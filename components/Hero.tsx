@@ -11,7 +11,6 @@ export function Hero() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // Handle email submission logic here
     console.log('Submitted email:', email)
     setEmail('')
   }
