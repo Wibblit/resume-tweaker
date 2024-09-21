@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ResumeData } from "@/types/types";
+//left sidebar
 
 const initialState: ResumeData = {
   basics: [],
