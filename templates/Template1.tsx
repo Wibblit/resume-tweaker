@@ -1,15 +1,7 @@
 import React from 'react';
+import { MapPin, Phone, Mail, Globe, Linkedin, Github, FileStack } from 'lucide-react';
 
 interface TemplateProps {
-  content: {
-    name: string;
-    email: string;
-    phone: string;
-    summary: string;
-    experience: { title: string; company: string; duration: string; description: string }[];
-    education: { degree: string; institution: string; year: string }[];
-    skills: string[];
-  };
   baseColor: string;
   fontSize: number;
   fontFamily: string;
@@ -18,7 +10,6 @@ interface TemplateProps {
 }
 
 const Template1: React.FC<TemplateProps> = ({
-  content,
   baseColor,
   fontSize,
   fontFamily,
@@ -31,41 +22,76 @@ const Template1: React.FC<TemplateProps> = ({
         fontFamily,
         fontSize: `${fontSize}px`,
         lineHeight: `${lineHeight}`,
-        color: baseColor,
-        padding: `${margin}mm`,
+        color: '#333',
         height: '100%',
+        padding: `${margin}mm`,
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <header className="text-center mb-4">
-        <h1 className="text-2xl font-bold">{content.name}</h1>
-        <p>{content.email} | {content.phone}</p>
+      <header style={{ marginBottom: '10px' }}>
+        <h1 style={{ fontSize: '24px', marginBottom: '5px', color: baseColor }}>John Doe</h1>
+        <h2 style={{ fontSize: '18px', fontWeight: 'normal', marginBottom: '5px' }}>Creative and Innovative Web Developer</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '12px' }}>
+          <span style={{ display: 'flex', alignItems: 'center' }}><MapPin size={12} /> Pleasantville, CA 94588</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Phone size={12} /> (555) 123-4567</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Mail size={12} /> john.doe@gmail.com</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Globe size={12} /> https://johndoe.me/</span>
+        </div>
       </header>
-      <section className="mb-4">
-        <h2 className="text-xl font-semibold mb-2">Summary</h2>
-        <p>{content.summary}</p>
+
+      <section style={{ marginBottom: '10px' }}>
+        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Profiles</h2>
+        <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Linkedin size={12} /> johndoe</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}><Github size={12} /> johndoe</span>
+          <span style={{ display: 'flex', alignItems: 'center' }}><FileStack size={12} /> johndoe</span>
+        </div>
       </section>
-      <section className="mb-4">
-        <h2 className="text-xl font-semibold mb-2">Experience</h2>
-        {content.experience.map((exp, index) => (
-          <div key={index} className="mb-2">
-            <h3 className="font-semibold">{exp.title}</h3>
-            <p>{exp.company} | {exp.duration}</p>
-            <p>{exp.description}</p>
-          </div>
-        ))}
+
+      <section style={{ marginBottom: '10px' }}>
+        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Summary</h2>
+        <p style={{ fontSize: '12px' }}>Innovative Web Developer with 5 years of experience in building impactful and user-friendly websites and applications. Specializes in front-end technologies and passionate about modern web standards and cutting-edge development techniques.</p>
       </section>
-      <section className="mb-4">
-        <h2 className="text-xl font-semibold mb-2">Education</h2>
-        {content.education.map((edu, index) => (
-          <div key={index}>
-            <h3 className="font-semibold">{edu.degree}</h3>
-            <p>{edu.institution} | {edu.year}</p>
-          </div>
-        ))}
+
+      <section style={{ marginBottom: '10px' }}>
+        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Experience</h2>
+        <div style={{ marginBottom: '5px' }}>
+          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Senior Web Developer</h3>
+          <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>Creative Solutions Inc. | January 2019 to Present</p>
+          <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
+            <li>Spearheaded the redesign of the main product website, resulting in a 40% increase in user engagement.</li>
+            <li>Developed and implemented a new responsive framework, improving cross-device compatibility.</li>
+          </ul>
+        </div>
+        <div style={{ marginBottom: '5px' }}>
+          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Web Developer</h3>
+          <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>TechAdvancers | June 2016 to December 2018</p>
+          <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
+            <li>Collaborated in a team of 10 to develop high-quality web applications using React.js and Node.js.</li>
+            <li>Optimized application performance, achieving a 30% reduction in load times.</li>
+          </ul>
+        </div>
       </section>
+
+      <section style={{ marginBottom: '10px' }}>
+        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Education</h2>
+        <div>
+          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Bachelor's in Computer Science</h3>
+          <p style={{ fontSize: '12px' }}>University of California, Berkeley | August 2012 to May 2016</p>
+        </div>
+      </section>
+
       <section>
-        <h2 className="text-xl font-semibold mb-2">Skills</h2>
-        <p>{content.skills.join(', ')}</p>
+        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Skills</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', fontSize: '12px' }}>
+          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>HTML5</span>
+          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>JavaScript</span>
+          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>React.js</span>
+          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>Node.js</span>
+          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>Python</span>
+        </div>
       </section>
     </div>
   );
