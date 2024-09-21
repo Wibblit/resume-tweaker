@@ -44,7 +44,7 @@ export default function AIReviewPage() {
   return (
     <div className="flex h-screen bg-background text-foreground">
       {/* Sidebar for larger screens */}
-      <aside className="hidden w-64 border-r border-border bg-muted/40 lg:block">
+      <aside className="hidden w-64 border-r border-border lg:block">
         <SidebarContent />
       </aside>
 
