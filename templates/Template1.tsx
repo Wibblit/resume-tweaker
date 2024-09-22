@@ -28,6 +28,7 @@ const Template1: React.FC<TemplateProps> = ({
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
       <header style={{ marginBottom: '10px' }}>
@@ -55,23 +56,25 @@ const Template1: React.FC<TemplateProps> = ({
         <p style={{ fontSize: '12px' }}>Innovative Web Developer with 5 years of experience in building impactful and user-friendly websites and applications. Specializes in front-end technologies and passionate about modern web standards and cutting-edge development techniques.</p>
       </section>
 
-      <section style={{ marginBottom: '10px' }}>
+      <section style={{ marginBottom: '10px', flex: 1, overflow: 'hidden' }}>
         <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Experience</h2>
-        <div style={{ marginBottom: '5px' }}>
-          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Senior Web Developer</h3>
-          <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>Creative Solutions Inc. | January 2019 to Present</p>
-          <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
-            <li>Spearheaded the redesign of the main product website, resulting in a 40% increase in user engagement.</li>
-            <li>Developed and implemented a new responsive framework, improving cross-device compatibility.</li>
-          </ul>
-        </div>
-        <div style={{ marginBottom: '5px' }}>
-          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Web Developer</h3>
-          <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>TechAdvancers | June 2016 to December 2018</p>
-          <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
-            <li>Collaborated in a team of 10 to develop high-quality web applications using React.js and Node.js.</li>
-            <li>Optimized application performance, achieving a 30% reduction in load times.</li>
-          </ul>
+        <div style={{ height: 'calc(100% - 30px)', overflowY: 'auto' }}>
+          <div style={{ marginBottom: '5px' }}>
+            <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Senior Web Developer</h3>
+            <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>Creative Solutions Inc. | January 2019 to Present</p>
+            <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
+              <li>Spearheaded the redesign of the main product website, resulting in a 40% increase in user engagement.</li>
+              <li>Developed and implemented a new responsive framework, improving cross-device compatibility.</li>
+            </ul>
+          </div>
+          <div style={{ marginBottom: '5px' }}>
+            <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Web Developer</h3>
+            <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>TechAdvancers | June 2016 to December 2018</p>
+            <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
+              <li>Collaborated in a team of 10 to develop high-quality web applications using React.js and Node.js.</li>
+              <li>Optimized application performance, achieving a 30% reduction in load times.</li>
+            </ul>
+          </div>
         </div>
       </section>
 

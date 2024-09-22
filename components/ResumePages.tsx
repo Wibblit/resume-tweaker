@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, MouseEvent } from "react";
+import React, { useState, useRef, useEffect, MouseEvent } from "react";
+import ReactDOMServer from 'react-dom/server';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,9 +13,9 @@ import {
   ZoomOut,
   Plus,
   FileDown,
+  Eye,
 } from "lucide-react";
 import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 //Template imports
 import Template1 from "@/templates/Template1";
 import Template2 from "@/templates/Template2";
@@ -96,6 +97,7 @@ export default function ResumePages({
   const [zoom, setZoom] = useState<number>(100);
   const [history, setHistory] = useState<Page[][]>([[{ id: 1, template: 1, content: defaultResumeContent }]]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const resumeContainerRef = useRef<HTMLDivElement>(null);
   const resumePagesRef = useRef<HTMLDivElement>(null);
@@ -134,31 +136,71 @@ export default function ResumePages({
     setPages(updatedPages);
   };
 
-  const downloadPDF = async () => {
+  const generatePDF = () => {
     const pdf = new jsPDF({
       format: pageFormat.toLowerCase(),
       unit: "mm",
     });
 
-    for (let i = 0; i < pages.length; i++) {
-      const pageElement = document.getElementById(`page-${pages[i].id}`);
-      if (pageElement) {
-        const canvas = await html2canvas(pageElement, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
-
-        if (i > 0) pdf.addPage();
-        pdf.addImage(
-          imgData,
-          "PNG",
-          0,
-          0,
-          pdf.internal.pageSize.getWidth(),
-          pdf.internal.pageSize.getHeight()
-        );
+    pages.forEach((page, index) => {
+      if (index > 0) {
+        pdf.addPage();
       }
-    }
 
-    pdf.save("resume.pdf");
+      const pageElement = renderTemplate(page);
+      const htmlString = ReactDOMServer.renderToString(pageElement);
+
+      pdf.html(htmlString, {
+        callback: function (pdf) {
+          if (index === pages.length - 1) {
+            pdf.save("resume.pdf");
+          }
+        },
+        x: 0,
+        y: 0,
+        width: PAGE_FORMATS[pageFormat].width,
+        windowWidth: PAGE_FORMATS[pageFormat].width,
+        autoPaging: 'text',
+      });
+    });
+  };
+
+  const previewPDF = () => {
+    const pdf = new jsPDF({
+      format: pageFormat.toLowerCase(),
+      unit: "mm",
+    });
+
+    const renderPage = (pageIndex: number) => {
+      if (pageIndex >= pages.length) {
+        const pdfBlob = pdf.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        setPreviewUrl(url);
+        return;
+      }
+
+      const page = pages[pageIndex];
+      const pageElement = renderTemplate(page);
+      const htmlString = ReactDOMServer.renderToString(pageElement);
+
+      pdf.html(htmlString, {
+        callback: function (pdf) {
+          if (pageIndex < pages.length - 1) {
+            pdf.addPage();
+            renderPage(pageIndex + 1);
+          } else {
+            renderPage(pageIndex + 1);
+          }
+        },
+        x: 0,
+        y: 0,
+        width: PAGE_FORMATS[pageFormat].width,
+        windowWidth: PAGE_FORMATS[pageFormat].width,
+        autoPaging: 'text',
+      });
+    };
+
+    renderPage(0);
   };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
@@ -260,6 +302,7 @@ export default function ResumePages({
                     width: `${PAGE_FORMATS[pageFormat].width}mm`,
                     height: `${PAGE_FORMATS[pageFormat].height}mm`,
                     margin: "0 auto",
+                    overflow: "hidden",
                   }}
                 >
                   {renderTemplate(page)}
@@ -309,12 +352,26 @@ export default function ResumePages({
           <Button onClick={() => handleZoom(zoom + 10)}>
             <ZoomIn className="h-4 w-4" />
           </Button>
-          <Button onClick={downloadPDF}>
+          <Button onClick={generatePDF}>
             <FileDown className="h-4 w-4 mr-2" />
             Download PDF
           </Button>
+          <Button onClick={previewPDF}>
+            <Eye className="h-4 w-4 mr-2" />
+            Preview PDF
+          </Button>
         </div>
       </div>
+      {previewUrl && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg max-w-3xl max-h-[90vh] overflow-auto">
+            <iframe src={previewUrl} className="w-full h-[80vh]" />
+            <Button onClick={() => setPreviewUrl(null)} className="mt-4">
+              Close Preview
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
