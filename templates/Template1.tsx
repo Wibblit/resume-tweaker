@@ -1,5 +1,18 @@
 import React from 'react';
-import { MapPin, Phone, Mail, Globe, Linkedin, Github, FileStack } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const isEmptyString = (str: string): boolean => {
+  return str.trim().length === 0;
+};
+
+const isUrl = (str: string): boolean => {
+  try {
+    new URL(str);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 interface TemplateProps {
   baseColor: string;
@@ -9,6 +22,66 @@ interface TemplateProps {
   margin: number;
 }
 
+const Link: React.FC<{ url: { href: string; label: string }, icon?: React.ReactNode, iconOnRight?: boolean, label?: string, className?: string }> = ({ url, icon, iconOnRight, label, className }) => {
+  if (!isUrl(url.href)) return null;
+
+  return (
+    <div className="flex items-center gap-x-1.5">
+      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
+      <a
+        href={url.href}
+        target="_blank"
+        rel="noreferrer noopener nofollow"
+        className={cn("inline-block", className)}
+      >
+        {label ?? (url.label || url.href)}
+      </a>
+      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
+    </div>
+  );
+};
+
+const LinkedEntity: React.FC<{ name: string; url: { href: string; label: string }; separateLinks: boolean; className?: string }> = ({ name, url, separateLinks, className }) => {
+  return !separateLinks && isUrl(url.href) ? (
+    <Link
+      url={url}
+      label={name}
+      icon={<i className="ph ph-bold ph-globe text-primary" />}
+      iconOnRight={true}
+      className={className}
+    />
+  ) : (
+    <div className={className}>{name}</div>
+  );
+};
+
+const Section: React.FC<{ section: any; children: (item: any) => React.ReactNode }> = ({ section, children }) => {
+  if (!section.visible || section.items.length === 0) return null;
+
+  return (
+    <section id={section.id} className="grid grid-cols-5 border-t pt-2.5">
+      <div>
+        <h4 className="text-base font-bold">{section.name}</h4>
+      </div>
+
+      <div
+        className="col-span-4 grid gap-x-6 gap-y-3"
+        style={{ gridTemplateColumns: `repeat(${section.columns}, 1fr)` }}
+      >
+        {section.items
+          .filter((item: any) => item.visible)
+          .map((item: any) => (
+            <div key={item.id} className="space-y-2">
+              <div>{children(item)}</div>
+              {item.summary && !isEmptyString(item.summary) && (
+                <div dangerouslySetInnerHTML={{ __html: item.summary }} className="wysiwyg" />
+              )}
+            </div>
+          ))}
+      </div>
+    </section>
+  );
+};
 const Template1: React.FC<TemplateProps> = ({
   baseColor,
   fontSize,
@@ -16,85 +89,218 @@ const Template1: React.FC<TemplateProps> = ({
   lineHeight,
   margin
 }) => {
+  const basics = {
+    name: "John Doe",
+    email: "john.doe@example.com",
+    phone: "+1 (555) 123-4567",
+    headline: "Experienced Software Developer",
+    location: "New York, NY",
+    url: { href: "https://johndoe.com", label: "Portfolio" },
+    summary: "Passionate software developer with 5+ years of experience in creating robust web applications. Skilled in React, Node.js, and Python."
+  };
+
+  const sections = {
+    experience: {
+      id: "experience",
+      name: "Professional Experience",
+      items: [
+        {
+          id: "exp1",
+          visible: true,
+          company: "Tech Solutions Inc.",
+          position: "Senior Software Developer",
+          location: "New York, NY",
+          date: "2018 - Present",
+          url: { href: "https://techsolutions.com", label: "Tech Solutions" },
+          summary: "Led a team of 5 developers in creating a scalable e-commerce platform. Implemented CI/CD pipelines and reduced deployment time by 50%."
+        },
+        {
+          id: "exp2",
+          visible: true,
+          company: "WebDev Co.",
+          position: "Junior Developer",
+          location: "Boston, MA",
+          date: "2016 - 2018",
+          url: { href: "https://webdevco.com", label: "WebDev Co." },
+          summary: "Developed and maintained multiple client websites using React and Node.js. Improved site load times by 30% through optimization techniques."
+        }
+      ],
+      visible: true,
+      columns: 1
+    },
+    education: {
+      id: "education",
+      name: "Education",
+      items: [
+        {
+          id: "edu1",
+          visible: true,
+          institution: "University of Technology",
+          studyType: "Bachelor's Degree",
+          area: "Computer Science",
+          score: "3.8 GPA",
+          date: "2012 - 2016",
+          url: { href: "https://uotech.edu", label: "University of Technology" },
+          summary: "Graduated with honors. Relevant coursework: Data Structures, Algorithms, Web Development, Database Management."
+        }
+      ],
+      visible: true,
+      columns: 1
+    },
+    skills: {
+      id: "skills",
+      name: "Skills",
+      items: [
+        {
+          id: "skill1",
+          visible: true,
+          name: "Web Development",
+          keywords: ["React", "Node.js", "Express", "MongoDB"],
+          level: 5
+        },
+        {
+          id: "skill2",
+          visible: true,
+          name: "Programming Languages",
+          keywords: ["JavaScript", "Python", "Java", "C++"],
+          level: 4
+        },
+        {
+          id: "skill3",
+          visible: true,
+          name: "DevOps",
+          keywords: ["Docker", "Jenkins", "AWS", "Azure"],
+          level: 3
+        }
+      ],
+      visible: true,
+      columns: 2
+    }
+  };
+
   return (
     <div
       style={{
         fontFamily,
         fontSize: `${fontSize}px`,
         lineHeight: `${lineHeight}`,
-        color: '#333',
-        height: '100%',
+        color: baseColor,
         padding: `${margin}mm`,
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
+        height: '100%',
       }}
     >
-      <header style={{ marginBottom: '10px' }}>
-        <h1 style={{ fontSize: '24px', marginBottom: '5px', color: baseColor }}>John Doe</h1>
-        <h2 style={{ fontSize: '18px', fontWeight: 'normal', marginBottom: '5px' }}>Creative and Innovative Web Developer</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', fontSize: '12px' }}>
-          <span style={{ display: 'flex', alignItems: 'center' }}><MapPin size={12} /> Pleasantville, CA 94588</span>
-          <span style={{ display: 'flex', alignItems: 'center' }}><Phone size={12} /> (555) 123-4567</span>
-          <span style={{ display: 'flex', alignItems: 'center' }}><Mail size={12} /> john.doe@gmail.com</span>
-          <span style={{ display: 'flex', alignItems: 'center' }}><Globe size={12} /> https://johndoe.me/</span>
-        </div>
-      </header>
+      <div className="p-custom space-y-4">
+        <header className="flex flex-col items-center space-y-2 text-center">
+          <div>
+            <div className="text-2xl font-bold">{basics.name}</div>
+            <div className="text-base">{basics.headline}</div>
+          </div>
 
-      <section style={{ marginBottom: '10px' }}>
-        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Profiles</h2>
-        <div style={{ display: 'flex', gap: '10px', fontSize: '12px' }}>
-          <span style={{ display: 'flex', alignItems: 'center' }}><Linkedin size={12} /> johndoe</span>
-          <span style={{ display: 'flex', alignItems: 'center' }}><Github size={12} /> johndoe</span>
-          <span style={{ display: 'flex', alignItems: 'center' }}><FileStack size={12} /> johndoe</span>
-        </div>
-      </section>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
+            {basics.location && (
+              <div className="flex items-center gap-x-1.5">
+                <i className="ph ph-bold ph-map-pin text-primary" />
+                <div>{basics.location}</div>
+              </div>
+            )}
+            {basics.phone && (
+              <div className="flex items-center gap-x-1.5">
+                <i className="ph ph-bold ph-phone text-primary" />
+                <a href={`tel:${basics.phone}`} target="_blank" rel="noreferrer">
+                  {basics.phone}
+                </a>
+              </div>
+            )}
+            {basics.email && (
+              <div className="flex items-center gap-x-1.5">
+                <i className="ph ph-bold ph-at text-primary" />
+                <a href={`mailto:${basics.email}`} target="_blank" rel="noreferrer">
+                  {basics.email}
+                </a>
+              </div>
+            )}
+            <Link url={basics.url} />
+          </div>
+        </header>
 
-      <section style={{ marginBottom: '10px' }}>
-        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Summary</h2>
-        <p style={{ fontSize: '12px' }}>Innovative Web Developer with 5 years of experience in building impactful and user-friendly websites and applications. Specializes in front-end technologies and passionate about modern web standards and cutting-edge development techniques.</p>
-      </section>
+        <div className="space-y-4">
+          <section id="summary" className="grid grid-cols-5 border-t pt-2.5">
+            <div>
+              <h4 className="text-base font-bold">Summary</h4>
+            </div>
+            <div
+              dangerouslySetInnerHTML={{ __html: basics.summary }}
+              className="wysiwyg col-span-4"
+            />
+          </section>
 
-      <section style={{ marginBottom: '10px' }}>
-        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Experience</h2>
-        <div style={{ marginBottom: '5px' }}>
-          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Senior Web Developer</h3>
-          <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>Creative Solutions Inc. | January 2019 to Present</p>
-          <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
-            <li>Spearheaded the redesign of the main product website, resulting in a 40% increase in user engagement.</li>
-            <li>Developed and implemented a new responsive framework, improving cross-device compatibility.</li>
-          </ul>
-        </div>
-        <div style={{ marginBottom: '5px' }}>
-          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Web Developer</h3>
-          <p style={{ fontSize: '12px', fontStyle: 'italic', marginBottom: '2px' }}>TechAdvancers | June 2016 to December 2018</p>
-          <ul style={{ paddingLeft: '20px', fontSize: '12px', margin: '0' }}>
-            <li>Collaborated in a team of 10 to develop high-quality web applications using React.js and Node.js.</li>
-            <li>Optimized application performance, achieving a 30% reduction in load times.</li>
-          </ul>
-        </div>
-      </section>
+          <Section section={sections.experience}>
+            {(item) => (
+              <div className="flex items-start justify-between">
+                <div className="text-left">
+                  <LinkedEntity
+                    name={item.company}
+                    url={item.url}
+                    separateLinks={false}
+                    className="font-bold"
+                  />
+                  <div>{item.position}</div>
+                </div>
 
-      <section style={{ marginBottom: '10px' }}>
-        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Education</h2>
-        <div>
-          <h3 style={{ fontSize: '14px', marginBottom: '2px' }}>Bachelor's in Computer Science</h3>
-          <p style={{ fontSize: '12px' }}>University of California, Berkeley | August 2012 to May 2016</p>
-        </div>
-      </section>
+                <div className="shrink-0 text-right">
+                  <div className="font-bold">{item.date}</div>
+                  <div>{item.location}</div>
+                </div>
+              </div>
+            )}
+          </Section>
 
-      <section>
-        <h2 style={{ fontSize: '16px', borderBottom: `2px solid ${baseColor}`, paddingBottom: '3px', marginBottom: '5px' }}>Skills</h2>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', fontSize: '12px' }}>
-          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>HTML5</span>
-          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>JavaScript</span>
-          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>React.js</span>
-          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>Node.js</span>
-          <span style={{ backgroundColor: baseColor, color: 'white', padding: '2px 5px', borderRadius: '3px' }}>Python</span>
+          <Section section={sections.education}>
+            {(item) => (
+              <div className="flex items-start justify-between">
+                <div className="text-left">
+                  <LinkedEntity
+                    name={item.institution}
+                    url={item.url}
+                    separateLinks={false}
+                    className="font-bold"
+                  />
+                  <div>{item.area}</div>
+                  <div>{item.score}</div>
+                </div>
+
+                <div className="shrink-0 text-right">
+                  <div className="font-bold">{item.date}</div>
+                  <div>{item.studyType}</div>
+                </div>
+              </div>
+            )}
+          </Section>
+
+          <Section section={sections.skills}>
+            {(item) => (
+              <div className="space-y-0.5">
+                <div className="font-bold">{item.name}</div>
+                {item.keywords && item.keywords.length > 0 && (
+                  <p className="text-sm">{item.keywords.join(", ")}</p>
+                )}
+                {item.level > 0 && (
+                  <div className="flex items-center gap-x-1.5">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className={cn("size-2 rounded-full border border-primary", item.level > index && "bg-primary")}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </Section>
         </div>
-      </section>
+      </div>
+
     </div>
   );
 };
-
 export default Template1;
