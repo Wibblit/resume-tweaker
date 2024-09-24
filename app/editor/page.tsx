@@ -16,7 +16,7 @@ export default function ResumeBuilder() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true);
   const [activeSection, setActiveSection] = useState<string>("basics");
-  const [pageFormat, setPageFormat] = useState<"A4" | "LETTER">("A4");
+  const [pageFormat, setPageFormat] = useState<"a4" | "letter">("a4");
 
   const ResumeData = useAppSelector((state) => state.leftsidebar)
   
