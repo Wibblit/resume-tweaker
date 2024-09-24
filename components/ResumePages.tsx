@@ -41,15 +41,15 @@ interface ResumeContent {
 }
 
 const PAGE_FORMATS: {
-  A4: { width: number; height: number }
-  LETTER: { width: number; height: number }
+  a4: { width: number; height: number }
+  letter: { width: number; height: number }
 } = {
-  A4: { width: 210, height: 297 },
-  LETTER: { width: 216, height: 279 },
+  a4: { width: 210, height: 297 },
+  letter: { width: 216, height: 279 },
 }
 
 interface ResumePagesProps {
-  pageFormat: "A4" | "LETTER"
+  pageFormat: "a4" | "letter"
   baseColor: string
   fontSize: number
   fontFamily: string
@@ -93,7 +93,7 @@ const MM_TO_PX = 3.78
 const ResumePage: React.FC<{
   page: Page
   pageNumber: number
-  pageFormat: "A4" | "LETTER"
+  pageFormat: "a4" | "letter"
   baseColor: string
   fontSize: number
   fontFamily: string
@@ -291,7 +291,7 @@ export default function ResumePages({
   }
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-[calc(100vh-64px)]">
       <ScrollArea className="flex-grow">
         <div className="p-4 pb-20">
           <TransformWrapper
@@ -347,7 +347,7 @@ export default function ResumePages({
           </TransformWrapper>
         </div>
       </ScrollArea>
-      <div className="fixed bottom-0 left-0 right-0 p-4 border-t border-border flex flex-col gap-2 bg-background">
+      <div className="bottom-0 left-0 right-0 p-4 border-t border-border flex flex-col gap-2 bg-background">
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             <Button onClick={undo} disabled={historyIndex === 0}>
