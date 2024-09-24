@@ -11,7 +11,7 @@ const initialState: ResumeStyles = {
   fontSize: 12,
   lineHeight: 1,
   margin: 10,
-  paperFormat: "A4",
+  paperFormat: "a4",
   baseColor: "#000",
 };
 

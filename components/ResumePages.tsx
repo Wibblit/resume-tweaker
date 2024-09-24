@@ -14,7 +14,6 @@ import Template5 from "@/templates/Template5"
 import Template6 from "@/templates/Template6"
 import Template7 from "@/templates/Template7"
 import Template8 from "@/templates/Template8"
-import { generateResume } from "@/lib/downloadPDF"
 
 interface Page {
   id: number
@@ -211,66 +210,72 @@ export default function ResumePages({
   }
 
   const handleDownloadPDF = async () => {
-    try {
-      // Capture HTML content of all pages
-      const pageElements = document.querySelectorAll('[data-page]');
-      const pagesHTML = Array.from(pageElements).map(el => el.outerHTML).join('');
+    
+    const pageElements = document.querySelectorAll('[data-page]');
+    const pagesHTML = Array.from(pageElements).map(el => el.outerHTML).join('');
 
-      // Get all styles from the document
-      const styles = Array.from(document.styleSheets)
-        .map(sheet => {
-          try {
-            return Array.from(sheet.cssRules)
-              .map(rule => rule.cssText)
-              .join('\n');
-          } catch (e) {
-            console.warn('Error accessing stylesheet rules', e);
-            return '';
-          }
-        })
-        .join('\n');
-
-      // Wrap all pages in a container with styles
-      const wrappedHTML = `
-        <html>
-          <head>
-            <style>${styles}</style>
-          </head>
-          <body>
-            <div id="resume-pages" style="width: ${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px;">
-              ${pagesHTML}
-            </div>
-          </body>
-        </html>
-      `;
-
-      const result = await generateResume(wrappedHTML, pages.length, pageFormat);
-      
-      if (!result.success || !result.pdf) {
-        throw new Error(result.error || "Failed to generate PDF");
+    // Get all styles from the document
+    const styles = Array.from(document.styleSheets)
+      .map(sheet => {
+        try {
+          return Array.from(sheet.cssRules)
+            .map(rule => rule.cssText)
+            .join('\n');
+        } catch (e) {
+          console.warn('Error accessing stylesheet rules', e);
+          return '';
+        }
+      })
+      .join('\n');
+    
+    // Add print-specific styles
+    const printStyles = 
+      `@page {
+        size: ${pageFormat};
+        margin: 0;
       }
-
-      // Convert Base64 to Blob
-      const byteCharacters = atob(result.pdf);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      body {
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
-
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = "resume.pdf";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-    }
+      #resume-pages {
+        width: ${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px;
+      }`;
+    
+    // Wrap all pages in a container with styles
+    const wrappedHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>${styles}</style>
+          <style>${printStyles}</style>
+        </head>
+        <body>
+          <div id="resume-pages">
+            ${pagesHTML}
+          </div>
+        </body>
+      </html>`;
+    
+    const printFrame = document.createElement('iframe');
+    printFrame.style.display = 'none';
+    document.body.appendChild(printFrame);
+    
+    const frameDoc = printFrame.contentDocument;
+    frameDoc?.open();
+    frameDoc?.write(wrappedHTML);
+    frameDoc?.close();
+    
+    // Wait for images and other resources to load before printing
+    setTimeout(() => {
+      if (printFrame?.contentWindow) {
+        printFrame.contentWindow.print();
+        document.body.removeChild(printFrame);
+      }
+    }, 1000);
+    
   };
   
   

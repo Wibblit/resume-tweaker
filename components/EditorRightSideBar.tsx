@@ -79,7 +79,7 @@ export default function RightSideBar() {
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
   const [margin, setMargin] = useState<number>(20);
-  const [paperFormat, setPaperFormat] = useState<string>("A4");
+  const [paperFormat, setPaperFormat] = useState<string>("a4");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<string>("Arial");
   const [searchFont, setSearchFont] = useState<string>("");
@@ -275,9 +275,8 @@ export default function RightSideBar() {
                 <SelectValue placeholder="Select format" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="A4">A4</SelectItem>
-                <SelectItem value="Letter">Letter</SelectItem>
-                <SelectItem value="Legal">Legal</SelectItem>
+                <SelectItem value="a4">A4</SelectItem>
+                <SelectItem value="letter">Letter</SelectItem>
               </SelectContent>
             </Select>
           </div>
