@@ -82,7 +82,6 @@ const Section: React.FC<{ section: any; children: (item: any) => React.ReactNode
     </section>
   );
 };
-
 const Template1: React.FC<TemplateProps> = ({
   baseColor,
   fontSize,
@@ -300,8 +299,8 @@ const Template1: React.FC<TemplateProps> = ({
           </Section>
         </div>
       </div>
+
     </div>
   );
 };
-
 export default Template1;
