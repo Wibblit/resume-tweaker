@@ -7,6 +7,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
+  SheetFooter
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
@@ -34,10 +36,11 @@ import {
   UpdateFontSize,
   UpdateLineHeight,
   UpdateMargin,
-  UpdateName,
+  UpdateId,
   UpdatePaperFormat,
 } from "@/slices/rightsidebarSlice";
 import { useAppDispatch } from "@/hooks/hooks";
+import { DownloadPDF } from "@/slices/rightsidebarSlice";
 
 const fonts = [
   "Arial",
@@ -66,16 +69,20 @@ const fonts = [
   "Verdana",
 ];
 
+interface RightSideBarProps {
+  printFrameRef: React.RefObject<HTMLIFrameElement>;
+}
+
 const templates = [
-  { name: "Professional", image: "/placeholder.svg?height=200&width=150" },
-  { name: "Creative", image: "/placeholder.svg?height=200&width=150" },
-  { name: "Executive", image: "/placeholder.svg?height=200&width=150" },
-  { name: "Technical", image: "/placeholder.svg?height=200&width=150" },
-  { name: "Academic", image: "/placeholder.svg?height=200&width=150" },
-  { name: "Student", image: "/placeholder.svg?height=200&width=150" },
+  {id : 1 , name: "Professional", image: "/placeholder.svg?height=200&width=150" },
+  {id :  2, name: "Creative", image: "/placeholder.svg?height=200&width=150" },
+  {id :  3, name: "Executive", image: "/placeholder.svg?height=200&width=150" },
+  {id :  4, name: "Technical", image: "/placeholder.svg?height=200&width=150" },
+  {id :  5, name: "Academic", image: "/placeholder.svg?height=200&width=150" },
+  {id :  6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
 ];
 
-export default function RightSideBar() {
+export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
   const [margin, setMargin] = useState<number>(20);
@@ -96,12 +103,12 @@ export default function RightSideBar() {
     dispatch(UpdateMargin(value[0]));
   };
 
-   const handleLineHeightChange = (value: number[]) => {
-     dispatch(UpdateLineHeight(value[0]));
-   };
-   const handleFontSizeChange = (value: number[]) => {
-     dispatch(UpdateFontSize(value[0]));
-   };
+  const handleLineHeightChange = (value: number[]) => {
+    dispatch(UpdateLineHeight(value[0]));
+  };
+  const handleFontSizeChange = (value: number[]) => {
+    dispatch(UpdateFontSize(value[0]));
+  };
 
   const handlePaperFormatChange = (value: string) => {
     setPaperFormat(value);
@@ -146,24 +153,26 @@ export default function RightSideBar() {
                 <ScrollArea className="flex-grow mt-4">
                   <div className="grid grid-cols-2 gap-4 pr-4">
                     {templates.map((template) => (
-                      <Button
-                        key={template.name}
-                        variant="outline"
-                        className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                        onClick={() => setSelectedTemplate(template.name)}
-                      >
-                        <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
-                          <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                          <img
-                            src={template.image}
-                            alt={`${template.name} template`}
-                            className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
-                          />
-                        </div>
-                        <div className="p-2 text-center font-medium">
-                          {template.name}
-                        </div>
-                      </Button>
+                      <SheetClose asChild>
+                        <Button
+                          key={template.name}
+                          variant="outline"
+                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          onClick={() => dispatch(UpdateId(template.id))}
+                        >
+                          <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
+                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
+                            <img
+                              src={template.image}
+                              alt={`${template.name} template`}
+                              className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
+                            />
+                          </div>
+                          <div className="p-2 text-center font-medium">
+                            {template.name}
+                          </div>
+                        </Button>
+                      </SheetClose>
                     ))}
                   </div>
                 </ScrollArea>
@@ -204,22 +213,24 @@ export default function RightSideBar() {
                   <ScrollArea className="flex-grow">
                     <div className="grid grid-cols-1 gap-2 pr-4">
                       {filteredFonts.map((font) => (
-                        <Button
-                          key={font}
-                          variant="ghost"
-                          className="w-full justify-start h-16 px-4 hover:bg-accent"
-                          onClick={() => {
-                            setSelectedFont(font);
-                            dispatch(UpdateFont(font));
-                          }}
-                        >
-                          <span
-                            style={{ fontFamily: font }}
-                            className="text-lg"
+                        <SheetClose asChild>
+                          <Button
+                            key={font}
+                            variant="ghost"
+                            className="w-full justify-start h-16 px-4 hover:bg-accent"
+                            onClick={() => {
+                              setSelectedFont(font);
+                              dispatch(UpdateFont(font));
+                            }}
                           >
-                            {font}
-                          </span>
-                        </Button>
+                            <span
+                              style={{ fontFamily: font }}
+                              className="text-lg"
+                            >
+                              {font}
+                            </span>
+                          </Button>
+                        </SheetClose>
                       ))}
                     </div>
                   </ScrollArea>
@@ -330,7 +341,9 @@ export default function RightSideBar() {
               </div>
               <div
                 className="w-full cursor-pointer hover:bg-secondary px-2"
-                onClick={() => handleExport("PDF")}
+                onClick={() =>
+                  dispatch(DownloadPDF({ printFrameRef: printFrameRef }))
+                }
               >
                 Export as PDF
               </div>

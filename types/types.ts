@@ -85,7 +85,7 @@ export type BlogType = {
 //   };
 
   type Template = {
-    readonly id: string;
+    id: number;
     name: string;
   }
 

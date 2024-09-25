@@ -3,7 +3,19 @@ import { ResumeData } from "@/types/types";
 //left sidebar
 
 const initialState: ResumeData = {
-  basics: [],
+  basics: [
+    {
+      name: "Vanamuthu V",
+      email: "1h21sdsa@gmail.com",
+      phone: "34234234",
+      location: "BLR",
+      headLine: "Software Engineer",
+      url: {
+        href: "https://resumetweaker.wibblit.com",
+        label: "Wibblit",
+      },
+    },
+  ],
   summary: [],
   profiles: [],
   skills: [],

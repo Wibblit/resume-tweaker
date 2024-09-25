@@ -1,5 +1,6 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { cn } from "@/lib/utils";
+import { ResumeData } from "@/types/types";
 
 const isEmptyString = (str: string): boolean => {
   return str.trim().length === 0;
@@ -20,14 +21,22 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  content: ResumeData;
 }
 
-const Link: React.FC<{ url: { href: string; label: string }, icon?: React.ReactNode, iconOnRight?: boolean, label?: string, className?: string }> = ({ url, icon, iconOnRight, label, className }) => {
+const Link: React.FC<{
+  url: { href: string; label: string };
+  icon?: React.ReactNode;
+  iconOnRight?: boolean;
+  label?: string;
+  className?: string;
+}> = ({ url, icon, iconOnRight, label, className }) => {
   if (!isUrl(url.href)) return null;
 
   return (
     <div className="flex items-center gap-x-1.5">
-      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
+      {!iconOnRight &&
+        (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
       <a
         href={url.href}
         target="_blank"
@@ -36,12 +45,18 @@ const Link: React.FC<{ url: { href: string; label: string }, icon?: React.ReactN
       >
         {label ?? (url.label || url.href)}
       </a>
-      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
+      {iconOnRight &&
+        (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
     </div>
   );
 };
 
-const LinkedEntity: React.FC<{ name: string; url: { href: string; label: string }; separateLinks: boolean; className?: string }> = ({ name, url, separateLinks, className }) => {
+const LinkedEntity: React.FC<{
+  name: string;
+  url: { href: string; label: string };
+  separateLinks: boolean;
+  className?: string;
+}> = ({ name, url, separateLinks, className }) => {
   return !separateLinks && isUrl(url.href) ? (
     <Link
       url={url}
@@ -55,7 +70,10 @@ const LinkedEntity: React.FC<{ name: string; url: { href: string; label: string 
   );
 };
 
-const Section: React.FC<{ section: any; children: (item: any) => React.ReactNode }> = ({ section, children }) => {
+const Section: React.FC<{
+  section: any;
+  children: (item: any) => React.ReactNode;
+}> = ({ section, children }) => {
   if (!section.visible || section.items.length === 0) return null;
 
   return (
@@ -74,7 +92,10 @@ const Section: React.FC<{ section: any; children: (item: any) => React.ReactNode
             <div key={item.id} className="space-y-2">
               <div>{children(item)}</div>
               {item.summary && !isEmptyString(item.summary) && (
-                <div dangerouslySetInnerHTML={{ __html: item.summary }} className="wysiwyg" />
+                <div
+                  dangerouslySetInnerHTML={{ __html: item.summary }}
+                  className="wysiwyg"
+                />
               )}
             </div>
           ))}
@@ -87,7 +108,8 @@ const Template1: React.FC<TemplateProps> = ({
   fontSize,
   fontFamily,
   lineHeight,
-  margin
+  margin,
+  content,
 }) => {
   const basics = {
     name: "John Doe",
@@ -96,7 +118,8 @@ const Template1: React.FC<TemplateProps> = ({
     headline: "Experienced Software Developer",
     location: "New York, NY",
     url: { href: "https://johndoe.com", label: "Portfolio" },
-    summary: "Passionate software developer with 5+ years of experience in creating robust web applications. Skilled in React, Node.js, and Python."
+    summary:
+      "Passionate software developer with 5+ years of experience in creating robust web applications. Skilled in React, Node.js, and Python.",
   };
 
   const sections = {
@@ -112,7 +135,8 @@ const Template1: React.FC<TemplateProps> = ({
           location: "New York, NY",
           date: "2018 - Present",
           url: { href: "https://techsolutions.com", label: "Tech Solutions" },
-          summary: "Led a team of 5 developers in creating a scalable e-commerce platform. Implemented CI/CD pipelines and reduced deployment time by 50%."
+          summary:
+            "Led a team of 5 developers in creating a scalable e-commerce platform. Implemented CI/CD pipelines and reduced deployment time by 50%.",
         },
         {
           id: "exp2",
@@ -122,11 +146,12 @@ const Template1: React.FC<TemplateProps> = ({
           location: "Boston, MA",
           date: "2016 - 2018",
           url: { href: "https://webdevco.com", label: "WebDev Co." },
-          summary: "Developed and maintained multiple client websites using React and Node.js. Improved site load times by 30% through optimization techniques."
-        }
+          summary:
+            "Developed and maintained multiple client websites using React and Node.js. Improved site load times by 30% through optimization techniques.",
+        },
       ],
       visible: true,
-      columns: 1
+      columns: 1,
     },
     education: {
       id: "education",
@@ -140,12 +165,16 @@ const Template1: React.FC<TemplateProps> = ({
           area: "Computer Science",
           score: "3.8 GPA",
           date: "2012 - 2016",
-          url: { href: "https://uotech.edu", label: "University of Technology" },
-          summary: "Graduated with honors. Relevant coursework: Data Structures, Algorithms, Web Development, Database Management."
-        }
+          url: {
+            href: "https://uotech.edu",
+            label: "University of Technology",
+          },
+          summary:
+            "Graduated with honors. Relevant coursework: Data Structures, Algorithms, Web Development, Database Management.",
+        },
       ],
       visible: true,
-      columns: 1
+      columns: 1,
     },
     skills: {
       id: "skills",
@@ -156,27 +185,29 @@ const Template1: React.FC<TemplateProps> = ({
           visible: true,
           name: "Web Development",
           keywords: ["React", "Node.js", "Express", "MongoDB"],
-          level: 5
+          level: 5,
         },
         {
           id: "skill2",
           visible: true,
           name: "Programming Languages",
           keywords: ["JavaScript", "Python", "Java", "C++"],
-          level: 4
+          level: 4,
         },
         {
           id: "skill3",
           visible: true,
           name: "DevOps",
           keywords: ["Docker", "Jenkins", "AWS", "Azure"],
-          level: 3
-        }
+          level: 3,
+        },
       ],
       visible: true,
-      columns: 2
-    }
+      columns: 2,
+    },
   };
+
+  console.log(content)
 
   return (
     <div
@@ -186,40 +217,48 @@ const Template1: React.FC<TemplateProps> = ({
         lineHeight: `${lineHeight}`,
         color: baseColor,
         padding: `${margin}mm`,
-        height: '100%',
+        height: "100%",
       }}
     >
       <div className="p-custom space-y-4">
         <header className="flex flex-col items-center space-y-2 text-center">
           <div>
-            <div className="text-2xl font-bold">{basics.name}</div>
-            <div className="text-base">{basics.headline}</div>
+            <div className="text-2xl font-bold">{content.basics[0].name}</div>
+            <div className="text-base">{content.basics[0].headLine}</div>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
             {basics.location && (
               <div className="flex items-center gap-x-1.5">
                 <i className="ph ph-bold ph-map-pin text-primary" />
-                <div>{basics.location}</div>
+                <div>{content.basics[0].location}</div>
               </div>
             )}
             {basics.phone && (
               <div className="flex items-center gap-x-1.5">
                 <i className="ph ph-bold ph-phone text-primary" />
-                <a href={`tel:${basics.phone}`} target="_blank" rel="noreferrer">
-                  {basics.phone}
+                <a
+                  href={`tel:${content.basics[0].phone}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {content.basics[0].phone}
                 </a>
               </div>
             )}
             {basics.email && (
               <div className="flex items-center gap-x-1.5">
                 <i className="ph ph-bold ph-at text-primary" />
-                <a href={`mailto:${basics.email}`} target="_blank" rel="noreferrer">
-                  {basics.email}
+                <a
+                  href={`mailto:${content.basics[0].email}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {content.basics[0].email}
                 </a>
               </div>
             )}
-            <Link url={basics.url} />
+            <Link url={content.basics[0].url} />
           </div>
         </header>
 
@@ -289,7 +328,10 @@ const Template1: React.FC<TemplateProps> = ({
                     {Array.from({ length: 5 }).map((_, index) => (
                       <div
                         key={index}
-                        className={cn("size-2 rounded-full border border-primary", item.level > index && "bg-primary")}
+                        className={cn(
+                          "size-2 rounded-full border border-primary",
+                          item.level > index && "bg-primary"
+                        )}
                       />
                     ))}
                   </div>
@@ -299,7 +341,6 @@ const Template1: React.FC<TemplateProps> = ({
           </Section>
         </div>
       </div>
-
     </div>
   );
 };

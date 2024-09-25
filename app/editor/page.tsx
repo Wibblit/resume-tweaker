@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, MutableRefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { useAppSelector } from "@/hooks/hooks"; 
-import {
-  ChevronRight,
-  ChevronLeft,
-} from "lucide-react";
+import { useAppSelector } from "@/hooks/hooks";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import LeftSideBar from "@/components/EditorLeftSideBar";
 import RightSideBar from "@/components/EditorRightSideBar";
 import ResumePages from "@/components/ResumePages";
@@ -16,10 +13,12 @@ export default function ResumeBuilder() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true);
   const [activeSection, setActiveSection] = useState<string>("basics");
-  const [pageFormat, setPageFormat] = useState<"a4" | "letter">("a4");
 
-  const ResumeData = useAppSelector((state) => state.leftsidebar)
-  
+  const ResumeData = useAppSelector((state) => state.leftsidebar);
+  const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
+
+  const printFrameRef = useRef<HTMLIFrameElement | null>(null);
+
   console.log(ResumeData.summary);
 
   return (
@@ -52,16 +51,20 @@ export default function ResumeBuilder() {
           </Button>
         </div>
         <ResumePages
-          baseColor="#333333"
-          fontFamily="'Calibri', 'Arial', sans-serif"
-          lineHeight={1.5}
-          fontSize={12}
-          margin={15}
-          pageFormat={pageFormat}
+          baseColor={ResumeAppearance.baseColor}
+          fontFamily={ResumeAppearance.font}
+          lineHeight={ResumeAppearance.lineHeight}
+          fontSize={ResumeAppearance.fontSize}
+          margin={ResumeAppearance.margin}
+          pageFormat={ResumeAppearance.paperFormat}
+          printFrameRef={printFrameRef}
+          resumeData={ResumeData}
         />
       </div>
 
-      <AnimatePresence>{rightSidebarOpen && <RightSideBar />}</AnimatePresence>
+      <AnimatePresence>
+        {rightSidebarOpen && <RightSideBar printFrameRef={printFrameRef} />}
+      </AnimatePresence>
     </div>
   );
 }
