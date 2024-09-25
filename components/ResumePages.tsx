@@ -168,6 +168,7 @@ export default function ResumePages({
   const [isHovering, setIsHovering] = useState(false)
   const transformRef = useRef<ReactZoomPanPinchRef>(null)
   const printFrameRef = useRef<HTMLIFrameElement | null>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (historyIndex === history.length - 1) {
@@ -184,8 +185,7 @@ export default function ResumePages({
       if (event.data.type === "ZOOM_OUT") transformRef.current?.zoomOut(0.2)
       if (event.data.type === "CENTER_VIEW") transformRef.current?.centerView()
       if (event.data.type === "RESET_VIEW") {
-        transformRef.current?.resetTransform(0)
-        setTimeout(() => transformRef.current?.centerView(0.8, 0), 10)
+        resetView()
       }
     }
 
@@ -201,6 +201,24 @@ export default function ResumePages({
     const lastPage = pages[pages.length - 1]
     const newPages = [...pages, { id: newPageId, template: lastPage.template, content: defaultResumeContent }]
     setPages(newPages)
+
+    // Scroll to the new page after a short delay to ensure the page has been rendered
+    setTimeout(() => {
+      const newPageElement = document.getElementById(`page-${newPageId}`)
+      if (newPageElement && scrollAreaRef.current) {
+        const scrollViewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]')
+        if (scrollViewport) {
+          const containerRect = scrollViewport.getBoundingClientRect()
+          const newPageRect = newPageElement.getBoundingClientRect()
+          const scrollTop = newPageRect.top - containerRect.top + scrollViewport.scrollTop
+
+          scrollViewport.scrollTo({
+            top: scrollTop,
+            behavior: 'smooth'
+          })
+        }
+      }
+    }, 100)
   }
 
   const deletePage = (id: number) => {
@@ -306,9 +324,18 @@ export default function ResumePages({
     }
   }
 
+  const resetView = () => {
+    if (transformRef.current) {
+      transformRef.current.resetTransform()
+      setTimeout(() => {
+        transformRef.current?.centerView(1)
+      }, 50)
+    }
+  }
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
-      <ScrollArea className="flex-grow">
+      <ScrollArea className="flex-grow" ref={scrollAreaRef}>
         <div className="p-4 pb-20">
           <TransformWrapper
             ref={transformRef}
@@ -383,7 +410,7 @@ export default function ResumePages({
             <Button onClick={() => transformRef.current?.zoomOut(0.2)}>
               <ZoomOut className="h-4 w-4" />
             </Button>
-            <Button onClick={() => transformRef.current?.resetTransform(0)}>Reset View</Button>
+            <Button onClick={resetView}>Reset View</Button>
             <Button onClick={() => transformRef.current?.zoomIn(0.2)}>
               <ZoomIn className="h-4 w-4" />
             </Button>
