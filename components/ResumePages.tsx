@@ -167,6 +167,7 @@ export default function ResumePages({
   const [historyIndex, setHistoryIndex] = useState<number>(0)
   const [isHovering, setIsHovering] = useState(false)
   const transformRef = useRef<ReactZoomPanPinchRef>(null)
+  const printFrameRef = useRef<HTMLIFrameElement | null>(null)
 
   useEffect(() => {
     if (historyIndex === history.length - 1) {
@@ -209,10 +210,9 @@ export default function ResumePages({
     }
   }
 
-  const handleDownloadPDF = async () => {
-    
-    const pageElements = document.querySelectorAll('[data-page]');
-    const pagesHTML = Array.from(pageElements).map(el => el.outerHTML).join('');
+  const handleDownloadPDF = () => {
+    const pageElements = document.querySelectorAll('[data-page]')
+    const pagesHTML = Array.from(pageElements).map(el => el.outerHTML).join('')
 
     // Get all styles from the document
     const styles = Array.from(document.styleSheets)
@@ -220,35 +220,48 @@ export default function ResumePages({
         try {
           return Array.from(sheet.cssRules)
             .map(rule => rule.cssText)
-            .join('\n');
+            .join('\n')
         } catch (e) {
-          console.warn('Error accessing stylesheet rules', e);
-          return '';
+          console.warn('Error accessing stylesheet rules', e)
+          return ''
         }
       })
-      .join('\n');
-    
+      .join('\n')
+
     // Add print-specific styles
-    const printStyles = 
-      `@page {
+    const printStyles = `
+      @page {
         size: ${pageFormat};
         margin: 0;
       }
-      body {
-        margin: 0;
-        padding: 0;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+      @media print {
+        html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        #resume-pages {
+          width: ${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px;
+          margin: 0 auto;
+        }
+        /* Hide all other elements */
+        body > *:not(#resume-pages) {
+          display: none !important;
+        }
       }
-      #resume-pages {
-        width: ${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px;
-      }`;
-    
+    `
+
     // Wrap all pages in a container with styles
     const wrappedHTML = `
       <!DOCTYPE html>
       <html>
         <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <style>${styles}</style>
           <style>${printStyles}</style>
         </head>
@@ -257,29 +270,27 @@ export default function ResumePages({
             ${pagesHTML}
           </div>
         </body>
-      </html>`;
-    
-    const printFrame = document.createElement('iframe');
-    printFrame.style.display = 'none';
-    document.body.appendChild(printFrame);
-    
-    const frameDoc = printFrame.contentDocument;
-    frameDoc?.open();
-    frameDoc?.write(wrappedHTML);
-    frameDoc?.close();
-    
+      </html>
+    `
+
+    if (!printFrameRef.current) {
+      printFrameRef.current = document.createElement('iframe')
+      printFrameRef.current.style.display = 'none'
+      document.body.appendChild(printFrameRef.current)
+    }
+
+    const frameDoc = printFrameRef.current.contentDocument
+    frameDoc?.open()
+    frameDoc?.write(wrappedHTML)
+    frameDoc?.close()
+
     // Wait for images and other resources to load before printing
     setTimeout(() => {
-      if (printFrame?.contentWindow) {
-        printFrame.contentWindow.print();
-        document.body.removeChild(printFrame);
+      if (printFrameRef.current?.contentWindow) {
+        printFrameRef.current.contentWindow.print()
       }
-    }, 1000);
-    
-  };
-  
-  
-
+    }, 1000)
+  }
 
   const undo = () => {
     if (historyIndex > 0) {
