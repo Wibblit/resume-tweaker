@@ -31,7 +31,7 @@ const Link: React.FC<{
   label?: string;
   className?: string;
 }> = ({ url, icon, iconOnRight, label, className }) => {
-  if (!isUrl(url.href)) return null;
+  if (!isUrl(url?.href)) return null;
 
   return (
     <div className="flex items-center gap-x-1.5">
@@ -104,12 +104,12 @@ const Section: React.FC<{
   );
 };
 const Template1: React.FC<TemplateProps> = ({
+  content,
   baseColor,
   fontSize,
   fontFamily,
   lineHeight,
   margin,
-  content,
 }) => {
   const basics = {
     name: "John Doe",
@@ -223,26 +223,26 @@ const Template1: React.FC<TemplateProps> = ({
       <div className="p-custom space-y-4">
         <header className="flex flex-col items-center space-y-2 text-center">
           <div>
-            <div className="text-2xl font-bold">{content.basics[0].name}</div>
-            <div className="text-base">{content.basics[0].headLine}</div>
+            <div className="text-2xl font-bold">{content?.basics[0]?.name}</div>
+            <div className="text-base">{content.basics[0]?.headLine}</div>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
             {basics.location && (
               <div className="flex items-center gap-x-1.5">
                 <i className="ph ph-bold ph-map-pin text-primary" />
-                <div>{content.basics[0].location}</div>
+                <div>{content.basics[0]?.location}</div>
               </div>
             )}
             {basics.phone && (
               <div className="flex items-center gap-x-1.5">
                 <i className="ph ph-bold ph-phone text-primary" />
                 <a
-                  href={`tel:${content.basics[0].phone}`}
+                  href={`tel:${content.basics[0]?.phone}`}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {content.basics[0].phone}
+                  {content.basics[0]?.phone}
                 </a>
               </div>
             )}
@@ -250,15 +250,15 @@ const Template1: React.FC<TemplateProps> = ({
               <div className="flex items-center gap-x-1.5">
                 <i className="ph ph-bold ph-at text-primary" />
                 <a
-                  href={`mailto:${content.basics[0].email}`}
+                  href={`mailto:${content.basics[0]?.email}`}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {content.basics[0].email}
+                  {content.basics[0]?.email}
                 </a>
               </div>
             )}
-            <Link url={content.basics[0].url} />
+            <Link url={content?.basics[0]?.url} />
           </div>
         </header>
 
@@ -279,7 +279,7 @@ const Template1: React.FC<TemplateProps> = ({
                 <div className="text-left">
                   <LinkedEntity
                     name={item.company}
-                    url={item.url}
+                    url={item?.url}
                     separateLinks={false}
                     className="font-bold"
                   />
@@ -300,7 +300,7 @@ const Template1: React.FC<TemplateProps> = ({
                 <div className="text-left">
                   <LinkedEntity
                     name={item.institution}
-                    url={item.url}
+                    url={item?.url}
                     separateLinks={false}
                     className="font-bold"
                   />
