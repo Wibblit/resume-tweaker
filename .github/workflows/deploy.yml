@@ -26,17 +26,29 @@ jobs:
       env: 
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
-    - name: Squash merge updates from upstream
+    - name: Create and switch to a temporary branch
+      run: |
+        git checkout -b temp-sync
+
+    - name: Pull changes from upstream
+      run: |
+        git pull -X theirs upstream main  # Prefer upstream changes in case of conflicts
+
+    - name: Squash merge changes into main
       run: |
         git checkout main
-        git merge --squash upstream/main --allow-unrelated-histories || true  # Allow the workflow to continue on conflicts
-        git checkout --theirs .  # Prefer upstream changes
-        git add .  # Stage the changes
+        git merge --squash temp-sync
+        # Get the current timestamp in IST format (Indian Standard Time)
         TIMESTAMP=$(TZ='Asia/Kolkata' date +"%Y-%m-%dT%H:%M:%S%z")
-        git commit -m "Sync with upstream - $TIMESTAMP" || echo "No changes to commit - $TIMESTAMP"
+        # Commit changes with the timestamp
+        git commit -m "Sync with upstream - $TIMESTAMP" || echo "No changes to commit"
 
     - name: Push changes to forked repo
       run: |
         git push origin main
       env:
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+    - name: Clean up temporary branch
+      run: |
+        git branch -D temp-sync
