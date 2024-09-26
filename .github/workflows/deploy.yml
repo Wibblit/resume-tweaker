@@ -49,6 +49,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
-    - name: Clean up temporary branch
-      run: |
-        git branch -D temp-sync
+   
