@@ -32,7 +32,7 @@ jobs:
 
     - name: Pull changes from upstream
       run: |
-        git pull -X theirs --no-rebase upstream main  # Prefer upstream changes in case of conflicts
+        git pull -X theirs --no-rebase --allow-unrelated-histories upstream main  # Prefer upstream changes in case of conflicts
 
     - name: Squash merge changes into main
       run: |
