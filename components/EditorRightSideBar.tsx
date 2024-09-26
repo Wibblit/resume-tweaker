@@ -411,7 +411,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
               ].map((color) => (
                 <button
                   key={color}
-                  className={`w-8 h-8 rounded-full border-2 border-background focus:outline-none focus:ring-2 focus:ring-ring`}
+                  className={`w-6 h-6 rounded-full border-2 border-background focus:outline-none focus:ring-2 focus:ring-ring`}
                   onClick={() => dispatch(UpdateBaseColor(color))}
                   style={{ backgroundColor: color }}
                 />
