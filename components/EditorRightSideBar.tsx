@@ -390,18 +390,28 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
             <Label>Theme Color</Label>
             <div className="flex flex-wrap gap-2 mt-2">
               {[
-                "#3b82f6",
-                "#22c55e",
-                "#ef4444",
-                "#a855f7",
-                "#d97706",
-                "#ec4899 ",
-                "#6366f1",
-                "#14b8a6",
+                "#475569",
+                "#57534e",
+                "#dc2626",
+                "#ea580c",
+                "#ca8a04",
+                "#65a30d",
+                "#16a34a",
+                "#059669",
+                "#0d9488",
+                "#0891b2",
+                "#0284c7",
+                "#2563eb",
+                "#4f46e5",
+                "#7c3aed",
+                "#9333ea",
+                "#c026d3",
+                "#db2777",
+                "#e11d48",
               ].map((color) => (
                 <button
                   key={color}
-                  className={`w-8 h-8 rounded-full border-2 border-background focus:outline-none focus:ring-2 focus:ring-ring`}
+                  className={`w-6 h-6 rounded-full border-2 border-background focus:outline-none focus:ring-2 focus:ring-ring`}
                   onClick={() => dispatch(UpdateBaseColor(color))}
                   style={{ backgroundColor: color }}
                 />
