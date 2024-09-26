@@ -1,19 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { ResumeData } from "@/types/types";
-
-const isEmptyString = (str: string): boolean => {
-  return str.trim().length === 0;
-};
-
-const isUrl = (str: string): boolean => {
-  try {
-    new URL(str);
-    return true;
-  } catch {
-    return false;
-  }
-};
+import { isEmptyString, isUrl } from "@/lib/utils";
+import { useAppDispatch } from "@/hooks/hooks";
+import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 
 interface TemplateProps {
   baseColor: string;
@@ -34,19 +24,18 @@ const Link: React.FC<{
   if (!isUrl(url?.href)) return null;
 
   return (
-    <div className="flex items-center gap-x-1.5">
-      {!iconOnRight &&
-        (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
+    <div className="flex items-center gap-x-1">
+      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
       <a
         href={url.href}
         target="_blank"
         rel="noreferrer noopener nofollow"
-        className={cn("inline-block", className)}
+        className={cn("inline-block underline", className)}
+        style={{ color: 'currentColor' }}
       >
         {label ?? (url.label || url.href)}
       </a>
-      {iconOnRight &&
-        (icon ?? <i className="ph ph-bold ph-link text-primary" />)}
+      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
     </div>
   );
 };
@@ -61,7 +50,7 @@ const LinkedEntity: React.FC<{
     <Link
       url={url}
       label={name}
-      icon={<i className="ph ph-bold ph-globe text-primary" />}
+      icon={<i className="ph ph-bold ph-globe" style={{ color: 'currentColor' }} />}
       iconOnRight={true}
       className={className}
     />
@@ -71,38 +60,20 @@ const LinkedEntity: React.FC<{
 };
 
 const Section: React.FC<{
-  section: any;
-  children: (item: any) => React.ReactNode;
-}> = ({ section, children }) => {
-  if (!section.visible || section.items.length === 0) return null;
-
+  title: string;
+  children: React.ReactNode;
+  baseColor: string;
+}> = ({ title, children, baseColor }) => {
   return (
-    <section id={section.id} className="grid grid-cols-5 border-t pt-2.5">
-      <div>
-        <h4 className="text-base font-bold">{section.name}</h4>
+    <section className="grid grid-cols-5 pt-4 mt-4" style={{ borderTop: '1px solid #d1d5db' }}>
+      <div className="col-span-5 mb-2 sm:col-span-1">
+        <h2 className="text-xl font-bold" style={{ color: baseColor }}>{title}</h2>
       </div>
-
-      <div
-        className="col-span-4 grid gap-x-6 gap-y-3"
-        style={{ gridTemplateColumns: `repeat(${section.columns}, 1fr)` }}
-      >
-        {section.items
-          .filter((item: any) => item.visible)
-          .map((item: any) => (
-            <div key={item.id} className="space-y-2">
-              <div>{children(item)}</div>
-              {item.summary && !isEmptyString(item.summary) && (
-                <div
-                  dangerouslySetInnerHTML={{ __html: item.summary }}
-                  className="wysiwyg"
-                />
-              )}
-            </div>
-          ))}
-      </div>
+      <div className="col-span-5 sm:col-span-4">{children}</div>
     </section>
   );
 };
+
 const Template1: React.FC<TemplateProps> = ({
   content,
   baseColor,
@@ -111,237 +82,241 @@ const Template1: React.FC<TemplateProps> = ({
   lineHeight,
   margin,
 }) => {
-  const basics = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    headline: "Experienced Software Developer",
-    location: "New York, NY",
-    url: { href: "https://johndoe.com", label: "Portfolio" },
-    summary:
-      "Passionate software developer with 5+ years of experience in creating robust web applications. Skilled in React, Node.js, and Python.",
-  };
 
-  const sections = {
-    experience: {
-      id: "experience",
-      name: "Professional Experience",
-      items: [
-        {
-          id: "exp1",
-          visible: true,
-          company: "Tech Solutions Inc.",
-          position: "Senior Software Developer",
-          location: "New York, NY",
-          date: "2018 - Present",
-          url: { href: "https://techsolutions.com", label: "Tech Solutions" },
-          summary:
-            "Led a team of 5 developers in creating a scalable e-commerce platform. Implemented CI/CD pipelines and reduced deployment time by 50%.",
-        },
-        {
-          id: "exp2",
-          visible: true,
-          company: "WebDev Co.",
-          position: "Junior Developer",
-          location: "Boston, MA",
-          date: "2016 - 2018",
-          url: { href: "https://webdevco.com", label: "WebDev Co." },
-          summary:
-            "Developed and maintained multiple client websites using React and Node.js. Improved site load times by 30% through optimization techniques.",
-        },
-      ],
-      visible: true,
-      columns: 1,
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(UpdateBaseColor("#000000"))
+  }, [])
+
+  const basics = content.basics[0] || {};
+
+  const scaleFactor = fontSize / 16; // Base scale factor
+
+  const styles = {
+    container: {
+      fontFamily,
+      fontSize: `${fontSize}px`,
+      lineHeight: `${lineHeight}`,
+      color: "black", // Default text color
+      padding: `${margin}mm`,
+      height: "100%",
     },
-    education: {
-      id: "education",
-      name: "Education",
-      items: [
-        {
-          id: "edu1",
-          visible: true,
-          institution: "University of Technology",
-          studyType: "Bachelor's Degree",
-          area: "Computer Science",
-          score: "3.8 GPA",
-          date: "2012 - 2016",
-          url: {
-            href: "https://uotech.edu",
-            label: "University of Technology",
-          },
-          summary:
-            "Graduated with honors. Relevant coursework: Data Structures, Algorithms, Web Development, Database Management.",
-        },
-      ],
-      visible: true,
-      columns: 1,
+    name: {
+      fontSize: `${2.2 * scaleFactor}rem`,
+      fontWeight: "bold",
+      color: baseColor,
     },
-    skills: {
-      id: "skills",
-      name: "Skills",
-      items: [
-        {
-          id: "skill1",
-          visible: true,
-          name: "Web Development",
-          keywords: ["React", "Node.js", "Express", "MongoDB"],
-          level: 5,
-        },
-        {
-          id: "skill2",
-          visible: true,
-          name: "Programming Languages",
-          keywords: ["JavaScript", "Python", "Java", "C++"],
-          level: 4,
-        },
-        {
-          id: "skill3",
-          visible: true,
-          name: "DevOps",
-          keywords: ["Docker", "Jenkins", "AWS", "Azure"],
-          level: 3,
-        },
-      ],
-      visible: true,
-      columns: 2,
+    headline: {
+      fontSize: `${1.3 * scaleFactor}rem`,
+      color: "black",
+    },
+    sectionTitle: {
+      fontSize: `${1.6 * scaleFactor}rem`,
+      fontWeight: "bold",
+      color: baseColor,
+    },
+    subtitle: {
+      fontSize: `${1.2 * scaleFactor}rem`,
+      fontWeight: "bold",
+      color: "black",
+    },
+    body: {
+      fontSize: `${1.1 * scaleFactor}rem`,
+      color: "black",
     },
   };
-
-  console.log(content)
 
   return (
-    <div
-      style={{
-        fontFamily,
-        fontSize: `${fontSize}px`,
-        lineHeight: `${lineHeight}`,
-        color: baseColor,
-        padding: `${margin}mm`,
-        height: "100%",
-      }}
-    >
-      <div className="p-custom space-y-4">
-        <header className="flex flex-col items-center space-y-2 text-center">
-          <div>
-            <div className="text-2xl font-bold">{content?.basics[0]?.name}</div>
-            <div className="text-base">{content.basics[0]?.headLine}</div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
+    <div style={styles.container}>
+      <div className="space-y-4">
+        <header className="text-center w-full">
+          <h1 style={styles.name}>{basics.name}</h1>
+          <p style={styles.headline} className="mt-1">{basics.headLine}</p>
+          <div className="mt-2 flex justify-between items-center space-x-3" style={{ ...styles.body, color: baseColor }}>
             {basics.location && (
-              <div className="flex items-center gap-x-1.5">
-                <i className="ph ph-bold ph-map-pin text-primary" />
-                <div>{content.basics[0]?.location}</div>
+              <div className="flex items-center">
+                <i className="ph ph-bold ph-map-pin mr-1" />
+                <span>{basics.location}</span>
               </div>
             )}
             {basics.phone && (
-              <div className="flex items-center gap-x-1.5">
-                <i className="ph ph-bold ph-phone text-primary" />
-                <a
-                  href={`tel:${content.basics[0]?.phone}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {content.basics[0]?.phone}
+              <div className="flex items-center">
+                <i className="ph ph-bold ph-phone mr-1" />
+                <a href={`tel:${basics.phone}`} className="underline">
+                  {basics.phone}
                 </a>
               </div>
             )}
             {basics.email && (
-              <div className="flex items-center gap-x-1.5">
-                <i className="ph ph-bold ph-at text-primary" />
-                <a
-                  href={`mailto:${content.basics[0]?.email}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {content.basics[0]?.email}
+              <div className="flex items-center">
+                <i className="ph ph-bold ph-at mr-1" />
+                <a href={`mailto:${basics.email}`} className="underline">
+                  {basics.email}
                 </a>
               </div>
             )}
-            <Link url={content?.basics[0]?.url} />
+            <Link url={basics.url} />
           </div>
         </header>
 
         <div className="space-y-4">
-          <section id="summary" className="grid grid-cols-5 border-t pt-2.5">
-            <div>
-              <h4 className="text-base font-bold">Summary</h4>
-            </div>
-            <div
-              dangerouslySetInnerHTML={{ __html: basics.summary }}
-              className="wysiwyg col-span-4"
-            />
-          </section>
+          {content.summary && content.summary.length > 0 && (
+            <Section title="Summary" baseColor={baseColor}>
+              <div
+                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
+                style={styles.body}
+                className="text-justify"
+              />
+            </Section>
+          )}
 
-          <Section section={sections.experience}>
-            {(item) => (
-              <div className="flex items-start justify-between">
-                <div className="text-left">
-                  <LinkedEntity
-                    name={item.company}
-                    url={item?.url}
-                    separateLinks={false}
-                    className="font-bold"
-                  />
-                  <div>{item.position}</div>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <div className="font-bold">{item.date}</div>
-                  <div>{item.location}</div>
-                </div>
-              </div>
-            )}
-          </Section>
-
-          <Section section={sections.education}>
-            {(item) => (
-              <div className="flex items-start justify-between">
-                <div className="text-left">
-                  <LinkedEntity
-                    name={item.institution}
-                    url={item?.url}
-                    separateLinks={false}
-                    className="font-bold"
-                  />
-                  <div>{item.area}</div>
-                  <div>{item.score}</div>
-                </div>
-
-                <div className="shrink-0 text-right">
-                  <div className="font-bold">{item.date}</div>
-                  <div>{item.studyType}</div>
-                </div>
-              </div>
-            )}
-          </Section>
-
-          <Section section={sections.skills}>
-            {(item) => (
-              <div className="space-y-0.5">
-                <div className="font-bold">{item.name}</div>
-                {item.keywords && item.keywords.length > 0 && (
-                  <p className="text-sm">{item.keywords.join(", ")}</p>
-                )}
-                {item.level > 0 && (
-                  <div className="flex items-center gap-x-1.5">
-                    {Array.from({ length: 5 }).map((_, index) => (
+          {content.experience && content.experience.length > 0 && (
+            <Section title="Experience" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.experience.map((exp, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex flex-col justify-between sm:flex-row">
+                      <div>
+                        <h3 style={styles.subtitle}>{exp.organization}</h3>
+                        <p style={styles.body}>{exp.role}</p>
+                      </div>
+                      <div className="text-right">
+                        <p style={styles.body}>{`${exp.startDate} - ${exp.endDate}`}</p>
+                        <p style={styles.body}>{exp.location}</p>
+                      </div>
+                    </div>
+                    {exp.summary && !isEmptyString(exp.summary) && (
                       <div
-                        key={index}
-                        className={cn(
-                          "size-2 rounded-full border border-primary",
-                          item.level > index && "bg-primary"
-                        )}
+                        dangerouslySetInnerHTML={{ __html: exp.summary }}
+                        style={styles.body}
+                        className="text-justify"
                       />
-                    ))}
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-            )}
-          </Section>
+            </Section>
+          )}
+
+          {content.education && content.education.length > 0 && (
+            <Section title="Education" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.education.map((edu, index) => (
+                  <div key={index} className="flex flex-col justify-between sm:flex-row">
+                    <div>
+                      <h3 style={styles.subtitle}>{edu.institution}</h3>
+                      <p style={styles.body}>{edu.field}</p>
+                      <p style={styles.body}>{edu.score}</p>
+                    </div>
+                    <div className="text-right">
+                      <p style={styles.body}>{`${edu.startDate} - ${edu.endDate}`}</p>
+                      <p style={styles.body}>{edu.degree}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {content.skills && content.skills.length > 0 && content.skills[0].categories && (
+            <Section title="Skills" baseColor={baseColor}>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {content.skills[0].categories.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <h3 style={styles.subtitle}>{category.name}</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {category.skills.map((skill, skillIndex) => (
+                        <span
+                          key={skillIndex}
+                          className="rounded-full px-3 py-1"
+                          style={{ ...styles.body, backgroundColor: `${baseColor}20`, color: baseColor }}
+                        >
+                          {skill.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {content.projects && content.projects.length > 0 && (
+            <Section title="Projects" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.projects.map((project, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex flex-col justify-between sm:flex-row">
+                      <h3 style={styles.subtitle}>
+                        <LinkedEntity
+                          name={project.name}
+                          url={project.url}
+                          separateLinks={false}
+                        />
+                      </h3>
+                      <p style={styles.body}>{`${project.startDate} - ${project.endDate}`}</p>
+                    </div>
+                    {project.summary && !isEmptyString(project.summary) && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: project.summary }}
+                        style={styles.body}
+                        className="text-justify"
+                      />
+                    )}
+                    {project.keywords && project.keywords.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {project.keywords.map((keyword, keywordIndex) => (
+                          <span
+                            key={keywordIndex}
+                            className="rounded-full px-3 py-1"
+                            style={{ ...styles.body, backgroundColor: `${baseColor}20`, color: baseColor }}
+                          >
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {content.certifications && content.certifications.length > 0 && (
+            <Section title="Certifications" baseColor={baseColor}>
+              <div className="space-y-2">
+                {content.certifications.map((cert, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <LinkedEntity
+                      name={cert.name}
+                      url={cert.url}
+                      separateLinks={false}
+                      className="font-semibold"
+                    />
+                    <p style={styles.body}>{cert.date}</p>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {content.languages && content.languages.length > 0 && (
+            <Section title="Languages" baseColor={baseColor}>
+              <div className="flex flex-wrap gap-4">
+                {content.languages.map((lang, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <span style={styles.subtitle}>{lang.name}:</span>
+                    <span style={styles.body}>{lang.level}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
         </div>
       </div>
     </div>
   );
 };
+
 export default Template1;

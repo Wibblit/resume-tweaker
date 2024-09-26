@@ -90,7 +90,6 @@ const ResumePage: React.FC<{
       case 1:
         return <Template1 {...props} />;
       case 2:
-        //@ts-ignore
         return <Template2 {...props} />;
       case 3:
         //@ts-ignore
@@ -126,7 +125,7 @@ const ResumePage: React.FC<{
         minHeight: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
       }}
     >
-      <div className="absolute -top-7 left-0 font-bold text-white">
+      <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
         Page {pageNumber}
       </div>
       {renderTemplate(page)}
@@ -150,14 +149,13 @@ export default function ResumePages({
   printFrameRef,
   resumeData
 }: ResumePagesProps) {
-  const templateNumber : number = useAppSelector((state) => state.rightsidebar.id);
-  console.log(templateNumber);
-
+  const templateNumber: number = useAppSelector((state) => state.rightsidebar.id);
+  
   const [pages, setPages] = useState<Page[]>([
-    { id: 1, template: 1, content: resumeData },
+    { id: 1, template: templateNumber, content: resumeData },
   ]);
   const [history, setHistory] = useState<Page[][]>([
-    [{ id: 1, template: 1, content: resumeData }],
+    [{ id: 1, template: templateNumber, content: resumeData }],
   ]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
   const [isHovering, setIsHovering] = useState(false);
@@ -165,17 +163,18 @@ export default function ResumePages({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setPages([
-      { id: 1, template: templateNumber, content: resumeData },
-    ]);
-  }, [templateNumber]);
-
-  useEffect(() => {
-    if (historyIndex === history.length - 1) {
-      setHistory([...history, pages]);
-      setHistoryIndex(historyIndex + 1);
-    }
-  }, [pages]);
+    const updatedPages = pages.map(page => ({
+      ...page,
+      template: templateNumber,
+      content: resumeData,
+    }));
+    setPages(updatedPages);
+    
+    // Update history
+    const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  }, [templateNumber, resumeData]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -209,6 +208,11 @@ export default function ResumePages({
     ];
     setPages(newPages);
 
+    // Update history
+    const newHistory = [...history.slice(0, historyIndex + 1), newPages];
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+
     // Scroll to the new page after a short delay to ensure the page has been rendered
     setTimeout(() => {
       const newPageElement = document.getElementById(`page-${newPageId}`);
@@ -235,6 +239,11 @@ export default function ResumePages({
     if (pages.length > 1) {
       const newPages = pages.filter((page) => page.id !== id);
       setPages(newPages);
+
+      // Update history
+      const newHistory = [...history.slice(0, historyIndex + 1), newPages];
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
     }
   };
 
@@ -351,5 +360,3 @@ export default function ResumePages({
     </div>
   );
 }
-
-//  <FileDown className="h-4 w-4 mr-2" />;
