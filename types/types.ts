@@ -200,6 +200,8 @@ export type BlogType = {
 // }
 
 //RightSideBar
+export type SectionName = 'summary' | 'experience' | 'education' | 'skills' | 'projects' | 'certifications' | 'languages' | 'profiles' | 'basics' | 'references' | 'volunteerings' | 'publications' | 'awards'; 
+
 export type ResumeStyles = Template & {
   font: string;
   fontSize: 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20;
@@ -207,6 +209,11 @@ export type ResumeStyles = Template & {
   margin: 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30;
   paperFormat: "a4" | "letter";
   baseColor: string;
+  sectionOrder: {
+    column1: SectionName[];
+    column2: SectionName[];
+    column3: SectionName[];
+  };
 }
 
 export interface URL {

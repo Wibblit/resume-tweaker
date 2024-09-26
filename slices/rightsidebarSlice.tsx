@@ -2,10 +2,12 @@
 // @ts-ignore
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ResumeStyles } from "@/types/types";
+import { SectionName } from "@/types/types";
+
 
 // Define the initial state using that type
 const initialState: ResumeStyles = {
-  id: 0,
+  id: 1,
   name: "",
   font: "Roboto",
   fontSize: 12,
@@ -13,6 +15,11 @@ const initialState: ResumeStyles = {
   margin: 10,
   paperFormat: "a4",
   baseColor: "#000",
+  sectionOrder: {
+    column1: ['basics'],
+    column2: [],
+    column3: ['projects', 'certifications','experience', 'education', 'skills', 'languages', 'awards', 'profiles', 'publications', 'references', 'volunteerings', 'summary'],
+  },
 };
 
 const MM_TO_PX = 3.78;
@@ -46,6 +53,10 @@ const rightsidebarSlice = createSlice({
     },
     UpdatePaperFormat(state, action) {
       state.paperFormat = action.payload;
+    },
+    updateSectionOrder: (state, action: PayloadAction<{ column: 'column1' | 'column2' | 'column3', order: SectionName[] }>) => {
+      const { column, order } = action.payload;
+      state.sectionOrder[column] = order;
     },
     UpdateBaseColor(state, action) {
       state.baseColor = action.payload;
@@ -148,7 +159,8 @@ export const {
   UpdateMargin,
   UpdateId,
   UpdatePaperFormat,
-  DownloadPDF
+  DownloadPDF,
+  updateSectionOrder,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

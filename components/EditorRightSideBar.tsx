@@ -29,7 +29,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ChevronRight, ChevronDown, Search } from "lucide-react";
-
 import {
   UpdateBaseColor,
   UpdateFont,
@@ -38,9 +37,17 @@ import {
   UpdateMargin,
   UpdateId,
   UpdatePaperFormat,
+  updateSectionOrder,
 } from "@/slices/rightsidebarSlice";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { DownloadPDF } from "@/slices/rightsidebarSlice";
+import { SectionName } from "@/types/types";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 
 const fonts = [
   "Arial",
@@ -82,6 +89,38 @@ const templates = [
   {id :  6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
 ];
 
+const abbrv = {
+    'summary': 'summary', 
+     'experience' : 'exp.',
+     'education' : 'edu.',
+     'skills' : 'skills',
+     'projects' : 'projects',
+     'certifications' : 'certs.',
+     'languages' : 'langs.',
+     'profiles' : 'profiles',
+     'basics' : 'basics',
+     'references' : 'refs.',
+     'volunteerings' : 'vols.',
+     'publications' : 'publs.',
+     'awards': 'awards',
+}
+
+const DraggableSection: React.FC<{ section: SectionName; index: number }> = ({ section, index }) => (
+  <Draggable draggableId={section} index={index}>
+    {(provided) => (
+      <div
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        className="p-2 mb-2 bg-background rounded-md shadow-sm truncate text-xs text-center"
+      >
+        {abbrv[section].charAt(0).toUpperCase() + abbrv[section].slice(1)}
+      </div>
+    )}
+  </Draggable>
+);
+
+
 export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
@@ -90,8 +129,35 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<string>("Arial");
   const [searchFont, setSearchFont] = useState<string>("");
-
   const dispatch = useAppDispatch();
+  const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
+
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+  
+    const sourceColumn = result.source.droppableId as 'column1' | 'column2' | 'column3';
+    const destColumn = result.destination.droppableId as 'column1' | 'column2' | 'column3';
+  
+    // Create a deep copy of the sectionOrder
+    const newSectionOrder = {
+      ...sectionOrder,
+      [sourceColumn]: [...sectionOrder[sourceColumn]],
+      [destColumn]: [...sectionOrder[destColumn]],
+    };
+  
+    // Remove the item from the source column
+    const [movedItem] = newSectionOrder[sourceColumn].splice(result.source.index, 1);
+  
+    // Add it to the destination column
+    newSectionOrder[destColumn].splice(result.destination.index, 0, movedItem);
+  
+    // Dispatch the updated order
+    dispatch(updateSectionOrder({ column: sourceColumn, order: newSectionOrder[sourceColumn] }));
+    if (sourceColumn !== destColumn) {
+      dispatch(updateSectionOrder({ column: destColumn, order: newSectionOrder[destColumn] }));
+    }
+  };
+  
 
   const handleDarkModeChange = (checked: boolean) => {
     setDark(checked);
@@ -124,7 +190,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   );
 
   return (
-    <div className="w-80 bg-card border-l border-border flex flex-col  md:flex">
+    <div className="w-80 bg-card border-l border-border flex flex-col md:flex">
       <div className="p-4 border-b border-border">
         <h2 className="text-lg font-semibold">Styling Options</h2>
       </div>
@@ -158,7 +224,10 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                           key={template.name}
                           variant="outline"
                           className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                          onClick={() => dispatch(UpdateId(template.id))}
+                          onClick={() => {
+                            setSelectedTemplate(template.name);
+                            dispatch(UpdateId(template.id));
+                          }}
                         >
                           <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
                             <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
@@ -178,6 +247,32 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 </ScrollArea>
               </SheetContent>
             </Sheet>
+          </div>
+          <div>
+            <Label>Section Order</Label>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <div className="grid grid-cols-3 gap-1 mt-2">
+                {(['column1', 'column2', 'column3'] as const).map((columnId) => (
+                  <Droppable key={columnId} droppableId={columnId}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className="bg-muted p-2 rounded-md"
+                      >
+                        <h3 className="text-sm font-semibold mb-2">
+                          {columnId === 'column1' ? 'Sidebar' : columnId === 'column2' ? 'Main' : 'Unused'}
+                        </h3>
+                        {sectionOrder[columnId].map((section, index) => (
+                          <DraggableSection key={section} section={section} index={index} />
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                ))}
+              </div>
+            </DragDropContext>
           </div>
           <div>
             <Label>Font Family</Label>
@@ -299,7 +394,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 "#22c55e",
                 "#ef4444",
                 "#a855f7",
-                "#eab308",
+                "#d97706",
                 "#ec4899 ",
                 "#6366f1",
                 "#14b8a6",
