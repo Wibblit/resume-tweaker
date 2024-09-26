@@ -10,12 +10,7 @@ export type BlogType = {
     image: string;
 }
 
-// // export interface Education {
-// //     university_name: string
-// //     joined_year: number
-// //     passed_out_year: number
-// //     cgpa_or_marks: string
-// //   }
+
   
 //   // export interface Project {
 //   //   project_name: string
