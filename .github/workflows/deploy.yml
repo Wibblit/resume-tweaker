@@ -1,0 +1,42 @@
+name: Sync with Upstream
+
+on:
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout forked repository
+      uses: actions/checkout@v4
+      with:
+        repository: wibblit-deployer/resume-tweaker
+        token: ${{ secrets.ACCESS_TOKEN }}
+
+    - name: Configure Git user
+      run: |
+        git config --global user.email "wibblit.deployer@protonmail.com"
+        git config --global user.name "wibblit-deployer"
+
+    - name: Add upstream repository
+      run: |
+        git remote add upstream https://github.com/Wibblit/resume-tweaker.git
+        git fetch upstream
+      env: 
+        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+    - name: Squash merge updates from upstream
+      run: |
+        git checkout main
+        git merge --squash upstream/main --allow-unrelated-histories || true  # Allow the workflow to continue on conflicts
+        git checkout --theirs .  # Prefer upstream changes
+        git add .  # Stage the changes
+        TIMESTAMP=$(TZ='Asia/Kolkata' date +"%Y-%m-%dT%H:%M:%S%z")
+        git commit -m "Sync with upstream - $TIMESTAMP" || echo "No changes to commit - $TIMESTAMP"
+
+    - name: Push changes to forked repo
+      run: |
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
