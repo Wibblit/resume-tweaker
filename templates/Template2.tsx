@@ -4,159 +4,10 @@ import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 
-const content: ResumeData = {
-  basics: [
-    {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+1 (555) 123-4567",
-      location: "New York, NY",
-      headLine: "Experienced Software Engineer",
-      picture: undefined,
-      url: {
-        href: "https://johndoe.com",
-        label: "Personal Website",
-      },
-    },
-  ],
-  summary: [
-    {
-      content: "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
-    },
-  ],
-  profiles: [
-    {
-      url: {
-        href: "https://linkedin.com/in/johndoe",
-        label: "LinkedIn",
-      },
-    },
-    {
-      url: {
-        href: "https://github.com/johndoe",
-        label: "GitHub",
-      },
-    },
-  ],
-  skills: [
-    {
-      id: "tech-skills",
-      categories: [
-        {
-          id: "programming-languages",
-          name: "Programming Languages",
-          skills: [
-            { name: "JavaScript", level: "Advanced" },
-            { name: "Python", level: "Intermediate" },
-            { name: "Java", level: "Beginner" },
-          ],
-        },
-        {
-          id: "frameworks",
-          name: "Frameworks",
-          skills: [
-            { name: "React", level: "Advanced" },
-            { name: "Node.js", level: "Intermediate" },
-            { name: "Django", level: "Beginner" },
-          ],
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "E-commerce Platform",
-      summary: "Developed a full-stack e-commerce platform using React and Node.js",
-      startDate: "2022-01-01",
-      endDate: "2022-06-30",
-      url: {
-        href: "https://github.com/johndoe/ecommerce-platform",
-        label: "GitHub Repository",
-      },
-      keywords: ["React", "Node.js", "MongoDB", "Express"],
-    },
-  ],
-  education: [
-    {
-      institution: "University of Technology",
-      degree: "Bachelor of Science",
-      field: "Computer Science",
-      specialization: "Software Engineering",
-      startDate: "2015-09-01",
-      endDate: "2019-05-31",
-      score: "3.8 GPA",
-    },
-  ],
-  experience: [
-    {
-      organization: "Tech Solutions Inc.",
-      role: "Senior Software Engineer",
-      startDate: "2019-06-01",
-      endDate: "Present",
-      location: "New York, NY",
-      summary: "Lead developer for multiple web applications, mentoring junior developers, and implementing best practices.",
-    },
-  ],
-  languages: [
-    {
-      name: "English",
-      level: "Advanced",
-    },
-    {
-      name: "Spanish",
-      level: "Intermediate",
-    },
-  ],
-  volunteer: [
-    {
-      organization: "Code for Good",
-      role: "Volunteer Developer",
-      startDate: "2020-01-01",
-      endDate: "Present",
-      location: "Remote",
-    },
-  ],
-  awards: [
-    {
-      title: "Best Innovative Project",
-      awarder: "Annual Tech Conference",
-      date: "2021-11-15",
-      summary: "Awarded for developing an AI-powered accessibility tool for websites.",
-    },
-  ],
-  publications: [
-    {
-      name: "Modern Web Development Techniques",
-      publisher: "Tech Journal",
-      publishedIn: "Volume 5, Issue 2",
-      url: {
-        href: "https://techjournal.com/article123",
-        label: "Article Link",
-      },
-      date: "2022-03-01",
-    },
-  ],
-  certifications: [
-    {
-      name: "AWS Certified Developer - Associate",
-      issuer: "Amazon Web Services",
-      date: "2021-08-15",
-      url: {
-        href: "https://www.youracclaim.com/badges/aws-certified-developer",
-        label: "Verify Certification",
-      },
-    },
-  ],
-  references: [
-    {
-      name: "Jane Smith",
-      phone: "+1 (555) 987-6543",
-      email: "jane.smith@techsolutions.com",
-    },
-  ],
-};
+
 
 interface TemplateProps {
+  content: ResumeData;
   baseColor: string;
   fontSize: number;
   fontFamily: string;
@@ -249,44 +100,44 @@ const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineH
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.name}>{basics.name}</h2>
-      <p className="text-white" style={styles.headline}>{basics.headLine}</p>
+      <h2 style={styles.name}>{basics?.name}</h2>
+      <p className="text-white" style={styles.headline}>{basics?.headLine}</p>
       <hr style={{ borderColor: 'white', opacity: 0.5, margin: '1rem 0' }} />
       <div style={styles.details} className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-        {basics.location && (
+        {basics?.location && (
           <>
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-map-pin" />
-              <div>{basics.location}</div>
+              <div>{basics?.location}</div>
             </div>
             <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
           </>
         )}
-        {basics.phone && (
+        {basics?.phone && (
           <>
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-phone" />
-              <a href={`tel:${basics.phone}`} target="_blank" rel="noreferrer">
-                {basics.phone}
+              <a href={`tel:${basics?.phone}`} target="_blank" rel="noreferrer">
+                {basics?.phone}
               </a>
             </div>
             <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
           </>
         )}
-        {basics.email && (
+        {basics?.email && (
           <>
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-at" />
-              <a href={`mailto:${basics.email}`} target="_blank" rel="noreferrer">
-                {basics.email}
+              <a href={`mailto:${basics?.email}`} target="_blank" rel="noreferrer">
+                {basics?.email}
               </a>
             </div>
             <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
           </>
         )}
-        {isUrl(basics.url?.href) && (
+        {isUrl(basics?.url?.href) && (
           <>
-            <Link url={basics.url} />
+            <Link url={basics?.url} />
             <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
           </>
         )}
@@ -296,6 +147,7 @@ const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineH
 };
 
 const Template2: React.FC<TemplateProps> = ({
+  content,
   baseColor,
   fontSize,
   fontFamily,

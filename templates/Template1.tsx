@@ -1,61 +1,38 @@
 import React, { useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn, isEmptyString, isUrl } from "@/lib/utils";
 import { ResumeData } from "@/types/types";
-import { isEmptyString, isUrl } from "@/lib/utils";
-import { useAppDispatch } from "@/hooks/hooks";
+import { MapPin, Phone, AtSign, Link as LinkIcon, Linkedin, Github } from "lucide-react";
+import { useDispatch } from "react-redux";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 
 interface TemplateProps {
+  content: ResumeData;
   baseColor: string;
   fontSize: number;
   fontFamily: string;
   lineHeight: number;
   margin: number;
-  content: ResumeData;
 }
 
 const Link: React.FC<{
   url: { href: string; label: string };
   icon?: React.ReactNode;
-  iconOnRight?: boolean;
-  label?: string;
   className?: string;
-}> = ({ url, icon, iconOnRight, label, className }) => {
+  baseColor: string;
+}> = ({ url, icon, className, baseColor }) => {
   if (!isUrl(url?.href)) return null;
 
   return (
-    <div className="flex items-center gap-x-1">
-      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
-      <a
-        href={url.href}
-        target="_blank"
-        rel="noreferrer noopener nofollow"
-        className={cn("inline-block underline", className)}
-        style={{ color: 'currentColor' }}
-      >
-        {label ?? (url.label || url.href)}
-      </a>
-      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
-    </div>
-  );
-};
-
-const LinkedEntity: React.FC<{
-  name: string;
-  url: { href: string; label: string };
-  separateLinks: boolean;
-  className?: string;
-}> = ({ name, url, separateLinks, className }) => {
-  return !separateLinks && isUrl(url.href) ? (
-    <Link
-      url={url}
-      label={name}
-      icon={<i className="ph ph-bold ph-globe" style={{ color: 'currentColor' }} />}
-      iconOnRight={true}
-      className={className}
-    />
-  ) : (
-    <div className={className}>{name}</div>
+    <a
+      href={url.href}
+      target="_blank"
+      rel="noreferrer noopener nofollow"
+      className={cn("inline-flex items-center gap-x-1", className)}
+      style={{ color: baseColor }}
+    >
+      {icon}
+      <span>{url.label || url.href}</span>
+    </a>
   );
 };
 
@@ -65,11 +42,9 @@ const Section: React.FC<{
   baseColor: string;
 }> = ({ title, children, baseColor }) => {
   return (
-    <section className="grid grid-cols-5 pt-4 mt-4" style={{ borderTop: '1px solid #d1d5db' }}>
-      <div className="col-span-5 mb-2 sm:col-span-1">
-        <h2 className="text-xl font-bold" style={{ color: baseColor }}>{title}</h2>
-      </div>
-      <div className="col-span-5 sm:col-span-4">{children}</div>
+    <section className="mt-4">
+      <h2 className="text-lg font-bold border-b border-gray-300 pb-1 mb-2" style={{ color: baseColor }}>{title}</h2>
+      <div>{children}</div>
     </section>
   );
 };
@@ -82,239 +57,174 @@ const Template1: React.FC<TemplateProps> = ({
   lineHeight,
   margin,
 }) => {
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#000000"))
-  }, [])
-
-  const basics = content.basics[0] || {};
-
-  const scaleFactor = fontSize / 16; // Base scale factor
-
   const styles = {
     container: {
       fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
-      color: "black", // Default text color
+      color: "black",
       padding: `${margin}mm`,
-      height: "100%",
     },
-    name: {
-      fontSize: `${2.2 * scaleFactor}rem`,
-      fontWeight: "bold",
+    coloredText: {
       color: baseColor,
     },
-    headline: {
-      fontSize: `${1.3 * scaleFactor}rem`,
-      color: "black",
-    },
-    sectionTitle: {
-      fontSize: `${1.6 * scaleFactor}rem`,
-      fontWeight: "bold",
-      color: baseColor,
-    },
-    subtitle: {
-      fontSize: `${1.2 * scaleFactor}rem`,
-      fontWeight: "bold",
-      color: "black",
-    },
-    body: {
-      fontSize: `${1.1 * scaleFactor}rem`,
+    blackText: {
       color: "black",
     },
   };
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(UpdateBaseColor("#57534e"));
+  }, [dispatch]);
+
+  const basics = content.basics?.[0] || {};
+
   return (
-    <div style={styles.container}>
-      <div className="space-y-4">
-        <header className="text-center w-full">
-          <h1 style={styles.name}>{basics.name}</h1>
-          <p style={styles.headline} className="mt-1">{basics.headLine}</p>
-          <div className="mt-2 flex justify-between items-center space-x-3" style={{ ...styles.body, color: baseColor }}>
-            {basics.location && (
-              <div className="flex items-center">
-                <i className="ph ph-bold ph-map-pin mr-1" />
-                <span>{basics.location}</span>
-              </div>
-            )}
-            {basics.phone && (
-              <div className="flex items-center">
-                <i className="ph ph-bold ph-phone mr-1" />
-                <a href={`tel:${basics.phone}`} className="underline">
-                  {basics.phone}
-                </a>
-              </div>
-            )}
-            {basics.email && (
-              <div className="flex items-center">
-                <i className="ph ph-bold ph-at mr-1" />
-                <a href={`mailto:${basics.email}`} className="underline">
-                  {basics.email}
-                </a>
-              </div>
-            )}
-            <Link url={basics.url} />
-          </div>
-        </header>
-
-        <div className="space-y-4">
-          {content.summary && content.summary.length > 0 && (
-            <Section title="Summary" baseColor={baseColor}>
-              <div
-                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-                style={styles.body}
-                className="text-justify"
-              />
-            </Section>
+    <div style={styles.container} className="max-w-4xl mx-auto">
+      <header className="text-center mb-6">
+        <h1 className="text-3xl font-bold" style={styles.coloredText}>{basics.name}</h1>
+        <p className="text-xl" style={styles.coloredText}>{basics.headLine}</p>
+        <div className="flex justify-center items-center gap-4 mt-2">
+          {basics.location && (
+            <div className="flex items-center gap-1" style={styles.coloredText}>
+              <MapPin size={14} />
+              <span>{basics.location}</span>
+            </div>
           )}
-
-          {content.experience && content.experience.length > 0 && (
-            <Section title="Experience" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.experience.map((exp, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex flex-col justify-between sm:flex-row">
-                      <div>
-                        <h3 style={styles.subtitle}>{exp.organization}</h3>
-                        <p style={styles.body}>{exp.role}</p>
-                      </div>
-                      <div className="text-right">
-                        <p style={styles.body}>{`${exp.startDate} - ${exp.endDate}`}</p>
-                        <p style={styles.body}>{exp.location}</p>
-                      </div>
-                    </div>
-                    {exp.summary && !isEmptyString(exp.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: exp.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Section>
+          {basics.phone && (
+            <div className="flex items-center gap-1" style={styles.coloredText}>
+              <Phone size={14} />
+              <a href={`tel:${basics.phone}`}>{basics.phone}</a>
+            </div>
           )}
-
-          {content.education && content.education.length > 0 && (
-            <Section title="Education" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.education.map((edu, index) => (
-                  <div key={index} className="flex flex-col justify-between sm:flex-row">
-                    <div>
-                      <h3 style={styles.subtitle}>{edu.institution}</h3>
-                      <p style={styles.body}>{edu.field}</p>
-                      <p style={styles.body}>{edu.score}</p>
-                    </div>
-                    <div className="text-right">
-                      <p style={styles.body}>{`${edu.startDate} - ${edu.endDate}`}</p>
-                      <p style={styles.body}>{edu.degree}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Section>
+          {basics.email && (
+            <div className="flex items-center gap-1" style={styles.coloredText}>
+              <AtSign size={14} />
+              <a href={`mailto:${basics.email}`}>{basics.email}</a>
+            </div>
           )}
-
-          {content.skills && content.skills.length > 0 && content.skills[0].categories && (
-            <Section title="Skills" baseColor={baseColor}>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {content.skills[0].categories.map((category, index) => (
-                  <div key={index} className="space-y-2">
-                    <h3 style={styles.subtitle}>{category.name}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {category.skills.map((skill, skillIndex) => (
-                        <span
-                          key={skillIndex}
-                          className="rounded-full px-3 py-1"
-                          style={{ ...styles.body, backgroundColor: `${baseColor}20`, color: baseColor }}
-                        >
-                          {skill.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {content.projects && content.projects.length > 0 && (
-            <Section title="Projects" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.projects.map((project, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex flex-col justify-between sm:flex-row">
-                      <h3 style={styles.subtitle}>
-                        <LinkedEntity
-                          name={project.name}
-                          url={project.url}
-                          separateLinks={false}
-                        />
-                      </h3>
-                      <p style={styles.body}>{`${project.startDate} - ${project.endDate}`}</p>
-                    </div>
-                    {project.summary && !isEmptyString(project.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: project.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
-                    )}
-                    {project.keywords && project.keywords.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {project.keywords.map((keyword, keywordIndex) => (
-                          <span
-                            key={keywordIndex}
-                            className="rounded-full px-3 py-1"
-                            style={{ ...styles.body, backgroundColor: `${baseColor}20`, color: baseColor }}
-                          >
-                            {keyword}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {content.certifications && content.certifications.length > 0 && (
-            <Section title="Certifications" baseColor={baseColor}>
-              <div className="space-y-2">
-                {content.certifications.map((cert, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <LinkedEntity
-                      name={cert.name}
-                      url={cert.url}
-                      separateLinks={false}
-                      className="font-semibold"
-                    />
-                    <p style={styles.body}>{cert.date}</p>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {content.languages && content.languages.length > 0 && (
-            <Section title="Languages" baseColor={baseColor}>
-              <div className="flex flex-wrap gap-4">
-                {content.languages.map((lang, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <span style={styles.subtitle}>{lang.name}:</span>
-                    <span style={styles.body}>{lang.level}</span>
-                  </div>
-                ))}
-              </div>
-            </Section>
+          {basics.url && (
+            <div className="flex items-center gap-1" style={styles.coloredText}>
+              <LinkIcon size={14} />
+              <a href={basics.url.href} target="_blank" rel="noopener noreferrer">{basics.url.label}</a>
+            </div>
           )}
         </div>
-      </div>
+      </header>
+
+      <Section title="Profiles" baseColor={baseColor}>
+        <div className="flex gap-4">
+          {content.profiles?.map((profile, index) => (
+            <Link
+              key={index}
+              url={profile.url}
+              icon={profile.url.label.toLowerCase().includes('linkedin') ? <Linkedin size={14} /> : 
+                    profile.url.label.toLowerCase().includes('github') ? <Github size={14} /> :
+                    <LinkIcon size={14} />}
+              className="text-sm"
+              baseColor={baseColor}
+            />
+          ))}
+        </div>
+      </Section>
+
+      {content.summary && content.summary.length > 0 && (
+        <Section title="Summary" baseColor={baseColor}>
+          <p className="text-justify" style={styles.blackText}>{content.summary[0].content}</p>
+        </Section>
+      )}
+
+      {content.experience && content.experience.length > 0 && (
+        <Section title="Experience" baseColor={baseColor}>
+          {content.experience.map((exp, index) => (
+            <div key={index} className="mb-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold" style={styles.blackText}>{exp.organization}</h3>
+                  <p style={styles.blackText}>{exp.role}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold" style={styles.blackText}>{`${exp.startDate} to ${exp.endDate}`}</p>
+                  <p style={styles.blackText}>{exp.location}</p>
+                </div>
+              </div>
+              {/* {exp.url && (
+                <Link url={exp.url} icon={<LinkIcon size={14} />} className="text-sm mt-1" baseColor={baseColor} />
+              )} */}
+              {exp.summary && <p className="mt-2 text-justify" style={styles.blackText}>{exp.summary}</p>}
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {content.education && content.education.length > 0 && (
+        <Section title="Education" baseColor={baseColor}>
+          {content.education.map((edu, index) => (
+            <div key={index} className="mb-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-bold" style={styles.blackText}>{edu.institution}</h3>
+                  <p style={styles.blackText}>{edu.degree}</p>
+                  <p style={styles.blackText}>{edu.field}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold" style={styles.blackText}>{`${edu.startDate} to ${edu.endDate}`}</p>
+                  <p style={styles.blackText}>{edu.score}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {content.projects && content.projects.length > 0 && (
+        <Section title="Projects" baseColor={baseColor}>
+          {content.projects.map((project, index) => (
+            <div key={index} className="mb-4">
+              <h3 className="font-bold" style={styles.blackText}>{project.name}</h3>
+              <p style={styles.blackText}>{project.summary}</p>
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {content.skills && content.skills.length > 0 && content.skills[0].categories && (
+        <Section title="Skills" baseColor={baseColor}>
+          {content.skills[0].categories.map((category, index) => (
+            <div key={index} className="mb-2">
+              <h3 className="font-bold" style={styles.blackText}>{category.name}</h3>
+              <p style={styles.blackText}>{category.skills.map(skill => skill.name).join(', ')}</p>
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {content.certifications && content.certifications.length > 0 && (
+        <Section title="Certifications" baseColor={baseColor}>
+          {content.certifications.map((cert, index) => (
+            <div key={index} className="mb-2 flex justify-between">
+              <span style={styles.blackText}>{cert.name}</span>
+              <span style={styles.blackText}>{cert.date}</span>
+            </div>
+          ))}
+        </Section>
+      )}
+
+      {content.languages && content.languages.length > 0 && (
+        <Section title="Languages" baseColor={baseColor}>
+          {content.languages.map((lang, index) => (
+            <div key={index} className="mb-2 flex justify-between">
+              <span style={styles.blackText}>{lang.name}</span>
+              <span style={styles.blackText}>{lang.level}</span>
+            </div>
+          ))}
+        </Section>
+      )}
+
+      <Section title="References" baseColor={baseColor}>
+        <p style={styles.blackText}>Available upon request</p>
+      </Section>
     </div>
   );
 };
