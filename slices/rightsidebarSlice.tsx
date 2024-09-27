@@ -16,9 +16,9 @@ const initialState: ResumeStyles = {
   paperFormat: "a4",
   baseColor: "#000",
   sectionOrder: {
-    column1: ['basics'],
+    column1: ['basics','summary', 'experience','education', 'projects', 'skills', 'certifications',],
     column2: [],
-    column3: ['projects', 'certifications','experience', 'education', 'skills', 'languages', 'awards', 'profiles', 'publications', 'references', 'volunteerings', 'summary'],
+    column3: [ 'languages', 'awards', 'profiles', 'publications', 'references', 'volunteerings'],
   },
 };
 
