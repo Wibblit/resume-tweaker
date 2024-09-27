@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import SidebarContent from "@/components/SideBar";
-import { MobileSideBar } from "@/components/MobileSideBar";
 import { Menu, Send, User, Bot } from "lucide-react";
 
 type Message = {
@@ -82,7 +81,7 @@ export default function AIInterviewPage() {
 			</aside>
 
 			{/* Mobile sidebar */}
-			<MobileSideBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+		
 
 			{/* Main content */}
 			<main className="flex flex-1 flex-col overflow-hidden p-4 md:p-6">

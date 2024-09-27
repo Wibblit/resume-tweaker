@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FileText, PlusCircle, Menu, MessageSquare, Star, User } from "lucide-react"
 import SidebarContent from "@/components/SideBar"
-import { MobileSideBar } from "@/components/MobileSideBar"
+// import { MobileSideBar } from "@/components/MobileSideBar"
 
 export default function HomePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -28,7 +28,10 @@ export default function HomePage() {
       </aside>
 
       {/* Mobile sidebar */}
-      <MobileSideBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      {/* <MobileSideBar
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      /> */}
 
       {/* Main content */}
       <AnimatePresence>
@@ -39,6 +42,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+           
             <ScrollArea className="h-full">
               <Tabs defaultValue="resumes" className="h-full">
                 <div className="flex items-center justify-between">
@@ -51,7 +55,10 @@ export default function HomePage() {
                       <PlusCircle className="mr-2 h-4 w-4" />
                       Create New
                     </Button>
-                    <Button variant="ghost" className="hidden items-center gap-2 lg:flex">
+                    <Button
+                      variant="ghost"
+                      className="hidden items-center gap-2 lg:flex"
+                    >
                       <User className="h-4 w-4" />
                       Profile
                     </Button>
@@ -72,7 +79,7 @@ export default function HomePage() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 function ResumeContent() {
