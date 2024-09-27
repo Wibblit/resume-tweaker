@@ -1,18 +1,8 @@
 import React, { useEffect } from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import { ResumeData } from "@/types/types";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { SectionName } from "@/types/types";
-
-interface TemplateProps {
-  baseColor: string;
-  fontSize: number;
-  fontFamily: string;
-  lineHeight: number;
-  margin: number;
-  content: ResumeData;
-}
+import { ResumeData } from "@/types/types";
 
 const content: ResumeData = {
   basics: [
@@ -110,7 +100,7 @@ const content: ResumeData = {
   languages: [
     {
       name: "English",
-      level: "Adavanced",
+      level: "Advanced",
     },
     {
       name: "Spanish",
@@ -166,6 +156,14 @@ const content: ResumeData = {
   ],
 };
 
+interface TemplateProps {
+  baseColor: string;
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  margin: number;
+}
+
 const Link: React.FC<{
   url: { href: string; label: string };
   icon?: React.ReactNode;
@@ -173,13 +171,6 @@ const Link: React.FC<{
   label?: string;
   className?: string;
 }> = ({ url, icon, iconOnRight, label, className }) => {
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#d97706"))
-  }, [])
-
   if (!isUrl(url?.href)) return null;
 
   return (
@@ -225,9 +216,82 @@ const Section: React.FC<{
 }> = ({ title, children, baseColor }) => {
   return (
     <section className="mt-4 pt-4" style={{ borderTop: `1px solid ${baseColor}` }}>
-      <h2 className="mb-2 text-xl font-bold" style={{ color: baseColor }}>{title}</h2>
+      <h4 className="mb-2 text-base font-bold" style={{ color: baseColor }}>{title}</h4>
       <div>{children}</div>
     </section>
+  );
+};
+
+const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineHeight: number }> = ({ basics, baseColor, fontSize, lineHeight }) => {
+  const scaleFactor = fontSize / 16;
+  const styles = {
+    container: {
+      backgroundColor: baseColor,
+      borderRadius: '8px',
+      padding: '1.5rem',
+      color: 'white',
+      fontSize: `${fontSize}px`,
+      lineHeight: lineHeight,
+    },
+    name: {
+      fontSize: `${2 * scaleFactor}rem`,
+      fontWeight: 'bold',
+      marginBottom: '0.5rem',
+    },
+    headline: {
+      fontSize: `${1.2 * scaleFactor}rem`,
+      marginBottom: '1rem',
+    },
+    details: {
+      fontSize: `${scaleFactor}rem`,
+    },
+  };
+
+  return (
+    <div style={styles.container}>
+      <h2 style={styles.name}>{basics.name}</h2>
+      <p className="text-white" style={styles.headline}>{basics.headLine}</p>
+      <hr style={{ borderColor: 'white', opacity: 0.5, margin: '1rem 0' }} />
+      <div style={styles.details} className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+        {basics.location && (
+          <>
+            <div className="flex items-center gap-x-1.5 mr-2">
+              <i className="ph ph-bold ph-map-pin" />
+              <div>{basics.location}</div>
+            </div>
+            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
+          </>
+        )}
+        {basics.phone && (
+          <>
+            <div className="flex items-center gap-x-1.5 mr-2">
+              <i className="ph ph-bold ph-phone" />
+              <a href={`tel:${basics.phone}`} target="_blank" rel="noreferrer">
+                {basics.phone}
+              </a>
+            </div>
+            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
+          </>
+        )}
+        {basics.email && (
+          <>
+            <div className="flex items-center gap-x-1.5 mr-2">
+              <i className="ph ph-bold ph-at" />
+              <a href={`mailto:${basics.email}`} target="_blank" rel="noreferrer">
+                {basics.email}
+              </a>
+            </div>
+            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
+          </>
+        )}
+        {isUrl(basics.url?.href) && (
+          <>
+            <Link url={basics.url} />
+            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -238,9 +302,13 @@ const Template2: React.FC<TemplateProps> = ({
   lineHeight,
   margin,
 }) => {
-  const basics = content.basics[0] || {};
+  const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
   const scaleFactor = fontSize / 16;
+
+  useEffect(() => {
+    dispatch(UpdateBaseColor("#ca8a04"));
+  }, [dispatch]);
 
   const styles = {
     container: {
@@ -251,32 +319,13 @@ const Template2: React.FC<TemplateProps> = ({
       padding: `${margin}mm`,
       height: "100%",
     },
-    name: {
-      fontSize: `${2.2 * scaleFactor}rem`,
-      fontWeight: "bold",
-      color: "white",
-    },
-    headline: {
-      fontSize: `${1.3 * scaleFactor}rem`,
-      color: "black",
-    },
-    sectionTitle: {
-      fontSize: `${1.6 * scaleFactor}rem`,
-      fontWeight: "bold",
-      color: baseColor,
-    },
-    subtitle: {
-      fontSize: `${1.2 * scaleFactor}rem`,
-      fontWeight: "bold",
-      color: "black",
-    },
     body: {
       fontSize: `${1.1 * scaleFactor}rem`,
       color: "black",
     },
   };
 
-  const renderSection = (sectionName: SectionName) => {
+  const renderSection = (sectionName: string) => {
     switch (sectionName) {
       case 'summary':
         return content.summary && content.summary.length > 0 && (
@@ -294,14 +343,14 @@ const Template2: React.FC<TemplateProps> = ({
             <div className="space-y-4">
               {content.experience.map((exp, index) => (
                 <div key={index} className="space-y-2">
-                  <div className="flex flex-col justify-between sm:flex-row">
+                  <div className="flex items-start justify-between">
                     <div>
-                      <h3 style={styles.subtitle}>{exp.organization}</h3>
-                      <p style={styles.body}>{exp.role}</p>
+                      <div className="font-bold">{exp.organization}</div>
+                      <div>{exp.role}</div>
                     </div>
-                    <div className="text-right">
-                      <p style={styles.body}>{`${exp.startDate} - ${exp.endDate}`}</p>
-                      <p style={styles.body}>{exp.location}</p>
+                    <div className="shrink-0 text-right">
+                      <div className="font-bold">{`${exp.startDate} - ${exp.endDate}`}</div>
+                      <div>{exp.location}</div>
                     </div>
                   </div>
                   {exp.summary && !isEmptyString(exp.summary) && (
@@ -316,13 +365,13 @@ const Template2: React.FC<TemplateProps> = ({
             </div>
           </Section>
         );
-      case 'skills': 
+      case 'skills':
         return content.skills && content.skills.length > 0 && content.skills[0].categories && (
           <Section title="Skills" baseColor={baseColor}>
             <div className="space-y-4">
               {content.skills[0].categories.map((category, index) => (
                 <div key={index} className="space-y-2">
-                  <h3 style={styles.subtitle}>{category.name}</h3>
+                  <div className="font-bold">{category.name}</div>
                   <div className="flex flex-wrap gap-2">
                     {category.skills.map((skill, skillIndex) => (
                       <span
@@ -338,40 +387,40 @@ const Template2: React.FC<TemplateProps> = ({
               ))}
             </div>
           </Section>
-        )
-      case 'languages': 
-      return content.languages && content.languages.length > 0 && (
-        <Section title="Languages" baseColor={baseColor}>
-          <div className="space-y-2">
-            {content.languages.map((lang, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span style={styles.subtitle}>{lang.name}</span>
-                <span style={styles.body}>{lang.level}</span>
-              </div>
-            ))}
-          </div>
-        </Section>
-      )
+        );
+      case 'languages':
+        return content.languages && content.languages.length > 0 && (
+          <Section title="Languages" baseColor={baseColor}>
+            <div className="space-y-2">
+              {content.languages.map((lang, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span className="font-bold">{lang.name}</span>
+                  <span>{lang.level}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
       case 'education':
         return content.education && content.education.length > 0 && (
           <Section title="Education" baseColor={baseColor}>
             <div className="space-y-4">
               {content.education.map((edu, index) => (
-                <div key={index} className="flex flex-col justify-between sm:flex-row">
+                <div key={index} className="flex items-start justify-between">
                   <div>
-                    <h3 style={styles.subtitle}>{edu.institution}</h3>
-                    <p style={styles.body}>{edu.field}</p>
-                    <p style={styles.body}>{edu.score}</p>
+                    <div className="font-bold">{edu.institution}</div>
+                    <div>{edu.field}</div>
+                    <div>{edu.score}</div>
                   </div>
-                  <div className="text-right">
-                    <p style={styles.body}>{`${edu.startDate} - ${edu.endDate}`}</p>
-                    <p style={styles.body}>{edu.degree}</p>
+                  <div className="shrink-0 text-right">
+                    <div className="font-bold">{`${edu.startDate} - ${edu.endDate}`}</div>
+                    <div>{edu.degree}</div>
                   </div>
                 </div>
               ))}
             </div>
           </Section>
-        )
+        );
       case 'certifications':
         return content.certifications && content.certifications.length > 0 && (
           <Section title="Certifications" baseColor={baseColor}>
@@ -382,29 +431,30 @@ const Template2: React.FC<TemplateProps> = ({
                     name={cert.name}
                     url={cert.url}
                     separateLinks={false}
-                    className="font-semibold"
+                    className="font-bold"
                   />
-                  <p style={styles.body}>{cert.date}</p>
+                  <div>{cert.date}</div>
                 </div>
               ))}
             </div>
           </Section>
-        )
+        );
       case 'projects':
         return content.projects && content.projects.length > 0 && (
           <Section title="Projects" baseColor={baseColor}>
             <div className="space-y-4">
               {content.projects.map((project, index) => (
                 <div key={index} className="space-y-2">
-                  <div className="flex flex-col justify-between sm:flex-row">
-                    <h3 style={styles.subtitle}>
-                      <LinkedEntity
-                        name={project.name}
-                        url={project.url}
-                        separateLinks={false}
-                      />
-                    </h3>
-                    <p style={styles.body}>{`${project.startDate} - ${project.endDate}`}</p>
+                  <div className="flex items-start justify-between">
+                    <LinkedEntity
+                      name={project.name}
+                      url={project.url}
+                      separateLinks={false}
+                      className="font-bold"
+                    />
+                    <div className="shrink-0 text-right">
+                      <div className="font-bold">{`${project.startDate} - ${project.endDate}`}</div>
+                    </div>
                   </div>
                   {project.summary && !isEmptyString(project.summary) && (
                     <div
@@ -430,53 +480,111 @@ const Template2: React.FC<TemplateProps> = ({
               ))}
             </div>
           </Section>
-        )
+        );
+      case 'volunteer':
+        return content.volunteer && content.volunteer.length > 0 && (
+          <Section title="Volunteer Experience" baseColor={baseColor}>
+            <div className="space-y-4">
+              {content.volunteer.map((vol, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="font-bold">{vol.organization}</div>
+                      <div>{vol.role}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-bold">{`${vol.startDate} - ${vol.endDate}`}</div>
+                      <div>{vol.location}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'awards':
+        return content.awards && content.awards.length > 0 && (
+          <Section title="Awards" baseColor={baseColor}>
+            <div className="space-y-4">
+              {content.awards.map((award, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="font-bold">{award.title}</div>
+                      <div>{award.awarder}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-bold">{award.date}</div>
+                    </div>
+                  </div>
+                  {award.summary && !isEmptyString(award.summary) && (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: award.summary }}
+                      style={styles.body}
+                      className="text-justify"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'publications':
+        return content.publications && content.publications.length > 0 && (
+          <Section title="Publications" baseColor={baseColor}>
+            <div className="space-y-4">
+              {content.publications.map((pub, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <LinkedEntity
+                      name={pub.name}
+                      url={pub.url}
+                      separateLinks={false}
+                      className="font-bold"
+                    />
+                    <div className="shrink-0 text-right">
+                      <div className="font-bold">{pub.date}</div>
+                    </div>
+                  </div>
+                  <div>{pub.publisher}</div>
+                  <div>{pub.publishedIn}</div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'references':
+        return content.references && content.references.length > 0 && (
+          <Section title="References" baseColor={baseColor}>
+            <div className="space-y-4">
+              {content.references.map((ref, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="font-bold">{ref.name}</div>
+                  <div>{ref.phone}</div>
+                  <div>{ref.email}</div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'basics':
+        return content.basics && (
+          <Header basics={content.basics[0]} baseColor={baseColor} fontSize={fontSize} lineHeight={lineHeight} />
+        );
       default:
         return null;
     }
   };
 
   return (
-    // <div style={styles.container} className="p-custom grid grid-cols-3 gap-6">
-    //   {/* <div className="sidebar col-span-1 space-y-4">
-    //     <div className="bg-primary px-4 py-6 text-white" style={{ backgroundColor: baseColor, borderRadius: '8px', color: 'white' }}>
-    //       <h1 style={styles.name}>{basics.name}</h1>
-    //       <p style={{ ...styles.headline, color: 'white' }} className="mt-1">{basics.headLine}</p>
-    //       <div className="mt-2 space-y-2" style={{ ...styles.body, color: 'white' }}>
-    //         {basics.location && (
-    //           <div className="flex items-center gap-x-1.5">
-    //             <i className="ph ph-bold ph-map-pin" />
-    //             <span>{basics.location}</span>
-    //           </div>
-    //         )}
-    //         {basics.phone && (
-    //           <div className="flex items-center gap-x-1.5">
-    //             <i className="ph ph-bold ph-phone" />
-    //             <a href={`tel:${basics.phone}`}>{basics.phone}</a>
-    //           </div>
-    //         )}
-    //         {basics.email && (
-    //           <div className="flex items-center gap-x-1.5">
-    //             <i className="ph ph-bold ph-at" />
-    //             <a href={`mailto:${basics.email}`}>{basics.email}</a>
-    //           </div>
-    //         )}
-    //         <Link url={basics.url} />
-    //       </div>
-    //     </div>
-        
-
-    //     </div> */}
-        
-    // </div>
     <div style={styles.container} className="p-custom grid grid-cols-2 gap-6">
       <div className="main col-span-2 space-y-4">
-       {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
-     </div>
-    <div className="sidebar col-span-1 space-y-4">
-       {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
-     </div>
-   </div>
+        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+      </div>
+      <div className="sidebar col-span-1 space-y-4">
+        {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+      </div>
+    </div>
   );
 };
 
