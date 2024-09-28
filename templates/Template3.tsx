@@ -185,24 +185,23 @@ const Template3: React.FC<TemplateProps> = ({
     },
     sidebar: {
       backgroundColor: baseColor,
-      minHeight: "100%",
-      position: "absolute",
+      position: "absolute" as const,
       top: 0,
       bottom: 0,
       right: 0,
-      height: "100%",
-      color: 'white',
       width: "35%",
+      color: 'white',
     },
     sidebarContent: {
       padding: `${margin}mm`,
+      height: "100%",
+      overflowY: "auto" as const,
     },
     mainContent: {
       padding: `${margin}mm`,
       width: "65%",
     },
   };
-
   const renderSection = (sectionName: string, isRightColumn: boolean = false) => {
     const sectionStyle = isRightColumn ? { color: 'white' } : styles.body;
 
