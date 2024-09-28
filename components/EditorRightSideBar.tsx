@@ -82,7 +82,7 @@ interface RightSideBarProps {
 
 const templates = [
   {id : 1 , name: "Professional", image: "/placeholder.svg?height=200&width=150" },
-  {id :  2, name: "Creative", image: "/placeholder.svg?height=200&width=150" },
+  {id :  2, name: "Creative", image: "/templates/template2.jpeg" },
   {id :  3, name: "Executive", image: "/placeholder.svg?height=200&width=150" },
   {id :  4, name: "Technical", image: "/placeholder.svg?height=200&width=150" },
   {id :  5, name: "Academic", image: "/placeholder.svg?height=200&width=150" },
