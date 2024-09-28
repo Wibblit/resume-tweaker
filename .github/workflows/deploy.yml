@@ -32,21 +32,21 @@ jobs:
         git checkout --orphan empty-branch  # Create an empty branch
         git rm -rf .  # Remove all files from the empty branch
 
-    - name: Configure pull behavior
-      run: |
-        git config pull.rebase false  # Set pull behavior to merge
-
     - name: Pull changes from upstream into empty branch
       run: |
         git pull --allow-unrelated-histories upstream main  # Pull changes allowing unrelated histories
+
+    - name: Commit changes with new author
+      run: |
+        git commit -m "Sync from upstream" --author="wibblit-deployer <wibblit.deployer@protonmail.com>"  # Commit with new author
 
     - name: Switch to main branch and reset
       run: |
         git checkout main
         git reset --hard empty-branch  # Hard reset main to match empty-branch
 
-    - name: Push changes to forked repo
+    - name: Push changes to forked repo (without commit history)
       run: |
-        git push origin main --force
+        git push origin main --force  # Force push to overwrite main with empty-branch
       env:
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
