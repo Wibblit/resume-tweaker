@@ -28,7 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronRight, ChevronDown, Search } from "lucide-react";
+import { ChevronRight, ChevronDown, Search, GripVertical } from "lucide-react";
 import {
   UpdateBaseColor,
   UpdateFont,
@@ -105,20 +105,33 @@ const abbrv = {
      'awards': 'awards',
 }
 
-const DraggableSection: React.FC<{ section: SectionName; index: number }> = ({ section, index }) => (
+import React from 'react';
+
+interface DraggableSectionProps {
+  section: SectionName;
+  index: number;
+}
+
+const DraggableSection: React.FC<DraggableSectionProps> = ({ section, index }) => (
   <Draggable draggableId={section} index={index}>
     {(provided) => (
       <div
         ref={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
-        className="p-2 mb-2 bg-background rounded-md shadow-sm truncate text-xs text-center"
+        className="p-2 mb-2 bg-primary flex items-center text-primary-foreground rounded-md shadow-sm text-xs"
       >
-        {abbrv[section].charAt(0).toUpperCase() + abbrv[section].slice(1)}
+        <div className="flex-shrink-0 mr-2">
+          <GripVertical className="h-4 w-4 text-primary-foreground/85" />
+        </div>
+        <div className="truncate">
+          {abbrv[section].charAt(0).toUpperCase() + abbrv[section].slice(1)}
+        </div>
       </div>
     )}
   </Draggable>
 );
+
 
 
 export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
