@@ -25,33 +25,35 @@ jobs:
         git remote add upstream https://github.com/Wibblit/resume-tweaker.git
         git fetch upstream
 
-    - name: Create and switch to an empty branch
+    - name: Create and switch to an empty branch 1
       run: |
-        git checkout --orphan empty-branch  # Create an orphan branch
+        git checkout --orphan empty-branch-1  # Create the first empty branch
         git rm -rf .  # Remove all files from the empty branch
-        git status
 
-    - name: Pull changes from upstream into empty branch
+    - name: Pull changes from upstream into empty branch 1
       run: |
         git pull --allow-unrelated-histories upstream main  # Pull changes allowing unrelated histories
-        git status
 
-    - name: Commit changes with new author if there are changes
+    - name: Create and switch to an empty branch 2
       run: |
-        if [ -n "$(git status --porcelain)" ]; then
-          git commit --amend --no-edit --author="wibblit-deployer <wibblit.deployer@protonmail.com>"  # Amend commit to set new author
-        else
-          echo "No changes to commit"
-        fi
-        git status
+        git checkout --orphan empty-branch-2  # Create the second empty branch
+        git rm -rf .  # Remove all files from the empty branch
+
+    - name: Squash merge changes from empty branch 1 into empty branch 2
+      run: |
+        git merge --squash empty-branch-1  # Squash merge changes from the first empty branch
+
+    - name: Commit squashed changes with new author
+      run: |
+        git commit -m "Sync from upstream" --author="wibblit-deployer <wibblit.deployer@protonmail.com>"  # Commit with new author
 
     - name: Switch to main branch and reset
       run: |
         git checkout main
-        git reset --hard empty-branch  # Hard reset main to match empty-branch
+        git reset --hard empty-branch-2  # Hard reset main to match empty-branch-2
 
     - name: Push changes to forked repo (without commit history)
       run: |
-        git push origin main --force  # Force push to overwrite main with empty-branch
+        git push origin main --force  # Force push to overwrite main with empty-branch-2
       env:
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
