@@ -44,7 +44,7 @@ jobs:
 
     - name: Squash merge changes from empty branch 1 into empty branch 2
       run: |
-        git merge --squash empty-branch-1  # Squash merge changes from the first empty branch
+        git merge --squash empty-branch-1 --allow-unrelated-histories # Squash merge changes from the first empty branch
 
     - name: Commit squashed changes with new author
       run: |
