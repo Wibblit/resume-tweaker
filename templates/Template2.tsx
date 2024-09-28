@@ -3,8 +3,11 @@ import { cn, isEmptyString, isUrl } from "@/lib/utils";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
-
-
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { MapPin, Mail, Phone, Globe, Linkedin, Github } from "lucide-react";
 
 interface TemplateProps {
   content: ResumeData;
@@ -26,17 +29,23 @@ const Link: React.FC<{
 
   return (
     <div className="flex items-center gap-x-1.5">
-      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
+      {!iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
       <a
         href={url.href}
         target="_blank"
         rel="noreferrer noopener nofollow"
         className={cn("inline-block", className)}
-        style={{ color: 'currentColor' }}
+        style={{ color: "currentColor" }}
       >
         {label ?? (url.label || url.href)}
       </a>
-      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
+      {iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
     </div>
   );
 };
@@ -51,7 +60,9 @@ const LinkedEntity: React.FC<{
     <Link
       url={url}
       label={name}
-      icon={<i className="ph ph-bold ph-globe" style={{ color: 'currentColor' }} />}
+      icon={
+        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+      }
       iconOnRight={true}
       className={className}
     />
@@ -66,32 +77,42 @@ const Section: React.FC<{
   baseColor: string;
 }> = ({ title, children, baseColor }) => {
   return (
-    <section className="mt-4 pt-4" style={{ borderTop: `1px solid ${baseColor}` }}>
-      <h4 className="mb-2 text-base font-bold" style={{ color: baseColor }}>{title}</h4>
+    <section
+      className="mt-4 pt-4"
+      style={{ borderTop: `1px solid ${baseColor}` }}
+    >
+      <h4 className="mb-2 text-base font-bold" style={{ color: baseColor }}>
+        {title}
+      </h4>
       <div>{children}</div>
     </section>
   );
 };
 
-const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineHeight: number }> = ({ basics, baseColor, fontSize, lineHeight }) => {
+const Header: React.FC<{
+  basics: any;
+  baseColor: string;
+  fontSize: number;
+  lineHeight: number;
+}> = ({ basics, baseColor, fontSize, lineHeight }) => {
   const scaleFactor = fontSize / 16;
   const styles = {
     container: {
       backgroundColor: baseColor,
-      borderRadius: '8px',
-      padding: '1.5rem',
-      color: 'white',
+      borderRadius: "8px",
+      padding: "1.5rem",
+      color: "white",
       fontSize: `${fontSize}px`,
       lineHeight: lineHeight,
     },
     name: {
       fontSize: `${2 * scaleFactor}rem`,
-      fontWeight: 'bold',
-      marginBottom: '0.5rem',
+      fontWeight: "bold",
+      marginBottom: "0.5rem",
     },
     headline: {
       fontSize: `${1.2 * scaleFactor}rem`,
-      marginBottom: '1rem',
+      marginBottom: "1rem",
     },
     details: {
       fontSize: `${scaleFactor}rem`,
@@ -101,12 +122,17 @@ const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineH
   return (
     <div style={styles.container}>
       <h2 style={styles.name}>{basics?.name}</h2>
-      <p className="text-white" style={styles.headline}>{basics?.headLine}</p>
-      <hr style={{ borderColor: 'white', opacity: 0.5, margin: '1rem 0' }} />
-      <div style={styles.details} className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+      <p className="text-white" style={styles.headline}>
+        {basics?.headLine}
+      </p>
+      <hr style={{ borderColor: "white", opacity: 0.5, margin: "1rem 0" }} />
+      <div
+        style={styles.details}
+        className="flex flex-wrap items-center gap-x-2 gap-y-0.5"
+      >
         {basics?.location && (
           <>
-            <div className="flex items-center gap-x-1.5 mr-2">
+            <div className="mr-2 flex items-center gap-x-1.5">
               <i className="ph ph-bold ph-map-pin" />
               <div>{basics?.location}</div>
             </div>
@@ -115,7 +141,7 @@ const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineH
         )}
         {basics?.phone && (
           <>
-            <div className="flex items-center gap-x-1.5 mr-2">
+            <div className="mr-2 flex items-center gap-x-1.5">
               <i className="ph ph-bold ph-phone" />
               <a href={`tel:${basics?.phone}`} target="_blank" rel="noreferrer">
                 {basics?.phone}
@@ -126,9 +152,13 @@ const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineH
         )}
         {basics?.email && (
           <>
-            <div className="flex items-center gap-x-1.5 mr-2">
+            <div className="mr-2 flex items-center gap-x-1.5">
               <i className="ph ph-bold ph-at" />
-              <a href={`mailto:${basics?.email}`} target="_blank" rel="noreferrer">
+              <a
+                href={`mailto:${basics?.email}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {basics?.email}
               </a>
             </div>
@@ -146,7 +176,7 @@ const Header: React.FC<{ basics: any; baseColor: string; fontSize: number; lineH
   );
 };
 
-const Template2: React.FC<TemplateProps> = ({
+const ResumeTemplate: React.FC<TemplateProps> = ({
   content,
   baseColor,
   fontSize,
@@ -155,7 +185,10 @@ const Template2: React.FC<TemplateProps> = ({
   margin,
 }) => {
   const dispatch = useAppDispatch();
-  const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
+  const sectionOrder = useAppSelector(
+    (state) => state.rightsidebar.sectionOrder
+  );
+  console.log(sectionOrder)
   const scaleFactor = fontSize / 16;
 
   useEffect(() => {
@@ -179,249 +212,326 @@ const Template2: React.FC<TemplateProps> = ({
 
   const renderSection = (sectionName: string) => {
     switch (sectionName) {
-      case 'summary':
-        return content.summary && content.summary.length > 0 && (
-          <Section title="Summary" baseColor={baseColor}>
-            <div
-              dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-              style={styles.body}
-              className="text-justify"
-            />
-          </Section>
+      case "summary":
+        return (
+          content.summary &&
+          content.summary.length > 0 && (
+            <Section title="Summary" baseColor={baseColor}>
+              <div
+                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
+                style={styles.body}
+                className="text-justify"
+              />
+            </Section>
+          )
         );
-      case 'experience':
-        return content.experience && content.experience.length > 0 && (
-          <Section title="Experience" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.experience.map((exp, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="font-bold">{exp.organization}</div>
-                      <div>{exp.role}</div>
+      case "experience":
+        return (
+          content.experience &&
+          content.experience.length > 0 && (
+            <Section title="Experience" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.experience.map((exp, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{exp.organization}</div>
+                        <div>{exp.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{`${exp.startDate} - ${exp.endDate}`}</div>
+                        <div>{exp.location}</div>
+                      </div>
                     </div>
-                    <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${exp.startDate} - ${exp.endDate}`}</div>
-                      <div>{exp.location}</div>
-                    </div>
+                    {exp.summary && !isEmptyString(exp.summary) && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: exp.summary }}
+                        style={styles.body}
+                        className="text-justify"
+                      />
+                    )}
                   </div>
-                  {exp.summary && !isEmptyString(exp.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      style={styles.body}
-                      className="text-justify"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'skills':
-        return content.skills && content.skills.length > 0 && content.skills[0].categories && (
-          <Section title="Skills" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.skills[0].categories.map((category, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="font-bold">{category.name}</div>
-                  <div className="flex flex-wrap gap-2">
-                    {category.skills.map((skill, skillIndex) => (
-                      <span
-                        key={skillIndex}
-                        className="rounded-full px-3 py-1"
-                        style={{ ...styles.body, backgroundColor: `${baseColor}20`, color: baseColor }}
-                      >
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'languages':
-        return content.languages && content.languages.length > 0 && (
-          <Section title="Languages" baseColor={baseColor}>
-            <div className="space-y-2">
-              {content.languages.map((lang, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="font-bold">{lang.name}</span>
-                  <span>{lang.level}</span>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'education':
-        return content.education && content.education.length > 0 && (
-          <Section title="Education" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.education.map((edu, index) => (
-                <div key={index} className="flex items-start justify-between">
-                  <div>
-                    <div className="font-bold">{edu.institution}</div>
-                    <div>{edu.field}</div>
-                    <div>{edu.score}</div>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <div className="font-bold">{`${edu.startDate} - ${edu.endDate}`}</div>
-                    <div>{edu.degree}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'certifications':
-        return content.certifications && content.certifications.length > 0 && (
-          <Section title="Certifications" baseColor={baseColor}>
-            <div className="space-y-2">
-              {content.certifications.map((cert, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <LinkedEntity
-                    name={cert.name}
-                    url={cert.url}
-                    separateLinks={false}
-                    className="font-bold"
-                  />
-                  <div>{cert.date}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'projects':
-        return content.projects && content.projects.length > 0 && (
-          <Section title="Projects" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.projects.map((project, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <LinkedEntity
-                      name={project.name}
-                      url={project.url}
-                      separateLinks={false}
-                      className="font-bold"
-                    />
-                    <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${project.startDate} - ${project.endDate}`}</div>
-                    </div>
-                  </div>
-                  {project.summary && !isEmptyString(project.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: project.summary }}
-                      style={styles.body}
-                      className="text-justify"
-                    />
-                  )}
-                  {project.keywords && project.keywords.length > 0 && (
+      case "skills":
+        return (
+          content.skills &&
+          content.skills.length > 0 &&
+          content.skills[0].categories && (
+            <Section title="Skills" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.skills[0].categories.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{category.name}</div>
                     <div className="flex flex-wrap gap-2">
-                      {project.keywords.map((keyword, keywordIndex) => (
+                      {category.skills.map((skill, skillIndex) => (
                         <span
-                          key={keywordIndex}
+                          key={skillIndex}
                           className="rounded-full px-3 py-1"
-                          style={{ ...styles.body, backgroundColor: `${baseColor}20`, color: baseColor }}
+                          style={{
+                            ...styles.body,
+                            backgroundColor: `${baseColor}20`,
+                            color: baseColor,
+                          }}
                         >
-                          {keyword}
+                          {skill.name}
                         </span>
                       ))}
                     </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'volunteer':
-        return content.volunteer && content.volunteer.length > 0 && (
-          <Section title="Volunteer Experience" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.volunteer.map((vol, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
+      case "languages":
+        return (
+          content.languages &&
+          content.languages.length > 0 && (
+            <Section title="Languages" baseColor={baseColor}>
+              <div className="space-y-2">
+                {content.languages.map((lang, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span className="font-bold">{lang.name}</span>
+                    <span>{lang.level}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "education":
+        return (
+          content.education &&
+          content.education.length > 0 && (
+            <Section title="Education" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.education.map((edu, index) => (
+                  <div key={index} className="flex items-start justify-between">
                     <div>
-                      <div className="font-bold">{vol.organization}</div>
-                      <div>{vol.role}</div>
+                      <div className="font-bold">{edu.institution}</div>
+                      <div>{edu.field}</div>
+                      <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${vol.startDate} - ${vol.endDate}`}</div>
-                      <div>{vol.location}</div>
+                      <div className="font-bold">{`${edu.startDate} - ${edu.endDate}`}</div>
+                      <div>{edu.degree}</div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'awards':
-        return content.awards && content.awards.length > 0 && (
-          <Section title="Awards" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.awards.map((award, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="font-bold">{award.title}</div>
-                      <div>{award.awarder}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div className="font-bold">{award.date}</div>
-                    </div>
-                  </div>
-                  {award.summary && !isEmptyString(award.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: award.summary }}
-                      style={styles.body}
-                      className="text-justify"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'publications':
-        return content.publications && content.publications.length > 0 && (
-          <Section title="Publications" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.publications.map((pub, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
+      case "certifications":
+        return (
+          content.certifications &&
+          content.certifications.length > 0 && (
+            <Section title="Certifications" baseColor={baseColor}>
+              <div className="space-y-2">
+                {content.certifications.map((cert, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <LinkedEntity
-                      name={pub.name}
-                      url={pub.url}
+                      name={cert.name}
+                      url={cert.url}
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div className="shrink-0 text-right">
-                      <div className="font-bold">{pub.date}</div>
+                    <div>{cert.date}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "projects":
+        return (
+          content.projects &&
+          content.projects.length > 0 && (
+            <Section title="Projects" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.projects.map((project, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={project.name}
+                        url={project.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{`${project.startDate} - ${project.endDate}`}</div>
+                      </div>
+                    </div>
+                    {project.summary && !isEmptyString(project.summary) && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: project.summary }}
+                        style={styles.body}
+                        className="text-justify"
+                      />
+                    )}
+                    {project.keywords && project.keywords.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {project.keywords.map((keyword, keywordIndex) => (
+                          <span
+                            key={keywordIndex}
+                            className="rounded-full px-3 py-1"
+                            style={{
+                              ...styles.body,
+                              backgroundColor: `${baseColor}20`,
+                              color: baseColor,
+                            }}
+                          >
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "volunteerings":
+        console.log(content.volunteer);
+        return (
+          content.volunteer &&
+          content.volunteer.length > 0 && (
+            <Section title="Volunteer Experience" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.volunteer.map((vol, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{vol.organization}</div>
+                        <div>{vol.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{`${vol.startDate} - ${vol.endDate}`}</div>
+                        <div>{vol.location}</div>
+                      </div>
                     </div>
                   </div>
-                  <div>{pub.publisher}</div>
-                  <div>{pub.publishedIn}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'references':
-        return content.references && content.references.length > 0 && (
-          <Section title="References" baseColor={baseColor}>
-            <div className="space-y-4">
-              {content.references.map((ref, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="font-bold">{ref.name}</div>
-                  <div>{ref.phone}</div>
-                  <div>{ref.email}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
+      case "awards":
+        return (
+          content.awards &&
+          content.awards.length > 0 && (
+            <Section title="Awards" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.awards.map((award, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{award.title}</div>
+                        <div>{award.awarder}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{award.date}</div>
+                      </div>
+                    </div>
+                    {award.summary && !isEmptyString(award.summary) && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: award.summary }}
+                        style={styles.body}
+                        className="text-justify"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'basics':
-        return content.basics && (
-          <Header basics={content.basics[0]} baseColor={baseColor} fontSize={fontSize} lineHeight={lineHeight} />
+      case "publications":
+        return (
+          content.publications &&
+          content.publications.length > 0 && (
+            <Section title="Publications" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.publications.map((pub, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={pub.name}
+                        url={pub.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{pub.date}</div>
+                      </div>
+                    </div>
+                    <div>{pub.publisher}</div>
+                    <div>{pub.publishedIn}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "references":
+        return (
+          content.references &&
+          content.references.length > 0 && (
+            <Section title="References" baseColor={baseColor}>
+              <div className="space-y-4">
+                {content.references.map((ref, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{ref.name}</div>
+                    <div>{ref.phone}</div>
+                    <div>{ref.email}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "basics":
+        return (
+          content.basics && (
+            <Header
+              basics={content.basics[0]}
+              baseColor={baseColor}
+              fontSize={fontSize}
+              lineHeight={lineHeight}
+            />
+          )
+        );
+      case "profiles":
+        return (
+          content.profiles &&
+          content.profiles.length > 0 && (
+            <Section title="Profiles" baseColor={baseColor}>
+              <div className="flex space-x-4">
+                {content.profiles.map((profile, index) => (
+                  <a
+                    key={index}
+                    href={profile.url.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    {profile.url.label}
+                  </a>
+                ))}
+              </div>
+            </Section>
+          )
         );
       default:
         return null;
@@ -440,4 +550,4 @@ const Template2: React.FC<TemplateProps> = ({
   );
 };
 
-export default Template2;
+export default ResumeTemplate;
