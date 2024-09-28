@@ -13,6 +13,7 @@ jobs:
       with:
         repository: wibblit-deployer/resume-tweaker
         token: ${{ secrets.ACCESS_TOKEN }}
+        fetch-depth: 0  # Ensure full history is available
 
     - name: Configure Git user
       run: |
@@ -26,25 +27,19 @@ jobs:
       env: 
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
-    - name: Create and switch to a temporary branch
+    - name: Create and switch to an empty branch
       run: |
-        git checkout -b temp-sync
+        git checkout --orphan empty-branch  # Create an empty branch
+        git commit --allow-empty -m "Empty branch for syncing"  # Create an initial commit
 
-    - name: Pull changes from upstream
+    - name: Pull changes from upstream into empty branch
       run: |
-        git pull -X theirs --no-rebase --allow-unrelated-histories upstream main  # Prefer upstream changes in case of conflicts
+        git pull upstream main  # Pull the latest changes from upstream
 
-    - name: Switch to main branch and reset to temp-sync
+    - name: Switch to main branch and reset
       run: |
         git checkout main
-        git reset --hard temp-sync  # Reset main to match temp-sync exactly, including deletions
-
-    - name: Commit changes with a timestamp
-      run: |
-        # Get the current timestamp in IST format (Indian Standard Time)
-        TIMESTAMP=$(TZ='Asia/Kolkata' date +"%Y-%m-%dT%H:%M:%S%z")
-        # Create a commit
-        git commit --allow-empty -m "Sync with upstream - $TIMESTAMP" || echo "No changes to commit"
+        git reset --hard empty-branch  # Hard reset main to match empty-branch
 
     - name: Push changes to forked repo
       run: |
