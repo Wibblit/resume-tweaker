@@ -25,7 +25,7 @@ jobs:
         git remote add upstream https://github.com/Wibblit/resume-tweaker.git
         git fetch upstream
 
-    - name: Create and switch to an empty branch 1
+    - name: Create and switch to empty branch 1
       run: |
         git checkout --orphan empty-branch-1  # Create the first empty branch
         git rm -rf .  # Remove all files from the empty branch
@@ -34,10 +34,13 @@ jobs:
       run: |
         git pull --allow-unrelated-histories upstream main  # Pull changes allowing unrelated histories
 
-    - name: Create and switch to an empty branch 2
+    - name: Create and switch to empty branch 2
       run: |
         git checkout --orphan empty-branch-2  # Create the second empty branch
         git rm -rf .  # Remove all files from the empty branch
+        echo "Initializing empty branch" > temp-file.txt  # Create a temporary file to enable commit
+        git add temp-file.txt  # Stage the temporary file
+        git commit -m "Initialize empty branch for merging"  # Commit to allow squash merge
 
     - name: Squash merge changes from empty branch 1 into empty branch 2
       run: |
