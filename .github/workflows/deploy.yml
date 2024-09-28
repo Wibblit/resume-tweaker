@@ -32,6 +32,10 @@ jobs:
         git checkout --orphan empty-branch  # Create an empty branch
         git commit --allow-empty -m "Empty branch for syncing"  # Create an initial commit
 
+    - name: Configure pull behavior
+      run: |
+        git config pull.rebase false  # Set pull behavior to merge
+
     - name: Pull changes from upstream into empty branch
       run: |
         git pull --allow-unrelated-histories upstream main  # Pull changes allowing unrelated histories
