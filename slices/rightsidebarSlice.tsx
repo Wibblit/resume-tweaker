@@ -9,7 +9,7 @@ import { SectionName } from "@/types/types";
 const initialState: ResumeStyles = {
   id: 1,
   name: "",
-  font: "Roboto",
+  font: "Arial",
   fontSize: 12,
   lineHeight: 1,
   margin: 10,
