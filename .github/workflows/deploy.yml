@@ -34,19 +34,20 @@ jobs:
       run: |
         git pull -X theirs --no-rebase --allow-unrelated-histories upstream main  # Prefer upstream changes in case of conflicts
 
-    - name: Squash merge changes into main
+    - name: Switch to main branch and reset to temp-sync
       run: |
         git checkout main
-        git merge --squash temp-sync
+        git reset --hard temp-sync  # Reset main to match temp-sync exactly, including deletions
+
+    - name: Commit changes with a timestamp
+      run: |
         # Get the current timestamp in IST format (Indian Standard Time)
         TIMESTAMP=$(TZ='Asia/Kolkata' date +"%Y-%m-%dT%H:%M:%S%z")
-        # Commit changes with the timestamp
-        git commit -m "Sync with upstream - $TIMESTAMP" || echo "No changes to commit"
+        # Create a commit
+        git commit --allow-empty -m "Sync with upstream - $TIMESTAMP" || echo "No changes to commit"
 
     - name: Push changes to forked repo
       run: |
-        git push origin main
+        git push origin main --force
       env:
         GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-
-   
