@@ -4,8 +4,6 @@ import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics, Profile } from "@/types/types";
 import { position } from "html2canvas/dist/types/css/property-descriptors/position";
-import { opacity } from "html2canvas/dist/types/css/property-descriptors/opacity";
-import { color } from "framer-motion";
 
 interface TemplateProps {
   content: ResumeData;
@@ -83,36 +81,54 @@ const Picture: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   );
 };
 
+const hexToRgba = (hex: string, alpha: number) => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 const Profiles: React.FC<{profiles: Profile[]; baseColor: string; fontSize: number; lineHeight: number; margin: number}> = ({ profiles, baseColor, fontSize, lineHeight, margin }) => {
   const styles = {
     container: {
       fontSize: `${fontSize}px`,
-      lineHeight: `${lineHeight}`,
-      padding: `${margin}mm`,
-      color: "black",
-      background: baseColor,
-      opacity: 0.4,  
+      color: 'black',
+      background: hexToRgba(baseColor, 0.4),
+    },
+    link: {
+      color: "#000000",
+      textDecoration: "none",
+    },
+    dot: {
+      margin: '0 8px',
     },
   }
   
   return (
-    <div style={styles.container}>
-        {profiles.length > 0 && profiles.map((profile, index) => (
-          <Link
-          key={index}
-          url={profile.url}
-          className="text-sm text-black"
-        />
-        ))}
+    <div style={styles.container} className="flex flex-wrap justify-center space-x-4 py-2">
+      {profiles.map((profile, index) => (
+        <span key={index} className="flex items-center gap-2">
+          <a
+            href={profile.url.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.link}
+            className="underline"
+          >
+            {profile.url.label}
+          </a>
+          {index < profiles.length - 1 && <span style={styles.dot}>•</span>}
+        </span>
+      ))}
     </div>
   )
 }
 
 const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; lineHeight: number; margin: number }> = ({ basics, baseColor, fontSize, lineHeight, margin }) => {
-
   const scaleFactor = fontSize / 16;
-  const imageSize = 128; // 8rem = 128px
-  const contentWidth = `calc(100% - ${imageSize}px - 1rem)`; // Subtracting image width and gap
+  const imageSize = 128;
+  const contentWidth = `calc(100% - ${imageSize}px - 1rem)`;
 
   const styles = {
     container: {
@@ -120,6 +136,7 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
       lineHeight: `${lineHeight}`,
       padding: `${margin}mm`,
       background: baseColor,
+      color: "#ffffff",
     },
     content: {
       width: contentWidth,
@@ -204,7 +221,6 @@ const Template3: React.FC<TemplateProps> = ({
       fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
-      color: "white",
       minHeight: "100vh",
       height: "100%",
       display: "flex",
@@ -215,7 +231,8 @@ const Template3: React.FC<TemplateProps> = ({
     },
     sidebar: {
       width: "50%",
-      color: 'white',
+      hight: "100%",
+      color: 'black',
     },
     sidebarContent: {
       padding: `${margin}mm`,
@@ -227,8 +244,9 @@ const Template3: React.FC<TemplateProps> = ({
       width: "50%",
     },
   };
+
   const renderSection = (sectionName: string, isRightColumn: boolean = false) => {
-    const sectionStyle = isRightColumn ? { color: 'white' } : styles.body;
+    const sectionStyle = styles.body;
 
     switch (sectionName) {
       case 'summary':
@@ -375,11 +393,21 @@ const Template3: React.FC<TemplateProps> = ({
       </div>
       <div style={styles.container}>
         <div style={styles.mainContent}>
+        <style>
+          {`
+            p {
+              white-space: pre-wrap; 
+              word-wrap: break-word; 
+              overflow-wrap: break-word;
+              text-align: justify;
+            }
+          `}
+        </style>
           {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
         </div>
         <div style={styles.sidebar}>
           <div style={styles.sidebarContent}>
-            {sectionOrder.column2.map((sectionName) => renderSection(sectionName, true))}
+            {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
           </div>
         </div>
       </div>
