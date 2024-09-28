@@ -24,21 +24,26 @@ jobs:
       run: |
         git remote add upstream https://github.com/Wibblit/resume-tweaker.git
         git fetch upstream
-      env: 
-        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
     - name: Create and switch to an empty branch
       run: |
-        git checkout --orphan empty-branch  # Create an empty branch
+        git checkout --orphan empty-branch  # Create an orphan branch
         git rm -rf .  # Remove all files from the empty branch
+        git status
 
     - name: Pull changes from upstream into empty branch
       run: |
         git pull --allow-unrelated-histories upstream main  # Pull changes allowing unrelated histories
+        git status
 
-    - name: Commit changes with new author
+    - name: Commit changes with new author if there are changes
       run: |
-        git commit -m "Sync from upstream" --author="wibblit-deployer <wibblit.deployer@protonmail.com>"  # Commit with new author
+        if [ -n "$(git status --porcelain)" ]; then
+          git commit --amend --no-edit --author="wibblit-deployer <wibblit.deployer@protonmail.com>"  # Amend commit to set new author
+        else
+          echo "No changes to commit"
+        fi
+        git status
 
     - name: Switch to main branch and reset
       run: |
