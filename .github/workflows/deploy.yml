@@ -30,7 +30,7 @@ jobs:
     - name: Create and switch to an empty branch
       run: |
         git checkout --orphan empty-branch  # Create an empty branch
-        git commit --allow-empty -m "Empty branch for syncing"  # Create an initial commit
+        git rm -rf .  # Remove all files from the empty branch
 
     - name: Configure pull behavior
       run: |
