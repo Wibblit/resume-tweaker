@@ -34,7 +34,7 @@ jobs:
 
     - name: Pull changes from upstream into empty branch
       run: |
-        git pull --no-rebase upstream main  # Pull changes without rebasing
+        git pull --allow-unrelated-histories upstream main  # Pull changes allowing unrelated histories
 
     - name: Switch to main branch and reset
       run: |
