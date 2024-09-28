@@ -81,12 +81,16 @@ interface RightSideBarProps {
 }
 
 const templates = [
-  {id : 1 , name: "Professional", image: "/placeholder.svg?height=200&width=150" },
-  {id :  2, name: "Creative", image: "/templates/template2.jpeg" },
-  {id :  3, name: "Executive", image: "/placeholder.svg?height=200&width=150" },
-  {id :  4, name: "Technical", image: "/placeholder.svg?height=200&width=150" },
-  {id :  5, name: "Academic", image: "/placeholder.svg?height=200&width=150" },
-  {id :  6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
+  {
+    id: 1,
+    name: "Professional",
+    image: "/templates/template1.png",
+  },
+  { id: 2, name: "Creative", image: "/templates/template2.jpeg" },
+  { id: 3, name: "Executive", image: "/templates/template3.png" },
+  { id: 4, name: "Technical", image: "/placeholder.svg?height=200&width=150" },
+  { id: 5, name: "Academic", image: "/placeholder.svg?height=200&width=150" },
+  { id: 6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
 ];
 
 const abbrv = {
