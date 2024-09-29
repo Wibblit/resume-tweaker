@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft, Upload } from "lucide-react";
 import Link from "next/link";
-import { Editor } from "../TextEditor";
+import { RichInput } from "../TextEditor";
 
 const categories = [
   "Web Development",
@@ -38,14 +38,14 @@ const categories = [
 export default function BlogForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    excerpt: "",
-    content: "",
-    category: "",
-    image: null as File | null,
-    author: "Wibblit",
-  });
+    const [formData, setFormData] = useState({
+      title: "",
+      excerpt: "",
+      content: "",
+      category: "",
+      image: null as File | null,
+      author: "Wibblit",
+    });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -147,10 +147,7 @@ export default function BlogForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
-              <Editor
-                content={formData.content}
-                setContent={handleContentChange}
-              />
+              <RichInput content={formData.content} onContentChange={handleContentChange} />
               {/* <div className="mt-4 border rounded-md p-4">
                 <h3 className="text-lg font-semibold mb-2">Preview:</h3>
                 <RichTextRenderer content={formData.content} />

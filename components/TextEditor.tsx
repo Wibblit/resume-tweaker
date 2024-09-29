@@ -1,245 +1,603 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import "suneditor/dist/css/suneditor.min.css";
-import { Card, CardContent } from "@/components/ui/card";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  ArrowClockwise,
+  ArrowCounterClockwise,
+  Code as CodeIcon,
+  CodeBlock as CodeBlockIcon,
+  HighlighterCircle,
+  Image as ImageIcon,
+  KeyReturn,
+  LinkSimple,
+  ListBullets,
+  ListNumbers,
+  Minus,
+  Paragraph as ParagraphIcon,
+  TextAlignCenter,
+  TextAlignJustify,
+  TextAlignLeft,
+  TextAlignRight,
+  TextAUnderline,
+  TextB,
+  TextHOne,
+  TextHThree,
+  TextHTwo,
+  TextIndent,
+  TextItalic,
+  TextOutdent,
+  TextStrikethrough,
+} from "@phosphor-icons/react";
+import { PopoverTrigger } from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils";
+import { Highlight } from "@tiptap/extension-highlight";
+import { Image } from "@tiptap/extension-image";
+import { Link } from "@tiptap/extension-link";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { Underline } from "@tiptap/extension-underline";
+import {
+  Editor,
+  EditorContent,
+  EditorContentProps,
+  useEditor,
+} from "@tiptap/react";
+import { StarterKit } from "@tiptap/starter-kit";
+import { forwardRef, useCallback, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "./ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { Input } from "./ui/input";
+import { Popover, PopoverContent } from "./ui/popover";
+import { Skeleton } from "./ui/skeleton";
+import { Toggle } from "./ui/toggle";
+import { Tooltip, TooltipProvider } from "./ui/tooltip";
 
-const SunEditor = dynamic(() => import("suneditor-react"), {
-  ssr: false,
+const InsertImageFormSchema = z.object({
+  src: z.string().url("Please enter a valid URL"),
+  alt: z.string().optional(),
 });
 
-export function Editor({
-  content,
-  setContent,
-  className,
-}: {
-  content: string;
-  setContent: (content: string) => void;
-  className?: string;
-}) {
-  const [mounted, setMounted] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [dialogContent, setDialogContent] = useState<React.ReactNode | null>(
-    null
-  );
+type InsertImageFormValues = z.infer<typeof InsertImageFormSchema>;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+type InsertImageProps = {
+  onInsert: (value: InsertImageFormValues) => void;
+};
 
-  const handleChange = (content: string) => {
-    setContent(content);
+const InsertImageForm = ({ onInsert }: InsertImageProps) => {
+  const form = useForm<InsertImageFormValues>({
+    resolver: zodResolver(InsertImageFormSchema),
+    defaultValues: { src: "", alt: "" },
+  });
+
+  const onSubmit = (values: InsertImageFormValues) => {
+    onInsert(values);
+    form.reset();
   };
-
-  const editorStyle = `
-    .sun-editor {
-      --tw-border-opacity: 1;
-      border-color: hsl(var(--border) / var(--tw-border-opacity));
-      --tw-bg-opacity: 1;
-      background-color: hsl(var(--background) / var(--tw-bg-opacity));
-      --tw-text-opacity: 1;
-      color: hsl(var(--foreground) / var(--tw-text-opacity));
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    }
-
-    .sun-editor .se-toolbar {
-      background-color: hsl(var(--background) / var(--tw-bg-opacity));
-      border-bottom: 1px solid hsl(var(--border) / var(--tw-border-opacity));
-      padding: 0.5rem;
-      outline: none;
-    }
-
-    .sun-editor .se-btn:enabled.active {
-      color: hsl(var(--primary));
-      background: hsl(var(--secondary));
-    }
-
-    .sun-editor .se-btn:enabled:focus,
-    .sun-editor .se-btn:enabled:hover {
-      background-color: hsl(var(--secondary));
-    }
-
-    .sun-editor .se-btn-module-border {
-      border: solid 1px hsl(var(--border) / var(--tw-border-opacity));
-    }
-
-    .sun-editor .se-btn-tray {
-      border: none;
-      background: none;
-    }
-
-    .sun-editor .se-btn {
-      color: hsl(var(--foreground) / 0.7);
-      background: none;
-      margin: 0 0.125rem;
-      padding: 0.25rem;
-      border-radius: var(--radius);
-      transition: all 0.2s ease;
-    }
-
-    .sun-editor .se-btn:hover,
-    .sun-editor .se-btn:focus {
-      color: hsl(var(--foreground) / var(--tw-text-opacity));
-      background-color: hsl(var(--accent) / 0.1);
-      box-shadow: none;
-    }
-
-    .sun-editor .se-btn-select.active {
-      color: hsl(var(--primary) / var(--tw-text-opacity));
-      background-color: hsl(var(--accent) / 0.2);
-    }
-
-    .sun-editor .se-wrapper {
-      background-color: hsl(var(--background) / var(--tw-bg-opacity));
-    }
-
-    .sun-editor .se-wrapper-inner {
-      background-color: hsl(var(--background) / var(--tw-bg-opacity));
-    }
-
-    .sun-editor .se-placeholder {
-      color: hsl(var(--muted-foreground) / 0.8);
-    }
-
-    .sun-editor .se-wrapper-wysiwyg {
-      color: hsl(var(--foreground) / var(--tw-text-opacity));
-    }
-
-    .sun-editor .se-wrapper-wysiwyg strong,
-    .sun-editor .se-wrapper-wysiwyg b {
-      font-weight: 700;
-      color: hsl(var(--foreground) / var(--tw-text-opacity));
-    }
-
-    .sun-editor .se-wrapper-wysiwyg h1,
-    .sun-editor .se-wrapper-wysiwyg h2,
-    .sun-editor .se-wrapper-wysiwyg h3 {
-      color: hsl(var(--foreground) / var(--tw-text-opacity));
-      font-weight: 600;
-    }
-
-    .sun-editor .se-wrapper-wysiwyg a {
-      color: hsl(var(--primary) / var(--tw-text-opacity));
-    }
-
-    .sun-editor .se-wrapper-wysiwyg code {
-      background-color: hsl(var(--muted) / 0.3);
-      color: hsl(var(--foreground) / var(--tw-text-opacity));
-      padding: 0.2em 0.4em;
-    }
-
-    .sun-editor .se-resizing-bar {
-      background-color: hsl(var(--muted) / 0.3);
-    }
-
-    .sun-editor .se-dialog {
-      display: none;
-    }
-
-    .sun-editor .se-dialog-back {
-      display: none;
-    }
-
-    .sun-editor .se-btn:hover,
-    .sun-editor .se-btn:focus {
-      background-color: hsl(var(--accent) / 0.8);
-      color: hsl(var(--accent-foreground));
-    }
-  `;
-
-  const openDialog = (content: React.ReactNode) => {
-    setDialogContent(content);
-    setIsDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setIsDialogOpen(false);
-    setDialogContent(null);
-  };
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
-    <Card className={cn("w-full", className)}>
-      <CardContent className="p-0">
-        <style>{editorStyle}</style>
-        <SunEditor
-          setContents={content}
-          onChange={handleChange}
-          setOptions={{
-            buttonList: [
-              ["undo", "redo"],
-              ["bold", "italic", "underline", "strike"],
-              ["removeFormat"],
-              ["fontColor", "hiliteColor"],
-              ["link", "image", "video"],
-              ["align", "list", "lineHeight"],
-              ["outdent", "indent"],
-              ["table", "horizontalRule"],
-              ["fullScreen", "showBlocks", "codeView"],
-            ],
-            formats: ["p", "h1", "h2", "h3"],
-            defaultTag: "p",
-            minHeight: "300px",
-            height: "auto",
-            width: "100%",
-            resizingBar: false,
-            imageFileInput: true,
-            font: ["Arial", "Courier New", "Georgia", "Tahoma", "Verdana"],
-            fontSize: [10, 12, 14, 16, 18, 20, 24, 28, 36],
-            // dialogBox: {
-            //   image: (xhr: any, json: any, core: any) => {
-            //     openDialog(
-            //       <div>
-            //         <h2>Insert Image</h2>
-            //         <input
-            //           type="file"
-            //           accept="image/*"
-            //           onChange={(e) => {
-            //             if (e.target.files && e.target.files[0]) {
-            //               const file = e.target.files[0];
-            //               const reader = new FileReader();
-            //               reader.onload = (e) => {
-            //                 if (e.target) {
-            //                   core.insertImage(e.target.result as string);
-            //                   closeDialog();
-            //                 }
-            //               };
-            //               reader.readAsDataURL(file);
-            //             }
-            //           }}
-            //         />
-            //       </div>
-            //     );
-            //     return false;
-            //   },
-            //   // Add other dialog overrides here (link, video, etc.)
-            // },
-          }}
-          defaultValue={content}
-          lang="en"
-          name="custom-editor"
-          placeholder="Start typing..."
+    <Form {...form}>
+      <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
+        <p className="prose prose-sm prose-zinc dark:prose-invert">
+          Insert an image from an external URL and use it on your resume.
+        </p>
+
+        <FormField
+          name="src"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>URL</FormLabel>
+              <FormControl>
+                <Input placeholder="https://..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </CardContent>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editor Dialog</DialogTitle>
-          </DialogHeader>
-          {dialogContent}
-        </DialogContent>
-      </Dialog>
-    </Card>
+
+        <FormField
+          name="alt"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="!mt-5 ml-auto max-w-fit">
+          <Button type="submit" variant="secondary" size="sm">
+            Insert Image
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
+};
+
+const Toolbar = ({ editor }: { editor: Editor }) => {
+  const setLink = useCallback(() => {
+    const previousUrl = editor.getAttributes("link").href;
+    const url = window.prompt("URL", previousUrl);
+
+    if (url === null) {
+      return;
+    }
+
+    if (url === "") {
+      editor.chain().focus().extendMarkRange("link").unsetLink().run();
+      return;
+    }
+
+    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
+  }, [editor]);
+
+  return (
+    <TooltipProvider>
+      <div className="flex flex-wrap gap-0.5 border p-1">
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("bold")}
+            onPressedChange={() => editor.chain().focus().toggleBold().run()}
+          >
+            <TextB className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("italic")}
+            onPressedChange={() => editor.chain().focus().toggleItalic().run()}
+          >
+            <TextItalic className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("strike")}
+            onPressedChange={() => editor.chain().focus().toggleStrike().run()}
+          >
+            <TextStrikethrough className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("underline")}
+            onPressedChange={() =>
+              editor.chain().focus().toggleUnderline().run()
+            }
+          >
+            <TextAUnderline className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("highlight")}
+            onPressedChange={() =>
+              editor.chain().focus().toggleHighlight().run()
+            }
+          >
+            <HighlighterCircle className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={setLink}
+          >
+            <LinkSimple className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("code")}
+            onPressedChange={() => editor.chain().focus().toggleCode().run()}
+          >
+            <CodeIcon className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("codeBlock")}
+            onPressedChange={() =>
+              editor.chain().focus().toggleCodeBlock().run()
+            }
+          >
+            <CodeBlockIcon className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("heading", { level: 1 })}
+            onPressedChange={() =>
+              editor.chain().focus().toggleHeading({ level: 1 }).run()
+            }
+          >
+            <TextHOne className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("heading", { level: 2 })}
+            onPressedChange={() =>
+              editor.chain().focus().toggleHeading({ level: 2 }).run()
+            }
+          >
+            <TextHTwo className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("heading", { level: 3 })}
+            onPressedChange={() =>
+              editor.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+          >
+            <TextHThree className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("paragraph")}
+            onPressedChange={() => editor.chain().focus().setParagraph().run()}
+          >
+            <ParagraphIcon className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive({ textAlign: "left" })}
+            onPressedChange={() =>
+              editor.chain().focus().setTextAlign("left").run()
+            }
+          >
+            <TextAlignLeft className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive({ textAlign: "center" })}
+            onPressedChange={() =>
+              editor.chain().focus().setTextAlign("center").run()
+            }
+          >
+            <TextAlignCenter className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive({ textAlign: "right" })}
+            onPressedChange={() =>
+              editor.chain().focus().setTextAlign("right").run()
+            }
+          >
+            <TextAlignRight className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive({ textAlign: "justify" })}
+            onPressedChange={() =>
+              editor.chain().focus().setTextAlign("justify").run()
+            }
+          >
+            <TextAlignJustify className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("bulletList")}
+            onPressedChange={() =>
+              editor.chain().focus().toggleBulletList().run()
+            }
+          >
+            <ListBullets className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Toggle
+            size="sm"
+            pressed={editor.isActive("orderedList")}
+            onPressedChange={() =>
+              editor.chain().focus().toggleOrderedList().run()
+            }
+          >
+            <ListNumbers className="h-4 w-4" />
+          </Toggle>
+        </Tooltip>
+
+        <Tooltip>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={() =>
+              editor.chain().focus().liftListItem("listItem").run()
+            }
+          >
+            <TextOutdent className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+
+        <Tooltip>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={() =>
+              editor.chain().focus().sinkListItem("listItem").run()
+            }
+          >
+            <TextIndent className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+
+        <Popover>
+          <Tooltip>
+            <PopoverTrigger asChild>
+              <Button size="sm" variant="ghost" className="px-2">
+                <ImageIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+          </Tooltip>
+          <PopoverContent className="w-80">
+            <InsertImageForm
+              onInsert={(props) => editor.chain().focus().setImage(props).run()}
+            />
+          </PopoverContent>
+        </Popover>
+
+        <Tooltip>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={() => editor.chain().focus().setHardBreak().run()}
+          >
+            <KeyReturn className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+
+        <Tooltip>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+
+        <Tooltip>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={() => editor.chain().focus().undo().run()}
+          >
+            <ArrowCounterClockwise className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+
+        <Tooltip>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="px-2"
+            onClick={() => editor.chain().focus().redo().run()}
+          >
+            <ArrowClockwise className="h-4 w-4" />
+          </Button>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+};
+
+type RichInputProps = {
+  content: string;
+  onContentChange: (value: string) => void;
+  hideToolbar?: boolean;
+  className?: string;
+  editorClassName?: string;
+} & Omit<
+  EditorContentProps,
+  "editor" | "content" | "value" | "onChange" | "className"
+>;
+
+export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
+  (
+    {
+      content,
+      onContentChange,
+      hideToolbar = false,
+      className,
+      editorClassName,
+      ...props
+    },
+    ref
+  ) => {
+    // const editor = useEditor({
+    //   extensions: [
+    //     StarterKit.configure({
+    //       heading: {
+    //         levels: [1, 2, 3],
+    //       },
+    //       bulletList: {},
+    //       orderedList: {},
+    //     }),
+    //     Image,
+    //     Underline,
+    //     Highlight,
+    //     TextAlign.configure({ types: ["heading", "paragraph"] }),
+    //     Link.extend({ inclusive: false }).configure({ openOnClick: false }),
+    //   ],
+    //   editorProps: {
+    //     attributes: {
+    //       class: cn(
+    //         "prose prose-sm prose-zinc max-h-[200px] max-w-none overflow-y-scroll dark:prose-invert focus:outline-none [&_*]:my-2",
+    //         editorClassName
+    //       ),
+    //     },
+    //   },
+    //   content,
+    //   onUpdate: ({ editor }) => {
+    //     onContentChange(editor.getHTML());
+    //   },
+    // });
+    const editor = useEditor({
+      extensions: [
+        StarterKit.configure({
+          heading: {
+            levels: [1, 2, 3],
+          },
+          bold: {
+            HTMLAttributes: {
+              class: "font-bold",
+            },
+          },
+          italic: {
+            HTMLAttributes: {
+              class: "italic",
+            },
+          },
+          bulletList: {
+            keepMarks: true,
+            keepAttributes: false,
+          },
+          orderedList: {
+            keepMarks: true,
+            keepAttributes: false,
+          },
+        }),
+        Image,
+        Underline.configure({
+          HTMLAttributes: {
+            class: "underline",
+          },
+        }),
+        Highlight.configure({
+          multicolor: true,
+        }),
+        TextAlign.configure({
+          types: ["heading", "paragraph"],
+        }),
+        Link.extend({
+          inclusive: false,
+        }).configure({
+          openOnClick: false,
+        }),
+      ],
+      content,
+      onUpdate: ({ editor }) => {
+        onContentChange(editor.getHTML());
+      },
+      editorProps: {
+        attributes: {
+          class: cn(
+            "prose prose-sm prose-zinc max-h-[200px] max-w-none overflow-y-scroll dark:prose-invert focus:outline-none",
+            "[&_h1]:text-2xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:mt-6",
+            "[&_h2]:text-xl [&_h2]:font-semibold [&_h2]:mb-3 [&_h2]:mt-5",
+            "[&_h3]:text-lg [&_h3]:font-medium [&_h3]:mb-2 [&_h3]:mt-4",
+            "[&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4",
+            editorClassName
+          ),
+        },
+      },
+    });
+
+    useEffect(() => {
+      if (editor && content !== editor.getHTML()) {
+        editor.commands.setContent(content);
+      }
+    }, [editor, content]);
+
+    if (!editor) {
+      return (
+        <div className="space-y-2">
+          <Skeleton
+            className={cn("h-[42px] w-full", hideToolbar && "hidden")}
+          />
+          <Skeleton className="h-[90px] w-full" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="custom-editor" ref={ref}>
+        {!hideToolbar && <Toolbar editor={editor} />}
+
+        <EditorContent
+          editor={editor}
+          className={cn(
+            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+            hideToolbar && "pt-2",
+            className
+          )}
+          style={{ fontWeight: "normal" }} // Change 'normal' to whatever font-weight you need
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+
+RichInput.displayName = "RichInput";
+
+export default function Component({
+  content,
+  onContentChange,
+}: {
+  content: string;
+  onContentChange: (content: string) => void;
+}) {
+  return <RichInput content={content} onContentChange={onContentChange} />;
 }

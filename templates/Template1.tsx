@@ -471,19 +471,24 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   };
 
   return (
-    <div className="p-8" style={styles.container}>
+    <div className="no-ltwave p-8" style={styles.container}>
       <style>
         {`
-          p {
-            color: black;
-            font-size: ${1.3 * fontSize}px;
-            line-height: ${1.6 * fontSize}px;
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
-            text-align: justify;
-          }
-        `}
+      /* Override any global font styles inside this container */
+      .no-ltwave * {
+        font-family: inherit; /* Ensures all elements inside no-ltwave inherit the default font */
+      }
+
+      .no-ltwave p {
+        color: black;
+        font-size: ${1.3 * fontSize}px;
+        line-height: ${1.6 * fontSize}px;
+        white-space: pre-wrap; 
+        word-wrap: break-word; 
+        overflow-wrap: break-word;
+        text-align: justify;
+      }
+    `}
       </style>
       {sectionOrder.column1.map((sectionName) =>
         renderSection(sectionName as SectionName)
