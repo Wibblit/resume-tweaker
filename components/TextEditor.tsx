@@ -599,5 +599,5 @@ export default function Component({
   content: string;
   onContentChange: (content: string) => void;
 }) {
-  return <RichInput content={content} onContentChange={onContentChange} />;
+  return <RichInput content={content} onContentChange={onContentChange} />
 }

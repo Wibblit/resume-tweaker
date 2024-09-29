@@ -63,9 +63,35 @@ const config: Config = {
       fontFamily: {
         ltwave: ["LTWave", "sans-serif"], // Add your custom font
       },
+      typography: () => ({
+        foreground: {
+          css: {
+            "--tw-prose-body": "var(--color-foreground)",
+            "--tw-prose-headings": "var(--color-foreground)",
+            "--tw-prose-lead": "var(--color-foreground)",
+            "--tw-prose-links": "var(--color-foreground)",
+            "--tw-prose-bold": "var(--color-foreground)",
+            "--tw-prose-counters": "var(--color-foreground)",
+            "--tw-prose-bullets": "var(--color-foreground)",
+            "--tw-prose-hr": "var(--color-foreground)",
+            "--tw-prose-quotes": "var(--color-foreground)",
+            "--tw-prose-quote-borders": "var(--color-foreground)",
+            "--tw-prose-captions": "var(--color-foreground)",
+            "--tw-prose-code": "var(--color-foreground)",
+            "--tw-prose-pre-code": "var(--color-foreground)",
+            "--tw-prose-pre-bg": "var(--color-background)",
+            "--tw-prose-th-borders": "var(--color-foreground)",
+            "--tw-prose-td-borders": "var(--color-foreground)",
+          },
+        },
+      }),
     },
   },
-  plugins: [require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@tailwindcss/typography"),
+    addVariablesForColors,
+  ],
 };
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
