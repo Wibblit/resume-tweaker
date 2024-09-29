@@ -25,17 +25,23 @@ const Link: React.FC<{
 
   return (
     <div className="flex items-center gap-x-1.5">
-      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
+      {!iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
       <a
         href={url.href}
         target="_blank"
         rel="noreferrer noopener nofollow"
         className={cn("inline-block", className)}
-        style={{ color: 'currentColor' }}
+        style={{ color: "currentColor" }}
       >
         {label ?? (url.label || url.href)}
       </a>
-      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
+      {iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
     </div>
   );
 };
@@ -50,7 +56,9 @@ const LinkedEntity: React.FC<{
     <Link
       url={url}
       label={name}
-      icon={<i className="ph ph-bold ph-globe" style={{ color: 'currentColor' }} />}
+      icon={
+        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+      }
       iconOnRight={true}
       className={className}
     />
@@ -66,8 +74,16 @@ const Section: React.FC<{
   isRightColumn?: boolean;
 }> = ({ title, children, baseColor, isRightColumn }) => {
   return (
-    <section className="mt-4 pt-4" style={{ borderTop: `1px solid ${isRightColumn ? 'white' : baseColor}` }}>
-      <h4 className="mb-2 text-base font-bold uppercase" style={{ color: isRightColumn ? 'white' : baseColor }}>{title}</h4>
+    <section
+      className="mt-4 pt-4"
+      style={{ borderTop: `1px solid ${isRightColumn ? "white" : baseColor}` }}
+    >
+      <h4
+        className="mb-2 text-base font-bold uppercase"
+        style={{ color: isRightColumn ? "white" : baseColor }}
+      >
+        {title}
+      </h4>
       <div>{children}</div>
     </section>
   );
@@ -81,7 +97,12 @@ const Picture: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
   );
 };
 
-const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; lineHeight: number }> = ({ basics, baseColor, fontSize, lineHeight }) => {
+const Header: React.FC<{
+  basics: Basics;
+  baseColor: string;
+  fontSize: number;
+  lineHeight: number;
+}> = ({ basics, baseColor, fontSize, lineHeight }) => {
   const scaleFactor = fontSize / 16;
   const imageSize = 128; // 8rem = 128px
   const contentWidth = `calc(100% - ${imageSize}px - 1rem)`; // Subtracting image width and gap
@@ -96,13 +117,13 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
     },
     name: {
       fontSize: `${Math.max(2, imageSize / 64) * scaleFactor}rem`,
-      fontWeight: 'bold',
-      marginBottom: '0.5rem',
+      fontWeight: "bold",
+      marginBottom: "0.5rem",
       lineHeight: 1.2,
     },
     headline: {
       fontSize: `${Math.max(1.2, imageSize / 96) * scaleFactor}rem`,
-      marginBottom: '1rem',
+      marginBottom: "1rem",
       color: baseColor,
       lineHeight: 1.4,
     },
@@ -114,14 +135,21 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
 
   return (
     <div style={styles.container} className="flex items-center gap-4">
-      <Picture 
-        src={typeof basics?.picture === 'string' && basics?.picture !== "" ? basics?.picture : "/placeholder-user.jpeg"} 
-        alt={basics?.name || "Profile picture"} 
+      <Picture
+        src={
+          typeof basics?.picture === "string" && basics?.picture !== ""
+            ? basics?.picture
+            : "/placeholder-user.jpeg"
+        }
+        alt={basics?.name || "Profile picture"}
       />
       <div style={styles.content}>
         <h2 style={styles.name}>{basics?.name}</h2>
         <p style={styles.headline}>{basics?.headLine}</p>
-        <div style={styles.details} className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div
+          style={styles.details}
+          className="flex flex-wrap items-center gap-x-4 gap-y-2"
+        >
           {basics?.location && (
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-map-pin" />
@@ -139,14 +167,16 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
           {basics?.email && (
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-at" />
-              <a href={`mailto:${basics.email}`} target="_blank" rel="noreferrer">
+              <a
+                href={`mailto:${basics.email}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {basics.email}
               </a>
             </div>
           )}
-          {isUrl(basics?.url?.href) && (
-            <Link url={basics.url!} />
-          )}
+          {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
       </div>
     </div>
@@ -162,7 +192,9 @@ const Template3: React.FC<TemplateProps> = ({
   margin,
 }) => {
   const dispatch = useAppDispatch();
-  const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
+  const sectionOrder = useAppSelector(
+    (state) => state.rightsidebar.sectionOrder
+  );
   const scaleFactor = fontSize / 16;
 
   useEffect(() => {
@@ -190,7 +222,7 @@ const Template3: React.FC<TemplateProps> = ({
       bottom: 0,
       right: 0,
       width: "35%",
-      color: 'white',
+      color: "white",
     },
     sidebarContent: {
       padding: `${margin}mm`,
@@ -202,144 +234,209 @@ const Template3: React.FC<TemplateProps> = ({
       width: "65%",
     },
   };
-  const renderSection = (sectionName: string, isRightColumn: boolean = false) => {
-    const sectionStyle = isRightColumn ? { color: 'white' } : styles.body;
+  const renderSection = (
+    sectionName: string,
+    isRightColumn: boolean = false
+  ) => {
+    const sectionStyle = isRightColumn ? { color: "white" } : styles.body;
 
     switch (sectionName) {
-      case 'summary':
-        return content.summary && content.summary.length > 0 && (
-          <Section title="Summary" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div
-              dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-              style={sectionStyle}
-              className="text-justify"
-            />
-          </Section>
+      case "summary":
+        return (
+          content.summary &&
+          content.summary.length > 0 && (
+            <Section
+              title="Summary"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div
+                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
+                style={sectionStyle}
+                className="text-justify"
+              />
+            </Section>
+          )
         );
-      case 'experience':
-        return content.experience && content.experience.length > 0 && (
-          <Section title="Experience" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.experience.map((exp, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
+      case "experience":
+        return (
+          content.experience &&
+          content.experience.length > 0 && (
+            <Section
+              title="Experience"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.experience.map((exp, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{exp.organization}</div>
+                        <div>{exp.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div>{`${exp.startDate} - ${exp.endDate}`}</div>
+                        <div>{exp.location}</div>
+                      </div>
+                    </div>
+                    {exp.summary && !isEmptyString(exp.summary) && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: exp.summary }}
+                        style={sectionStyle}
+                        className="text-justify"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "skills":
+        return (
+          content.skills &&
+          content.skills.length > 0 &&
+          content.skills[0].categories && (
+            <Section
+              title="Skills"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.skills[0].categories.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{category.name}</div>
                     <div>
-                      <div className="font-bold">{exp.organization}</div>
-                      <div>{exp.role}</div>
+                      {category.skills.map((skill) => skill.name).join(", ")}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "languages":
+        return (
+          content.languages &&
+          content.languages.length > 0 && (
+            <Section
+              title="Languages"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-2">
+                {content.languages.map((lang, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{lang.name}</span>
+                    <span>{lang.level}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "education":
+        return (
+          content.education &&
+          content.education.length > 0 && (
+            <Section
+              title="Education"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.education.map((edu, index) => (
+                  <div key={index} className="flex items-start justify-between">
+                    <div>
+                      <div className="font-bold">{edu.institution}</div>
+                      <div>{edu.field}</div>
+                      <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div>{`${exp.startDate} - ${exp.endDate}`}</div>
-                      <div>{exp.location}</div>
+                      <div>{`${edu.startDate} - ${edu.endDate}`}</div>
+                      <div>{edu.degree}</div>
                     </div>
                   </div>
-                  {exp.summary && !isEmptyString(exp.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      style={sectionStyle}
-                      className="text-justify"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'skills':
-        return content.skills && content.skills.length > 0 && content.skills[0].categories && (
-          <Section title="Skills" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.skills[0].categories.map((category, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="font-bold">{category.name}</div>
-                  <div>{category.skills.map(skill => skill.name).join(', ')}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'languages':
-        return content.languages && content.languages.length > 0 && (
-          <Section title="Languages" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-2">
-              {content.languages.map((lang, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span>{lang.name}</span>
-                  <span>{lang.level}</span>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'education':
-        return content.education && content.education.length > 0 && (
-          <Section title="Education" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.education.map((edu, index) => (
-                <div key={index} className="flex items-start justify-between">
-                  <div>
-                    <div className="font-bold">{edu.institution}</div>
-                    <div>{edu.field}</div>
-                    <div>{edu.score}</div>
-                  </div>
-                  <div className="shrink-0 text-right">
-                    <div>{`${edu.startDate} - ${edu.endDate}`}</div>
-                    <div>{edu.degree}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'certifications':
-        return content.certifications && content.certifications.length > 0 && (
-          <Section title="Certifications" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-2">
-              {content.certifications.map((cert, index) => (
-                <div key={index}>
-                  <LinkedEntity
-                    name={cert.name}
-                    url={cert.url}
-                    separateLinks={false}
-                    className="font-bold"
-                  />
-                  <div>{cert.date}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'projects':
-        return content.projects && content.projects.length > 0 && (
-          <Section title="Projects" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.projects.map((project, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
+      case "certifications":
+        return (
+          content.certifications &&
+          content.certifications.length > 0 && (
+            <Section
+              title="Certifications"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-2">
+                {content.certifications.map((cert, index) => (
+                  <div key={index}>
                     <LinkedEntity
-                      name={project.name}
-                      url={project.url}
+                      name={cert.name}
+                      url={cert.url}
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div className="shrink-0 text-right">
-                      <div>{`${project.startDate} - ${project.endDate}`}</div>
-                    </div>
+                    <div>{cert.date}</div>
                   </div>
-                  {project.summary && !isEmptyString(project.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: project.summary }}
-                      style={sectionStyle}
-                      className="text-justify"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'basics':
-        return content.basics && (
-          <Header basics={content.basics[0]} baseColor={baseColor} fontSize={fontSize} lineHeight={lineHeight} />
+      case "projects":
+        return (
+          content.projects &&
+          content.projects.length > 0 && (
+            <Section
+              title="Projects"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.projects.map((project, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={project.name}
+                        url={project.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div>{`${project.startDate} - ${project.endDate}`}</div>
+                      </div>
+                    </div>
+                    {project.summary && !isEmptyString(project.summary) && (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: project.summary }}
+                        style={sectionStyle}
+                        className="text-justify"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "basics":
+        return (
+          content.basics && (
+            <Header
+              basics={content.basics[0]}
+              baseColor={baseColor}
+              fontSize={fontSize}
+              lineHeight={lineHeight}
+            />
+          )
         );
       default:
         return null;
@@ -348,12 +445,19 @@ const Template3: React.FC<TemplateProps> = ({
 
   return (
     <div style={styles.container}>
+      <style>
+        {`.no-ltwave * {
+        font-family: inherit; /* Ensures all elements inside no-ltwave inherit the default font */
+      }`}
+      </style>
       <div style={styles.mainContent}>
         {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
       </div>
       <div style={styles.sidebar}>
         <div style={styles.sidebarContent}>
-          {sectionOrder.column2.map((sectionName) => renderSection(sectionName, true))}
+          {sectionOrder.column2.map((sectionName) =>
+            renderSection(sectionName, true)
+          )}
         </div>
       </div>
     </div>
