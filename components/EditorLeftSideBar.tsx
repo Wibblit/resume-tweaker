@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -47,6 +49,7 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
   const [sidebarWidth, setSidebarWidth] = useState(320);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isPhoneView, setIsPhoneView] = useState(false);
   const [resumeData, setResumeData] = useState<ResumeData>({
     basics: [],
     summary: [],
@@ -146,6 +149,25 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
   ];
 
   useEffect(() => {
+    const handleResize = () => {
+      setIsPhoneView(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPhoneView) {
+      setIsCollapsed(true);
+    }
+  }, [isPhoneView]);
+
+  useEffect(() => {
     dispatch(UpdateLeftBarData(resumeData));
   }, [resumeData, dispatch]);
 
@@ -172,7 +194,6 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
   }, [isDragging]);
 
   useEffect(() => {
-    // Add empty entries to all sections by default
     const initialResumeData: ResumeData = {
       basics: [createEmptyEntry("basics")],
       summary: [createEmptyEntry("summary")],
@@ -399,7 +420,7 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
                     ))}
                   </SelectContent>
                 </Select>
-              ) : field === "categories" && section === "skills" ? (
+              ) : field === "categories" && section === "skills" ?
                 <div className="space-y-4">
                   {((entry[field] as SkillCategory[]) || []).map((category, categoryIndex) => (
                     <div key={category.id} className="border p-4 rounded-md">
@@ -500,7 +521,7 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
                     Add Category
                   </Button>
                 </div>
-              ) : (
+              : (
                 <Input
                   id={`${field}-${entry.id}`}
                   value={entry[field] || ""}
@@ -553,9 +574,11 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
       <div className="flex flex-col h-full">
         <div className="p-4 border-b flex justify-between items-center">
           {!isCollapsed && <h2 className="text-lg font-semibold">Resume Sections</h2>}
-          <Button variant="ghost" size="icon" onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
+          {!isPhoneView && (
+            <Button variant="ghost" size="icon" onClick={() => setIsCollapsed(!isCollapsed)}>
+              {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </Button>
+          )}
         </div>
         <ScrollArea className="flex-grow">
           <div className="p-4 space-y-4">
@@ -583,10 +606,12 @@ export default function LeftSideBar({ activeSection, setActiveSection }: LeftSid
           </div>
         </ScrollArea>
       </div>
-      <div
-        className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-border hover:bg-muted"
-        onMouseDown={() => setIsDragging(true)}
-      />
+      {!isPhoneView && (
+        <div
+          className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-border hover:bg-muted"
+          onMouseDown={() => setIsDragging(true)}
+        />
+      )}
     </div>
   );
 }

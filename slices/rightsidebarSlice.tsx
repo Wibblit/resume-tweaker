@@ -10,9 +10,9 @@ const initialState: ResumeStyles = {
   id: 1,
   name: "",
   font: "Arial",
-  fontSize: 12,
+  fontSize: 10,
   lineHeight: 1,
-  margin: 10,
+  margin: 5,
   paperFormat: "a4",
   baseColor: "#000",
   sectionOrder: {

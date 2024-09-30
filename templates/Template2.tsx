@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
+import { UpdateBaseColor, UpdateFont, UpdateLineHeight, UpdateMargin } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
+import { SocialIcon } from "react-social-icons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ interface TemplateProps {
   lineHeight: number;
   margin: number;
 }
+
 
 const Link: React.FC<{
   url: { href: string; label: string };
@@ -191,8 +193,13 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   console.log(sectionOrder)
   const scaleFactor = fontSize / 16;
 
+
+
   useEffect(() => {
     dispatch(UpdateBaseColor("#ca8a04"));
+    dispatch(UpdateFont(12));
+    dispatch(UpdateLineHeight(1.2));
+    dispatch(UpdateMargin(6));
   }, [dispatch]);
 
   const styles = {
@@ -200,13 +207,24 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
-      color: "black",
       padding: `${margin}mm`,
+      color: "black",
+      minHeight: "100vh",
       height: "100%",
+      display: "flex",
     },
     body: {
       fontSize: `${1.1 * scaleFactor}rem`,
       color: "black",
+    },
+    col2: {
+      width: "65%",
+    },
+    col2Content: {
+      height: "100%",
+    },
+    col1Content: {
+      width: "35%",
     },
   };
 
@@ -230,8 +248,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.experience &&
           content.experience.length > 0 && (
             <Section title="Experience" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.experience.map((exp, index) => (
+            <div className="space-y-4">
+            {content.experience.map((exp, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex items-start justify-between">
                       <div>
@@ -252,8 +270,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     )}
                   </div>
                 ))}
-              </div>
-            </Section>
+            </div>
+          </Section>          
           )
         );
       case "skills":
@@ -263,26 +281,38 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.skills[0].categories && (
             <Section title="Skills" baseColor={baseColor}>
               <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="font-bold">{category.name}</div>
-                    <div className="flex flex-wrap gap-2">
-                      {category.skills.map((skill, skillIndex) => (
-                        <span
-                          key={skillIndex}
-                          className="rounded-full px-3 py-1"
-                          style={{
-                            ...styles.body,
-                            backgroundColor: `${baseColor}20`,
-                            color: baseColor,
-                          }}
-                        >
-                          {skill.name}
-                        </span>
-                      ))}
-                    </div>
+              {content.skills[0].categories.map((category, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="font-bold">{category.name}</div>
+                  <div className="flex flex-col gap-2">
+                    {category.skills.map((skill, skillIndex) => (
+                      <div
+                        key={skillIndex}
+                        className="rounded-full px-3 grid grid-cols-2 items-center gap-2 w-full"
+                        style={{
+                          ...styles.body,
+                        }}
+                      >
+                        <h5>{skill.name}</h5>
+                        <div style={{background: `${baseColor}30` }} className="w-full h-2 rounded-md">
+                          <div
+                            style={{
+                              background: baseColor,
+                              width:
+                                skill.level == "Beginner"
+                                  ? "33%"  
+                                  : skill.level == "Intermediate"
+                                  ? "66%"  
+                                  : "100%", 
+                            }}
+                            className="h-full rounded-md py-1"
+                          ></div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+              ))}
               </div>
             </Section>
           )
@@ -384,7 +414,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         {project.keywords.map((keyword, keywordIndex) => (
                           <span
                             key={keywordIndex}
-                            className="rounded-full px-3 py-1"
+                            className="rounded-full px-2 py-1"
                             style={{
                               ...styles.body,
                               backgroundColor: `${baseColor}20`,
@@ -512,39 +542,49 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             />
           )
         );
-      case "profiles":
-        return (
-          content.profiles &&
-          content.profiles.length > 0 && (
-            <Section title="Profiles" baseColor={baseColor}>
-              <div className="flex space-x-4">
-                {content.profiles.map((profile, index) => (
-                  <a
-                    key={index}
-                    href={profile.url.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    {profile.url.label}
-                  </a>
-                ))}
-              </div>
-            </Section>
-          )
-        );
+        case "profiles":
+         return (
+           content.profiles &&
+           content.profiles.length > 0 && (
+             <Section title="Profiles" baseColor={baseColor}>
+               <div className="flex flex-wrap items-center gap-2">
+                 {content.profiles.map((profile, index) => (
+                   <div className="flex gap-2 items-center" key={index}>
+                    {profile.url.href !== "" && (
+                      <SocialIcon
+                        style={{ width: '16px', height: '16px' }}
+                        url={profile.url.href}
+                      />
+                    )}
+                     <a
+                       href={profile.url.href}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="underline text-sm"
+                     >
+                       {profile.url.label}
+                     </a>
+                   </div>
+                 ))}
+               </div>
+             </Section>
+           )
+         );
+
       default:
         return null;
     }
   };
 
   return (
-    <div style={styles.container} className="p-custom grid grid-cols-2 gap-6">
-      <div className="main col-span-2 space-y-4">
+    <div style={styles.container} className="flex gap-4">
+      <div style={styles.col1Content}>
         {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
       </div>
-      <div className="sidebar col-span-1 space-y-4">
-        {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+      <div style={styles.col2}>
+        <div style={styles.col2Content}>
+          {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+        </div>
       </div>
     </div>
   );
