@@ -86,8 +86,8 @@ const templates = [
     name: "Professional",
     image: "/templates/template1.png",
   },
-  { id: 2, name: "Creative", image: "/templates/template2.jpeg" },
-  { id: 3, name: "Executive", image: "/templates/template3.png" },
+  { id: 2, name: "Creative", image: "/templates/template2.jpg" },
+  { id: 3, name: "Executive", image: "/templates/template3.jpg" },
   { id: 4, name: "Technical", image: "/placeholder.svg?height=200&width=150" },
   { id: 5, name: "Academic", image: "/templates/template5.png" },
   { id: 6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
@@ -141,13 +141,15 @@ const DraggableSection: React.FC<DraggableSectionProps> = ({ section, index }) =
 export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
-  const [margin, setMargin] = useState<number>(20);
   const [paperFormat, setPaperFormat] = useState<string>("a4");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<string>("Arial");
   const [searchFont, setSearchFont] = useState<string>("");
   const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
+  const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight);
+  const fontSize = useAppSelector((state) => state.rightsidebar.fontSize);
+  const margin = useAppSelector((state) => state.rightsidebar.margin);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -182,7 +184,6 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   };
 
   const handleMarginChange = (value: number[]) => {
-    setMargin(value[0]);
     dispatch(UpdateMargin(value[0]));
   };
 
@@ -278,7 +279,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                         className="bg-muted p-2 rounded-md"
                       >
                         <h3 className="text-sm font-semibold mb-2">
-                          {columnId === 'column1' ? 'Sidebar' : columnId === 'column2' ? 'Main' : 'Unused'}
+                          {columnId === 'column1' ? 'Column 1' : columnId === 'column2' ? 'Column 2' : 'Unused'}
                         </h3>
                         {sectionOrder[columnId].map((section, index) => (
                           <DraggableSection key={section} section={section} index={index} />
@@ -352,41 +353,64 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
           </div>
           <div>
             <Label>Font Size</Label>
-            <Slider
-              defaultValue={[14]}
-              max={24}
-              min={10}
-              step={1}
-              className="mt-2"
-              onValueChange={handleFontSizeChange}
+            <div className="flex items-center space-x-2 mt-2">
+              <Slider
+                max={16}
+                min={10}
+                step={1}
+                className="mt-2"
+                value={[fontSize]}
+                onValueChange={handleFontSizeChange}
+              />
+              <Input
+                type="number"
+                max={16}
+                min={10}
+                value={fontSize}
+                onChange={(e) => dispatch(UpdateFontSize(Number(e.target.value)))}
+                className="w-16"
             />
+            </div>
           </div>
           <div>
             <Label>Line Height</Label>
-            <Slider
-              defaultValue={[1.5]}
-              max={2}
-              min={1}
-              step={0.1}
-              className="mt-2"
-              onValueChange={handleLineHeightChange}
+            <div className="flex items-center space-x-2 mt-2">
+              <Slider
+                value={[lineHeight]}
+                max={2}
+                min={1}
+                step={0.1}
+                className="mt-2"
+                onValueChange={handleLineHeightChange}
+              />
+            <Input
+                type="number"
+                value={lineHeight}
+                step={0.1}
+                max={2}
+                min={1}
+                onChange={(e) => dispatch(UpdateLineHeight(Number(e.target.value)))}
+                className="w-16"
             />
-          </div>
+             </div>
+            </div>
           <div>
             <Label>Margin (mm)</Label>
             <div className="flex items-center space-x-2 mt-2">
               <Slider
                 value={[margin]}
                 onValueChange={handleMarginChange}
-                max={30}
+                max={15}
                 min={5}
                 step={1}
                 className="flex-grow"
               />
               <Input
                 type="number"
+                max={15}  
+                min={5}
                 value={margin}
-                onChange={(e) => setMargin(Number(e.target.value))}
+                onChange={(e) => dispatch(UpdateMargin(Number(e.target.value)))}
                 className="w-16"
               />
             </div>

@@ -60,6 +60,7 @@
     "react-hook-form": "^7.53.0",
     "react-latex-next": "^3.0.0",
     "react-redux": "^9.1.2",
+    "react-social-icons": "^6.18.0",
     "react-to-pdf": "^1.0.1",
     "react-zoom-pan-pinch": "^3.6.1",
     "redux": "^5.0.1",

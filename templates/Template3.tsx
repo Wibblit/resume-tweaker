@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
+import { UpdateBaseColor, UpdateFontSize, UpdateLineHeight, UpdateMargin } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics } from "@/types/types";
-import { position } from "html2canvas/dist/types/css/property-descriptors/position";
+import { SocialIcon } from "react-social-icons";
 
 interface TemplateProps {
   content: ResumeData;
@@ -176,7 +176,13 @@ const Header: React.FC<{
               </a>
             </div>
           )}
+<<<<<<< HEAD
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
+=======
+          {isUrl(basics?.url?.href) && (
+            <Link className={`underline text-[${baseColor}]`} url={basics.url!} />
+          )}
+>>>>>>> b990fb7 (templates update)
         </div>
       </div>
     </div>
@@ -199,6 +205,9 @@ const Template3: React.FC<TemplateProps> = ({
 
   useEffect(() => {
     dispatch(UpdateBaseColor("#16a34a"));
+    dispatch(UpdateFontSize(12));
+    dispatch(UpdateMargin(6));
+    dispatch(UpdateLineHeight(1.2));
   }, [dispatch]);
 
   const styles = {
@@ -366,6 +375,7 @@ const Template3: React.FC<TemplateProps> = ({
             </Section>
           )
         );
+<<<<<<< HEAD
       case "certifications":
         return (
           content.certifications &&
@@ -378,6 +388,212 @@ const Template3: React.FC<TemplateProps> = ({
               <div className="space-y-2">
                 {content.certifications.map((cert, index) => (
                   <div key={index}>
+=======
+       case 'skills':
+        return content.skills && content.skills.length > 0 && content.skills[0].categories && (
+          <Section title="Skills" baseColor={baseColor} isRightColumn={isRightColumn}>
+            <div className="space-y-4">
+              {content.skills[0].categories.map((category, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="font-bold">{category.name}</div>
+                  <div>
+                    {category.skills.map((skill, skillIndex) => (
+                      <span key={skillIndex}>
+                        {skill.name} <span style={{color: `${isRightColumn ? "white": baseColor}`}}>({skill.level})</span>
+                        {skillIndex < category.skills.length - 1 && ", "}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'languages':
+        return content.languages && content.languages.length > 0 && (
+          <Section title="Languages" baseColor={baseColor} isRightColumn={isRightColumn}>
+            <div className="space-y-2">
+              {content.languages.map((lang, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span>{lang.name}</span>
+                  <span>{lang.level}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+        case "publications":
+          return (
+            content.publications &&
+            content.publications.length > 0 && (
+              <Section title="Publications" baseColor={baseColor} isRightColumn={isRightColumn}>
+                <div className="space-y-4">
+                  {content.publications.map((pub, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex items-start justify-between">
+                        <LinkedEntity
+                          name={pub.name}
+                          url={pub.url}
+                          separateLinks={false}
+                          className="font-bold"
+                        />
+                        <div className="shrink-0 text-right">
+                          <div className="font-bold">{pub.date}</div>
+                        </div>
+                      </div>
+                      <div>{pub.publisher}</div>
+                      <div>{pub.publishedIn}</div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )
+          );
+          case "profiles":
+         return (
+           content.profiles &&
+           content.profiles.length > 0 && (
+             <Section title="Profiles" baseColor={baseColor} isRightColumn={isRightColumn}>
+               <div className="flex flex-wrap items-center gap-2">
+                 {content.profiles.map((profile, index) => (
+                   <div className="flex gap-2 items-center" key={index}>
+                    {profile?.url.href !== "" && (
+                      <SocialIcon
+                        style={{ width: '16px', height: '16px' }}
+                        url={profile.url.href}
+                      />
+                    )}
+                     <a
+                       href={profile.url.href}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="underline text-sm"
+                     >
+                       {profile.url.label}
+                     </a>
+                   </div>
+                 ))}
+               </div>
+             </Section>
+           )
+         );
+         case "references":
+          return (
+            content.references &&
+            content.references.length > 0 && (
+              <Section title="References" baseColor={baseColor} isRightColumn={isRightColumn}>
+                <div className="space-y-4">
+                  {content.references.map((ref, index) => (
+                    <div key={index} className="space-y-2">
+                      <div className="font-bold">{ref.name}</div>
+                      <div>{ref.phone}</div>
+                      <div>{ref.email}</div>
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            )
+          );
+        case "volunteerings":
+        return (
+          content.volunteer &&
+          content.volunteer.length > 0 && (
+            <Section title="Volunteer Experience" baseColor={baseColor} isRightColumn={isRightColumn}>
+              <div className="space-y-4">
+                {content.volunteer.map((vol, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{vol.organization}</div>
+                        <div>{vol.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{`${vol.startDate} - ${vol.endDate}`}</div>
+                        <div>{vol.location}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+          case "awards":
+            return (
+              content.awards &&
+              content.awards.length > 0 && (
+                <Section title="Awards" baseColor={baseColor} isRightColumn={isRightColumn}>
+                  <div className="space-y-4">
+                    {content.awards.map((award, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <div className="font-bold">{award.title}</div>
+                            <div>{award.awarder}</div>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <div className="font-bold">{award.date}</div>
+                          </div>
+                        </div>
+                        {award.summary && !isEmptyString(award.summary) && (
+                          <div
+                            dangerouslySetInnerHTML={{ __html: award.summary }}
+                            style={sectionStyle}
+                            className="text-justify text-white"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </Section>
+              )
+            );
+      case 'education':
+        return content.education && content.education.length > 0 && (
+          <Section title="Education" baseColor={baseColor} isRightColumn={isRightColumn}>
+            <div className="space-y-4">
+              {content.education.map((edu, index) => (
+                <div key={index} className="flex items-start justify-between">
+                  <div>
+                    <div className="font-bold">{edu.institution}</div>
+                    <div>{edu.field}</div>
+                    <div>{edu.score}</div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <div>{`${edu.startDate} - ${edu.endDate}`}</div>
+                    <div>{edu.degree}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'certifications':
+        return content.certifications && content.certifications.length > 0 && (
+          <Section title="Certifications" baseColor={baseColor} isRightColumn={isRightColumn}>
+            <div className="space-y-2">
+              {content.certifications.map((cert, index) => (
+                <div key={index}>
+                  <LinkedEntity
+                    name={cert.name}
+                    url={cert.url}
+                    separateLinks={false}
+                    className="font-bold"
+                  />
+                  <div>{cert.date}</div>
+                </div>
+              ))}
+            </div>
+          </Section>
+        );
+      case 'projects':
+        return content.projects && content.projects.length > 0 && (
+          <Section title="Projects" baseColor={baseColor} isRightColumn={isRightColumn}>
+            <div className="space-y-4">
+              {content.projects.map((project, index) => (
+                <div key={index} className="space-y-2">
+                  <div className="flex items-start justify-between">
+>>>>>>> b990fb7 (templates update)
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
