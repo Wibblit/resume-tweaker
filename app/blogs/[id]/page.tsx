@@ -162,7 +162,7 @@ export default function BlogPost() {
           )}
         </CardContent>
       </Card>
-      <div className="prose prose-lg max-w-none mt-6">
+      <div className="max-w-none mt-6">
         {blog.sections.map((section) => (
           <section className='mt-6' key={section.id} id={section.id}>
             <h2 className="mt-8 scroll-m-20 text-2xl font-semibold tracking-tight">{section.title}</h2>
@@ -170,6 +170,7 @@ export default function BlogPost() {
           </section>
         ))}
       </div>
+      
       <div className="mt-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <Button variant="outline" asChild className="w-full sm:w-auto">
           <Link href="/blogs">Back to all blogs</Link>

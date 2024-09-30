@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetClose,
-  SheetFooter
+  SheetFooter,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
@@ -88,35 +88,38 @@ const templates = [
   },
   { id: 2, name: "Creative", image: "/templates/template2.jpg" },
   { id: 3, name: "Executive", image: "/templates/template3.jpg" },
-  { id: 4, name: "Technical", image: "/placeholder.svg?height=200&width=150" },
+  { id: 4, name: "Technical", image: "/templates/template4.png" },
   { id: 5, name: "Academic", image: "/templates/template5.png" },
   { id: 6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
 ];
 
 const abbrv = {
-    'summary': 'summary', 
-     'experience' : 'exp.',
-     'education' : 'edu.',
-     'skills' : 'skills',
-     'projects' : 'projects',
-     'certifications' : 'certs.',
-     'languages' : 'langs.',
-     'profiles' : 'profiles',
-     'basics' : 'basics',
-     'references' : 'refs.',
-     'volunteerings' : 'vols.',
-     'publications' : 'publs.',
-     'awards': 'awards',
-}
+  summary: "summary",
+  experience: "exp.",
+  education: "edu.",
+  skills: "skills",
+  projects: "projects",
+  certifications: "certs.",
+  languages: "langs.",
+  profiles: "profiles",
+  basics: "basics",
+  references: "refs.",
+  volunteerings: "vols.",
+  publications: "publs.",
+  awards: "awards",
+};
 
-import React from 'react';
+import React from "react";
 
 interface DraggableSectionProps {
   section: SectionName;
   index: number;
 }
 
-const DraggableSection: React.FC<DraggableSectionProps> = ({ section, index }) => (
+const DraggableSection: React.FC<DraggableSectionProps> = ({
+  section,
+  index,
+}) => (
   <Draggable draggableId={section} index={index}>
     {(provided) => (
       <div
@@ -136,8 +139,6 @@ const DraggableSection: React.FC<DraggableSectionProps> = ({ section, index }) =
   </Draggable>
 );
 
-
-
 export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
@@ -146,37 +147,58 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const [selectedFont, setSelectedFont] = useState<string>("Arial");
   const [searchFont, setSearchFont] = useState<string>("");
   const dispatch = useAppDispatch();
-  const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
-  const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight);
-  const fontSize = useAppSelector((state) => state.rightsidebar.fontSize);
-  const margin = useAppSelector((state) => state.rightsidebar.margin);
+  const sectionOrder = useAppSelector(
+    (state) => state.rightsidebar.sectionOrder
+  );
+  const fontSize = useAppSelector((state) => state.rightsidebar.fontSize)
+  const templateID = useAppSelector((state) => state.rightsidebar.id);
+  const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight)
+  const margin = useAppSelector((state) => state.rightsidebar.margin)
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-  
-    const sourceColumn = result.source.droppableId as 'column1' | 'column2' | 'column3';
-    const destColumn = result.destination.droppableId as 'column1' | 'column2' | 'column3';
-  
+
+    const sourceColumn = result.source.droppableId as
+      | "column1"
+      | "column2"
+      | "column3";
+    const destColumn = result.destination.droppableId as
+      | "column1"
+      | "column2"
+      | "column3";
+
     // Create a deep copy of the sectionOrder
     const newSectionOrder = {
       ...sectionOrder,
       [sourceColumn]: [...sectionOrder[sourceColumn]],
       [destColumn]: [...sectionOrder[destColumn]],
     };
-  
+
     // Remove the item from the source column
-    const [movedItem] = newSectionOrder[sourceColumn].splice(result.source.index, 1);
-  
+    const [movedItem] = newSectionOrder[sourceColumn].splice(
+      result.source.index,
+      1
+    );
+
     // Add it to the destination column
     newSectionOrder[destColumn].splice(result.destination.index, 0, movedItem);
-  
+
     // Dispatch the updated order
-    dispatch(updateSectionOrder({ column: sourceColumn, order: newSectionOrder[sourceColumn] }));
+    dispatch(
+      updateSectionOrder({
+        column: sourceColumn,
+        order: newSectionOrder[sourceColumn],
+      })
+    );
     if (sourceColumn !== destColumn) {
-      dispatch(updateSectionOrder({ column: destColumn, order: newSectionOrder[destColumn] }));
+      dispatch(
+        updateSectionOrder({
+          column: destColumn,
+          order: newSectionOrder[destColumn],
+        })
+      );
     }
   };
-  
 
   const handleDarkModeChange = (checked: boolean) => {
     setDark(checked);
@@ -252,7 +274,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                             <img
                               src={template.image}
                               alt={`${template.name} template`}
-                              className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
+                              className="absolute inset-0 w-full h-full object-cover "
                             />
                           </div>
                           <div className="p-2 text-center font-medium">
@@ -270,25 +292,54 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
             <Label>Section Order</Label>
             <DragDropContext onDragEnd={onDragEnd}>
               <div className="grid grid-cols-3 gap-1 mt-2">
-                {(['column1', 'column2', 'column3'] as const).map((columnId) => (
-                  <Droppable key={columnId} droppableId={columnId}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className="bg-muted p-2 rounded-md"
-                      >
-                        <h3 className="text-sm font-semibold mb-2">
-                          {columnId === 'column1' ? 'Column 1' : columnId === 'column2' ? 'Column 2' : 'Unused'}
-                        </h3>
-                        {sectionOrder[columnId].map((section, index) => (
-                          <DraggableSection key={section} section={section} index={index} />
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                ))}
+                {(["column1", "column2", "column3"] as const).map(
+                  (columnId) => (
+                    <Droppable key={columnId} droppableId={columnId}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="bg-muted p-2 rounded-md"
+                        >
+                          <h3 className="text-sm font-semibold mb-2">
+                            {columnId === "column1"
+                              ? "Sidebar"
+                              : columnId === "column2"
+                              ? "Main"
+                              : "Unused"}
+                          </h3>
+                          {sectionOrder[columnId].map((section, index) => {
+                            switch (templateID) {
+                              case 4:
+                                if (
+                                  section === "basics" ||
+                                  section === "profiles"
+                                ) {
+                                  return null; // Skip rendering for "basics" and "profiles" when templateID is 4
+                                }
+                                return (
+                                  <DraggableSection
+                                    key={section}
+                                    section={section}
+                                    index={index}
+                                  />
+                                );
+                              default:
+                                return (
+                                  <DraggableSection
+                                    key={section}
+                                    section={section}
+                                    index={index}
+                                  />
+                                );
+                            }
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  )
+                )}
               </div>
             </DragDropContext>
           </div>
