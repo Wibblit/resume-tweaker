@@ -64,7 +64,7 @@ const config: Config = {
         ltwave: ["LTWave", "sans-serif"], // Add your custom font
       },
       typography: () => ({
-        foreground: {
+        customcolor : {
           css: {
             "--tw-prose-body": "var(--color-foreground)",
             "--tw-prose-headings": "var(--color-foreground)",
