@@ -59,7 +59,6 @@ import { Popover, PopoverContent } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 import { Toggle } from "./ui/toggle";
 import { Tooltip, TooltipProvider } from "./ui/tooltip";
-import HTMLViewer from "./HTMLViewer";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -586,7 +585,6 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
           style={{ fontWeight: "normal" }} // Change 'normal' to whatever font-weight you need
           {...props}
         />
-        <HTMLViewer content={content} />
       </div>
     );
   }

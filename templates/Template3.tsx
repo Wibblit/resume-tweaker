@@ -11,6 +11,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
+import HTMLViewer from "@/components/HTMLViewer";
 
 interface TemplateProps {
   content: ResumeData;
@@ -260,11 +261,12 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div
+              {/* <div
                 dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
                 style={sectionStyle}
                 className="text-justify"
-              />
+              /> */}
+              <HTMLViewer content={content.summary[0].content} />
             </Section>
           )
         );
@@ -291,11 +293,12 @@ const Template3: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {exp.summary && !isEmptyString(exp.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: exp.summary }}
-                        style={sectionStyle}
-                        className="text-justify"
-                      />
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
+                      //   style={sectionStyle}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer content={exp.summary} />
                     )}
                   </div>
                 ))}
@@ -425,11 +428,12 @@ const Template3: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: project.summary }}
-                        style={sectionStyle}
-                        className="text-justify"
-                      />
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
+                      //   style={sectionStyle}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer content={project.summary} />
                     )}
                   </div>
                 ))}

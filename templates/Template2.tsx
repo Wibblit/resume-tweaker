@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, Mail, Phone, Globe, Linkedin, Github } from "lucide-react";
+import HTMLViewer from "@/components/HTMLViewer";
 
 interface TemplateProps {
   content: ResumeData;
@@ -235,11 +236,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.summary &&
           content.summary.length > 0 && (
             <Section title="Summary" baseColor={baseColor}>
-              <div
+              {/* <div
                 dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
                 style={styles.body}
                 className="text-justify"
-              />
+              /> */}
+              <HTMLViewer content={content.summary[0].content} />
             </Section>
           )
         );
@@ -248,8 +250,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.experience &&
           content.experience.length > 0 && (
             <Section title="Experience" baseColor={baseColor}>
-            <div className="space-y-4">
-            {content.experience.map((exp, index) => (
+              <div className="space-y-4">
+                {content.experience.map((exp, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex items-start justify-between">
                       <div>
@@ -262,16 +264,17 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {exp.summary && !isEmptyString(exp.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: exp.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
+                      //   style={styles.body}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer content={exp.summary} />
                     )}
                   </div>
                 ))}
-            </div>
-          </Section>          
+              </div>
+            </Section>
           )
         );
       case "skills":
@@ -403,11 +406,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: project.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
+                      //   style={styles.body}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer content={project.summary} />
                     )}
                     {project.keywords && project.keywords.length > 0 && (
                       <div className="flex flex-wrap gap-2">
@@ -475,11 +479,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: award.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
+                      <HTMLViewer content={award.summary} />
                     )}
                   </div>
                 ))}

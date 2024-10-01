@@ -4,6 +4,7 @@ import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics, Profile } from "@/types/types";
 import { position } from "html2canvas/dist/types/css/property-descriptors/position";
+import HTMLViewer from "@/components/HTMLViewer";
 
 interface TemplateProps {
   content: ResumeData;
@@ -250,42 +251,58 @@ const Template3: React.FC<TemplateProps> = ({
 
     switch (sectionName) {
       case 'summary':
-        return content.summary && content.summary.length > 0 && (
-          <Section title="Summary" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div
+        return (
+          content.summary &&
+          content.summary.length > 0 && (
+            <Section
+              title="Summary"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              {/* <div
               dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
               style={sectionStyle}
               className="text-justify"
-            />
-          </Section>
+            /> */}
+              <HTMLViewer content={content.summary[0].content} />
+            </Section>
+          )
         );
       case 'experience':
-        return content.experience && content.experience.length > 0 && (
-          <Section title="Experience" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.experience.map((exp, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="font-bold">{exp.organization}</div>
-                      <div>{exp.role}</div>
+        return (
+          content.experience &&
+          content.experience.length > 0 && (
+            <Section
+              title="Experience"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.experience.map((exp, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{exp.organization}</div>
+                        <div>{exp.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div>{`${exp.startDate} - ${exp.endDate}`}</div>
+                        <div>{exp.location}</div>
+                      </div>
                     </div>
-                    <div className="shrink-0 text-right">
-                      <div>{`${exp.startDate} - ${exp.endDate}`}</div>
-                      <div>{exp.location}</div>
-                    </div>
+                    {exp.summary && !isEmptyString(exp.summary) && (
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
+                      //   style={sectionStyle}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer content={exp.summary} />
+                    )}
                   </div>
-                  {exp.summary && !isEmptyString(exp.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      style={sectionStyle}
-                      className="text-justify"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
       case 'skills':
         return content.skills && content.skills.length > 0 && content.skills[0].categories && (
@@ -352,33 +369,41 @@ const Template3: React.FC<TemplateProps> = ({
           </Section>
         );
       case 'projects':
-        return content.projects && content.projects.length > 0 && (
-          <Section title="Projects" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.projects.map((project, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex items-start justify-between">
-                    <LinkedEntity
-                      name={project.name}
-                      url={project.url}
-                      separateLinks={false}
-                      className="font-bold"
-                    />
-                    <div className="shrink-0 text-right">
-                      <div>{`${project.startDate} - ${project.endDate}`}</div>
+        return (
+          content.projects &&
+          content.projects.length > 0 && (
+            <Section
+              title="Projects"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.projects.map((project, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={project.name}
+                        url={project.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div>{`${project.startDate} - ${project.endDate}`}</div>
+                      </div>
                     </div>
+                    {project.summary && !isEmptyString(project.summary) && (
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
+                      //   style={sectionStyle}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer content={project.summary} />
+                    )}
                   </div>
-                  {project.summary && !isEmptyString(project.summary) && (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: project.summary }}
-                      style={sectionStyle}
-                      className="text-justify"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
       default:
         return null;

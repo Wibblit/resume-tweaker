@@ -4,6 +4,7 @@ import React from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
+import HTMLViewer from "@/components/HTMLViewer";
 
 interface TemplateProps {
   content: ResumeData;
@@ -77,9 +78,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.summary &&
           content.summary.length > 0 && (
             <Section title="Summary" baseColor={baseColor}>
-              <p className="text-sm text-justify leading-snug whitespace-pre-wrap">
+              {/* <p className="text-sm text-justify leading-snug whitespace-pre-wrap">
                 {content.summary[0].content}
-              </p>
+              </p> */}
+              <HTMLViewer content={content.summary[0].content} />
             </Section>
           )
         );
@@ -105,9 +107,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     </span>
                   </div>
                   {exp.summary && (
-                    <p className="text-sm text-justify mt-1 leading-snug whitespace-pre-wrap">
-                      {exp.summary}
-                    </p>
+                    // <p className="text-sm text-justify mt-1 leading-snug whitespace-pre-wrap">
+                    //   {exp.summary}
+                    // </p>
+                    <HTMLViewer content={exp.summary} />
                   )}
                 </div>
               ))}
@@ -181,7 +184,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                             rel="noopener noreferrer"
                             className="text-xs text-blue-600 flex items-center break-words"
                           >
-                            <p style={{color : `${baseColor}`}} className="underline font-medium">{project.url.label}</p>
+                            <p
+                              style={{ color: `${baseColor}` }}
+                              className="underline font-medium"
+                            >
+                              {project.url.label}
+                            </p>
                           </a>
                         </>
                       )}
@@ -191,9 +199,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     </p>
                   </div>
                   {project.summary && (
-                    <p className="text-sm text-gray-700 leading-snug mb-1 text-justify whitespace-pre-wrap">
-                      {project.summary}
-                    </p>
+                    // <p className="text-sm text-gray-700 leading-snug mb-1 text-justify whitespace-pre-wrap">
+                    //   {project.summary}
+                    // </p>
+                    <HTMLViewer content={project.summary} />
                   )}
                 </div>
               ))}
@@ -335,9 +344,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   </div>
                   <h3 className="text-xs">{award.awarder}</h3>
                   {award.summary && (
-                    <p className="text-xs mt-1 text-justify leading-snug whitespace-pre-wrap">
-                      {award.summary}
-                    </p>
+                    // <p className="text-xs mt-1 text-justify leading-snug whitespace-pre-wrap">
+                    //   {award.summary}
+                    // </p>
+                    <HTMLViewer content={award.summary} />
                   )}
                 </div>
               ))}
