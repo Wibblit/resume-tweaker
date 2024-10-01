@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { Github, Linkedin, Globe } from "lucide-react";
 import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
+import HTMLViewer from "@/components/HTMLViewer";
 
 type SectionName =
   | "summary"
@@ -136,7 +137,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         return (
           <section className="mb-6 text-black">
             <h2 style={styles.sectionTitle}>Summary</h2>
-            <p>{content.summary[0].content}</p>
+            {/* <p>{content.summary[0].content}</p> */}
+            <HTMLViewer content={content.summary[0].content} />
           </section>
         );
 
@@ -225,7 +227,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <p>{exp.location}</p>
                   </div>
                 </div>
-                {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>}
+                {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
+                {exp.summary && <HTMLViewer content={exp.summary} />}
               </div>
             ))}
           </section>
@@ -262,7 +265,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                       </h3>
                     </div>
                   </div>
-                  <p className="w-full text-left mt-1">{project.summary}</p>
+                  {/* <p className="w-full text-left mt-1">{project.summary}</p> */}
+                  <HTMLViewer content={project.summary} />
                   {project.keywords && (
                     <div className="w-full flex flex-wrap items-start justify-start gap-2 mt-2">
                       {project.keywords.map((keyword, keywordIndex) => (
@@ -457,7 +461,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   </div>
 
                   {award.summary && (
-                    <p className="w-full text-left mt-1">{award.summary}</p>
+                    // <p className="w-full text-left mt-1">{award.summary}</p>
+                    <HTMLViewer content={award.summary} />
                   )}
                 </div>
               </div>
