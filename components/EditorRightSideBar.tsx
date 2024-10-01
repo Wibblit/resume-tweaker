@@ -90,7 +90,7 @@ const templates = [
   { id: 3, name: "Executive", image: "/templates/template3.jpg" },
   { id: 4, name: "Technical", image: "/templates/template4.png" },
   { id: 5, name: "Academic", image: "/templates/template5.png" },
-  { id: 6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
+    // { id: 6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
 ];
 
 const abbrv = {

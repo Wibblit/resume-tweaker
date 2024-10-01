@@ -138,7 +138,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
           <section className="mb-6 text-black">
             <h2 style={styles.sectionTitle}>Summary</h2>
             {/* <p>{content.summary[0].content}</p> */}
-            <HTMLViewer content={content.summary[0].content} />
+            <HTMLViewer
+              lineHeight={lineHeight}
+              content={content.summary[0].content}
+            />
           </section>
         );
 
@@ -228,7 +231,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   </div>
                 </div>
                 {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
-                {exp.summary && <HTMLViewer content={exp.summary} />}
+                {exp.summary && <HTMLViewer lineHeight={lineHeight} content={exp.summary} />}
               </div>
             ))}
           </section>
@@ -253,7 +256,11 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                           style={styles.link}
                           className="w-full text-left mt-1 inline-block"
                         >
-                          <p style={styles.normal}> <span className="mx-1">|</span>{project.url.label}</p>
+                          <p style={styles.normal}>
+                            {" "}
+                            <span className="mx-1">|</span>
+                            {project.url.label}
+                          </p>
                         </a>
                       )}
                     </div>
@@ -266,7 +273,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
                   </div>
                   {/* <p className="w-full text-left mt-1">{project.summary}</p> */}
-                  <HTMLViewer content={project.summary} />
+                  <HTMLViewer
+                    lineHeight={lineHeight}
+                    content={project.summary}
+                  />
                   {project.keywords && (
                     <div className="w-full flex flex-wrap items-start justify-start gap-2 mt-2">
                       {project.keywords.map((keyword, keywordIndex) => (
@@ -462,7 +472,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                   {award.summary && (
                     // <p className="w-full text-left mt-1">{award.summary}</p>
-                    <HTMLViewer content={award.summary} />
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={award.summary}
+                    />
                   )}
                 </div>
               </div>

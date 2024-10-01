@@ -241,7 +241,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 style={styles.body}
                 className="text-justify"
               /> */}
-              <HTMLViewer content={content.summary[0].content} />
+              <HTMLViewer lineHeight={lineHeight} content={content.summary[0].content} />
             </Section>
           )
         );
@@ -269,7 +269,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       //   style={styles.body}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer content={exp.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={exp.summary}
+                      />
                     )}
                   </div>
                 ))}
@@ -411,7 +414,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       //   style={styles.body}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer content={project.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={project.summary}
+                      />
                     )}
                     {project.keywords && project.keywords.length > 0 && (
                       <div className="flex flex-wrap gap-2">
@@ -479,7 +485,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer content={award.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
                     )}
                   </div>
                 ))}

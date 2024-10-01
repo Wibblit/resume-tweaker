@@ -81,7 +81,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
               {/* <p className="text-sm text-justify leading-snug whitespace-pre-wrap">
                 {content.summary[0].content}
               </p> */}
-              <HTMLViewer content={content.summary[0].content} />
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content}
+              />
             </Section>
           )
         );
@@ -110,7 +113,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     // <p className="text-sm text-justify mt-1 leading-snug whitespace-pre-wrap">
                     //   {exp.summary}
                     // </p>
-                    <HTMLViewer content={exp.summary} />
+                    <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
                   )}
                 </div>
               ))}
@@ -202,7 +205,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     // <p className="text-sm text-gray-700 leading-snug mb-1 text-justify whitespace-pre-wrap">
                     //   {project.summary}
                     // </p>
-                    <HTMLViewer content={project.summary} />
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={project.summary}
+                    />
                   )}
                 </div>
               ))}
@@ -347,7 +353,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     // <p className="text-xs mt-1 text-justify leading-snug whitespace-pre-wrap">
                     //   {award.summary}
                     // </p>
-                    <HTMLViewer content={award.summary} />
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={award.summary}
+                    />
                   )}
                 </div>
               ))}
