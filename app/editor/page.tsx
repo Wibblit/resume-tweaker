@@ -8,18 +8,25 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 import LeftSideBar from "@/components/EditorLeftSideBar";
 import RightSideBar from "@/components/EditorRightSideBar";
 import ResumePages from "@/components/ResumePages";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export default function ResumeBuilder() {
   const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true);
   const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true);
   const [activeSection, setActiveSection] = useState<string>("basics");
+  const session = useSession(); 
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
+  
+
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
 
-  console.log(ResumeData.summary);
+  if (session.status === "unauthenticated") {
+    return redirect("/login")
+  } 
 
   return (
     <div className="flex h-screen bg-background text-foreground">
