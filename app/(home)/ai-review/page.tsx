@@ -43,14 +43,6 @@ export default function AIReviewPage() {
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      {/* Sidebar for larger screens */}
-      <aside className="hidden w-64 border-r border-border lg:block">
-        <SidebarContent />
-      </aside>
-
-      
-
-      {/* Main content */}
       <motion.main
         className="flex-1 overflow-auto p-4 md:p-6"
         initial={{ opacity: 0, y: 20 }}

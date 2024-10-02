@@ -18,7 +18,8 @@ const initialState: ResumeData = {
   ],
   summary: [
     {
-      content: "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
+      content:
+        "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
     },
   ],
   profiles: [
@@ -63,7 +64,8 @@ const initialState: ResumeData = {
   projects: [
     {
       name: "E-commerce Platform",
-      summary: "Developed a full-stack e-commerce platform using React and Node.js",
+      summary:
+        "Developed a full-stack e-commerce platform using React and Node.js",
       startDate: "2022-01-01",
       endDate: "2022-06-30",
       url: {
@@ -91,7 +93,8 @@ const initialState: ResumeData = {
       startDate: "2019-06-01",
       endDate: "Present",
       location: "New York, NY",
-      summary: "Lead developer for multiple web applications, mentoring junior developers, and implementing best practices.",
+      summary:
+        "Lead developer for multiple web applications, mentoring junior developers, and implementing best practices.",
     },
   ],
   languages: [
@@ -118,7 +121,8 @@ const initialState: ResumeData = {
       title: "Best Innovative Project",
       awarder: "Annual Tech Conference",
       date: "2021-11-15",
-      summary: "Awarded for developing an AI-powered accessibility tool for websites.",
+      summary:
+        "Awarded for developing an AI-powered accessibility tool for websites.",
     },
   ],
   publications: [
