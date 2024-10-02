@@ -1,17 +1,16 @@
-'use client'
-
+"use client";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Provider } from "react-redux";
 import store from "@/store";
+import AuthSessionProvider from "@/components/AuthSessionProvider";
 
 // const LTWave = localFont({
 //   src: "./fonts/LTWave-Regular.ttf",
 //   variable: "--font-geist-sans",
 //   weight: "100 900",
 // });
-
 
 export default function RootLayout({
   children,
@@ -26,16 +25,16 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={` antialiased font-custom`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Provider store={store}>{children}</Provider>
-        </ThemeProvider>
-      </body>
+        <body className={` antialiased font-custom`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Provider store={store}>{children}</Provider>
+          </ThemeProvider>
+        </body>
     </html>
   );
 }

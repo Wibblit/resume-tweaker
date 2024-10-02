@@ -1,33 +1,44 @@
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTheme } from "next-themes"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Progress } from "@/components/ui/progress"
+"use client"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { FileText, MessageSquare, Star, User, Sun, Moon, Laptop, Coins } from "lucide-react"
+} from "@/components/ui/dropdown-menu";
+import {
+  FileText,
+  MessageSquare,
+  Star,
+  User,
+  Sun,
+  Moon,
+  Laptop,
+  Coins,
+} from "lucide-react";
+// import { SignOut } from "./SignOut";
 
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
   { name: "AI Review", icon: Star, href: "/ai-review" },
   { name: "AI Interview", icon: MessageSquare, href: "/ai-interview" },
   { name: "Profile", icon: User, href: "/profile" },
-]
+];
 
 export default function Component() {
-  const pathname = usePathname()
-  const { setTheme, theme } = useTheme()
+  const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
 
   // Example credit data (replace with actual data)
   const credits = {
     used: 750,
-    total: 1000
-  }
+    total: 1000,
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -42,7 +53,9 @@ export default function Component() {
       <ScrollArea className="flex-1">
         <div className="space-y-4 py-4">
           <div className="px-3 py-2">
-            <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">Features</h2>
+            <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
+              Features
+            </h2>
             <div className="space-y-1">
               {sidebarItems.map((item) => (
                 <Button
@@ -62,12 +75,13 @@ export default function Component() {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
+        {/* <SignOut /> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-start">
-              {theme === 'light' && <Sun className="mr-2 h-4 w-4" />}
-              {theme === 'dark' && <Moon className="mr-2 h-4 w-4" />}
-              {theme === 'system' && <Laptop className="mr-2 h-4 w-4" />}
+              {theme === "light" && <Sun className="mr-2 h-4 w-4" />}
+              {theme === "dark" && <Moon className="mr-2 h-4 w-4" />}
+              {theme === "system" && <Laptop className="mr-2 h-4 w-4" />}
               <span className="capitalize">{theme} Theme</span>
             </Button>
           </DropdownMenuTrigger>
@@ -90,15 +104,20 @@ export default function Component() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Credits</span>
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Credits
+              </span>
             </div>
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
               {credits.used}/{credits.total}
             </span>
           </div>
-          <Progress value={(credits.used / credits.total) * 100} className="h-2" />
+          <Progress
+            value={(credits.used / credits.total) * 100}
+            className="h-2"
+          />
         </div>
       </div>
     </div>
-  )
+  );
 }

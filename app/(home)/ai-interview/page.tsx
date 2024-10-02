@@ -75,14 +75,6 @@ export default function AIInterviewPage() {
 
 	return (
 		<div className="flex h-screen bg-background text-foreground">
-			{/* Sidebar for larger screens */}
-			<aside className="hidden w-64 border-r border-border lg:block">
-				<SidebarContent />
-			</aside>
-
-			{/* Mobile sidebar */}
-		
-
 			{/* Main content */}
 			<main className="flex flex-1 flex-col overflow-hidden p-4 md:p-6">
 				<h1 className="mb-6 text-3xl font-bold">AI Interview Simulation</h1>

@@ -190,26 +190,6 @@ export default function ProfilePage() {
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      <aside className="hidden w-64 border-r border-border lg:block">
-        <SidebarContent />
-      </aside>
-
-      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed left-4 top-4 z-40 lg:hidden"
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle sidebar</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
-
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
