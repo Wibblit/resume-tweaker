@@ -291,7 +291,9 @@ const Template3: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div>{`${exp.startDate} - ${exp.endDate}`}</div>
+                        <div>{`${exp.startDate} ${exp.endDate && " - "} ${
+                          exp.endDate
+                        }`}</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -376,7 +378,9 @@ const Template3: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div>{`${edu.startDate} - ${edu.endDate}`}</div>
+                      <div>{`${edu.startDate} ${edu.endDate && " - "} ${
+                        edu.endDate
+                      }`}</div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -430,7 +434,9 @@ const Template3: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div>{`${project.startDate} - ${project.endDate}`}</div>
+                        <div>{`${project.startDate} ${project.endDate && " - "} ${
+                          project.endDate
+                        }`}</div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (

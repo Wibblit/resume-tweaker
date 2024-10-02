@@ -236,7 +236,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       rel="noopener noreferrer"
                       className="text-xs text-blue-600 underline"
                     >
-                      View Certificate
+                      {cert.url.label}
                     </a>
                   )}
                 </div>

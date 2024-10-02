@@ -114,7 +114,6 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   {basics.location}
                 </p>
               )}
-
               {basics.url && (
                 <a
                   href={basics.url.href}
@@ -123,7 +122,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   style={styles.link}
                 >
                   <p>
-                    <span className="mx-1">|</span>
+                    {basics.url.label && <span className="mx-1">|</span>}
                     {basics.url.label}
                   </p>
                 </a>
@@ -257,8 +256,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                           className="w-full text-left mt-1 inline-block"
                         >
                           <p style={styles.normal}>
-                            {" "}
-                            <span className="mx-1">|</span>
+                            {project.url.label && (
+                              <span className="mx-1">|</span>
+                            )}
+
                             {project.url.label}
                           </p>
                         </a>
@@ -333,7 +334,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             <div className="flex flex-col flex-wrap justify-start">
               {content.languages.map((lang, index) => (
                 <div key={index} className="w-1/2 mb-2">
-                  <span style={styles.subtitle}>{lang.name}:</span> {lang.level}
+                  <span style={styles.subtitle}>{lang.name} {lang.level && " : "}</span> {lang.level}
                 </div>
               ))}
             </div>
@@ -424,8 +425,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                           className="flex items-center"
                         >
                           <p style={styles.normal}>
-                            {" "}
-                            <span className="mx-1">|</span>
+                            {pub.url.label && <span className="mx-1">|</span>}
                             {pub.url.label}
                           </p>
                         </a>
