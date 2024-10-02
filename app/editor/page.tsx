@@ -7,7 +7,7 @@ export default async function ResumeBuilder() {
   const session = await auth()
   console.log(session)
   if (!session?.user) {
-    redirect("/api/auth/signin?callbackUrl=/editor")
+    redirect("/login?callbackUrl=/editor")
   }
   return <Editor />
 }

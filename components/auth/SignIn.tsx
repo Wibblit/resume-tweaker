@@ -14,12 +14,15 @@ import { useTheme } from "next-themes";
 import { Sun, Moon, Laptop } from "lucide-react";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 export function SignIn() {
   const [isLoading, setIsLoading] = useState("");
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-
+  
+  const params = useSearchParams()
+  const redirect = params.get("callbackUrl");
   const isDarkTheme = resolvedTheme === "dark";
    
   const providerConfig = [
@@ -47,7 +50,7 @@ export function SignIn() {
     setIsLoading(provider);
       try {
         await signIn(provider, {
-          redirectTo: "/home",
+          redirectTo: redirect ? redirect : "/home",
         });
       } catch (error) { 
         throw error;
