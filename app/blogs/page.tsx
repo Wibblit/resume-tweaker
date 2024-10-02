@@ -1,6 +1,6 @@
 "use client";
-import LatestBlogs from "@/components/Blogs/latestBlogs";
-import FeaturedBlogs from "@/components/Blogs/featuredBlogs";
+import LatestBlogs from "@/components/blogs/latestBlogs";
+import FeaturedBlogs from "@/components/blogs/featuredBlogs";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
