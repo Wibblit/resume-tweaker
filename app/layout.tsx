@@ -34,7 +34,7 @@ export default function RootLayout({
           >
             <Provider store={store}>{children}</Provider>
           </ThemeProvider>
-        </body>    
+        </body>
     </html>
   );
 }

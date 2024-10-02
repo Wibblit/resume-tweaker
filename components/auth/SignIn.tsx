@@ -19,7 +19,6 @@ export function SignIn() {
   const [isLoading, setIsLoading] = useState("");
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [error, setError] = useState("");
 
   const isDarkTheme = resolvedTheme === "dark";
    
@@ -32,10 +31,6 @@ export function SignIn() {
       name: "linkedin",
       iconPath: "/svgs/socialmedia/linkedin.svg",
     },
-    {
-      name: "apple",
-      iconPath: "/svgs/socialmedia/apple.svg",
-    },
   ];
 
   const themeOptions = [
@@ -45,21 +40,18 @@ export function SignIn() {
   ];
 
   useEffect(() => {
-    
     setMounted(true);
   }, []);
 
   const handleOAuthLogin = async (provider: string) => {
     setIsLoading(provider);
-    if (provider !== "apple") {
       try {
-        await signIn(provider);
-      } catch (error) {
+        await signIn(provider, {
+          redirectTo: "/home",
+        });
+      } catch (error) { 
         throw error;
       }
-    } else {
-      setError(provider + "auth is not yet ready");   
-    }
   };
 
   if (!mounted) {
@@ -109,7 +101,7 @@ export function SignIn() {
                   />
                   {isLoading === provider.name
                     ? "Signing in..."
-                    : `${provider.name}`}
+                    : `${provider.name[0].toUpperCase() + provider.name.substring(1)}`}
                 </div>
               </Button>
             </motion.div>
@@ -140,8 +132,7 @@ export function SignIn() {
               Privacy Policy
             </a>
           </div>
-          {error !== "" && <span className="py-2 w-full text-center">{error}</span>}
-          <div className="flex justify-center space-x-2">
+           <div className="flex justify-center space-x-2">
             {themeOptions.map((option) => (
               <Button
                 key={option.name}

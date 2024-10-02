@@ -10,17 +10,14 @@ const providers: Provider[] = [
   Google({
     clientId: process.env.AUTH_GOOGLE_ID,
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    authorization: { params: { access_type: "offline", prompt: "consent" } },
   }),
   Apple({
     clientId: process.env.AUTH_APPLE_ID,
     clientSecret: process.env.AUTH_APPLE_SECRET,
-    authorization: { params: { access_type: "offline", prompt: "consent" } },
   }),
   LinkedIn({
     clientId: process.env.AUTH_LINKEDIN_ID,
     clientSecret: process.env.AUTH_LINKEDIN_SECRET,
-    authorization: { params: { access_type: "offline", prompt: "consent" } },
   }),
 ];
 
