@@ -264,7 +264,10 @@ const Template3: React.FC<TemplateProps> = ({
               style={sectionStyle}
               className="text-justify"
             /> */}
-              <HTMLViewer content={content.summary[0].content} />
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content}
+              />
             </Section>
           )
         );
@@ -296,7 +299,10 @@ const Template3: React.FC<TemplateProps> = ({
                       //   style={sectionStyle}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer content={exp.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={exp.summary}
+                      />
                     )}
                   </div>
                 ))}
@@ -397,7 +403,10 @@ const Template3: React.FC<TemplateProps> = ({
                       //   style={sectionStyle}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer content={project.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={project.summary}
+                      />
                     )}
                   </div>
                 ))}

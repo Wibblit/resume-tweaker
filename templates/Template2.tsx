@@ -241,7 +241,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 style={styles.body}
                 className="text-justify"
               /> */}
-              <HTMLViewer content={content.summary[0].content} />
+              <HTMLViewer lineHeight={lineHeight} content={content.summary[0].content} />
             </Section>
           )
         );
@@ -259,7 +259,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${exp.startDate} - ${exp.endDate}`}</div>
+                        <div className="font-bold">{`${exp.startDate} ${exp.endDate && " - "} ${exp.endDate}`}</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -269,7 +269,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       //   style={styles.body}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer content={exp.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={exp.summary}
+                      />
                     )}
                   </div>
                 ))}
@@ -353,7 +356,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${edu.startDate} - ${edu.endDate}`}</div>
+                      <div className="font-bold">{`${edu.startDate} ${
+                        edu.endDate && " - "
+                      } ${edu.endDate}`}</div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -402,7 +407,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${project.startDate} - ${project.endDate}`}</div>
+                        <div className="font-bold">{`${project.startDate} ${
+                          project.endDate && " - "
+                        } ${project.endDate}`}</div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
@@ -411,7 +418,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       //   style={styles.body}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer content={project.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={project.summary}
+                      />
                     )}
                     {project.keywords && project.keywords.length > 0 && (
                       <div className="flex flex-wrap gap-2">
@@ -451,7 +461,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${vol.startDate} - ${vol.endDate}`}</div>
+                        <div className="font-bold">{`${vol.startDate} ${
+                          vol.endDate && " - "
+                        } ${vol.endDate}`}</div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -479,7 +491,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer content={award.summary} />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
                     )}
                   </div>
                 ))}
