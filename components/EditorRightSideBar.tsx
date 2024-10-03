@@ -83,14 +83,13 @@ interface RightSideBarProps {
 const templates = [
   {
     id: 1,
-    name: "Professional",
+    name: "Classic Charm",
     image: "/templates/template1.png",
   },
-  { id: 2, name: "Creative", image: "/templates/template2.jpg" },
-  { id: 3, name: "Executive", image: "/templates/template3.jpg" },
-  { id: 4, name: "Technical", image: "/templates/template4.png" },
-  { id: 5, name: "Academic", image: "/templates/template5.png" },
-    // { id: 6, name: "Student", image: "/placeholder.svg?height=200&width=150" },
+  { id: 2, name: "Artistic Flair", image: "/templates/template2.jpg" },
+  { id: 3, name: "Executive Edge", image: "/templates/template3.jpg" },
+  { id: 4, name: "Fresh Start", image: "/templates/template4.png" },
+  { id: 5, name: "Eco Essence", image: "/templates/template5.png" },
 ];
 
 const abbrv = {
@@ -376,8 +375,8 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                   </div>
                   <ScrollArea className="flex-grow">
                     <div className="grid grid-cols-1 gap-2 pr-4">
-                      {filteredFonts.map((font) => (
-                        <SheetClose asChild>
+                      {filteredFonts.map((font, index) => (
+                        <SheetClose key={index} asChild>
                           <Button
                             key={font}
                             variant="ghost"

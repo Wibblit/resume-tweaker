@@ -25,8 +25,6 @@ import Template3 from "@/templates/Template3";
 import Template4 from "@/templates/Template4";
 import Template5 from "@/templates/Template5";
 import Template6 from "@/templates/Template6";
-import Template7 from "@/templates/Template7";
-import Template8 from "@/templates/Template8";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 
@@ -92,23 +90,13 @@ const ResumePage: React.FC<{
       case 2:
         return <Template2 {...props} />;
       case 3:
-        //@ts-ignore
         return <Template3 {...props} />;
       case 4:
-        //@ts-ignore
         return <Template4 {...props} />;
       case 5:
-        //@ts-ignore
-        return <Template5 {...props} photoUrl="/blogImages/wbb.jpg" />;
+        return <Template5 {...props} />;
       case 6:
-        //@ts-ignore
-        return <Template6 {...props} photoUrl="/blogImages/wbb.jpg" />;
-      case 7:
-        //@ts-ignore
-        return <Template7 {...props} photoUrl="/blogImages/wbb.jpg" />;
-      case 8:
-        //@ts-ignore
-        return <Template8 {...props} photoUrl="/blogImages/wbb.jpg" />;
+        return <Template6 {...props} />;
       default:
         return <Template1 {...props} />;
     }

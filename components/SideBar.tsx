@@ -34,9 +34,10 @@ const sidebarItems = [
 
 interface SideBarProps {
   session: Session | null;
+  setIsSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Component({ session }: SideBarProps) {
+export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
 
@@ -68,6 +69,7 @@ export default function Component({ session }: SideBarProps) {
                   key={item.name}
                   variant={pathname === item.href ? "secondary" : "ghost"}
                   className="w-full justify-start"
+                  onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)}
                   asChild
                 >
                   <Link href={item.href}>

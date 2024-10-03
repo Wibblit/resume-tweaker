@@ -26,7 +26,7 @@ export const MobileSideBar = ({ session }: MobileSideBarProps ) => {
             </Button>
           </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0">
-          <SidebarContent session={session} />
+          <SidebarContent setIsSidebarOpen={setIsSidebarOpen} session={session} />
         </SheetContent>
       </Sheet>
     );
