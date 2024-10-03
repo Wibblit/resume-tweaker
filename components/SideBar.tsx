@@ -21,7 +21,9 @@ import {
   Laptop,
   Coins,
 } from "lucide-react";
-// import { SignOut } from "./SignOut";
+import { Session } from "next-auth";
+import { SignOutButton } from "./SignOutButton";
+import React from "react";
 
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
@@ -30,7 +32,11 @@ const sidebarItems = [
   { name: "Profile", icon: User, href: "/profile" },
 ];
 
-export default function Component() {
+interface SideBarProps {
+  session: Session | null;
+}
+
+export default function Component({ session }: SideBarProps) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
 
@@ -75,7 +81,7 @@ export default function Component() {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
-        {/* <SignOut /> */}
+        {session?.user && <SignOutButton />}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-start">
