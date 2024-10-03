@@ -41,7 +41,6 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
 
-  // Example credit data (replace with actual data)
   const credits = {
     used: 750,
     total: 1000,
