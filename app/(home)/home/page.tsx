@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, PlusCircle, User } from "lucide-react"
+import { FileText, PlusCircle, Router, User } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { useAppDispatch } from "@/hooks/hooks"
+import { UpdateId } from "@/slices/rightsidebarSlice"
 
 export default function HomePage() {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -72,11 +74,14 @@ export default function HomePage() {
 }
 
 function ResumeContent({ searchQuery }: { searchQuery: string }) {
+
   const recentResumes = [
     { id: 1, name: "Professional Resume"},
     { id: 2, name: "Creative CV"},
     { id: 3, name: "Technical Resume" },
   ]
+  const dispatch = useAppDispatch()
+  const router = useRouter()
 
   const resumeTemplates = [
     { id: 1, name: "Classic Charm", img: "/templates/template1.png" },
@@ -90,6 +95,11 @@ function ResumeContent({ searchQuery }: { searchQuery: string }) {
     template.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const handleClick = (templateId: number) => {
+    dispatch(UpdateId(templateId))
+    router.push("/editor")
+  }
+
   return (
     <div className="space-y-6">
       <section>
@@ -101,7 +111,7 @@ function ResumeContent({ searchQuery }: { searchQuery: string }) {
               <span>{resume.name}</span>
             </Button>
           ))}
-          <Button variant="outline" className="h-auto flex-col items-center justify-center p-4">
+          <Button onClick={() => router.push("/editor")} variant="outline" className="h-auto flex-col items-center justify-center p-4">
             <PlusCircle className="h-6 w-6 mb-2" />
             <span>Create New Resume</span>
           </Button>
@@ -114,7 +124,7 @@ function ResumeContent({ searchQuery }: { searchQuery: string }) {
         ) : (
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {filteredTemplates.map((template) => (
-              <Button key={template.id} variant="outline" className="h-auto flex-col items-start p-4 group">
+              <Button key={template.id} onClick={() => handleClick(template.id)} variant="outline" className="h-auto flex-col items-start p-4 group">
                 <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
                   <Image
                     src={template.img}
