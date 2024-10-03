@@ -12,6 +12,7 @@ import {
   Plus,
   FileDown,
   RotateCcw,
+  Menu,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -27,6 +28,14 @@ import Template5 from "@/templates/Template5";
 import Template6 from "@/templates/Template6";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface Page {
   id: number;
@@ -149,6 +158,20 @@ export default function ResumePages({
   const [isHovering, setIsHovering] = useState(false);
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const updatedPages = pages.map(page => ({
@@ -258,6 +281,37 @@ export default function ResumePages({
     }
   };
 
+  const renderControls = () => (
+    <>
+      <div className="flex space-x-2">
+        <Button onClick={undo} disabled={historyIndex === 0}>
+          <Undo className="h-4 w-4" />
+        </Button>
+        <Button
+          onClick={redo}
+          disabled={historyIndex === history.length - 1}
+        >
+          <Redo className="h-4 w-4" />
+        </Button>
+        <Button onClick={addPage}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Page
+        </Button>
+      </div>
+      <div className="flex space-x-2">
+        <Button onClick={() => transformRef.current?.zoomOut(0.2)}>
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+        <Button onClick={resetView}>
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+        <Button onClick={() => transformRef.current?.zoomIn(0.2)}>
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
       <ScrollArea className="flex-grow" ref={scrollAreaRef}>
@@ -315,36 +369,30 @@ export default function ResumePages({
           </TransformWrapper>
         </div>
       </ScrollArea>
-      <div className="bottom-0 left-0 right-0 p-4 border-t border-border flex flex-col gap-2 bg-background">
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-2">
-            <Button onClick={undo} disabled={historyIndex === 0}>
-              <Undo className="h-4 w-4" />
+      {isMobile ? (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="fixed bottom-4 left-4 z-50">
+              <Menu className="h-4 w-4" />
             </Button>
-            <Button
-              onClick={redo}
-              disabled={historyIndex === history.length - 1}
-            >
-              <Redo className="h-4 w-4" />
-            </Button>
-            <Button onClick={addPage}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Page
-            </Button>
-          </div>
-          <div className="flex space-x-2">
-            <Button onClick={() => transformRef.current?.zoomOut(0.2)}>
-              <ZoomOut className="h-4 w-4" />
-            </Button>
-            <Button onClick={resetView}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-            <Button onClick={() => transformRef.current?.zoomIn(0.2)}>
-              <ZoomIn className="h-4 w-4" />
-            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[200px]">
+            <SheetHeader>
+              <SheetTitle>Resume Controls</SheetTitle>
+              <SheetDescription>Manage your resume pages and view</SheetDescription>
+            </SheetHeader>
+            <div className="mt-4 flex flex-col space-y-4">
+              {renderControls()}
+            </div>
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <div className="bottom-0 left-0 right-0 p-4 border-t border-border flex flex-col gap-2 bg-background">
+          <div className="flex justify-between items-center">
+            {renderControls()}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

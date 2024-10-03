@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import {
   Sheet,
@@ -28,7 +30,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronRight, ChevronDown, Search, GripVertical } from "lucide-react";
+import { ChevronRight, ChevronDown, Search, GripVertical, Settings } from "lucide-react";
 import {
   UpdateBaseColor,
   UpdateFont,
@@ -108,8 +110,6 @@ const abbrv = {
   awards: "awards",
 };
 
-import React from "react";
-
 interface DraggableSectionProps {
   section: SectionName;
   index: number;
@@ -154,6 +154,22 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight)
   const margin = useAppSelector((state) => state.rightsidebar.margin)
 
+  const [isPhoneView, setIsPhoneView] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPhoneView(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
@@ -166,23 +182,19 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
       | "column2"
       | "column3";
 
-    // Create a deep copy of the sectionOrder
     const newSectionOrder = {
       ...sectionOrder,
       [sourceColumn]: [...sectionOrder[sourceColumn]],
       [destColumn]: [...sectionOrder[destColumn]],
     };
 
-    // Remove the item from the source column
     const [movedItem] = newSectionOrder[sourceColumn].splice(
       result.source.index,
       1
     );
 
-    // Add it to the destination column
     newSectionOrder[destColumn].splice(result.destination.index, 0, movedItem);
 
-    // Dispatch the updated order
     dispatch(
       updateSectionOrder({
         column: sourceColumn,
@@ -228,11 +240,8 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
     font.toLowerCase().includes(searchFont.toLowerCase())
   );
 
-  return (
-    <div className="w-80 bg-card border-l border-border flex flex-col md:flex">
-      <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-semibold">Styling Options</h2>
-      </div>
+  const renderContent = () => (
+    <div className="flex flex-col h-full">
       <ScrollArea className="flex-grow">
         <div className="p-4 space-y-6">
           <div>
@@ -258,9 +267,8 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 <ScrollArea className="flex-grow mt-4">
                   <div className="grid grid-cols-2 gap-4 pr-4">
                     {templates.map((template) => (
-                      <SheetClose asChild>
+                      <SheetClose asChild key={template.id}>
                         <Button
-                          key={template.name}
                           variant="outline"
                           className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                           onClick={() => {
@@ -273,7 +281,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                             <img
                               src={template.image}
                               alt={`${template.name} template`}
-                              className="absolute inset-0 w-full h-full object-cover "
+                              className="absolute inset-0 w-full h-full object-cover"
                             />
                           </div>
                           <div className="p-2 text-center font-medium">
@@ -314,7 +322,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                                   section === "basics" ||
                                   section === "profiles"
                                 ) {
-                                  return null; // Skip rendering for "basics" and "profiles" when templateID is 4
+                                  return null;
                                 }
                                 return (
                                   <DraggableSection
@@ -378,7 +386,6 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                       {filteredFonts.map((font, index) => (
                         <SheetClose key={index} asChild>
                           <Button
-                            key={font}
                             variant="ghost"
                             className="w-full justify-start h-16 px-4 hover:bg-accent"
                             onClick={() => {
@@ -419,7 +426,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 value={fontSize}
                 onChange={(e) => dispatch(UpdateFontSize(Number(e.target.value)))}
                 className="w-16"
-            />
+              />
             </div>
           </div>
           <div>
@@ -433,7 +440,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 className="mt-2"
                 onValueChange={handleLineHeightChange}
               />
-            <Input
+              <Input
                 type="number"
                 value={lineHeight}
                 step={0.1}
@@ -441,9 +448,9 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 min={1}
                 onChange={(e) => dispatch(UpdateLineHeight(Number(e.target.value)))}
                 className="w-16"
-            />
-             </div>
+              />
             </div>
+          </div>
           <div>
             <Label>Margin (mm)</Label>
             <div className="flex items-center space-x-2 mt-2">
@@ -548,5 +555,35 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
         </Popover>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {isPhoneView ? (
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground shadow-lg">
+              <Settings className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetHeader>
+              <SheetTitle>Resume Settings</SheetTitle>
+              <SheetDescription>
+                Customize your resume appearance here.
+              </SheetDescription>
+            </SheetHeader>
+            {renderContent()}
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <div className="w-80 bg-card border-l border-border flex flex-col md:flex">
+          <div className="p-4 border-b border-border">
+            <h2 className="text-lg font-semibold">Styling Options</h2>
+          </div>
+          {renderContent()}
+        </div>
+      )}
+    </>
   );
 }
