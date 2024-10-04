@@ -1,50 +1,58 @@
 "use client";
 
-import { useState, useRef, MutableRefObject } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/hooks";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { Settings } from "lucide-react";
 import LeftSideBar from "@/components/EditorLeftSideBar";
 import RightSideBar from "@/components/EditorRightSideBar";
 import ResumePages from "@/components/ResumePages";
+import { useMediaQuery } from "react-responsive";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<string>("basics");
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
+  const isPhoneView = useMediaQuery({ maxWidth: 767 });
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      <AnimatePresence>
-        <LeftSideBar
-          activeSection={activeSection}
-          setActiveSection={setActiveSection}
-        />
-      </AnimatePresence>
-
-      <div className="flex-grow flex flex-col">
-        <div className="p-4 border-b border-border flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Resume Tweaker</h1>
-        </div>
-        <ResumePages
-          baseColor={ResumeAppearance.baseColor}
-          fontFamily={ResumeAppearance.font}
-          lineHeight={ResumeAppearance.lineHeight}
-          fontSize={ResumeAppearance.fontSize}
-          margin={ResumeAppearance.margin}
-          pageFormat={ResumeAppearance.paperFormat}
-          printFrameRef={printFrameRef}
-          resumeData={ResumeData}
-        />
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      <div className="flex md:hidden items-center justify-center p-4 border-b">
+        <h1 className="text-2xl font-bold">Resume Tweaker</h1>
       </div>
 
-      <AnimatePresence>
-        <RightSideBar printFrameRef={printFrameRef} />
-      </AnimatePresence>
+      <div className="flex flex-grow overflow-hidden">
+        <div className="relative">
+          <LeftSideBar
+            activeSection={activeSection}
+            setActiveSection={setActiveSection}
+          />
+        </div>
+
+        <div className={`flex-grow overflow-auto ${isPhoneView ? 'flex justify-center items-start' : ''}`}>
+          <div className={`${isPhoneView ? 'w-full max-w-md' : ''}`}>
+            <ResumePages
+              baseColor={ResumeAppearance.baseColor}
+              fontFamily={ResumeAppearance.font}
+              lineHeight={ResumeAppearance.lineHeight}
+              fontSize={ResumeAppearance.fontSize}
+              margin={ResumeAppearance.margin}
+              pageFormat={ResumeAppearance.paperFormat}
+              printFrameRef={printFrameRef}
+              resumeData={ResumeData}
+              isPhoneView={isPhoneView}
+            />
+          </div>
+        </div>
+
+        {!isPhoneView && <RightSideBar printFrameRef={printFrameRef} />}
+      </div>
+
+      {isPhoneView && <RightSideBar printFrameRef={printFrameRef} />}
     </div>
   );
 }

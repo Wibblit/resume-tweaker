@@ -550,7 +550,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
       {isPhoneView ? (
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden fixed top-4 right-4 z-50 bg-primary text-primary-foreground shadow-lg">
+            <Button variant="ghost" size="icon" className="md:hidden fixed top-4 right-4 z-50 shadow-lg">
               <Settings className="h-6 w-6" />
             </Button>
           </SheetTrigger> 

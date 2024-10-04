@@ -8,11 +8,14 @@ import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 export function LandingNav() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const theme = useTheme();
+  let logoSrc = theme.theme === "dark" ? "/resumetweaker-dark.png" : "/resumetweaker-light.png";
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -33,7 +36,7 @@ export function LandingNav() {
               className="font-semibold flex items-center gap-2 group"
             >
               <Image
-                src="/svgs/logo.svg"
+                src={logoSrc}
                 alt="Resume Tweaker Logo"
                 width={14}
                 height={14}
