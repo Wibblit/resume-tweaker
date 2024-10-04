@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useMediaQuery } from 'react-responsive';
 import {
   Sheet,
   SheetContent,
@@ -154,21 +155,8 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight)
   const margin = useAppSelector((state) => state.rightsidebar.margin)
 
-  const [isPhoneView, setIsPhoneView] = useState(false);
+  const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsPhoneView(window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -562,10 +550,10 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
       {isPhoneView ? (
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden fixed bottom-4 right-4 z-50 bg-primary text-primary-foreground shadow-lg">
+            <Button variant="ghost" size="icon" className="md:hidden fixed top-4 right-4 z-50 bg-primary text-primary-foreground shadow-lg">
               <Settings className="h-6 w-6" />
             </Button>
-          </SheetTrigger>
+          </SheetTrigger> 
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <SheetHeader>
               <SheetTitle>Resume Settings</SheetTitle>

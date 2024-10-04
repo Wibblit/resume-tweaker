@@ -13,6 +13,8 @@ import {
   FileDown,
   RotateCcw,
   Menu,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -36,6 +38,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useMediaQuery } from "react-responsive";
 
 interface Page {
   id: number;
@@ -158,20 +161,8 @@ export default function ResumePages({
   const [isHovering, setIsHovering] = useState(false);
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+  const [isControlsOpen, setIsControlsOpen] = useState(false);
+  const isPhoneView = useMediaQuery({ maxWidth: 767 });
 
   useEffect(() => {
     const updatedPages = pages.map(page => ({
@@ -369,23 +360,29 @@ export default function ResumePages({
           </TransformWrapper>
         </div>
       </ScrollArea>
-      {isMobile ? (
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="fixed bottom-4 left-4 z-50">
-              <Menu className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[200px]">
-            <SheetHeader>
-              <SheetTitle>Resume Controls</SheetTitle>
-              <SheetDescription>Manage your resume pages and view</SheetDescription>
-            </SheetHeader>
-            <div className="mt-4 flex flex-col space-y-4">
-              {renderControls()}
-            </div>
-          </SheetContent>
-        </Sheet>
+      {isPhoneView ? (
+        <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: isControlsOpen ? 0 : "calc(100% - 40px)" }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed bottom-0 left-0 right-0 bg-background border-t border-border shadow-lg rounded-t-lg"
+      >
+        <div
+          className="flex justify-center items-center h-10 cursor-pointer"
+          onClick={() => setIsControlsOpen(!isControlsOpen)}
+        >
+          {isControlsOpen ? (
+            <ChevronDown className="h-6 w-6" />
+          ) : (
+            <ChevronUp className="h-6 w-6" />
+          )}
+        </div>
+        <div className="p-4">
+          <div className="flex justify-around">
+            {renderControls()}
+          </div>
+        </div>
+      </motion.div>
       ) : (
         <div className="bottom-0 left-0 right-0 p-4 border-t border-border flex flex-col gap-2 bg-background">
           <div className="flex justify-between items-center">

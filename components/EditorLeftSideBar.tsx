@@ -39,11 +39,12 @@ import {
   Book,
   Menu,
 } from "lucide-react";
-
+import LeftSidePanel from "./LeftSidePanel";
 import { useAppDispatch } from "@/hooks/hooks";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "./TextEditor";
+import { useMediaQuery } from "react-responsive";
 
 interface LeftSideBarProps {
   activeSection: string;
@@ -65,8 +66,6 @@ export default function LeftSideBar({
   const [sidebarWidth, setSidebarWidth] = useState(320);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isPhoneView, setIsPhoneView] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [resumeData, setResumeData] = useState<ResumeData>({
     basics: [],
     summary: [],
@@ -84,7 +83,7 @@ export default function LeftSideBar({
   });
   const [urlErrors, setUrlErrors] = useState<{ [key: string]: string }>({});
   const dispatch = useAppDispatch();
-
+  const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const resumeSections: ResumeSection[] = [
     {
       id: "basics",
@@ -189,18 +188,6 @@ export default function LeftSideBar({
     },
   ];
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsPhoneView(window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   useEffect(() => {
     if (isPhoneView) {
@@ -729,51 +716,12 @@ export default function LeftSideBar({
   return (
     <>
       {isPhoneView ? (
-        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-            <SheetHeader>
-              <SheetTitle>Resume Sections</SheetTitle>
-              <SheetDescription>
-                Select a section to edit your resume.
-              </SheetDescription>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-120px)] mt-6">
-              <div className="space-y-4">
-                {resumeSections.map((section) => (
-                  <Sheet key={section.id}>
-                    <SheetTrigger asChild>
-                      <Button
-                        variant={activeSection === section.id ? "default" : "ghost"}
-                        className="w-full justify-start"
-                        onClick={() => {
-                          setActiveSection(section.id);
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        {section.icon}
-                        <span className="ml-2">{section.title}</span>
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-full sm:w-[540px]">
-                      <SheetHeader>
-                        <SheetTitle>Edit {section.title}</SheetTitle>
-                        <SheetDescription>
-                          Modify or add new entries to this section.
-                        </SheetDescription>
-                      </SheetHeader>
-                      {renderSheetContent(section.id)}
-                    </SheetContent>
-                  </Sheet>
-                ))}
-              </div>
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
+        <LeftSidePanel
+          resumeSections={resumeSections}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          renderSheetContent={renderSheetContent}
+        />
       ) : (
         <div
           ref={sidebarRef}
@@ -805,7 +753,9 @@ export default function LeftSideBar({
                   <Sheet key={section.id}>
                     <SheetTrigger asChild>
                       <Button
-                        variant={activeSection === section.id ? "default" : "ghost"}
+                        variant={
+                          activeSection === section.id ? "default" : "ghost"
+                        }
                         className={`w-full justify-start ${
                           isCollapsed ? "px-2" : ""
                         }`}
@@ -817,7 +767,10 @@ export default function LeftSideBar({
                         )}
                       </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+                    <SheetContent
+                      side="left"
+                      className="w-[400px] sm:w-[540px]"
+                    >
                       <SheetHeader>
                         <SheetTitle>Edit {section.title}</SheetTitle>
                         <SheetDescription>

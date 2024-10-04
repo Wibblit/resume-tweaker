@@ -10,8 +10,6 @@ import RightSideBar from "@/components/EditorRightSideBar";
 import ResumePages from "@/components/ResumePages";
 
 export default function Editor() {
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState<boolean>(true);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState<boolean>(true);
   const [activeSection, setActiveSection] = useState<string>("basics");
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
@@ -22,31 +20,15 @@ export default function Editor() {
   return (
     <div className="flex h-screen bg-background text-foreground">
       <AnimatePresence>
-        {leftSidebarOpen && (
-          <LeftSideBar
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-          />
-        )}
+        <LeftSideBar
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
       </AnimatePresence>
 
       <div className="flex-grow flex flex-col">
         <div className="p-4 border-b border-border flex justify-between items-center">
-          <Button
-            variant="ghost"
-            onClick={() => setLeftSidebarOpen(true)}
-            className="md:hidden"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
           <h1 className="text-2xl font-bold">Resume Tweaker</h1>
-          <Button
-            variant="ghost"
-            onClick={() => setRightSidebarOpen(true)}
-            className="md:hidden"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
         </div>
         <ResumePages
           baseColor={ResumeAppearance.baseColor}
@@ -61,7 +43,7 @@ export default function Editor() {
       </div>
 
       <AnimatePresence>
-        {rightSidebarOpen && <RightSideBar printFrameRef={printFrameRef} />}
+        <RightSideBar printFrameRef={printFrameRef} />
       </AnimatePresence>
     </div>
   );
