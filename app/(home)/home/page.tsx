@@ -6,11 +6,34 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FileText, PlusCircle, Router, User } from "lucide-react"
+import { FileText, PlusCircle, User, Pencil, Copy, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useAppDispatch } from "@/hooks/hooks"
 import { UpdateId } from "@/slices/rightsidebarSlice"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useMediaQuery } from "react-responsive"
+import { Label } from "@/components/ui/label"
 
 export default function HomePage() {
   const [isLoaded, setIsLoaded] = useState(false)
@@ -38,10 +61,7 @@ export default function HomePage() {
                   <TabsTrigger value="letters">Letters</TabsTrigger>
                 </TabsList>
                 <div className="flex items-center gap-2">
-                  <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Create New
-                  </Button>
+                  <CreateNewButtonTop />
                   <Button
                     variant="ghost"
                     onClick={() => router.push("/profile")}
@@ -74,7 +94,6 @@ export default function HomePage() {
 }
 
 function ResumeContent({ searchQuery }: { searchQuery: string }) {
-
   const recentResumes = [
     { id: 1, name: "Professional Resume"},
     { id: 2, name: "Creative CV"},
@@ -106,15 +125,9 @@ function ResumeContent({ searchQuery }: { searchQuery: string }) {
         <h2 className="text-2xl font-bold">Recently Edited Resumes</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {recentResumes.map((resume) => (
-            <Button key={resume.id} variant="outline" className="h-auto flex-col items-start p-4">
-              <FileText className="h-6 w-6 mb-2" />
-              <span>{resume.name}</span>
-            </Button>
+            <ResumeItem key={resume.id} resume={resume} />
           ))}
-          <Button onClick={() => router.push("/editor")} variant="outline" className="h-auto flex-col items-center justify-center p-4">
-            <PlusCircle className="h-6 w-6 mb-2" />
-            <span>Create New Resume</span>
-          </Button>
+          <CreateNewButton />
         </div>
       </section>
       <section>
@@ -132,7 +145,7 @@ function ResumeContent({ searchQuery }: { searchQuery: string }) {
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-zinc-950/10 group-hover:bg-zinc-950/20 transition-colors" />
+                  <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
                 </div>
                 <span className="font-medium">{template.name}</span>
               </Button>
@@ -151,10 +164,10 @@ function LetterContent({ searchQuery }: { searchQuery: string }) {
   ]
 
   const letterTemplates = [
-    { id: 1, name: "Professional Standard", img: "" },
-    { id: 2, name: "Modern Minimalist", img: "" },
-    { id: 3, name: "Formal Business", img: "" },
-    { id: 4, name: "Casual Creative", img: "" },
+    { id: 1, name: "Professional Standard", img: "/templates/letter1.png" },
+    { id: 2, name: "Modern Minimalist", img: "/templates/letter2.png" },
+    { id: 3, name: "Formal Business", img: "/templates/letter3.png" },
+    { id: 4, name: "Casual Creative", img: "/templates/letter4.png" },
   ]
 
   const filteredTemplates = letterTemplates.filter(template =>
@@ -167,15 +180,9 @@ function LetterContent({ searchQuery }: { searchQuery: string }) {
         <h2 className="text-2xl font-bold">Recently Edited Letters</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {recentLetters.map((letter) => (
-            <Button key={letter.id} variant="outline" className="h-auto flex-col items-start p-4">
-              <FileText className="h-6 w-6 mb-2" />
-              <span>{letter.name}</span>
-            </Button>
+            <LetterItem key={letter.id} letter={letter} />
           ))}
-          <Button variant="outline" className="h-auto flex-col items-center justify-center p-4">
-            <PlusCircle className="h-6 w-6 mb-2" />
-            <span>Create New Letter</span>
-          </Button>
+          <CreateNewButton />
         </div>
       </section>
       <section>
@@ -193,7 +200,7 @@ function LetterContent({ searchQuery }: { searchQuery: string }) {
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-zinc-950/10 group-hover:bg-zinc-950/20 transition-colors" />
+                  <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
                 </div>
                 <span className="font-medium">{template.name}</span>
               </Button>
@@ -202,5 +209,248 @@ function LetterContent({ searchQuery }: { searchQuery: string }) {
         )}
       </section>
     </div>
+  )
+}
+
+function ResumeItem({ resume }: { resume: { id: number; name: string } }) {
+  const isPhone = useMediaQuery({ maxWidth: 767 })
+  const router = useRouter()
+
+  const handleOpen = () => {
+    router.push(`/editor/${resume.id}`)
+  }
+
+  const handleRename = () => {
+    console.log("Rename", resume.name)
+  }
+
+  const handleDuplicate = () => {
+    console.log("Duplicate", resume.name)
+  }
+
+  const handleDelete = () => {
+    console.log("Delete", resume.name)
+  }
+
+  const menuItems = (
+    <>
+      <ContextMenuItem onSelect={handleOpen}>
+        <FileText className="mr-2 h-4 w-4" />
+        Open
+      </ContextMenuItem>
+      <ContextMenuItem onSelect={handleRename}>
+        <Pencil className="mr-2 h-4 w-4" />
+        Rename
+      </ContextMenuItem>
+      <ContextMenuItem onSelect={handleDuplicate}>
+        <Copy className="mr-2 h-4 w-4" />
+        Duplicate
+      </ContextMenuItem>
+      <ContextMenuItem className="text-destructive hover:text-destructive border-t" onSelect={handleDelete}>
+        <Trash2 className="mr-2 h-4 w-4" />
+        Delete
+      </ContextMenuItem>
+    </>
+  )
+
+  return isPhone ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+          <FileText className="h-6 w-6 mb-2" />
+          <span>{resume.name}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={handleOpen}>
+          <FileText className="mr-2 h-4 w-4" />
+          Open
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleRename}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Rename
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDuplicate}>
+          <Copy className="mr-2 h-4 w-4" />
+          Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleDelete}>
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+          <FileText className="h-6 w-6 mb-2" />
+          <span>{resume.name}</span>
+        </Button>
+      </ContextMenuTrigger>
+      <ContextMenuContent>{menuItems}</ContextMenuContent>
+    </ContextMenu>
+  )
+}
+
+function LetterItem({ letter }: { letter: { id: number; name: string } }) {
+  const isPhone = useMediaQuery({ maxWidth: 767 })
+  const router = useRouter()
+
+  const handleOpen = () => {
+    router.push(`/editor/${letter.id}`)
+  }
+
+  const handleRename = () => {
+    console.log("Rename", letter.name)
+  }
+
+  const handleDuplicate = () => {
+    console.log("Duplicate", letter.name)
+  }
+
+  const handleDelete = () => {
+    console.log("Delete", letter.name)
+  }
+
+  const menuItems = (
+    <>
+      <ContextMenuItem onSelect={handleOpen}>
+        <FileText className="mr-2 h-4 w-4" />
+        Open
+      </ContextMenuItem>
+      <ContextMenuItem onSelect={handleRename}>
+        <Pencil className="mr-2 h-4 w-4" />
+        Rename
+      </ContextMenuItem>
+      <ContextMenuItem onSelect={handleDuplicate}>
+        <Copy className="mr-2 h-4 w-4" />
+        Duplicate
+      </ContextMenuItem>
+      <ContextMenuItem onSelect={handleDelete}>
+        <Trash2 className="mr-2 h-4 w-4" />
+        Delete
+      </ContextMenuItem>
+    </>
+  )
+
+  return isPhone ? (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+          <FileText className="h-6 w-6 mb-2" />
+          <span>{letter.name}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>{menuItems}</DropdownMenuContent>
+    </DropdownMenu>
+  ) : (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+          <FileText className="h-6 w-6 mb-2" />
+          <span>{letter.name}</span>
+        </Button>
+      </ContextMenuTrigger>
+      <ContextMenuContent>{menuItems}</ContextMenuContent>
+    </ContextMenu>
+  )
+}
+
+function CreateNewButtonTop() {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState("")
+  const router = useRouter()
+
+  const handleCreate = () => {
+    if (name.trim()) {
+      router.push("/editor")
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="default" className="flex items-center gap-2">
+          <PlusCircle className="h-4 w-4" />
+          <span>Create New</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create New Resume/Letter</DialogTitle>
+          <DialogDescription>
+            Enter a name for your new resume or letter. Try to make it descriptive!
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit" onClick={handleCreate} disabled={!name.trim()}>
+            Create
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function CreateNewButton() {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState("")
+  const router = useRouter()
+
+  const handleCreate = () => {
+    if (name.trim()) {
+      router.push("/editor")
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="h-auto flex-col items-center justify-center p-4">
+          <PlusCircle className="h-6 w-6 mb-2" />
+          <span>Create New</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create New Resume/Letter</DialogTitle>
+          <DialogDescription>
+            Enter a name for your new resume or letter. Try to make it descriptive!
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit" onClick={handleCreate} disabled={!name.trim()}>
+            Create
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

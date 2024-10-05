@@ -6,24 +6,20 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+import ThemeAwareLogo from "./ThemeAwareLogo";
 
 export function LandingNav() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-  const theme = useTheme();
-  let logoSrc = theme.theme === "dark" ? "/resumetweaker-dark.png" : "/resumetweaker-light.png";
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const navItems = [
-    { href: "#", label: "Pricing" },
+    { href: "/pricing", label: "Pricing" },
     { href: "/blogs", label: "Blogs" },
-    { href: "#", label: "About" },
-    { href: "#", label: "Features" },
+    { href: "/about", label: "About" },
+    { href: "/features", label: "Features" },
   ];
 
   return (
@@ -35,13 +31,7 @@ export function LandingNav() {
               href="/"
               className="font-semibold flex items-center gap-2 group"
             >
-              <Image
-                src={logoSrc}
-                alt="Resume Tweaker Logo"
-                width={14}
-                height={14}
-                className="w-10 h-10 lg:w-14 lg:h-14 xl:w-16 xl:h-16"
-              />
+              <ThemeAwareLogo />
               <span className="sm:block md:text-xl text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
                 <span className="text-zinc-500 dark:text-zinc-400">resume</span>
                 <span className="font-bold">tweaker</span>

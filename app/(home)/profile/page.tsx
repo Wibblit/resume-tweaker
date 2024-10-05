@@ -523,7 +523,7 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Projects</Label>
+                <Label className="mr-4">Projects</Label>
                 {resumeData.projects.map((project, index) => (
                   <div key={index} className="space-y-2">
                     <Input
