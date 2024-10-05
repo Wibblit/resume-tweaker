@@ -3,24 +3,175 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ResumeStyles } from "@/types/types";
 import { SectionName } from "@/types/types";
-
+import { Section } from "lucide-react";
 
 // Define the initial state using that type
 const initialState: ResumeStyles = {
   id: 1,
   name: "",
-  font: "Arial",
+  font: "Helvetica",
   fontSize: 10,
   lineHeight: 1,
-  margin: 5,
+  margin: 6,
   paperFormat: "a4",
-  baseColor: "#000",
+  baseColor: "#475569",
   sectionOrder: {
-    column1: ['basics','summary', 'experience','education', 'projects', 'skills', 'certifications',],
+    column1: [
+      "basics",
+      "profiles",
+      "summary",
+      "experience",
+      "education",
+      "projects",
+      "skills",
+      "certifications",
+    ],
     column2: [],
-    column3: [ 'languages', 'awards', 'profiles', 'publications', 'references', 'volunteerings'],
+    column3: [
+      "languages",
+      "awards",
+      "publications",
+      "references",
+      "volunteerings",
+    ],
   },
 };
+
+const Defaults: Array<ResumeStyles> = [
+  {
+    id: 1,
+    name: "",
+    font: "Helvetica",
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
+    paperFormat: "a4",
+    baseColor: "#475569",
+    sectionOrder: {
+      column1: [
+        "basics",
+        "profiles",
+        "summary",
+        "experience",
+        "education",
+        "projects",
+        "skills",
+        "certifications",
+      ],
+      column2: [],
+      column3: [
+        "languages",
+        "awards",
+        "publications",
+        "references",
+        "volunteerings",
+      ],
+    },
+  },
+  {
+    id: 2,
+    name: "",
+    font: "Helvetica",
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
+    paperFormat: "a4",
+    baseColor: "#ca8a04",
+    sectionOrder: {
+      column1: ["basics", "profiles", "summary", "skills", "certifications"],
+      column2: ["education", "experience", "projects", "awards"],
+      column3: ["languages", "publications", "references", "volunteerings"],
+    },
+  },
+  {
+    id: 3,
+    name: "",
+    font: "Helvetica",
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
+    paperFormat: "a4",
+    baseColor: "#059669",
+    sectionOrder: {
+      column1: [
+        "basics",
+        "profiles",
+        "summary",
+        "experience",
+        "education",
+        "skills",
+      ],
+      column2: [
+        "projects",
+        "languages",
+        "awards",
+        "publications",
+        "certifications",
+        "volunteerings",
+        "references",
+      ],
+      column3: [],
+    },
+  },
+  {
+    id: 4,
+    name: "",
+    font: "Helvetica",
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
+    paperFormat: "a4",
+    baseColor: "#000000",
+    sectionOrder: {
+      column1: [
+        "basics",
+        "profiles",
+        "summary",
+        "experience",
+        "education",
+        "projects",
+        "awards",
+        "certifications",
+      ],
+      column2: [
+        "skills",
+        "languages",
+        "publications",
+        "volunteerings",
+        "references",
+      ],
+      column3: [],
+    },
+  },
+  {
+    id: 5,
+    name: "",
+    font: "Helvetica",
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
+    paperFormat: "a4",
+    baseColor: "#57534e",
+    sectionOrder: {
+      column1: [
+        "basics",
+        "profiles",
+        "summary",
+        "experience",
+        "education",
+        "projects",
+      ],
+      column2: [
+        "skills",
+        "awards",
+        "certifications",
+        "languages",
+        "publications",
+      ],
+      column3: ["volunteerings", "references"],
+    },
+  },
+];
 
 const MM_TO_PX = 3.78;
 
@@ -38,6 +189,21 @@ const rightsidebarSlice = createSlice({
   reducers: {
     UpdateId(state, action) {
       state.id = action.payload;
+      state.baseColor = Defaults[state.id - 1].baseColor;
+      state.font = Defaults[state.id - 1].font;
+      state.fontSize = Defaults[state.id - 1].fontSize;
+      state.lineHeight = Defaults[state.id - 1].lineHeight;
+      state.margin = Defaults[state.id - 1].margin;
+      state.sectionOrder = Defaults[state.id - 1].sectionOrder;
+    },
+    ResetStyle(state) {
+      state.baseColor = Defaults[state.id - 1].baseColor;
+      state.font = Defaults[state.id - 1].font;
+      state.fontSize = Defaults[state.id - 1].fontSize;
+      state.lineHeight = Defaults[state.id - 1].lineHeight;
+      state.margin = Defaults[state.id - 1].margin;
+      state.paperFormat = Defaults[state.id - 1].paperFormat;
+      state.sectionOrder = Defaults[state.id - 1].sectionOrder;
     },
     UpdateFont(state, action) {
       state.font = action.payload;
@@ -54,7 +220,13 @@ const rightsidebarSlice = createSlice({
     UpdatePaperFormat(state, action) {
       state.paperFormat = action.payload;
     },
-    updateSectionOrder: (state, action: PayloadAction<{ column: 'column1' | 'column2' | 'column3', order: SectionName[] }>) => {
+    updateSectionOrder: (
+      state,
+      action: PayloadAction<{
+        column: "column1" | "column2" | "column3";
+        order: SectionName[];
+      }>
+    ) => {
       const { column, order } = action.payload;
       state.sectionOrder[column] = order;
     },
@@ -62,7 +234,6 @@ const rightsidebarSlice = createSlice({
       state.baseColor = action.payload;
     },
     DownloadPDF(state, action) {
-
       const { printFrameRef } = action.payload;
 
       const pageElements = document.querySelectorAll("[data-page]");
@@ -146,7 +317,7 @@ const rightsidebarSlice = createSlice({
           printFrameRef.current.contentWindow.print();
         }
       }, 1000);
-    }
+    },
   },
 });
 
@@ -161,6 +332,7 @@ export const {
   UpdatePaperFormat,
   DownloadPDF,
   updateSectionOrder,
+  ResetStyle,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

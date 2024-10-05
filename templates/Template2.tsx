@@ -194,15 +194,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   console.log(sectionOrder)
   const scaleFactor = fontSize / 16;
 
-
-
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#ca8a04"));
-    dispatch(UpdateFont(12));
-    dispatch(UpdateLineHeight(1.2));
-    dispatch(UpdateMargin(6));
-  }, [dispatch]);
-
   const styles = {
     container: {
       fontFamily,
