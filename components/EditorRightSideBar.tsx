@@ -133,14 +133,14 @@ const DraggableSection: React.FC<DraggableSectionProps> = ({
         ref={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
-        className="p-2 mb-2 bg-primary flex items-center text-primary-foreground rounded-md shadow-sm text-xs"
+        className="p-1 md:p-2 mb-2 bg-primary flex items-center text-primary-foreground rounded-md shadow-sm text-xs"
       >
-        <div className="flex-shrink-0 mr-2">
-          <GripVertical className="h-4 w-4 text-primary-foreground/85" />
+        <div className="flex-shrink-0 md:mr-2 mr-[2px]">
+          <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85" />
         </div>
-        <div className="truncate">
-          {abbrv[section].charAt(0).toUpperCase() + abbrv[section].slice(1)}
-        </div>
+          <p className="truncate text-xs md:text-sm text-black">
+            {abbrv[section].charAt(0).toUpperCase() + abbrv[section].slice(1)}
+          </p>
       </div>
     )}
   </Draggable>
@@ -161,15 +161,15 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const templateID = useAppSelector((state) => state.rightsidebar.id);
   const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight);
   const margin = useAppSelector((state) => state.rightsidebar.margin);
-  const font = useAppSelector((state) => state.rightsidebar.font)
-  const id = useAppSelector((state) => state.rightsidebar.id)
+  const font = useAppSelector((state) => state.rightsidebar.font);
+  const id = useAppSelector((state) => state.rightsidebar.id);
 
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    setSelectedFont(font)
-  }, [id])
+    setSelectedFont(font);
+  }, [id]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -495,6 +495,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
               {[
                 "#475569",
                 "#57534e",
+                "#000000",
                 "#dc2626",
                 "#ea580c",
                 "#ca8a04",
@@ -511,7 +512,6 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 "#c026d3",
                 "#db2777",
                 "#e11d48",
-                "#000000"
               ].map((color) => (
                 <button
                   key={color}
@@ -598,7 +598,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
               <Settings className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+          <SheetContent side="right" className="w-[350px] sm:w-[400px]">
             <SheetHeader>
               <SheetTitle>Resume Settings</SheetTitle>
               <SheetDescription>
