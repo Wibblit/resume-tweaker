@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { useMediaQuery } from 'react-responsive';
+import { useMediaQuery } from "react-responsive";
 import {
   Sheet,
   SheetContent,
@@ -31,7 +31,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronRight, ChevronDown, Search, GripVertical, Settings } from "lucide-react";
+import {
+  ChevronRight,
+  ChevronDown,
+  Search,
+  GripVertical,
+  Settings,
+} from "lucide-react";
 import {
   UpdateBaseColor,
   UpdateFont,
@@ -51,6 +57,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import { ResetStyle } from "@/slices/rightsidebarSlice";
 
 const fonts = [
   "Arial",
@@ -150,13 +157,19 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
-  const fontSize = useAppSelector((state) => state.rightsidebar.fontSize)
+  const fontSize = useAppSelector((state) => state.rightsidebar.fontSize);
   const templateID = useAppSelector((state) => state.rightsidebar.id);
-  const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight)
-  const margin = useAppSelector((state) => state.rightsidebar.margin)
+  const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight);
+  const margin = useAppSelector((state) => state.rightsidebar.margin);
+  const font = useAppSelector((state) => state.rightsidebar.font)
+  const id = useAppSelector((state) => state.rightsidebar.id)
 
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setSelectedFont(font)
+  }, [id])
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -412,7 +425,9 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 max={16}
                 min={10}
                 value={fontSize}
-                onChange={(e) => dispatch(UpdateFontSize(Number(e.target.value)))}
+                onChange={(e) =>
+                  dispatch(UpdateFontSize(Number(e.target.value)))
+                }
                 className="w-16"
               />
             </div>
@@ -434,7 +449,9 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 step={0.1}
                 max={2}
                 min={1}
-                onChange={(e) => dispatch(UpdateLineHeight(Number(e.target.value)))}
+                onChange={(e) =>
+                  dispatch(UpdateLineHeight(Number(e.target.value)))
+                }
                 className="w-16"
               />
             </div>
@@ -452,7 +469,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
               />
               <Input
                 type="number"
-                max={15}  
+                max={15}
                 min={5}
                 value={margin}
                 onChange={(e) => dispatch(UpdateMargin(Number(e.target.value)))}
@@ -494,6 +511,7 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
                 "#c026d3",
                 "#db2777",
                 "#e11d48",
+                "#000000"
               ].map((color) => (
                 <button
                   key={color}
@@ -511,6 +529,28 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
               onCheckedChange={handleDarkModeChange}
             />
             <Label htmlFor="dark-mode">Dark Mode</Label>
+          </div>
+          <div>
+            <button
+              onClick={() => dispatch(ResetStyle())}
+              className="
+    bg-[hsl(var(--background))] 
+    text-[hsl(var(--foreground))] 
+    border-2 
+    border-[hsl(var(--border))] 
+    rounded-[var(--radius)] 
+    px-4 
+    py-2 
+    font-ltwave 
+    cursor-pointer 
+    transition 
+    duration-300 
+    hover:bg-[hsl(var(--secondary))] 
+    hover:text-[hsl(var(--secondary-foreground))]
+  "
+            >
+              Reset
+            </button>
           </div>
         </div>
       </ScrollArea>
@@ -550,10 +590,14 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
       {isPhoneView ? (
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden fixed top-4 right-4 z-50 shadow-lg">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
+            >
               <Settings className="h-6 w-6" />
             </Button>
-          </SheetTrigger> 
+          </SheetTrigger>
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <SheetHeader>
               <SheetTitle>Resume Settings</SheetTitle>
