@@ -19,7 +19,7 @@ export default function ThemeAwareLogo() {
       alt="Resume Tweaker Logo"
       width={16}
       height={16}
-      className="w-10 h-10 lg:w-14 lg:h-14 xl:w-16 xl:h-16"
+      className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7"
       priority={true}
     />
   )

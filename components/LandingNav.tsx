@@ -29,7 +29,7 @@ export function LandingNav() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="font-semibold flex items-center gap-2 group"
+              className="font-semibold flex items-center gap-2 group justify-center"
             >
               <ThemeAwareLogo />
               <span className="sm:block md:text-xl text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
