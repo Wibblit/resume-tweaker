@@ -6,11 +6,14 @@ import { configureStore, GetDefaultMiddleware } from "@reduxjs/toolkit";
 import logger from "redux-logger";
 import rightsidebarReducer from "./slices/rightsidebarSlice";
 import leftsidebarReducer from "./slices/leftsidebarSlice";
+import interviewReducer from './slices/interviewSlice'
+
 
 const store = configureStore({
   reducer: {
     rightsidebar: rightsidebarReducer,
     leftsidebar: leftsidebarReducer,
+    interview: interviewReducer,
   },
   middleware: (getDefaultMiddleware: GetDefaultMiddleware) => getDefaultMiddleware().concat(logger),
 });
