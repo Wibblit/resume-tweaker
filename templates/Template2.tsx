@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import { UpdateBaseColor, UpdateFont, UpdateLineHeight, UpdateMargin } from "@/slices/rightsidebarSlice";
+import {
+  UpdateBaseColor,
+  UpdateFont,
+  UpdateLineHeight,
+  UpdateMargin,
+} from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
@@ -19,7 +24,6 @@ interface TemplateProps {
   lineHeight: number;
   margin: number;
 }
-
 
 const Link: React.FC<{
   url: { href: string; label: string };
@@ -79,10 +83,13 @@ const Section: React.FC<{
   children: React.ReactNode;
   baseColor: string;
 }> = ({ title, children, baseColor }) => {
+  const isSeparator: boolean = useAppSelector(
+    (state) => state?.rightsidebar?.separator
+  );
   return (
     <section
       className="mt-4 pt-4"
-      style={{ borderTop: `1px solid ${baseColor}` }}
+      style={isSeparator ? { borderTop: `1px solid ${baseColor}` } : {}}
     >
       <h4 className="mb-2 text-base font-bold" style={{ color: baseColor }}>
         {title}
@@ -191,7 +198,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
-  console.log(sectionOrder)
+  const isIcons: boolean = useAppSelector(
+    (state) => state?.rightsidebar?.icons
+  );
+
+
+  console.log(sectionOrder);
   const scaleFactor = fontSize / 16;
 
   const styles = {
@@ -232,7 +244,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 style={styles.body}
                 className="text-justify"
               /> */}
-              <HTMLViewer lineHeight={lineHeight} content={content.summary[0].content} />
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content}
+              />
             </Section>
           )
         );
@@ -250,7 +265,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${exp.startDate} ${exp.endDate && " - "} ${exp.endDate}`}</div>
+                        <div className="font-bold">{`${exp.startDate} ${
+                          exp.endDate && " - "
+                        } ${exp.endDate}`}</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -278,38 +295,41 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.skills[0].categories && (
             <Section title="Skills" baseColor={baseColor}>
               <div className="space-y-4">
-              {content.skills[0].categories.map((category, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="font-bold">{category.name}</div>
-                  <div className="flex flex-col gap-2">
-                    {category.skills.map((skill, skillIndex) => (
-                      <div
-                        key={skillIndex}
-                        className="rounded-full px-3 grid grid-cols-2 items-center gap-2 w-full"
-                        style={{
-                          ...styles.body,
-                        }}
-                      >
-                        <h5>{skill.name}</h5>
-                        <div style={{background: `${baseColor}30` }} className="w-full h-2 rounded-md">
+                {content.skills[0].categories.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{category.name}</div>
+                    <div className="flex flex-col gap-2">
+                      {category.skills.map((skill, skillIndex) => (
+                        <div
+                          key={skillIndex}
+                          className="rounded-full px-3 grid grid-cols-2 items-center gap-2 w-full"
+                          style={{
+                            ...styles.body,
+                          }}
+                        >
+                          <h5>{skill.name}</h5>
                           <div
-                            style={{
-                              background: baseColor,
-                              width:
-                                skill.level == "Beginner"
-                                  ? "33%"  
-                                  : skill.level == "Intermediate"
-                                  ? "66%"  
-                                  : "100%", 
-                            }}
-                            className="h-full rounded-md py-1"
-                          ></div>
+                            style={{ background: `${baseColor}30` }}
+                            className="w-full h-2 rounded-md"
+                          >
+                            <div
+                              style={{
+                                background: baseColor,
+                                width:
+                                  skill.level == "Beginner"
+                                    ? "33%"
+                                    : skill.level == "Intermediate"
+                                    ? "66%"
+                                    : "100%",
+                              }}
+                              className="h-full rounded-md py-1"
+                            ></div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
               </div>
             </Section>
           )
@@ -548,34 +568,34 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             />
           )
         );
-        case "profiles":
-         return (
-           content.profiles &&
-           content.profiles.length > 0 && (
-             <Section title="Profiles" baseColor={baseColor}>
-               <div className="flex flex-wrap items-center gap-2">
-                 {content.profiles.map((profile, index) => (
-                   <div className="flex gap-2 items-center" key={index}>
-                    {profile.url.href !== "" && (
+      case "profiles":
+        return (
+          content.profiles &&
+          content.profiles.length > 0 && (
+            <Section title="Profiles" baseColor={baseColor}>
+              <div className="flex flex-wrap items-center gap-2">
+                {content.profiles.map((profile, index) => (
+                  <div className="flex gap-2 items-center" key={index}>
+                    {isIcons && profile.url.href !== "" && (
                       <SocialIcon
-                        style={{ width: '16px', height: '16px' }}
+                        style={{ width: "16px", height: "16px" }}
                         url={profile.url.href}
                       />
                     )}
-                     <a
-                       href={profile.url.href}
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       className="underline text-sm"
-                     >
-                       {profile.url.label}
-                     </a>
-                   </div>
-                 ))}
-               </div>
-             </Section>
-           )
-         );
+                    <a
+                      href={profile.url.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-sm"
+                    >
+                      {profile.url.label}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
 
       default:
         return null;
@@ -589,7 +609,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       </div>
       <div style={styles.col2}>
         <div style={styles.col2Content}>
-          {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+          {sectionOrder.column2.map((sectionName) =>
+            renderSection(sectionName)
+          )}
         </div>
       </div>
     </div>

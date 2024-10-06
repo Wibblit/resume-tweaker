@@ -294,7 +294,7 @@ export default function ResumePages({
   )
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)]">
+    <div className="flex flex-col h-[calc(100vh-0px)]">
       <ScrollArea className="flex-grow" ref={scrollAreaRef}>
         <div className={`p-4 pb-20 ${isPhoneView ? 'flex justify-center' : ''}`}>
           <TransformWrapper

@@ -15,6 +15,8 @@ const initialState: ResumeStyles = {
   margin: 6,
   paperFormat: "a4",
   baseColor: "#475569",
+  icons: true,
+  separator: true,
   sectionOrder: {
     column1: [
       "basics",
@@ -47,6 +49,8 @@ const Defaults: Array<ResumeStyles> = [
     margin: 6,
     paperFormat: "a4",
     baseColor: "#475569",
+    icons: true,
+    separator: true,
     sectionOrder: {
       column1: [
         "basics",
@@ -77,6 +81,8 @@ const Defaults: Array<ResumeStyles> = [
     margin: 6,
     paperFormat: "a4",
     baseColor: "#ca8a04",
+    icons: true,
+    separator: true,
     sectionOrder: {
       column1: ["basics", "profiles", "summary", "skills", "certifications"],
       column2: ["education", "experience", "projects", "awards"],
@@ -92,6 +98,8 @@ const Defaults: Array<ResumeStyles> = [
     margin: 6,
     paperFormat: "a4",
     baseColor: "#059669",
+    icons: true,
+    separator: true,
     sectionOrder: {
       column1: [
         "basics",
@@ -122,6 +130,8 @@ const Defaults: Array<ResumeStyles> = [
     margin: 6,
     paperFormat: "a4",
     baseColor: "#000000",
+    icons: true,
+    separator: true,
     sectionOrder: {
       column1: [
         "basics",
@@ -152,6 +162,8 @@ const Defaults: Array<ResumeStyles> = [
     margin: 6,
     paperFormat: "a4",
     baseColor: "#57534e",
+    icons: true,
+    separator: true,
     sectionOrder: {
       column1: [
         "basics",
@@ -318,6 +330,13 @@ const rightsidebarSlice = createSlice({
         }
       }, 1000);
     },
+    UpdateSeparator(state, action) {
+      state.separator = action.payload;
+    },
+    UpdateIcons(state, action) {
+      state.icons = action.payload;
+    },
+    DownloadJSON() {},
   },
 });
 
@@ -333,6 +352,9 @@ export const {
   DownloadPDF,
   updateSectionOrder,
   ResetStyle,
+  UpdateSeparator,
+  UpdateIcons,
+  DownloadJSON,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

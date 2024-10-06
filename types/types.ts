@@ -204,6 +204,8 @@ export type ResumeStyles = Template & {
   margin: 0 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15;
   paperFormat: "a4" | "letter";
   baseColor: string;
+  icons: boolean;
+  separator: boolean;
   sectionOrder: {
     column1: SectionName[];
     column2: SectionName[];

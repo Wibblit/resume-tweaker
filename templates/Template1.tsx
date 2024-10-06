@@ -6,6 +6,7 @@ import { Github, Linkedin, Globe } from "lucide-react";
 import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { SocialIcon } from "react-social-icons";
 
 type SectionName =
   | "summary"
@@ -44,9 +45,15 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   );
   const dispatch = useAppDispatch();
 
+  const isIcons: boolean = useAppSelector(
+    (state) => state?.rightsidebar?.icons
+  );
+
   useEffect(() => {
-    dispatch(UpdateBaseColor("#57534e"))
-  }, [dispatch])
+    dispatch(UpdateBaseColor("#57534e"));
+  }, [dispatch]);
+
+  const isSeparator = useAppSelector((state) => state.rightsidebar.separator)
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -60,9 +67,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       color: baseColor,
       fontSize: "1.4em",
       fontWeight: "bold",
-      marginBottom: "0.5em",
+      marginBottom: isSeparator ? "0.5em" : "none",
       textTransform: "uppercase",
-      borderBottom: `2px solid ${baseColor}`,
+      borderBottom: isSeparator ? `2px solid ${baseColor}` : 'none',
       paddingBottom: "0.25em",
     },
     sectionTitleWithOutBorder: {
@@ -230,7 +237,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   </div>
                 </div>
                 {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
-                {exp.summary && <HTMLViewer lineHeight={lineHeight} content={exp.summary} />}
+                {exp.summary && (
+                  <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
+                )}
               </div>
             ))}
           </section>
@@ -334,7 +343,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             <div className="flex flex-col flex-wrap justify-start">
               {content.languages.map((lang, index) => (
                 <div key={index} className="w-1/2 mb-2">
-                  <span style={styles.subtitle}>{lang.name} {lang.level && " : "}</span> {lang.level}
+                  <span style={styles.subtitle}>
+                    {lang.name} {lang.level && " : "}
+                  </span>{" "}
+                  {lang.level}
                 </div>
               ))}
             </div>
@@ -347,16 +359,27 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
           <section className="mb-6">
             <div className="flex flex-wrap justify-center space-x-4">
               {content.profiles.map((profile, index) => (
-                <a
+                <div
+                  className="flex gap-1 items-center jsutify-center"
                   key={index}
-                  href={profile.url.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={styles.link}
-                  className="flex items-center gap-2 mb-2 underline"
                 >
-                  <span className="underline">{profile.url.label}</span>
-                </a>
+                  {isIcons && profile.url.href !== "" && (
+                    <SocialIcon
+                      style={{ width: "16px", height: "16px" }}
+                      url={profile.url.href}
+                    />
+                  )}
+                  <a
+                    key={index}
+                    href={profile.url.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.link}
+                    className="flex items-center underline"
+                  >
+                    <span className="underline">{profile.url.label}</span>
+                  </a>
+                </div>
               ))}
             </div>
           </section>
