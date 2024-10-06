@@ -7,6 +7,14 @@ import { SkipForward, StopCircle, Mic, Send } from "lucide-react";
 import { VoiceAnimation } from "@/components/voice-animation";
 import { useDispatch } from "react-redux";
 
+// Add these type declarations at the top of your file
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
+
 interface InterviewProcessProps {
   questions: string[];
   formData: any;
@@ -25,7 +33,7 @@ export function InterviewProcess({
   const [recognizedText, setRecognizedText] = useState("");
   const [allRecognizedText, setAllRecognizedText] = useState<string[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const dispatch = useDispatch();
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
@@ -62,7 +70,9 @@ export function InterviewProcess({
         (voice) => voice.name.includes("Google") && voice.lang.startsWith("en")
       ) || voices[0];
 
-    utterance.voice = preferredVoice;
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
     utterance.rate = 1;
     utterance.pitch = 1;
 
@@ -92,14 +102,14 @@ export function InterviewProcess({
       setIsRecording(true);
 
       // Initialize speech recognition
-      recognitionRef.current = new (window.SpeechRecognition ||
-        window.webkitSpeechRecognition)();
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = true;
 
-      recognitionRef.current.onresult = (event) => {
+      recognitionRef.current.onresult = (event: any) => {
         const transcript = Array.from(event.results)
-          .map((result) => result[0].transcript)
+          .map((result: any) => result[0].transcript)
           .join(" ");
         setRecognizedText(transcript);
       };
