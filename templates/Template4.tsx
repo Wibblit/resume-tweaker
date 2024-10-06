@@ -5,6 +5,7 @@ import { cn, isEmptyString, isUrl } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
+import { SocialIcon } from "react-social-icons";
 
 interface TemplateProps {
   content: ResumeData;
@@ -35,11 +36,21 @@ const Section: React.FC<{
   children: React.ReactNode;
   baseColor: string;
 }> = ({ title, children, baseColor }) => {
+
+  const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator)
   return (
     <section className="mb-4">
       <h2
         className="mb-2 text-lg font-bold uppercase border-b-2 pb-1"
-        style={{ color: baseColor, borderColor: baseColor }}
+        style={
+          isSeparator
+            ? {
+                color: baseColor,
+                borderColor: baseColor,
+                borderBottomWidth: "2px",
+              }
+            : undefined
+        }
       >
         {title}
       </h2>
@@ -368,6 +379,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
     }
   };
 
+  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons)
+
   return (
     <div style={styles.container} className="flex flex-col">
       <div className="mb-4 flex items-start">
@@ -382,15 +395,22 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           </div>
           <div className="flex flex-wrap gap-2">
             {content.profiles.map((profile, index) => (
-              <a
-                key={index}
-                href={profile.url.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 text-xs underline break-words"
-              >
-                {profile.url.label}
-              </a>
+              <div className="flex gap-2 items-center" key={index}>
+                {isIcons && profile.url.href !== "" && (
+                  <SocialIcon
+                    style={{ width: "16px", height: "16px" }}
+                    url={profile.url.href}
+                  />
+                )}
+                <a
+                  href={profile.url.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline text-sm"
+                >
+                  {profile.url.label}
+                </a>
+              </div>
             ))}
           </div>
         </div>

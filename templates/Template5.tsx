@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics, Profile } from "@/types/types";
 import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 import HTMLViewer from "@/components/HTMLViewer";
+import { SocialIcon } from "react-social-icons";
 
 interface TemplateProps {
   content: ResumeData;
@@ -65,10 +66,26 @@ const Section: React.FC<{
   children: React.ReactNode;
   baseColor: string;
   isRightColumn?: boolean;
-}> = ({ title, children, baseColor, isRightColumn }) => {
+}>
+  = ({ title, children, baseColor, isRightColumn }) => {
+
+    const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator)
+
   return (
-    <section className="mt-4 pt-4" style={{ borderTop: `1px solid ${isRightColumn ? 'white' : baseColor}` }}>
-      <h4 className="mb-2 text-base font-bold uppercase" style={{ color: isRightColumn ? 'white' : baseColor }}>{title}</h4>
+    <section
+      className="mt-4 pt-4"
+      style={
+        isSeparator
+          ? { borderTop: `1px solid ${isRightColumn ? "white" : baseColor}` }
+          : undefined
+      }
+    >
+      <h4
+        className="mb-2 text-base font-bold uppercase"
+        style={{ color: isRightColumn ? "white" : baseColor }}
+      >
+        {title}
+      </h4>
       <div>{children}</div>
     </section>
   );
@@ -105,25 +122,34 @@ const Profiles: React.FC<{profiles: Profile[]; baseColor: string; fontSize: numb
       margin: '0 8px',
     },
   }
+
+  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons)
   
   return (
-    <div style={styles.container} className="flex flex-wrap justify-center space-x-4 py-2">
+    <div
+      style={styles.container}
+      className="flex flex-wrap justify-center space-x-4 py-2"
+    >
       {profiles.map((profile, index) => (
-        <span key={index} className="flex items-center gap-2">
+        <div className="flex gap-2 items-center" key={index}>
+          {isIcons && profile.url.href !== "" && (
+            <SocialIcon
+              style={{ width: "16px", height: "16px" }}
+              url={profile.url.href}
+            />
+          )}
           <a
             href={profile.url.href}
             target="_blank"
             rel="noopener noreferrer"
-            style={styles.link}
-            className="underline"
+            className="underline text-sm"
           >
             {profile.url.label}
           </a>
-          {index < profiles.length - 1 && <span style={styles.dot}>•</span>}
-        </span>
+        </div>
       ))}
     </div>
-  )
+  );
 }
 
 const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; lineHeight: number; margin: number }> = ({ basics, baseColor, fontSize, lineHeight, margin }) => {
@@ -250,7 +276,7 @@ const Template3: React.FC<TemplateProps> = ({
     const sectionStyle = styles.body;
 
     switch (sectionName) {
-      case 'summary':
+      case "summary":
         return (
           content.summary &&
           content.summary.length > 0 && (
@@ -271,7 +297,123 @@ const Template3: React.FC<TemplateProps> = ({
             </Section>
           )
         );
-      case 'experience':
+      case "publications":
+        return (
+          content.publications &&
+          content.publications.length > 0 && (
+            <Section
+              title="Publications"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.publications.map((pub, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={pub.name}
+                        url={pub.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{pub.date}</div>
+                      </div>
+                    </div>
+                    <div>{pub.publisher}</div>
+                    <div>{pub.publishedIn}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "volunteerings":
+        console.log(content.volunteer);
+        return (
+          content.volunteer &&
+          content.volunteer.length > 0 && (
+            <Section
+              title="Volunteer Experience"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.volunteer.map((vol, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{vol.organization}</div>
+                        <div>{vol.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{`${vol.startDate} ${
+                          vol.endDate && " - "
+                        } ${vol.endDate}`}</div>
+                        <div>{vol.location}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "references":
+        return (
+          content.references &&
+          content.references.length > 0 && (
+            <Section
+              title="References"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.references.map((ref, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{ref.name}</div>
+                    <div>{ref.phone}</div>
+                    <div>{ref.email}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "awards":
+        return (
+          content.awards &&
+          content.awards.length > 0 && (
+            <Section
+              title="Awards"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.awards.map((award, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{award.title}</div>
+                        <div>{award.awarder}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">{award.date}</div>
+                      </div>
+                    </div>
+                    {award.summary && !isEmptyString(award.summary) && (
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "experience":
         return (
           content.experience &&
           content.experience.length > 0 && (
@@ -310,71 +452,105 @@ const Template3: React.FC<TemplateProps> = ({
             </Section>
           )
         );
-      case 'skills':
-        return content.skills && content.skills.length > 0 && content.skills[0].categories && (
-          <Section title="Skills" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.skills[0].categories.map((category, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="font-bold">{category.name}</div>
-                  <div>{category.skills.map(skill => skill.name).join(', ')}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'languages':
-        return content.languages && content.languages.length > 0 && (
-          <Section title="Languages" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-2">
-              {content.languages.map((lang, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span>{lang.name}</span>
-                  <span>{lang.level}</span>
-                </div>
-              ))}
-            </div>
-          </Section>
-        );
-      case 'education':
-        return content.education && content.education.length > 0 && (
-          <Section title="Education" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-4">
-              {content.education.map((edu, index) => (
-                <div key={index} className="flex items-start justify-between">
-                  <div>
-                    <div className="font-bold">{edu.institution}</div>
-                    <div>{edu.field}</div>
-                    <div>{edu.score}</div>
+      case "skills":
+        return (
+          content.skills &&
+          content.skills.length > 0 &&
+          content.skills[0].categories && (
+            <Section
+              title="Skills"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.skills[0].categories.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{category.name}</div>
+                    <div>
+                      {category.skills.map((skill) => skill.name).join(", ")}
+                    </div>
                   </div>
-                  <div className="shrink-0 text-right">
-                    <div>{`${edu.startDate} - ${edu.endDate}`}</div>
-                    <div>{edu.degree}</div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "languages":
+        return (
+          content.languages &&
+          content.languages.length > 0 && (
+            <Section
+              title="Languages"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-2">
+                {content.languages.map((lang, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{lang.name}</span>
+                    <span>{lang.level}</span>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Section>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'certifications':
-        return content.certifications && content.certifications.length > 0 && (
-          <Section title="Certifications" baseColor={baseColor} isRightColumn={isRightColumn}>
-            <div className="space-y-2">
-              {content.certifications.map((cert, index) => (
-                <div key={index}>
-                  <LinkedEntity
-                    name={cert.name}
-                    url={cert.url}
-                    separateLinks={false}
-                    className="font-bold"
-                  />
-                  <div>{cert.date}</div>
-                </div>
-              ))}
-            </div>
-          </Section>
+      case "education":
+        return (
+          content.education &&
+          content.education.length > 0 && (
+            <Section
+              title="Education"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.education.map((edu, index) => (
+                  <div key={index} className="flex items-start justify-between">
+                    <div>
+                      <div className="font-bold">{edu.institution}</div>
+                      <div>{edu.field}</div>
+                      <div>{edu.score}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div>{`${edu.startDate} - ${edu.endDate}`}</div>
+                      <div>{edu.degree}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
         );
-      case 'projects':
+      case "certifications":
+        return (
+          content.certifications &&
+          content.certifications.length > 0 && (
+            <Section
+              title="Certifications"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-2">
+                {content.certifications.map((cert, index) => (
+                  <div key={index}>
+                    <LinkedEntity
+                      name={cert.name}
+                      url={cert.url}
+                      separateLinks={false}
+                      className="font-bold"
+                    />
+                    <div>{cert.date}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "projects":
         return (
           content.projects &&
           content.projects.length > 0 && (
