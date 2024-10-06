@@ -274,16 +274,16 @@ function ResumeItem({ resume }: { resume: { id: number; name: string } }) {
           <Copy className="mr-2 h-4 w-4" />
           Duplicate
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleDelete}>
+        <DropdownMenuItem className="text-destructive border-t" onSelect={handleDelete}>
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          <span>Delete</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   ) : (
     <ContextMenu>
       <ContextMenuTrigger asChild>
-        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full hover:bg-secondary">
           <FileText className="h-6 w-6 mb-2" />
           <span>{resume.name}</span>
         </Button>
