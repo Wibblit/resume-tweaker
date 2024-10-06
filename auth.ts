@@ -33,7 +33,7 @@ export const providerMap = providers.map((provider) => {
 //main
 export const { handlers, signIn, signOut, auth } = NextAuth({
   theme: {
-    logo: "/wbb.jpg",
+    logo: "/rt-light-bg.svg",
   },
   adapter: PrismaAdapter(prisma),
   providers,
