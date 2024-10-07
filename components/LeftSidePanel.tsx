@@ -60,7 +60,7 @@ export default function LeftSidePanel({
         initial={{ x: -60 }}
         animate={{ x: isPanelOpen ? 0 : -60 }}
         transition={{ duration: 0.3 }}
-        className="fixed left-0 bg-background border-r border-border shadow-lg rounded-r-lg z-50 flex"
+        className="fixed left-0 top-1/2 -translate-y-1/2 bg-background border-r border-border shadow-lg rounded-r-lg z-50 flex"
         style={{ height: `${panelHeight}px` }}
       >
         <div className="w-[60px]">
@@ -105,7 +105,7 @@ export default function LeftSidePanel({
               variant="secondary"
               size="icon"
               onClick={togglePanel}
-              className="rounded-full shadow-md bg-background border border-border"
+              className="rounded-md shadow-md bg-background border border-border"
             >
               <Menu className="h-4 w-4" />
             </Button>

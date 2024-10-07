@@ -24,12 +24,8 @@ export default function Editor() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <div className="flex md:hidden items-center justify-center p-4 border-b">
-        <h1 className="text-2xl font-bold">Resume Tweaker</h1>
-      </div>
-
       <div className="flex flex-grow overflow-hidden">
-        <div className="relative">
+        <div className="">
           <LeftSideBar
             activeSection={activeSection}
             setActiveSection={setActiveSection}
