@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<string>("basics");
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
-
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const CoverLetterData = useAppSelector((state) => state.coverletter);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
 
@@ -58,6 +58,8 @@ export default function CoverEditor() {
           <RightSideBar
             printFrameRef={printFrameRef}
             currentRoute={currentRoute}
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
           />
         )}
       </div>
@@ -66,6 +68,8 @@ export default function CoverEditor() {
         <RightSideBar
           printFrameRef={printFrameRef}
           currentRoute={currentRoute}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
       )}
     </div>
