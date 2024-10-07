@@ -22,13 +22,12 @@ export default function Editor() {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="flex flex-grow overflow-hidden">
-        <div className="">
+        <div>
           <LeftSideBar
             activeSection={activeSection}
             setActiveSection={setActiveSection}
           />
         </div>
-
         <div className={`flex-grow overflow-auto ${isPhoneView ? 'flex justify-center items-start' : ''}`}>
           <div className={`${isPhoneView ? 'w-full max-w-md' : ''}`}>
             <ResumePages

@@ -55,12 +55,12 @@ export default function LeftSidePanel({
   const panelHeight = resumeSections.length * 48 + 32 // 48px per icon + 32px padding
 
   return (
-    <>
+    <div className="relative h-screen">
       <motion.div
         initial={{ x: -60 }}
         animate={{ x: isPanelOpen ? 0 : -60 }}
         transition={{ duration: 0.3 }}
-        className="fixed left-0 top-1/2 -translate-y-1/2 bg-background border-r border-border shadow-lg rounded-r-lg z-50 flex"
+        className="absolute left-0 top-1/2 bottom-1/2 -translate-y-1/2 bg-background border-r border-border shadow-lg rounded-r-lg z-50 flex"
         style={{ height: `${panelHeight}px` }}
       >
         <div className="w-[60px]">
@@ -139,6 +139,6 @@ export default function LeftSidePanel({
           </DialogClose>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }

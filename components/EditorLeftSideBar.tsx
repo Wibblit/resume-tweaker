@@ -716,14 +716,12 @@ export default function LeftSideBar({
   return (
     <>
       {isPhoneView ? (
-        <div>
             <LeftSidePanel
               resumeSections={resumeSections}
               activeSection={activeSection}
               setActiveSection={setActiveSection}
               renderSheetContent={renderSheetContent}
-            />
-        </div>
+        />
       ) : (
         <div
           ref={sidebarRef}
