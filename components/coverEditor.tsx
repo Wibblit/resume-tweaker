@@ -1,20 +1,18 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/hooks";
-import { Settings } from "lucide-react";
-import LeftSideBar from "@/components/EditorLeftSideBar";
 import RightSideBar from "@/components/EditorRightSideBar";
-import ResumePages from "@/components/ResumePages";
 import { useMediaQuery } from "react-responsive";
+import CoverLeftSideBar from "./CoverEditorLeftSideBar";
+import CoverLetterPages from "./coverPage";
 import { usePathname } from "next/navigation";
 
-export default function Editor() {
+export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<string>("basics");
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
-  const ResumeData = useAppSelector((state) => state.leftsidebar);
+  const CoverLetterData = useAppSelector((state) => state.coverletter);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
@@ -30,7 +28,7 @@ export default function Editor() {
 
       <div className="flex flex-grow overflow-hidden">
         <div className="relative">
-          <LeftSideBar
+          <CoverLeftSideBar
             activeSection={activeSection}
             setActiveSection={setActiveSection}
           />
@@ -42,7 +40,7 @@ export default function Editor() {
           }`}
         >
           <div className={`${isPhoneView ? "w-full max-w-md" : ""}`}>
-            <ResumePages
+            <CoverLetterPages
               baseColor={ResumeAppearance.baseColor}
               fontFamily={ResumeAppearance.font}
               lineHeight={ResumeAppearance.lineHeight}
@@ -50,16 +48,26 @@ export default function Editor() {
               margin={ResumeAppearance.margin}
               pageFormat={ResumeAppearance.paperFormat}
               printFrameRef={printFrameRef}
-              resumeData={ResumeData}
+              coverLetterData={CoverLetterData}
               isPhoneView={isPhoneView}
             />
           </div>
         </div>
 
-        {!isPhoneView && <RightSideBar printFrameRef={printFrameRef} currentRoute={currentRoute} />}
+        {!isPhoneView && (
+          <RightSideBar
+            printFrameRef={printFrameRef}
+            currentRoute={currentRoute}
+          />
+        )}
       </div>
 
-      {isPhoneView && <RightSideBar printFrameRef={printFrameRef} currentRoute={currentRoute} />}
+      {isPhoneView && (
+        <RightSideBar
+          printFrameRef={printFrameRef}
+          currentRoute={currentRoute}
+        />
+      )}
     </div>
   );
 }
