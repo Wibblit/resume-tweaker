@@ -1354,6 +1354,8 @@ const fonts = [
 
 interface RightSideBarProps {
   printFrameRef: React.RefObject<HTMLIFrameElement>;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   currentRoute: string;
 }
 
@@ -1419,10 +1421,11 @@ const DraggableSection: React.FC<DraggableSectionProps> = ({
 
 export default function RightSideBar({
   printFrameRef,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
   currentRoute,
 }: RightSideBarProps) {
   const show = currentRoute === "/editor";
-
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
   const [paperFormat, setPaperFormat] = useState<string>("a4");
@@ -1443,7 +1446,6 @@ export default function RightSideBar({
   const icons = useAppSelector((state) => state.rightsidebar.icons);
 
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setSelectedFont(font);
@@ -1920,15 +1922,6 @@ export default function RightSideBar({
     <>
       {isPhoneView ? (
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
-            >
-              <Settings className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
           <SheetContent
             side="right"
             className="w-[350px] sm:w-[400px] flex flex-col"

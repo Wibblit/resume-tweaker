@@ -12,7 +12,9 @@ import { usePathname } from "next/navigation";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<string>("basics");
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
@@ -25,19 +27,16 @@ export default function Editor() {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="flex flex-grow overflow-hidden">
-        <div className="">
+        <div>
           <LeftSideBar
             activeSection={activeSection}
             setActiveSection={setActiveSection}
+            isPanelOpen={isPanelOpen}
+            setIsPanelOpen={setIsPanelOpen}
           />
         </div>
-
-        <div
-          className={`flex-grow overflow-auto ${
-            isPhoneView ? "flex justify-center items-start" : ""
-          }`}
-        >
-          <div className={`${isPhoneView ? "w-full max-w-md" : ""}`}>
+        <div className={`flex-grow overflow-auto ${isPhoneView ? 'flex justify-center items-start' : ''}`}>
+          <div className={`${isPhoneView ? 'w-full max-w-md' : ''}`}>
             <ResumePages
               baseColor={ResumeAppearance.baseColor}
               fontFamily={ResumeAppearance.font}
@@ -48,14 +47,17 @@ export default function Editor() {
               printFrameRef={printFrameRef}
               resumeData={ResumeData}
               isPhoneView={isPhoneView}
+              isPanelOpen={isPanelOpen}
+              setIsPanelOpen={setIsPanelOpen}
+              isMobileMenuOpen={isMobileMenuOpen}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
             />
           </div>
         </div>
-
-        {!isPhoneView && <RightSideBar printFrameRef={printFrameRef} currentRoute={currentRoute} />}
+        {!isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen} currentRoute={currentRoute}  printFrameRef={printFrameRef} />}
       </div>
 
-      {isPhoneView && <RightSideBar printFrameRef={printFrameRef} currentRoute={currentRoute} />}
+      {isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen} currentRoute={currentRoute} printFrameRef={printFrameRef} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -49,6 +49,8 @@ import { useMediaQuery } from "react-responsive";
 interface LeftSideBarProps {
   activeSection: string;
   setActiveSection: React.Dispatch<React.SetStateAction<string>>;
+  isPanelOpen: boolean;
+  setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface ResumeSection {
@@ -61,6 +63,8 @@ interface ResumeSection {
 export default function LeftSideBar({
   activeSection,
   setActiveSection,
+  isPanelOpen,
+  setIsPanelOpen,
 }: LeftSideBarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(320);
@@ -187,7 +191,6 @@ export default function LeftSideBar({
       fields: ["name", "phone", "email"],
     },
   ];
-
 
   useEffect(() => {
     if (isPhoneView) {
@@ -716,14 +719,14 @@ export default function LeftSideBar({
   return (
     <>
       {isPhoneView ? (
-        <div>
-            <LeftSidePanel
-              resumeSections={resumeSections}
-              activeSection={activeSection}
-              setActiveSection={setActiveSection}
-              renderSheetContent={renderSheetContent}
-            />
-        </div>
+        <LeftSidePanel
+          resumeSections={resumeSections}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          renderSheetContent={renderSheetContent}
+          isPanelOpen={isPanelOpen}
+          setIsPanelOpen={setIsPanelOpen}
+        />
       ) : (
         <div
           ref={sidebarRef}
