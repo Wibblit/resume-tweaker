@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChevronUp,
   FileText,
+  Settings,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -58,6 +59,10 @@ interface ResumePagesProps {
   printFrameRef: React.MutableRefObject<HTMLIFrameElement | null>;
   resumeData: ResumeData;
   isPhoneView: boolean;
+  isPanelOpen: boolean;
+  setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const MM_TO_PX = 3.78;
@@ -144,6 +149,10 @@ export default function ResumePages({
   printFrameRef,
   resumeData,
   isPhoneView,
+  isPanelOpen,
+  setIsPanelOpen,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
 }: ResumePagesProps) {
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
@@ -297,12 +306,46 @@ export default function ResumePages({
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)]">
-      <div className="p-4 border-b border-border flex justify-center items-center bg-background">
+      <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
+        {isPhoneView && (
+           <AnimatePresence>
+           {(
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               transition={{ duration: 0.2 }}
+               className="z-50 md:hidden"
+             >
+               <Button
+                 variant="secondary"
+                 size="icon"
+                 onClick={() => setIsPanelOpen(!isPanelOpen)}
+                 className="rounded-md shadow-md bg-background border border-border"
+               >
+                 <Menu className="h-4 w-4" />
+               </Button>
+             </motion.div>
+           )}
+         </AnimatePresence>
+        )}
         <div className="flex items-center space-x-3">
           <ThemeAwareLogo />
           <Separator orientation="vertical" className="h-6" />
           <span className="font-semibold text-lg">John Doe's Resume</span>
         </div>
+        {isPhoneView && (
+          <div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
+            >
+              <Settings className="h-6 w-6" />
+            </Button>
+          </div>
+        )}
       </div>
       <ScrollArea className="flex-grow" ref={scrollAreaRef}>
         <div

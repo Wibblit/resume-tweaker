@@ -534,18 +534,18 @@
 //             <button
 //               onClick={() => dispatch(ResetStyle())}
 //               className="
-//     bg-[hsl(var(--background))] 
-//     text-[hsl(var(--foreground))] 
-//     border-2 
-//     border-[hsl(var(--border))] 
-//     rounded-[var(--radius)] 
-//     px-4 
-//     py-2 
-//     font-ltwave 
-//     cursor-pointer 
-//     transition 
-//     duration-300 
-//     hover:bg-[hsl(var(--secondary))] 
+//     bg-[hsl(var(--background))]
+//     text-[hsl(var(--foreground))]
+//     border-2
+//     border-[hsl(var(--border))]
+//     rounded-[var(--radius)]
+//     px-4
+//     py-2
+//     font-ltwave
+//     cursor-pointer
+//     transition
+//     duration-300
+//     hover:bg-[hsl(var(--secondary))]
 //     hover:text-[hsl(var(--secondary-foreground))]
 //   "
 //             >
@@ -712,6 +712,8 @@ const fonts = [
 
 interface RightSideBarProps {
   printFrameRef: React.RefObject<HTMLIFrameElement>;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const templates = [
@@ -766,7 +768,11 @@ const DraggableSection: React.FC<DraggableSectionProps> = ({
   </Draggable>
 );
 
-export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
+export default function RightSideBar({
+  printFrameRef,
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
+}: RightSideBarProps) {
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
   const [paperFormat, setPaperFormat] = useState<string>("a4");
@@ -787,7 +793,6 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
   const icons = useAppSelector((state) => state.rightsidebar.icons);
 
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setSelectedFont(font);
@@ -1212,15 +1217,6 @@ export default function RightSideBar({ printFrameRef }: RightSideBarProps) {
     <>
       {isPhoneView ? (
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
-            >
-              <Settings className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
           <SheetContent
             side="right"
             className="w-[350px] sm:w-[400px] flex flex-col"

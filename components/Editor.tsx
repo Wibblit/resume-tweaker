@@ -11,7 +11,9 @@ import { useMediaQuery } from "react-responsive";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<string>("basics");
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
@@ -26,6 +28,8 @@ export default function Editor() {
           <LeftSideBar
             activeSection={activeSection}
             setActiveSection={setActiveSection}
+            isPanelOpen={isPanelOpen}
+            setIsPanelOpen={setIsPanelOpen}
           />
         </div>
         <div className={`flex-grow overflow-auto ${isPhoneView ? 'flex justify-center items-start' : ''}`}>
@@ -40,14 +44,18 @@ export default function Editor() {
               printFrameRef={printFrameRef}
               resumeData={ResumeData}
               isPhoneView={isPhoneView}
+              isPanelOpen={isPanelOpen}
+              setIsPanelOpen={setIsPanelOpen}
+              isMobileMenuOpen={isMobileMenuOpen}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
             />
           </div>
         </div>
 
-        {!isPhoneView && <RightSideBar printFrameRef={printFrameRef} />}
+        {!isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen}  printFrameRef={printFrameRef} />}
       </div>
 
-      {isPhoneView && <RightSideBar printFrameRef={printFrameRef} />}
+      {isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen} printFrameRef={printFrameRef} />}
     </div>
   );
 }
