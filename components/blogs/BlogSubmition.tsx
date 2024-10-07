@@ -104,7 +104,7 @@ export default function BlogForm() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
+    <div className="container mt-8 mx-auto px-4 py-8 max-w-3xl">
       <Link
         href="/blogs"
         className="inline-flex items-center text-primary hover:underline mb-6"

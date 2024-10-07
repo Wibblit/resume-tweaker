@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
-import React, { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import React, { useState, useRef, useEffect } from "react";
+import ThemeAwareLogo from "./ThemeAwareLogo";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import {
   Trash2,
   Undo,
@@ -15,59 +17,60 @@ import {
   Menu,
   ChevronDown,
   ChevronUp,
-} from "lucide-react"
-import { AnimatePresence, motion } from "framer-motion"
+  FileText,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ReactZoomPanPinchRef,
   TransformComponent,
   TransformWrapper,
-} from "react-zoom-pan-pinch"
-import Template1 from "@/templates/Template1"
-import Template2 from "@/templates/Template2"
-import Template3 from "@/templates/Template3"
-import Template4 from "@/templates/Template4"
-import Template5 from "@/templates/Template5"
-import Template6 from "@/templates/Template6"
-import { useAppSelector } from "@/hooks/hooks"
-import { ResumeData } from "@/types/types"
+} from "react-zoom-pan-pinch";
+import Template1 from "@/templates/Template1";
+import Template2 from "@/templates/Template2";
+import Template3 from "@/templates/Template3";
+import Template4 from "@/templates/Template4";
+import Template5 from "@/templates/Template5";
+import Template6 from "@/templates/Template6";
+import { useAppSelector } from "@/hooks/hooks";
+import { ResumeData } from "@/types/types";
 
 interface Page {
-  id: number
-  template: number
-  content: ResumeData
+  id: number;
+  template: number;
+  content: ResumeData;
 }
 
 const PAGE_FORMATS: {
-  a4: { width: number; height: number }
-  letter: { width: number; height: number }
+  a4: { width: number; height: number };
+  letter: { width: number; height: number };
 } = {
   a4: { width: 210, height: 297 },
   letter: { width: 216, height: 279 },
-}
+};
 
 interface ResumePagesProps {
-  pageFormat: "a4" | "letter"
-  baseColor: string
-  fontSize: number
-  fontFamily: string
-  lineHeight: number
-  margin: number
-  printFrameRef: React.MutableRefObject<HTMLIFrameElement | null>
-  resumeData: ResumeData
-  isPhoneView: boolean
+  pageFormat: "a4" | "letter";
+  baseColor: string;
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  margin: number;
+  printFrameRef: React.MutableRefObject<HTMLIFrameElement | null>;
+  resumeData: ResumeData;
+  isPhoneView: boolean;
 }
 
-const MM_TO_PX = 3.78
+const MM_TO_PX = 3.78;
 
 const ResumePage: React.FC<{
-  page: Page
-  pageNumber: number
-  pageFormat: "a4" | "letter"
-  baseColor: string
-  fontSize: number
-  fontFamily: string
-  lineHeight: number
-  margin: number
+  page: Page;
+  pageNumber: number;
+  pageFormat: "a4" | "letter";
+  baseColor: string;
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  margin: number;
 }> = ({
   page,
   pageNumber,
@@ -86,25 +89,25 @@ const ResumePage: React.FC<{
       fontFamily,
       lineHeight,
       margin,
-    }
+    };
 
     switch (page.template) {
       case 1:
-        return <Template1 {...props} />
+        return <Template1 {...props} />;
       case 2:
-        return <Template2 {...props} />
+        return <Template2 {...props} />;
       case 3:
-        return <Template3 {...props} />
+        return <Template3 {...props} />;
       case 4:
-        return <Template4 {...props} />
+        return <Template4 {...props} />;
       case 5:
-        return <Template5 {...props} />
+        return <Template5 {...props} />;
       case 6:
-        return <Template6 {...props} />
+        return <Template6 {...props} />;
       default:
-        return <Template1 {...props} />
+        return <Template1 {...props} />;
     }
-  }
+  };
 
   return (
     <div
@@ -128,8 +131,8 @@ const ResumePage: React.FC<{
         }}
       />
     </div>
-  )
-}
+  );
+};
 
 export default function ResumePages({
   pageFormat,
@@ -140,57 +143,59 @@ export default function ResumePages({
   margin,
   printFrameRef,
   resumeData,
-  isPhoneView
+  isPhoneView,
 }: ResumePagesProps) {
-  const templateNumber: number = useAppSelector((state) => state.rightsidebar.id)
-  
+  const templateNumber: number = useAppSelector(
+    (state) => state.rightsidebar.id
+  );
+
   const [pages, setPages] = useState<Page[]>([
     { id: 1, template: templateNumber, content: resumeData },
-  ])
+  ]);
   const [history, setHistory] = useState<Page[][]>([
     [{ id: 1, template: templateNumber, content: resumeData }],
-  ])
-  const [historyIndex, setHistoryIndex] = useState<number>(0)
-  const [isHovering, setIsHovering] = useState(false)
-  const transformRef = useRef<ReactZoomPanPinchRef>(null)
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
+  ]);
+  const [historyIndex, setHistoryIndex] = useState<number>(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const transformRef = useRef<ReactZoomPanPinchRef>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const updatedPages = pages.map(page => ({
+    const updatedPages = pages.map((page) => ({
       ...page,
       template: templateNumber,
       content: resumeData,
-    }))
-    setPages(updatedPages)
-    
+    }));
+    setPages(updatedPages);
+
     // Update history
-    const newHistory = [...history.slice(0, historyIndex + 1), updatedPages]
-    setHistory(newHistory)
-    setHistoryIndex(newHistory.length - 1)
-  }, [templateNumber, resumeData])
+    const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  }, [templateNumber, resumeData]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return
+      if (event.origin !== window.location.origin) return;
 
-      if (event.data.type === "ZOOM_IN") transformRef.current?.zoomIn(0.2)
-      if (event.data.type === "ZOOM_OUT") transformRef.current?.zoomOut(0.2)
-      if (event.data.type === "CENTER_VIEW") transformRef.current?.centerView()
+      if (event.data.type === "ZOOM_IN") transformRef.current?.zoomIn(0.2);
+      if (event.data.type === "ZOOM_OUT") transformRef.current?.zoomOut(0.2);
+      if (event.data.type === "CENTER_VIEW") transformRef.current?.centerView();
       if (event.data.type === "RESET_VIEW") {
-        resetView()
+        resetView();
       }
-    }
+    };
 
-    window.addEventListener("message", handleMessage)
+    window.addEventListener("message", handleMessage);
 
     return () => {
-      window.removeEventListener("message", handleMessage)
-    }
-  }, [transformRef])
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [transformRef]);
 
   const addPage = () => {
-    const newPageId = pages.length + 1
-    const lastPage = pages[pages.length - 1]
+    const newPageId = pages.length + 1;
+    const lastPage = pages[pages.length - 1];
     const newPages = [
       ...pages,
       {
@@ -198,70 +203,70 @@ export default function ResumePages({
         template: lastPage.template,
         content: resumeData,
       },
-    ]
-    setPages(newPages)
+    ];
+    setPages(newPages);
 
     // Update history
-    const newHistory = [...history.slice(0, historyIndex + 1), newPages]
-    setHistory(newHistory)
-    setHistoryIndex(newHistory.length - 1)
+    const newHistory = [...history.slice(0, historyIndex + 1), newPages];
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
 
     // Scroll to the new page after a short delay to ensure the page has been rendered
     setTimeout(() => {
-      const newPageElement = document.getElementById(`page-${newPageId}`)
+      const newPageElement = document.getElementById(`page-${newPageId}`);
       if (newPageElement && scrollAreaRef.current) {
         const scrollViewport = scrollAreaRef.current.querySelector(
           "[data-radix-scroll-area-viewport]"
-        )
+        );
         if (scrollViewport) {
-          const containerRect = scrollViewport.getBoundingClientRect()
-          const newPageRect = newPageElement.getBoundingClientRect()
+          const containerRect = scrollViewport.getBoundingClientRect();
+          const newPageRect = newPageElement.getBoundingClientRect();
           const scrollTop =
-            newPageRect.top - containerRect.top + scrollViewport.scrollTop
+            newPageRect.top - containerRect.top + scrollViewport.scrollTop;
 
           scrollViewport.scrollTo({
             top: scrollTop,
             behavior: "smooth",
-          })
+          });
         }
       }
-    }, 100)
-  }
+    }, 100);
+  };
 
   const deletePage = (id: number) => {
     if (pages.length > 1) {
-      const newPages = pages.filter((page) => page.id !== id)
-      setPages(newPages)
+      const newPages = pages.filter((page) => page.id !== id);
+      setPages(newPages);
 
       // Update history
-      const newHistory = [...history.slice(0, historyIndex + 1), newPages]
-      setHistory(newHistory)
-      setHistoryIndex(newHistory.length - 1)
+      const newHistory = [...history.slice(0, historyIndex + 1), newPages];
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
     }
-  }
+  };
 
   const undo = () => {
     if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1)
-      setPages(history[historyIndex - 1])
+      setHistoryIndex(historyIndex - 1);
+      setPages(history[historyIndex - 1]);
     }
-  }
+  };
 
   const redo = () => {
     if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1)
-      setPages(history[historyIndex + 1])
+      setHistoryIndex(historyIndex + 1);
+      setPages(history[historyIndex + 1]);
     }
-  }
+  };
 
   const resetView = () => {
     if (transformRef.current) {
-      transformRef.current.resetTransform()
+      transformRef.current.resetTransform();
       setTimeout(() => {
-        transformRef.current?.centerView(isPhoneView ? 0.6 : 1)
-      }, 50)
+        transformRef.current?.centerView(isPhoneView ? 0.6 : 1);
+      }, 50);
     }
-  }
+  };
 
   const renderControls = (zoomIn: () => void, zoomOut: () => void) => (
     <>
@@ -269,10 +274,7 @@ export default function ResumePages({
         <Button onClick={undo} disabled={historyIndex === 0}>
           <Undo className="h-4 w-4" />
         </Button>
-        <Button
-          onClick={redo}
-          disabled={historyIndex === history.length - 1}
-        >
+        <Button onClick={redo} disabled={historyIndex === history.length - 1}>
           <Redo className="h-4 w-4" />
         </Button>
         <Button onClick={addPage}>
@@ -291,12 +293,21 @@ export default function ResumePages({
         </Button>
       </div>
     </>
-  )
+  );
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)]">
+      <div className="p-4 border-b border-border flex justify-center items-center bg-background">
+        <div className="flex items-center space-x-3">
+          <ThemeAwareLogo />
+          <Separator orientation="vertical" className="h-6" />
+          <span className="font-semibold text-lg">John Doe's Resume</span>
+        </div>
+      </div>
       <ScrollArea className="flex-grow" ref={scrollAreaRef}>
-        <div className={`p-4 pb-20 ${isPhoneView ? 'flex justify-center' : ''}`}>
+        <div
+          className={`p-4 pb-20 ${isPhoneView ? "flex justify-center" : ""}`}
+        >
           <TransformWrapper
             ref={transformRef}
             centerOnInit
@@ -370,10 +381,13 @@ export default function ResumePages({
       {!isPhoneView && (
         <div className="bottom-0 left-0 right-0 p-4 border-t border-border flex flex-col gap-2 bg-background">
           <div className="flex justify-between items-center">
-            {renderControls(() => transformRef.current?.zoomIn(0.2), () => transformRef.current?.zoomOut(0.2))}
+            {renderControls(
+              () => transformRef.current?.zoomIn(0.2),
+              () => transformRef.current?.zoomOut(0.2)
+            )}
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
