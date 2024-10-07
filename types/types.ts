@@ -213,6 +213,21 @@ export type ResumeStyles = Template & {
   };
 }
 
+export interface CoverLetterState {
+  salutation: string; // Plain text input for greeting
+  date: string; // Date input
+  recipientInfo: string; // Plain text input for recipient details
+  subject: string; // Plain text input for subject line
+  opening: string; // Rich text input for opening paragraph
+  interestInPosition: string; // Rich text input for interest in the position
+  professionalSummary: string; // Rich text input for professional summary
+  keyAchievements: string; // Rich text input for key achievements
+  culturalFit: string; // Rich text input for cultural fit
+  closing: string; // Rich text input for closing paragraph
+  signOff: string; // Plain text input for sign-off message
+}
+
+
 export interface URL {
   href: string;
   label: string;

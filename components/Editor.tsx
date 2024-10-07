@@ -8,6 +8,7 @@ import LeftSideBar from "@/components/EditorLeftSideBar";
 import RightSideBar from "@/components/EditorRightSideBar";
 import ResumePages from "@/components/ResumePages";
 import { useMediaQuery } from "react-responsive";
+import { usePathname } from "next/navigation";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<string>("basics");
@@ -20,6 +21,8 @@ export default function Editor() {
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
+
+  const currentRoute = usePathname();
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
@@ -51,11 +54,10 @@ export default function Editor() {
             />
           </div>
         </div>
-
-        {!isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen}  printFrameRef={printFrameRef} />}
+        {!isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen} currentRoute={currentRoute}  printFrameRef={printFrameRef} />}
       </div>
 
-      {isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen} printFrameRef={printFrameRef} />}
+      {isPhoneView && <RightSideBar setIsMobileMenuOpen={setIsMobileMenuOpen} isMobileMenuOpen={isMobileMenuOpen} currentRoute={currentRoute} printFrameRef={printFrameRef} />}
     </div>
   );
 }
