@@ -7,10 +7,14 @@ import { useMediaQuery } from "react-responsive";
 import CoverLeftSideBar from "./CoverEditorLeftSideBar";
 import CoverLetterPages from "./coverPage";
 import { usePathname } from "next/navigation";
+import { CoverLetterState } from "@/types/types";
 
 export default function CoverEditor() {
-  const [activeSection, setActiveSection] = useState<string>("basics");
+  const [activeSection, setActiveSection] = useState<
+    keyof CoverLetterState | ""
+  >("salutation");
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const CoverLetterData = useAppSelector((state) => state.coverletter);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
@@ -22,15 +26,13 @@ export default function CoverEditor() {
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
-      <div className="flex md:hidden items-center justify-center p-4 border-b">
-        <h1 className="text-2xl font-bold">Resume Tweaker</h1>
-      </div>
-
       <div className="flex flex-grow overflow-hidden">
         <div className="relative">
           <CoverLeftSideBar
             activeSection={activeSection}
             setActiveSection={setActiveSection}
+            isPanelOpen={isPanelOpen}
+            setIsPanelOpen={setIsPanelOpen}
           />
         </div>
 
@@ -50,6 +52,10 @@ export default function CoverEditor() {
               printFrameRef={printFrameRef}
               coverLetterData={CoverLetterData}
               isPhoneView={isPhoneView}
+              isPanelOpen={isPanelOpen}
+              setIsPanelOpen={setIsPanelOpen}
+              isMobileMenuOpen={isMobileMenuOpen}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
             />
           </div>
         </div>
