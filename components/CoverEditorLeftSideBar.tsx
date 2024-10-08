@@ -313,7 +313,8 @@ import { useMediaQuery } from "react-responsive";
 import { useAppDispatch } from "@/hooks/hooks";
 import { updateCoverLetter } from "@/slices/coverletterSlice";
 import { RichInput } from "./TextEditor";
-import CoverLetterPanel from "./CoverLeftSidePanel";
+import LeftSidePanel from "./LeftSidePanel";
+import { CoverLetterData } from "@/types/types";
 
 interface CoverLeftSideBarProps {
   activeSection: keyof CoverLetterData | "";
@@ -331,19 +332,6 @@ interface CoverLetterSection {
   helperText: string;
 }
 
-interface CoverLetterData {
-  salutation: string;
-  date: string;
-  recipientInfo: string;
-  subject: string;
-  opening: string;
-  interestInPosition: string;
-  professionalSummary: string;
-  keyAchievements: string;
-  culturalFit: string;
-  closing: string;
-  signOff: string;
-}
 
 export default function CoverLeftSideBar({
   activeSection,
@@ -540,8 +528,8 @@ export default function CoverLeftSideBar({
   return (
     <>
       {isPhoneView ? (
-        <CoverLetterPanel
-          coverLetterSections={coverLetterSections}
+        <LeftSidePanel<CoverLetterData>
+          sections={coverLetterSections}
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           renderSheetContent={renderSheetContent}

@@ -349,3 +349,24 @@ export interface ResumeData {
   certifications: Certification[];
   references: Reference[];
 }
+
+export interface CoverLetterData {
+  salutation: string;
+  date: string;
+  recipientInfo: string;
+  subject: string;
+  opening: string;
+  interestInPosition: string;
+  professionalSummary: string;
+  keyAchievements: string;
+  culturalFit: string;
+  closing: string;
+  signOff: string;
+}
+
+export type ResumeSection = {
+  id: keyof ResumeData;
+  icon: React.ReactNode;
+  title: string;
+  fields: string[];
+};

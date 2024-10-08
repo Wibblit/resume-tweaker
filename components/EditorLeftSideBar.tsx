@@ -42,22 +42,16 @@ import {
 import LeftSidePanel from "./LeftSidePanel";
 import { useAppDispatch } from "@/hooks/hooks";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
-import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
+import { SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "./TextEditor";
 import { useMediaQuery } from "react-responsive";
+import { ResumeData, ResumeSection } from "@/types/types";
 
 interface LeftSideBarProps {
-  activeSection: string;
-  setActiveSection: React.Dispatch<React.SetStateAction<string>>;
+  activeSection: keyof ResumeData | "";
+  setActiveSection: React.Dispatch<React.SetStateAction<keyof ResumeData | "">>;
   isPanelOpen: boolean;
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-interface ResumeSection {
-  id: keyof ResumeData;
-  icon: JSX.Element;
-  title: string;
-  fields: string[];
 }
 
 export default function LeftSideBar({
@@ -719,8 +713,8 @@ export default function LeftSideBar({
   return (
     <>
       {isPhoneView ? (
-        <LeftSidePanel
-          resumeSections={resumeSections}
+        <LeftSidePanel<ResumeData>
+          sections={resumeSections}
           activeSection={activeSection}
           setActiveSection={setActiveSection}
           renderSheetContent={renderSheetContent}
