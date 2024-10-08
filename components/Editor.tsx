@@ -17,7 +17,7 @@ export default function Editor() {
 
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
-  const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
+  const ResumeAppearance = useAppSelector((state)=> state.rightsidebar)
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
