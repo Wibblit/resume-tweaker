@@ -1368,11 +1368,11 @@ const templates = [
 ];
 
 const covertemplate = [
-  { id: 1, name: "Cover Man", image: "/templates/template1.png" },
-  { id: 2, name: "Cover Man", image: "/templates/template2.jpg" },
-  { id: 3, name: "Cover Man", image: "/templates/template3.jpg" },
-  { id: 4, name: "Cover Man", image: "/templates/template4.png" },
-  { id: 5, name: "Cover Man", image: "/templates/template5.png" },
+  { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.png" },
+  { id: 2, name: "Modern Header", image: "/templates/ctemplate2.png" },
+  { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.png" },
+  { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.png" },
+  { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.png" },
 ];
 
 const abbrv = {

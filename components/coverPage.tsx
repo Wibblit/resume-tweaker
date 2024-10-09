@@ -1,20 +1,18 @@
 // "use client";
 
 // import React, { useState, useRef, useEffect } from "react";
+// import ThemeAwareLogo from "./ThemeAwareLogo";
 // import { Button } from "@/components/ui/button";
 // import { ScrollArea } from "@/components/ui/scroll-area";
+// import { Separator } from "@/components/ui/separator";
 // import {
-//   Trash2,
 //   Undo,
 //   Redo,
 //   ZoomIn,
 //   ZoomOut,
-//   Plus,
-//   FileDown,
 //   RotateCcw,
 //   Menu,
-//   ChevronDown,
-//   ChevronUp,
+//   Settings,
 // } from "lucide-react";
 // import { AnimatePresence, motion } from "framer-motion";
 // import {
@@ -22,7 +20,11 @@
 //   TransformComponent,
 //   TransformWrapper,
 // } from "react-zoom-pan-pinch";
-// import CoverTemplate1 from "@/templates/covertemplate1";
+// import CoverTemplate1 from "@/templates/coverlettertemplates/covertemplate1";
+// import CoverTemplate2 from "@/templates/coverlettertemplates/covertemplate2";
+// import CoverTemplate3 from "@/templates/coverlettertemplates/covertemplate3";
+// import CoverTemplate4 from "@/templates/coverlettertemplates/covertemplate4";
+// import CoverTemplate5 from "@/templates/coverlettertemplates/covertemplate5";
 // import { useAppSelector } from "@/hooks/hooks";
 // import { CoverLetterState } from "@/types/types";
 
@@ -166,6 +168,20 @@
 //     };
 //   }, [transformRef]);
 
+//   const undo = () => {
+//     if (historyIndex > 0) {
+//       setHistoryIndex(historyIndex - 1);
+//       setPages(history[historyIndex - 1]);
+//     }
+//   };
+
+//   const redo = () => {
+//     if (historyIndex < history.length - 1) {
+//       setHistoryIndex(historyIndex + 1);
+//       setPages(history[historyIndex + 1]);
+//     }
+//   };
+
 //   const resetView = () => {
 //     if (transformRef.current) {
 //       transformRef.current.resetTransform();
@@ -178,13 +194,19 @@
 //   const renderControls = (zoomIn: () => void, zoomOut: () => void) => (
 //     <>
 //       <div className="flex space-x-2">
-//         <Button onClick={resetView}>
-//           <RotateCcw className="h-4 w-4" />
+//         <Button onClick={undo} disabled={historyIndex === 0}>
+//           <Undo className="h-4 w-4" />
+//         </Button>
+//         <Button onClick={redo} disabled={historyIndex === history.length - 1}>
+//           <Redo className="h-4 w-4" />
 //         </Button>
 //       </div>
 //       <div className="flex space-x-2">
 //         <Button onClick={() => zoomOut()}>
 //           <ZoomOut className="h-4 w-4" />
+//         </Button>
+//         <Button onClick={resetView}>
+//           <RotateCcw className="h-4 w-4" />
 //         </Button>
 //         <Button onClick={() => zoomIn()}>
 //           <ZoomIn className="h-4 w-4" />
@@ -195,6 +217,47 @@
 
 //   return (
 //     <div className="flex flex-col h-[calc(100vh-0px)]">
+//       <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
+//         {isPhoneView && (
+//           <AnimatePresence>
+//             {
+//               <motion.div
+//                 initial={{ opacity: 0 }}
+//                 animate={{ opacity: 1 }}
+//                 exit={{ opacity: 0 }}
+//                 transition={{ duration: 0.2 }}
+//                 className="z-50 md:hidden"
+//               >
+//                 <Button
+//                   variant="secondary"
+//                   size="icon"
+//                   onClick={() => setIsPanelOpen(!isPanelOpen)}
+//                   className="rounded-md shadow-md bg-background border border-border"
+//                 >
+//                   <Menu className="h-4 w-4" />
+//                 </Button>
+//               </motion.div>
+//             }
+//           </AnimatePresence>
+//         )}
+//         <div className="flex items-center space-x-3">
+//           <ThemeAwareLogo />
+//           <Separator orientation="vertical" className="h-6" />
+//           <span className="font-semibold text-lg">John Doe's Cover Letter</span>
+//         </div>
+//         {isPhoneView && (
+//           <div>
+//             <Button
+//               variant="ghost"
+//               size="icon"
+//               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+//               className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
+//             >
+//               <Settings className="h-6 w-6" />
+//             </Button>
+//           </div>
+//         )}
+//       </div>
 //       <ScrollArea className="flex-grow" ref={scrollAreaRef}>
 //         <div
 //           className={`p-4 pb-20 ${isPhoneView ? "flex justify-center" : ""}`}
@@ -295,12 +358,17 @@ import {
   TransformComponent,
   TransformWrapper,
 } from "react-zoom-pan-pinch";
-import CoverTemplate1 from "@/templates/covertemplate1";
+import CoverTemplate1 from "@/templates/coverlettertemplates/covertemplate1";
+import CoverTemplate2 from "@/templates/coverlettertemplates/covertemplate2";
+import CoverTemplate3 from "@/templates/coverlettertemplates/covertemplate3";
+import CoverTemplate4 from "@/templates/coverlettertemplates/covertemplate4";
+import CoverTemplate5 from "@/templates/coverlettertemplates/covertemplate5";
 import { useAppSelector } from "@/hooks/hooks";
 import { CoverLetterState } from "@/types/types";
 
 interface Page {
   id: number;
+  template: number;
   content: CoverLetterState;
 }
 
@@ -349,6 +417,33 @@ const CoverLetterPage: React.FC<{
   lineHeight,
   margin,
 }) => {
+const renderTemplate = (page: Page) => {
+  const props = {
+    content: page.content,
+    baseColor,
+    fontSize,
+    fontFamily,
+    lineHeight,
+    margin,
+    pageFormat
+  };
+
+  switch (page.template) {
+    case 1:
+      return <CoverTemplate1 {...props} />;
+    case 2:
+      return <CoverTemplate2 {...props} />;
+    case 3:
+      return <CoverTemplate3 {...props} />;
+    case 4:
+      return <CoverTemplate4 {...props} />;
+    case 5:
+      return <CoverTemplate5 {...props} />;
+    default:
+      return <CoverTemplate1 {...props} />;
+  }
+};
+
   return (
     <div
       id={`page-${page.id}`}
@@ -363,14 +458,7 @@ const CoverLetterPage: React.FC<{
       <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
         Page {pageNumber}
       </div>
-      <CoverTemplate1
-        content={page.content}
-        baseColor={baseColor}
-        fontSize={fontSize}
-        fontFamily={fontFamily}
-        lineHeight={lineHeight}
-        margin={margin}
-      />
+      {renderTemplate(page)}
       <div
         className="absolute inset-x-0 border-b border-dashed"
         style={{
@@ -396,11 +484,15 @@ export default function CoverLetterPages({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
 }: CoverLetterPagesProps) {
+  const templateNumber: number = useAppSelector(
+    (state) => state.rightsidebar.id
+  );
+
   const [pages, setPages] = useState<Page[]>([
-    { id: 1, content: coverLetterData },
+    { id: 1, template: templateNumber, content: coverLetterData },
   ]);
   const [history, setHistory] = useState<Page[][]>([
-    [{ id: 1, content: coverLetterData }],
+    [{ id: 1, template: templateNumber, content: coverLetterData }],
   ]);
   const [historyIndex, setHistoryIndex] = useState<number>(0);
   const [isHovering, setIsHovering] = useState(false);
@@ -410,6 +502,7 @@ export default function CoverLetterPages({
   useEffect(() => {
     const updatedPages = pages.map((page) => ({
       ...page,
+      template: templateNumber,
       content: coverLetterData,
     }));
     setPages(updatedPages);
@@ -418,7 +511,7 @@ export default function CoverLetterPages({
     const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
     setHistory(newHistory);
     setHistoryIndex(newHistory.length - 1);
-  }, [coverLetterData]);
+  }, [templateNumber, coverLetterData]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -605,4 +698,4 @@ export default function CoverLetterPages({
       )}
     </div>
   );
-}
+} 
