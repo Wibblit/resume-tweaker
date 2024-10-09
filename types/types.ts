@@ -226,7 +226,7 @@ export interface CoverLetterState {
   closing: string; // Rich text input for closing paragraph
   signOff: string; // Plain text input for sign-off message
 }
-
+  
 
 export interface URL {
   href: string;
