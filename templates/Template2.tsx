@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
 import {
   UpdateBaseColor,

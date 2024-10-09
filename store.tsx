@@ -8,6 +8,7 @@ import rightsidebarReducer from "./slices/rightsidebarSlice";
 import leftsidebarReducer from "./slices/leftsidebarSlice";
 import interviewReducer from "./slices/interviewSlice";
 import coverletterReducer from "./slices/coverletterSlice";
+import currentResumeReducer from "./slices/currentResumeSlices";
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     leftsidebar: leftsidebarReducer,
     interview: interviewReducer,
     coverletter: coverletterReducer,
+    currentResume: currentResumeReducer,
   },
   middleware: (getDefaultMiddleware: GetDefaultMiddleware) =>
     getDefaultMiddleware().concat(logger),
