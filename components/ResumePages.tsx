@@ -157,7 +157,7 @@ export default function ResumePages({
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
   );
-
+  const resumeName = useAppSelector((state) => state.currentResume).currResumeName;
   const [pages, setPages] = useState<Page[]>([
     { id: 1, template: templateNumber, content: resumeData },
   ]);
@@ -332,7 +332,7 @@ export default function ResumePages({
         <div className="flex items-center space-x-3">
           <ThemeAwareLogo />
           <Separator orientation="vertical" className="h-6" />
-          <span className="font-semibold text-lg">John Doe's Resume</span>
+          <span className="font-semibold text-lg">{resumeName}</span>
         </div>
         {isPhoneView && (
           <div>

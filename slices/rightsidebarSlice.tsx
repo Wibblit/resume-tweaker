@@ -232,6 +232,9 @@ const rightsidebarSlice = createSlice({
     UpdatePaperFormat(state, action) {
       state.paperFormat = action.payload;
     },
+    UpdateSectionOrderLayout(state, action) {
+      state.sectionOrder = action.payload;
+    },
     updateSectionOrder: (
       state,
       action: PayloadAction<{
@@ -355,6 +358,7 @@ export const {
   UpdateSeparator,
   UpdateIcons,
   DownloadJSON,
+  UpdateSectionOrderLayout,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

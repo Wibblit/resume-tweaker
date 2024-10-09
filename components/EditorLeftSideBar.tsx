@@ -37,10 +37,9 @@ import {
   Star,
   Trash2,
   Book,
-  Menu,
 } from "lucide-react";
 import LeftSidePanel from "./LeftSidePanel";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 import { SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "./TextEditor";
@@ -64,24 +63,11 @@ export default function LeftSideBar({
   const [sidebarWidth, setSidebarWidth] = useState(320);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [resumeData, setResumeData] = useState<ResumeData>({
-    basics: [],
-    summary: [],
-    profiles: [],
-    skills: [],
-    projects: [],
-    education: [],
-    experience: [],
-    languages: [],
-    volunteer: [],
-    awards: [],
-    publications: [],
-    certifications: [],
-    references: [],
-  });
   const [urlErrors, setUrlErrors] = useState<{ [key: string]: string }>({});
   const dispatch = useAppDispatch();
+  const resumeData = useAppSelector((state) => state.leftsidebar);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
+
   const resumeSections: ResumeSection[] = [
     {
       id: "basics",
@@ -193,10 +179,6 @@ export default function LeftSideBar({
   }, [isPhoneView]);
 
   useEffect(() => {
-    dispatch(UpdateLeftBarData(resumeData));
-  }, [resumeData, dispatch]);
-
-  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
       const newWidth = e.clientX;
@@ -218,25 +200,6 @@ export default function LeftSideBar({
     };
   }, [isDragging]);
 
-  useEffect(() => {
-    const initialResumeData: ResumeData = {
-      basics: [createEmptyEntry("basics")],
-      summary: [createEmptyEntry("summary")],
-      profiles: [createEmptyEntry("profiles")],
-      skills: [createEmptyEntry("skills")],
-      projects: [createEmptyEntry("projects")],
-      education: [createEmptyEntry("education")],
-      experience: [createEmptyEntry("experience")],
-      languages: [createEmptyEntry("languages")],
-      volunteer: [createEmptyEntry("volunteer")],
-      awards: [createEmptyEntry("awards")],
-      publications: [createEmptyEntry("publications")],
-      certifications: [createEmptyEntry("certifications")],
-      references: [createEmptyEntry("references")],
-    };
-    setResumeData(initialResumeData);
-  }, []);
-
   const createEmptyEntry = (section: keyof ResumeData) => {
     const newEntry: any = { id: Date.now().toString() };
     const sectionFields =
@@ -254,23 +217,22 @@ export default function LeftSideBar({
   };
 
   const addEntry = (section: keyof ResumeData) => {
+    const updatedResumeData = { ...resumeData };
     if (section === "skills") {
-      setResumeData((prev) => ({
-        ...prev,
-        [section]: prev[section].map((entry) => ({
-          ...entry,
-          categories: [
-            ...entry.categories,
-            { id: Date.now().toString(), name: "", skills: [] },
-          ],
-        })),
+      updatedResumeData[section] = updatedResumeData[section].map((entry) => ({
+        ...entry,
+        categories: [
+          ...entry.categories,
+          { id: Date.now().toString(), name: "", skills: [] },
+        ],
       }));
     } else {
-      setResumeData((prev) => ({
-        ...prev,
-        [section]: [...prev[section], createEmptyEntry(section)],
-      }));
+      updatedResumeData[section] = [
+        ...updatedResumeData[section],
+        createEmptyEntry(section),
+      ];
     }
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const updateEntry = (
@@ -279,59 +241,58 @@ export default function LeftSideBar({
     field: string,
     value: any
   ) => {
-    setResumeData((prev) => ({
-      ...prev,
-      [section]: prev[section].map((entry: any) =>
-        entry.id === id ? { ...entry, [field]: value } : entry
-      ),
-    }));
+    const updatedResumeData = { ...resumeData };
+    updatedResumeData[section] = updatedResumeData[section].map((entry: any) =>
+      entry.id === id ? { ...entry, [field]: value } : entry
+    );
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const deleteEntry = (section: keyof ResumeData, id: string) => {
-    setResumeData((prev) => ({
-      ...prev,
-      [section]: prev[section].filter((entry: any) => entry.id !== id),
-    }));
+    const updatedResumeData = { ...resumeData };
+    //@ts-ignore
+    updatedResumeData[section] = updatedResumeData[section].filter(
+      (entry: any) => entry.id !== id
+    );
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const deleteSkillCategory = (entryId: string, categoryId: string) => {
-    setResumeData((prev) => ({
-      ...prev,
-      skills: prev.skills.map((entry) => {
-        if (entry.id === entryId) {
-          return {
-            ...entry,
-            categories: entry.categories.filter(
-              (category) => category.id !== categoryId
-            ),
-          };
-        }
-        return entry;
-      }),
-    }));
+    const updatedResumeData = { ...resumeData };
+    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+      if (entry.id === entryId) {
+        return {
+          ...entry,
+          categories: entry.categories.filter(
+            (category) => category.id !== categoryId
+          ),
+        };
+      }
+      return entry;
+    });
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const addSkill = (entryId: string, categoryId: string) => {
-    setResumeData((prev) => ({
-      ...prev,
-      skills: prev.skills.map((entry) => {
-        if (entry.id === entryId) {
-          return {
-            ...entry,
-            categories: entry.categories.map((category) => {
-              if (category.id === categoryId) {
-                return {
-                  ...category,
-                  skills: [...category.skills, { name: "", level: undefined }],
-                };
-              }
-              return category;
-            }),
-          };
-        }
-        return entry;
-      }),
-    }));
+    const updatedResumeData = { ...resumeData };
+    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+      if (entry.id === entryId) {
+        return {
+          ...entry,
+          categories: entry.categories.map((category) => {
+            if (category.id === categoryId) {
+              return {
+                ...category,
+                skills: [...category.skills, { name: "", level: undefined }],
+              };
+            }
+            return category;
+          }),
+        };
+      }
+      return entry;
+    });
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const deleteSkill = (
@@ -339,28 +300,27 @@ export default function LeftSideBar({
     categoryId: string,
     skillIndex: number
   ) => {
-    setResumeData((prev) => ({
-      ...prev,
-      skills: prev.skills.map((entry) => {
-        if (entry.id === entryId) {
-          return {
-            ...entry,
-            categories: entry.categories.map((category) => {
-              if (category.id === categoryId) {
-                return {
-                  ...category,
-                  skills: category.skills.filter(
-                    (_, index) => index !== skillIndex
-                  ),
-                };
-              }
-              return category;
-            }),
-          };
-        }
-        return entry;
-      }),
-    }));
+    const updatedResumeData = { ...resumeData };
+    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+      if (entry.id === entryId) {
+        return {
+          ...entry,
+          categories: entry.categories.map((category) => {
+            if (category.id === categoryId) {
+              return {
+                ...category,
+                skills: category.skills.filter(
+                  (_, index) => index !== skillIndex
+                ),
+              };
+            }
+            return category;
+          }),
+        };
+      }
+      return entry;
+    });
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const validateUrl = (url: string) => {
@@ -397,27 +357,24 @@ export default function LeftSideBar({
       });
     }
 
-    setResumeData((prev) => {
-      const sectionData = prev[section];
-      const updatedSection = sectionData.map((entry: any) => {
-        if (entry.id === id) {
-          const currentUrl = entry[field] as URL;
-          return {
-            ...entry,
-            [field]: {
-              href: value,
-              label: currentUrl?.label || "",
-            },
-          };
-        }
-        return entry;
-      });
-
-      return {
-        ...prev,
-        [section]: updatedSection,
-      };
+    const updatedResumeData = { ...resumeData };
+    const sectionData = updatedResumeData[section];
+    const updatedSection = sectionData.map((entry: any) => {
+      if (entry.id === id) {
+        const currentUrl = entry[field] as URL;
+        return {
+          ...entry,
+          [field]: {
+            href: value,
+            label: currentUrl?.label || "",
+          },
+        };
+      }
+      return entry;
     });
+
+    updatedResumeData[section] = updatedSection;
+    dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const renderEntryFields = (
@@ -475,6 +432,7 @@ export default function LeftSideBar({
                   />
                   {urlErrors[`${section}-${entry.id}-${field}`] && (
                     <p className="text-sm text-red-500">
+                
                       {urlErrors[`${section}-${entry.id}-${field}`]}
                     </p>
                   )}

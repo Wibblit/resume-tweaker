@@ -12,22 +12,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
- 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  Resume        Resume[]
 
   @@map("users")
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -40,34 +39,57 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
   @@map("accounts")
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("sessions")
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
   @@map("verification_tokens")
 }
- 
+
+model Resume {
+  id             String @id @default(cuid())
+  userId         String 
+  resumeName     String
+  basics         Json   @default("[]")
+  summary        Json   @default("[]")
+  profiles       Json   @default("[]")
+  skills         Json   @default("[]")
+  projects       Json   @default("[]")
+  education      Json   @default("[]")
+  experience     Json   @default("[]")
+  languages      Json   @default("[]")
+  volunteer      Json   @default("[]")
+  awards         Json   @default("[]")
+  publications   Json   @default("[]")  
+  certifications Json   @default("[]")
+  references     Json   @default("[]")
+  styles         Json   @default("{}")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("resume")
+}

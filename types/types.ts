@@ -178,7 +178,7 @@ export type BlogType = {
 
 // // & Profile & SkillCatergory & Project & Reference & Certifications & Publications & 
 // // Award & Volunteering & Language & Experience & Education
-// export type ResumeData = {
+// export type Data = {
 //   basics?: Basics;
 //   summary?: Summary;
 //   profile?: Profile[];
@@ -336,7 +336,7 @@ export interface ResumeData {
   summary: Summary[];
   profiles: Profile[];
   skills: {
-    id: string; //i added this
+    id: string; 
     categories: SkillCategory[]
   }[];
   projects: Project[];
@@ -370,3 +370,4 @@ export type ResumeSection = {
   title: string;
   fields: string[];
 };
+export type PageData = { id: string; userId: string; resumeName: string; styles: ResumeStyles; } & ResumeData;
