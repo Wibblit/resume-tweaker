@@ -34,6 +34,7 @@ import Template5 from "@/templates/Template5";
 import Template6 from "@/templates/Template6";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
+import { Skeleton } from "./ui/skeleton";
 
 interface Page {
   id: number;
@@ -63,6 +64,7 @@ interface ResumePagesProps {
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
 }
 
 const MM_TO_PX = 3.78;
@@ -153,6 +155,7 @@ export default function ResumePages({
   setIsPanelOpen,
   isMobileMenuOpen,
   setIsMobileMenuOpen,
+  isLoading,
 }: ResumePagesProps) {
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
@@ -304,6 +307,20 @@ export default function ResumePages({
     </>
   );
 
+
+  const renderSkeleton = () => (
+    <div className="flex flex-col items-center justify-start p-4">
+      <Skeleton 
+        className="mb-8"
+        style={{
+          width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
+          height: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+        }}
+      />
+    </div>
+  );
+
+
   return (
     <div className="flex flex-col h-[calc(100vh-0px)]">
       <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
@@ -367,41 +384,44 @@ export default function ResumePages({
                   wrapperClass="!w-full !h-full"
                   contentClass="flex flex-col items-center justify-start"
                 >
-                  <AnimatePresence>
-                    {pages.map((page, index) => (
-                      <motion.div
-                        key={page.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="relative"
-                        onMouseEnter={() => setIsHovering(true)}
-                        onMouseLeave={() => setIsHovering(false)}
-                      >
-                        <ResumePage
-                          page={page}
-                          pageNumber={index + 1}
-                          pageFormat={pageFormat}
-                          baseColor={baseColor}
-                          fontSize={fontSize}
-                          fontFamily={fontFamily}
-                          lineHeight={lineHeight}
-                          margin={margin}
-                        />
-                        {pages.length > 1 && (
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-2 right-1 z-10"
-                            onClick={() => deletePage(page.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                  {isLoading ? (
+                    renderSkeleton()
+                  ) : (
+                    <AnimatePresence>
+                      {pages.map((page, index) => (
+                        <motion.div
+                          key={page.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="relative"
+                          onMouseEnter={() => setIsHovering(true)}
+                          onMouseLeave={() => setIsHovering(false)}
+                        >
+                          <ResumePage
+                            page={page}
+                            pageNumber={index + 1}
+                            pageFormat={pageFormat}
+                            baseColor={baseColor}
+                            fontSize={fontSize}
+                            fontFamily={fontFamily}
+                            lineHeight={lineHeight}
+                            margin={margin}
+                          />
+                          {pages.length > 1 && (
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-1 z-10"
+                              onClick={() => deletePage(page.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>)}
                 </TransformComponent>
                 {isPhoneView && (
                   <motion.div
