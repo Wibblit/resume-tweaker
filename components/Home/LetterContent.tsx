@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import LetterItem from "./LetterItem"
-import CreateNewButton from "./CreateNewButton"
+import { CreateNewCoverButton } from "./CreateNewButton"
 
 export default function LetterContent({ searchQuery }: { searchQuery: string }) {
   const recentLetters = [
@@ -9,12 +9,14 @@ export default function LetterContent({ searchQuery }: { searchQuery: string }) 
     { id: 2, name: "Networking Letter" },
   ]
 
-  const letterTemplates = [
-    { id: 1, name: "Professional Standard", img: "/templates/letter1.png" },
-    { id: 2, name: "Modern Minimalist", img: "/templates/letter2.png" },
-    { id: 3, name: "Formal Business", img: "/templates/letter3.png" },
-    { id: 4, name: "Casual Creative", img: "/templates/letter4.png" },
-  ]
+const letterTemplates = [
+  { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.png" },
+  { id: 2, name: "Modern Header", image: "/templates/ctemplate2.png" },
+  { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.png" },
+  { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.png" },
+  { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.png" },
+];
+
 
   const filteredTemplates = letterTemplates.filter(template =>
     template.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -28,7 +30,7 @@ export default function LetterContent({ searchQuery }: { searchQuery: string }) 
           {recentLetters.map((letter) => (
             <LetterItem key={letter.id} letter={letter} />
           ))}
-          <CreateNewButton />
+          <CreateNewCoverButton />
         </div>
       </section>
       <section>
@@ -41,7 +43,7 @@ export default function LetterContent({ searchQuery }: { searchQuery: string }) 
               <Button key={template.id} variant="outline" className="h-auto flex-col items-start p-4 group">
                 <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
                   <Image
-                    src={template.img}
+                    src={template.image}
                     alt={template.name}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
