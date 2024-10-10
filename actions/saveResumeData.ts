@@ -15,7 +15,7 @@ export async function saveResumeData(
   console.log("Save data request reached...");
 
   try {
-    // Ensure the profiles and other fields are valid JSON
+ 
     const parsedProfiles = JSON.parse(JSON.stringify(resumeData.profiles));
     const parsedBasics = JSON.parse(JSON.stringify(resumeData.basics));
     const parsedSummary = JSON.parse(JSON.stringify(resumeData.summary));
@@ -38,7 +38,7 @@ export async function saveResumeData(
       data: {
         basics: parsedBasics, 
         summary: parsedSummary,
-        profiles: parsedProfiles, // Properly handle profiles as JSON
+        profiles: parsedProfiles, 
         skills: parsedSkills,
         experience: parsedExperience,
         projects: parsedProjects,
@@ -49,7 +49,7 @@ export async function saveResumeData(
         languages: parsedLanguages,
         publications: parsedPublications,
         volunteer: parsedVolunteer,
-        styles: JSON.parse(JSON.stringify(resumeStyles)), // Handle styles JSON too
+        styles: JSON.parse(JSON.stringify(resumeStyles)),
       },
     });
 

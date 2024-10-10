@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+'use client'
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,55 +13,55 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createResume } from "@/actions/createResume";
-import { setCurrentResume } from "@/slices/currentResumeSlices";
-import { useAppDispatch } from "@/hooks/hooks";
 import { useToast } from "@/hooks/use-toast";
-import { UpdateId } from "@/slices/rightsidebarSlice";
+import { renameResume } from "@/actions/renameResume";
 
-export function CreateNewDialog({
+export type RecentResume = {
+  id: string;
+  userId: string;
+  resumeName: string;
+}
+
+export function RenameDialog({
   children,
-  template,
-  templateId,
+  resumeId,
+  resumeName,
+  setRecentResumes
 }: {
   children: React.ReactNode;
-  template: boolean;
-  templateId?: number;
+  resumeId: string;
+  resumeName: string;
+  setRecentResumes: React.Dispatch<React.SetStateAction<RecentResume[] | undefined>>;
 }) {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(resumeName);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const router = useRouter();
-  const dispatch = useAppDispatch();
 
-  const handleCreate = async () => {
-    if (template) {
-      dispatch(UpdateId(templateId));
-    } else {
-      dispatch(UpdateId(1))
+  useEffect(() => {
+    if (open) {
+      setName(resumeName);
     }
-    if (name.trim()) {
+  }, [open, resumeName]);
+
+  const handleRename = async () => {
+    if (name.trim() && name !== resumeName) {
       setLoading(true);
       try {
-        const response = await createResume(name);
-        if (response && response.success) {
-          localStorage.setItem("currResumeId", response?.resume?.id as string);
-          dispatch(
-            setCurrentResume({
-              currResumeId: response?.resume?.id as string,
-              currResumeName: response?.resume?.resumeName as string,
-            })
-          );
-          setOpen(false);
-          router.push("/editor");
-        } else {
-          toast({
-            title: "Error",
-            description: response.message || "Failed to create resume",
-            variant: "destructive",
-          }); 
-        }
+        const response = await renameResume(name, resumeId);
+        setOpen(false);
+        setRecentResumes((prev) => 
+          prev?.map((resume) => 
+            resume.id === resumeId 
+              ? { ...resume, resumeName: name } 
+              : resume
+          )
+        );
+        toast({
+          title: "Success",
+          description: response.message,
+          variant: "default",
+        });
       } catch (error) {
         console.error("An error occurred:", error);
         toast({
@@ -71,6 +72,8 @@ export function CreateNewDialog({
       } finally {
         setLoading(false);
       }
+    } else if (name === resumeName) {
+      setOpen(false);
     }
   };
 
@@ -79,9 +82,9 @@ export function CreateNewDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Resume</DialogTitle>
+          <DialogTitle>Rename Resume</DialogTitle>
           <DialogDescription>
-            Enter a name for your new resume. Try to make it descriptive!
+            Enter a new name for your resume. Try to make it descriptive!
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -100,10 +103,10 @@ export function CreateNewDialog({
         <DialogFooter>
           <Button
             type="submit"
-            onClick={handleCreate}
-            disabled={!name.trim() || loading}
+            onClick={handleRename}
+            disabled={!name.trim() || name === resumeName || loading}
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? "Renaming..." : "Rename"}
           </Button>
         </DialogFooter>
       </DialogContent>

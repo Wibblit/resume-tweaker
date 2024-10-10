@@ -1,8 +1,5 @@
 'use client'
 
-import { useAppDispatch } from "@/hooks/hooks"
-import { UpdateId } from "@/slices/rightsidebarSlice"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import Image from "next/image"
@@ -11,18 +8,12 @@ import CreateNewButton from "./CreateNewButton"
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { CreateNewDialog } from "./CreateNewResumeDialog"
-
-interface RecentResume {
-  id: string;
-  userId: string;
-  resumeName: string;
-}
+import { RecentResume } from "@/types/types"
 
 export default function ResumeContent({ searchQuery }: { searchQuery: string }) {
   const [recentResumes, setRecentResumes] = useState<RecentResume[]>();
   const [isLoading, setIsLoading] = useState(true);
-  const dispatch = useAppDispatch()
-  const router = useRouter()
+
 
   useEffect(() => {
     async function getRecentResumes() {
@@ -65,7 +56,7 @@ export default function ResumeContent({ searchQuery }: { searchQuery: string }) 
           ) : (
             <>
               {recentResumes?.map((resume) => (
-                <ResumeItem key={resume.id} resume={resume} />
+                <ResumeItem  setRecentResumes={setRecentResumes} key={resume.id} resume={resume} />
               ))}
               <CreateNewButton />
             </>

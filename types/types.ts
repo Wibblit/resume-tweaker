@@ -371,3 +371,9 @@ export type ResumeSection = {
   fields: string[];
 };
 export type PageData = { id: string; userId: string; resumeName: string; styles: ResumeStyles; } & ResumeData;
+
+export type RecentResume = {
+  id: string;
+  userId: string;
+  resumeName: string;
+}
