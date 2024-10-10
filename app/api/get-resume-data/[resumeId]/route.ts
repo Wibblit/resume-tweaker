@@ -20,6 +20,7 @@ export async function GET(
     });
   } catch (error) {
     console.error("Error fetching resume data:", error);
+    throw error;
   } finally {
     prisma.$disconnect();
   }

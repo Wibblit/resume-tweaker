@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import LeftSideBar from "@/components/EditorLeftSideBar";
 import RightSideBar from "@/components/EditorRightSideBar";
 import ResumePages from "@/components/ResumePages";
@@ -9,18 +9,29 @@ import { useMediaQuery } from "react-responsive";
 import { ResumeData } from "@/types/types";
 import { usePathname } from "next/navigation";
 import { saveResumeData } from "@/actions/saveResumeData";
-import { useAppDispatch } from "@/hooks/hooks";
 import axios from "axios";
 import { PageData } from "@/types/types";
-import { UpdateBaseColor, UpdateFont, UpdateFontSize, UpdateIcons, UpdateId, UpdateLineHeight, UpdateMargin, UpdatePaperFormat, updateSectionOrder, UpdateSectionOrderLayout, UpdateSeparator } from "@/slices/rightsidebarSlice";
+import { 
+  UpdateBaseColor, 
+  UpdateFont, 
+  UpdateFontSize, 
+  UpdateIcons, 
+  UpdateId, 
+  UpdateLineHeight, 
+  UpdateMargin, 
+  UpdatePaperFormat, 
+  updateSectionOrder, 
+  UpdateSectionOrderLayout, 
+  UpdateSeparator 
+} from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 
-
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<keyof ResumeData | "">("basics");
-  const [isPanelOpen, setIsPanelOpen] = useState(false)
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
@@ -28,35 +39,42 @@ export default function Editor() {
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const currentRoute = usePathname();
 
   useEffect(() => {
     async function getResumeData() {
-      const resumeId = localStorage.getItem("currResumeId")
-      const response = await axios.get<{ resumeData: PageData, message: string }>(`/api/getResumeData/${resumeId}`);
-      const resumeData = response.data.resumeData;
-      console.log(resumeData)
-      const { id, styles, resumeName, userId, ...leftSidebBarContent } = resumeData;
-      dispatch(setCurrentResume({
-        currResumeId: resumeData.id,
-        currResumeName: resumeData.resumeName,
-      }))
-      dispatch(UpdateId(styles.id))
-      dispatch(UpdateLeftBarData(leftSidebBarContent))
-      dispatch(UpdateBaseColor(styles.baseColor))
-      dispatch(UpdateFont(styles.font))
-      dispatch(UpdateFontSize(styles.fontSize))
-      dispatch(UpdateLineHeight(styles.lineHeight))
-      dispatch(UpdateMargin(styles.margin))
-      dispatch(UpdateIcons(styles.icons))
-      dispatch(UpdateSeparator(styles.separator))
-      dispatch(UpdatePaperFormat(styles.paperFormat))
-      dispatch(UpdateSectionOrderLayout(styles.sectionOrder))
+      try {
+        setIsLoading(true);
+        const resumeId = currResumeId ? currResumeId : localStorage.getItem("currResumeId");
+        const response = await axios.get<{ resumeData: PageData; message: string }>(`/api/get-resume-data/${resumeId}`);
+        const resumeData = response.data.resumeData;
+        console.log(resumeData);
+        const { id, styles, resumeName, userId, ...leftSidebBarContent } = resumeData;
+        dispatch(setCurrentResume({
+          currResumeId: resumeData.id,
+          currResumeName: resumeData.resumeName,
+        }));
+        dispatch(UpdateId(styles.id));
+        dispatch(UpdateLeftBarData(leftSidebBarContent));
+        dispatch(UpdateBaseColor(styles.baseColor));
+        dispatch(UpdateFont(styles.font));
+        dispatch(UpdateFontSize(styles.fontSize));
+        dispatch(UpdateLineHeight(styles.lineHeight));
+        dispatch(UpdateMargin(styles.margin));
+        dispatch(UpdateIcons(styles.icons));
+        dispatch(UpdateSeparator(styles.separator));
+        dispatch(UpdatePaperFormat(styles.paperFormat));
+        dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
+      } catch (error) {
+        console.error("Error fetching resume data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-    getResumeData()
-  }, [])
+    getResumeData();
+  }, [dispatch]);
 
   const saveData = async () => {
     try {
@@ -69,7 +87,7 @@ export default function Editor() {
 
   useEffect(() => {
     const handleRouteChange = async () => {
-      await saveData(); // Save resume data before navigating
+      await saveData();
     };
 
     const handlePopState = async () => {
@@ -77,35 +95,29 @@ export default function Editor() {
     };
 
     const handleBeforeUnload = async () => {
-      await saveData(); // Save resume data before reload/close
+      await saveData();
     };
 
-    // Override pushState to trigger save before navigating programmatically
     const originalPushState = window.history.pushState;
     window.history.pushState = async function (state, title, url) {
-      await handleRouteChange(); // Save data before pushState
-      originalPushState.apply(window.history, [state, title, url]); // Proceed with the original action
+      await handleRouteChange();
+      originalPushState.apply(window.history, [state, title, url]);
     };
 
-    // Override replaceState similarly, if needed
     const originalReplaceState = window.history.replaceState;
     window.history.replaceState = async function (state, title, url) {
-      await handleRouteChange(); // Save data before replaceState
-      originalReplaceState.apply(window.history, [state, title, url]); // Proceed with the original action
+      await handleRouteChange();
+      originalReplaceState.apply(window.history, [state, title, url]);
     };
 
-    // Listen for popstate events (back/forward navigation)
     window.addEventListener("popstate", handlePopState);
-
-    // Listen for beforeunload events (reload/close browser window)
     window.addEventListener("beforeunload", handleBeforeUnload);
 
-    // Cleanup on component unmount
     return () => {
       window.removeEventListener("popstate", handlePopState);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.history.pushState = originalPushState; // Restore original pushState
-      window.history.replaceState = originalReplaceState; // Restore original replaceState
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
     };
   }, [ResumeData, ResumeAppearance, currResumeId]);
 
@@ -140,6 +152,7 @@ export default function Editor() {
               setIsPanelOpen={setIsPanelOpen}
               isMobileMenuOpen={isMobileMenuOpen}
               setIsMobileMenuOpen={setIsMobileMenuOpen}
+              isLoading={isLoading}
             />
           </div>
         </div>

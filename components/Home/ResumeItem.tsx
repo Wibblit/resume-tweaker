@@ -5,25 +5,32 @@ import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { FileText, Pencil, Copy, Trash2 } from "lucide-react"
 import { Separator } from "../ui/separator"
+import { setCurrentResume } from "@/slices/currentResumeSlices"
+import { useAppDispatch } from "@/hooks/hooks"
 
-export default function ResumeItem({ resume }: { resume: { id: number; name: string } }) {
+export default function ResumeItem({ resume }: { resume: { id: string; resumeName: string; userId: string; } }) {
   const isPhone = useMediaQuery({ maxWidth: 767 })
   const router = useRouter()
+  const dispatch = useAppDispatch()
 
   const handleOpen = () => {
-    router.push(`/editor/${resume.id}`)
+    dispatch(setCurrentResume({
+      currResumeId: resume.id,
+      currResumeName: resume.resumeName,
+    }))
+    router.push(`/editor`)
   }
 
   const handleRename = () => {
-    console.log("Rename", resume.name)
+    console.log("Rename", resume.resumeName)
   }
 
   const handleDuplicate = () => {
-    console.log("Duplicate", resume.name)
+    console.log("Duplicate", resume.resumeName)
   }
 
   const handleDelete = () => {
-    console.log("Delete", resume.name)
+    console.log("Delete", resume.resumeName)
   }
 
   const menuItems = (
@@ -53,7 +60,7 @@ export default function ResumeItem({ resume }: { resume: { id: number; name: str
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
           <FileText className="h-6 w-6 mb-2" />
-          <span>{resume.name}</span>
+          <span>{resume.resumeName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -78,9 +85,9 @@ export default function ResumeItem({ resume }: { resume: { id: number; name: str
   ) : (
     <ContextMenu>
       <ContextMenuTrigger asChild>
-        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full hover:bg-secondary">
+        <Button variant="outline" onClick={handleOpen} className="h-auto flex-col items-start p-4 w-full hover:bg-secondary">
           <FileText className="h-6 w-6 mb-2" />
-          <span>{resume.name}</span>
+          <span>{resume.resumeName}</span>
         </Button>
       </ContextMenuTrigger>
       <ContextMenuContent>{menuItems}</ContextMenuContent>
