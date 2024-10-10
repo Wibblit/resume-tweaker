@@ -69,7 +69,7 @@ export default function ResumeItem({
                     userId: response.duplicatedResume.userId, 
                     resumeName: response.duplicatedResume.resumeName, 
               },
-              ...prev,
+              ...prev,  
             ];
         });
       toast({
