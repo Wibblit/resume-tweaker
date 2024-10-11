@@ -26,10 +26,6 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#57534e"));
-  }, [dispatch]);
-
   const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,

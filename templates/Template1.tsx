@@ -48,11 +48,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
-
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#57534e"));
-  }, [dispatch]);
-
+  
   const isSeparator = useAppSelector((state) => state.rightsidebar.separator)
 
   const styles: Record<string, React.CSSProperties> = {

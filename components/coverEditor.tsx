@@ -66,7 +66,7 @@ export default function CoverEditor() {
         console.log(response);
         const coverData = response.data.coverData;
         console.log(coverData);
-        console.log("Hello This is to show that the response has recived.")
+        console.log("Hello This is to show that the response has received.")
         const {
           id,
           styles,
@@ -84,6 +84,7 @@ export default function CoverEditor() {
           closing,
           signOff,
         } = coverData;
+        localStorage.setItem("currCoverId", id)
         dispatch(
           setCurrentCover({
             currCoverId: coverData.id,
@@ -106,7 +107,6 @@ export default function CoverEditor() {
           })
         );
         dispatch(UpdateId(styles.id));
-        dispatch(UpdateBaseColor(styles.baseColor));
         dispatch(UpdateFont(styles.font));
         dispatch(UpdateFontSize(styles.fontSize));
         dispatch(UpdateLineHeight(styles.lineHeight));
@@ -114,8 +114,9 @@ export default function CoverEditor() {
         dispatch(UpdateIcons(styles.icons));
         dispatch(UpdateSeparator(styles.separator));
         dispatch(UpdatePaperFormat(styles.paperFormat));
+        dispatch(UpdateBaseColor(styles.baseColor));
       } catch (error) {
-        console.error("Error fetching resume data:", error);
+        console.error("Error fetching cover letter data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -132,8 +133,7 @@ export default function CoverEditor() {
       await handleRouteChange();
     };
 
-    const handleBeforeUnload = async () => {
-      console.log("Calling");
+    const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
       await saveData();
     };
 
@@ -192,6 +192,7 @@ export default function CoverEditor() {
               setIsPanelOpen={setIsPanelOpen}
               isMobileMenuOpen={isMobileMenuOpen}
               setIsMobileMenuOpen={setIsMobileMenuOpen}
+              isLoading={isLoading}
             />
           </div>
         </div>

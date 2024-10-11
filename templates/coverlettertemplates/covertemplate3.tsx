@@ -32,10 +32,6 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(UpdateBaseColor(baseColor || "#57534e"));
-  }, [dispatch, baseColor]);
-
   const pageDimensions = PAGE_FORMATS[pageFormat];
 
   const styles: Record<string, React.CSSProperties> = {

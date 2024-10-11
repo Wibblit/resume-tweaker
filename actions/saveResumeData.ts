@@ -12,6 +12,7 @@ export async function saveResumeData(
   resumeId: string
 ) {
   const session = await auth();
+  console.log(resumeStyles)
   console.log("Save data request reached...");
 
   try {
