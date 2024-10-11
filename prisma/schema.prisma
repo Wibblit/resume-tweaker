@@ -23,6 +23,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   Resume        Resume[]
+  CoverLetter   Coverletter[]
 
   @@map("users")
 }
@@ -92,4 +93,26 @@ model Resume {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("resume")
+}
+
+model Coverletter {
+  id                String @id @default(cuid())
+  userId            String
+  coverName         String
+  salutation        String @default("")
+  date              String @default("")
+  recipientInfo     String @default("")
+  subject           String @default("")
+  opening           String @default("")
+  interestInPosition String @default("")
+  professionalSummary String @default("")
+  keyAchievements   String @default("")
+  culturalFit       String @default("")
+  closing           String @default("")
+  signOff           String @default("")
+  styles            Json   @default("{}")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("coverletter")
 }

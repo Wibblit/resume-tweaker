@@ -13,19 +13,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createResume } from "@/actions/createResume";
+import { setCurrentCover } from "@/slices/currentCoverSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { useAppDispatch } from "@/hooks/hooks";
 import { useToast } from "@/hooks/use-toast";
 import { UpdateId } from "@/slices/rightsidebarSlice";
+import { createCover } from "@/actions/createCover";
+
+const RESUME = "Resume";
+const COVER = "Cover Letter";
 
 export function CreateNewDialog({
   children,
   template,
   templateId,
+  type,
 }: {
   children: React.ReactNode;
   template: boolean;
   templateId?: number;
+  type: string;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -43,24 +50,59 @@ export function CreateNewDialog({
     if (name.trim()) {
       setLoading(true);
       try {
-        const response = await createResume(name);
-        if (response && response.success) {
-          localStorage.setItem("currResumeId", response?.resume?.id as string);
-          dispatch(
-            setCurrentResume({
-              currResumeId: response?.resume?.id as string,
-              currResumeName: response?.resume?.resumeName as string,
-            })
-          );
-          setOpen(false);
-          router.push("/editor");
-        } else {
-          toast({
-            title: "Error",
-            description: response.message || "Failed to create resume",
-            variant: "destructive",
-          }); 
-        }
+        type === RESUME
+          ? (async () => {
+              const response = await createResume(name);
+
+              if (response && response.success) {
+                localStorage.setItem(
+                  "currResumeId",
+                  response?.resume?.id as string
+                );
+                dispatch(
+                  setCurrentResume({
+                    currResumeId: response?.resume?.id as string,
+                    currResumeName: response?.resume?.resumeName as string,
+                  })
+                );
+                setOpen(false);
+                router.push("/editor");
+              } else {
+                toast({
+                  title: "Error",
+                  description: response.message || "Failed to create resume",
+                  variant: "destructive",
+                });
+              }
+            })()
+          : (async () => {
+            console.log("Yo called")
+            console.log(name);
+            
+              const response = await createCover(name);
+              console.log(response);
+              
+              if (response && response.success) {
+                localStorage.setItem(
+                  "currCoverId",
+                  response?.cover?.id as string
+                );
+                dispatch(
+                  setCurrentCover({
+                    currCoverId: response?.cover?.id as string,
+                    currCoverName: response?.cover?.coverName as string,
+                  })
+                );
+                setOpen(false);
+                router.push("/covereditor");
+              } else {
+                toast({
+                  title: "Error",
+                  description: response.message || "Failed to create resume",
+                  variant: "destructive",
+                });
+              }
+            })();
       } catch (error) {
         console.error("An error occurred:", error);
         toast({
@@ -79,9 +121,10 @@ export function CreateNewDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Resume</DialogTitle>
+          <DialogTitle>Create New {type}</DialogTitle>
           <DialogDescription>
-            Enter a name for your new resume. Try to make it descriptive!
+            Enter a name for your new {type.toLowerCase()}. Try to make it
+            descriptive!
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
