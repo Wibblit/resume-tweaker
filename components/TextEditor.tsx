@@ -353,7 +353,7 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
           </Toggle>
         </Tooltip>
 
-        <Tooltip>
+        {/* <Tooltip>
           <Button
             size="sm"
             variant="ghost"
@@ -377,22 +377,8 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
           >
             <TextIndent className="h-4 w-4" />
           </Button>
-        </Tooltip>
+        </Tooltip> */}
 
-        <Popover>
-          <Tooltip>
-            <PopoverTrigger asChild>
-              <Button size="sm" variant="ghost" className="px-2">
-                <ImageIcon className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-          </Tooltip>
-          <PopoverContent className="w-80">
-            <InsertImageForm
-              onInsert={(props) => editor.chain().focus().setImage(props).run()}
-            />
-          </PopoverContent>
-        </Popover>
 
         <Tooltip>
           <Button
