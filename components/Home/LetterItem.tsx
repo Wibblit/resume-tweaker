@@ -1,30 +1,108 @@
-import { useMediaQuery } from "react-responsive"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { FileText, Pencil, Copy, Trash2 } from "lucide-react"
-import { Separator } from "../ui/separator"
+"use client";
 
-export default function LetterItem({ letter }: { letter: { id: number; name: string } }) {
-  const isPhone = useMediaQuery({ maxWidth: 767 })
-  const router = useRouter()
+import { useMediaQuery } from "react-responsive";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { FileText, Pencil, Copy, Trash2 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { setCurrentCover } from "@/slices/currentCoverSlice";
+import { useAppDispatch } from "@/hooks/hooks";
+import { deleteCoverLetter } from "@/actions/deleteCoverLetter";
+import { useToast } from "@/hooks/use-toast";
+import { RenameDialog } from "./RenameCoverLetterDialog";
+import { RecentCoverLetter } from "@/types/types";
+import { duplicateCoverLetter } from "@/actions/duplicateCoverLetter";
+
+export default function LetterItem({
+  letter,
+  setRecentCoverLetters,
+}: {
+  letter: {
+    id: string;
+    coverName: string;
+    userId: string;
+  };
+  setRecentCoverLetters: React.Dispatch<
+    React.SetStateAction<RecentCoverLetter[] | undefined>
+  >;
+}) {
+  const isPhone = useMediaQuery({ maxWidth: 767 });
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { toast } = useToast();
 
   const handleOpen = () => {
-    router.push(`/editor/${letter.id}`)
-  }
+    dispatch(
+      setCurrentCover({
+        currCoverId: letter.id,
+        currCoverName: letter.coverName,
+      })
+    );
+    router.push(`/covereditor`);
+  };
 
-  const handleRename = () => {
-    console.log("Rename", letter.name)
-  }
+  const handleDuplicate = async () => {
+    try {
+      const response = await duplicateCoverLetter(letter.id);
+      setRecentCoverLetters((prev) => {
+        if (!prev) return prev;
+        return [
+          {
+            id: response.duplicatedCoverLetter.id,
+            userId: response.duplicatedCoverLetter.userId,
+            coverName: response.duplicatedCoverLetter.coverName,
+          },
+          ...prev,
+        ];
+      });
+      toast({
+        title: "Success",
+        description: response.message,
+      });
+    } catch (error) {
+      console.error("Failed to duplicate cover letter:", error);
+      toast({
+        title: "Error",
+        description: "Failed to duplicate the cover letter :(",
+        variant: "destructive",
+      });
+    }
+  };
 
-  const handleDuplicate = () => {
-    console.log("Duplicate", letter.name)
-  }
-
-  const handleDelete = () => {
-    console.log("Delete", letter.name)
-  }
+  const handleDelete = async () => {
+    try {
+      const { success, message } = await deleteCoverLetter(letter.id);
+      if (success) {
+        setRecentCoverLetters((prev) =>
+          prev?.filter((item) => item.id !== letter.id)
+        );
+        toast({
+          title: "Success",
+          description: message,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the cover letter",
+        variant: "destructive",
+      });
+    }
+  };
 
   const menuItems = (
     <>
@@ -32,10 +110,16 @@ export default function LetterItem({ letter }: { letter: { id: number; name: str
         <FileText className="mr-2 h-4 w-4" />
         Open
       </ContextMenuItem>
-      <ContextMenuItem onSelect={handleRename}>
-        <Pencil className="mr-2 h-4 w-4" />
-        Rename
-      </ContextMenuItem>
+      <RenameDialog
+        setRecentCoverLetters={setRecentCoverLetters}
+        coverId={letter?.id}
+        coverName={letter.coverName}
+      >
+        <ContextMenuItem onSelect={(e) => e.preventDefault()}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Rename
+        </ContextMenuItem>
+      </RenameDialog>
       <ContextMenuItem onSelect={handleDuplicate}>
         <Copy className="mr-2 h-4 w-4" />
         Duplicate
@@ -46,28 +130,60 @@ export default function LetterItem({ letter }: { letter: { id: number; name: str
         Delete
       </ContextMenuItem>
     </>
-  )
+  );
 
   return isPhone ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+        <Button
+          variant="outline"
+          className="h-auto flex-col items-start p-4 w-full"
+        >
           <FileText className="h-6 w-6 mb-2" />
-          <span>{letter.name}</span>
+          <span>{letter.coverName}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>{menuItems}</DropdownMenuContent>
-    
+      <DropdownMenuContent>
+        <DropdownMenuItem onSelect={handleOpen}>
+          <FileText className="mr-2 h-4 w-4" />
+          Open
+        </DropdownMenuItem>
+        <RenameDialog
+          setRecentCoverLetters={setRecentCoverLetters}
+          coverId={letter?.id}
+          coverName={letter.coverName}
+        >
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Rename
+          </DropdownMenuItem>
+        </RenameDialog>
+        <DropdownMenuItem onSelect={handleDuplicate}>
+          <Copy className="mr-2 h-4 w-4" />
+          Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="text-destructive border-t"
+          onSelect={handleDelete}
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          <span>Delete</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
     </DropdownMenu>
   ) : (
     <ContextMenu>
       <ContextMenuTrigger asChild>
-        <Button variant="outline" className="h-auto flex-col items-start p-4 w-full">
+        <Button
+          variant="outline"
+          onClick={handleOpen}
+          className="h-auto flex-col items-start p-4 w-full hover:bg-secondary"
+        >
           <FileText className="h-6 w-6 mb-2" />
-          <span>{letter.name}</span>
+          <span>{letter.coverName}</span>
         </Button>
       </ContextMenuTrigger>
       <ContextMenuContent>{menuItems}</ContextMenuContent>
     </ContextMenu>
-  )
+  );
 }

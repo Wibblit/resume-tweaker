@@ -372,8 +372,22 @@ export type ResumeSection = {
 };
 export type PageData = { id: string; userId: string; resumeName: string; styles: ResumeStyles; } & ResumeData;
 
+export type CPageData = {
+  id: string;
+  userId: string;
+  coverName: string;
+  styles: ResumeStyles;
+} & CoverLetterData;
+
+
 export type RecentResume = {
   id: string;
   userId: string;
   resumeName: string;
 }
+
+export type RecentCoverLetter = {
+  id: string;
+  userId: string;
+  coverName: string;
+};

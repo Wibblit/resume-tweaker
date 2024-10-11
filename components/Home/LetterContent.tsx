@@ -1,61 +1,127 @@
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import LetterItem from "./LetterItem"
-import { CreateNewCoverButton } from "./CreateNewButton"
+"use client";
 
-export default function LetterContent({ searchQuery }: { searchQuery: string }) {
-  const recentLetters = [
-    { id: 1, name: "Job Application Letter" },
-    { id: 2, name: "Networking Letter" },
-  ]
+import { useAppDispatch } from "@/hooks/hooks";
+import { UpdateId } from "@/slices/rightsidebarSlice";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
+import LetterItem from "./LetterItem";
+import { CreateNewCoverButton } from "./CreateNewButton";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { CreateNewDialog } from "./CreateNewDialog";
 
-const letterTemplates = [
-  { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.png" },
-  { id: 2, name: "Modern Header", image: "/templates/ctemplate2.png" },
-  { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.png" },
-  { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.png" },
-  { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.png" },
-];
+const COVER = "Cover Letter";
 
+interface RecentCoverLetter {
+  id: string;
+  userId: string;
+  coverName: string;
+}
 
-  const filteredTemplates = letterTemplates.filter(template =>
+export default function LetterContent({
+  searchQuery,
+}: {
+  searchQuery: string;
+}) {
+  const [recentCoverLetters, setRecentCoverLetters] =
+    useState<RecentCoverLetter[]>();
+  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    async function getRecentCoverLetters() {
+      try {
+        setIsLoading(true);
+        const response = await axios.get<{
+          recentCoverLetters: RecentCoverLetter[];
+          message: string;
+        }>("/api/get-recent-cover-letter/");
+        console.log(response, "recent cover letters");
+        setRecentCoverLetters(response.data.recentCoverLetters);
+      } catch (error) {
+        console.error("Error fetching recent cover letters:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    getRecentCoverLetters();
+  }, []);
+
+  const letterTemplates = [
+    { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.png" },
+    { id: 2, name: "Modern Header", image: "/templates/ctemplate2.png" },
+    { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.png" },
+    { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.png" },
+    { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.png" },
+  ];
+
+  const filteredTemplates = letterTemplates.filter((template) =>
     template.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  );
 
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="text-2xl font-bold">Recently Edited Letters</h2>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {recentLetters.map((letter) => (
-            <LetterItem key={letter.id} letter={letter} />
-          ))}
-          <CreateNewCoverButton />
+        <h2 className="text-2xl font-bold mb-4">
+          Recently Edited Cover Letters
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {isLoading ? (
+            <>
+              {[...Array(3)].map((_, index) => (
+                <Skeleton key={index} className="h-[120px] w-full rounded-md" />
+              ))}
+            </>
+          ) : (
+            <>
+              {recentCoverLetters?.map((letter) => (
+                <LetterItem
+                  setRecentCoverLetters={setRecentCoverLetters}
+                  key={letter.id}
+                  letter={letter}
+                />
+              ))}
+              <CreateNewCoverButton />
+            </>
+          )}
         </div>
       </section>
       <section>
-        <h2 className="text-2xl font-bold">Letter Templates</h2>
+        <h2 className="text-2xl font-bold mb-4">Cover Letter Templates</h2>
         {filteredTemplates.length === 0 ? (
-          <p className="mt-4 text-muted-foreground">No matching templates found.</p>
+          <p className="text-muted-foreground">No matching templates found.</p>
         ) : (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {filteredTemplates.map((template) => (
-              <Button key={template.id} variant="outline" className="h-auto flex-col items-start p-4 group">
-                <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
-                  <Image
-                    src={template.image}
-                    alt={template.name}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
-                </div>
-                <span className="font-medium">{template.name}</span>
-              </Button>
+              <CreateNewDialog
+                key={template.id}
+                type={COVER}
+                template={true}
+                templateId={template.id}
+              >
+                <Button
+                  variant="outline"
+                  className="h-auto flex-col items-start p-4 group"
+                >
+                  <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
+                    <Image
+                      src={template.image}
+                      alt={template.name}
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
+                  </div>
+                  <span className="font-medium">{template.name}</span>
+                </Button>
+              </CreateNewDialog>
             ))}
           </div>
         )}
       </section>
     </div>
-  )
+  );
 }
