@@ -239,10 +239,6 @@ const Template3: React.FC<TemplateProps> = ({
   const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
   const scaleFactor = fontSize / 16;
 
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#57534e"));
-  }, [dispatch]);
-
   const styles = {
     container: {
       fontFamily,

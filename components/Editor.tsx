@@ -34,7 +34,7 @@ export default function Editor() {
   const [isLoading, setIsLoading] = useState(true);
 
   const ResumeData = useAppSelector((state) => state.leftsidebar);
-  const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
+  const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
 
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
@@ -56,9 +56,9 @@ export default function Editor() {
           currResumeId: resumeData.id,
           currResumeName: resumeData.resumeName,
         }));
+        console.log(styles.baseColor)
         dispatch(UpdateId(styles.id));
         dispatch(UpdateLeftBarData(leftSidebBarContent));
-        dispatch(UpdateBaseColor(styles.baseColor));
         dispatch(UpdateFont(styles.font));
         dispatch(UpdateFontSize(styles.fontSize));
         dispatch(UpdateLineHeight(styles.lineHeight));
@@ -67,6 +67,7 @@ export default function Editor() {
         dispatch(UpdateSeparator(styles.separator));
         dispatch(UpdatePaperFormat(styles.paperFormat));
         dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
+        dispatch(UpdateBaseColor(styles.baseColor));
       } catch (error) {
         console.error("Error fetching resume data:", error);
       } finally {
@@ -78,7 +79,8 @@ export default function Editor() {
 
   const saveData = async () => {
     try {
-      await saveResumeData(ResumeData, ResumeAppearance, currResumeId);
+      console.log(resumeStyles);
+      await saveResumeData(ResumeData, resumeStyles, currResumeId);
       console.log("Resume data saved successfully");
     } catch (error) {
       console.error("Error saving resume data:", error);
@@ -119,7 +121,7 @@ export default function Editor() {
       window.history.pushState = originalPushState;
       window.history.replaceState = originalReplaceState;
     };
-  }, [ResumeData, ResumeAppearance, currResumeId]);
+  }, [ResumeData, resumeStyles, currResumeId]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
@@ -139,12 +141,12 @@ export default function Editor() {
         >
           <div className={`${isPhoneView ? "w-full max-w-md" : ""}`}>
             <ResumePages
-              baseColor={ResumeAppearance.baseColor}
-              fontFamily={ResumeAppearance.font}
-              lineHeight={ResumeAppearance.lineHeight}
-              fontSize={ResumeAppearance.fontSize}
-              margin={ResumeAppearance.margin}
-              pageFormat={ResumeAppearance.paperFormat}
+              baseColor={resumeStyles.baseColor}
+              fontFamily={resumeStyles.font}
+              lineHeight={resumeStyles.lineHeight}
+              fontSize={resumeStyles.fontSize}
+              margin={resumeStyles.margin}
+              pageFormat={resumeStyles.paperFormat}
               printFrameRef={printFrameRef}
               resumeData={ResumeData}
               isPhoneView={isPhoneView}

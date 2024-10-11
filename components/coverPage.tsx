@@ -30,6 +30,7 @@
 
 // interface Page {
 //   id: number;
+//   template: number;
 //   content: CoverLetterState;
 // }
 
@@ -78,6 +79,33 @@
 //   lineHeight,
 //   margin,
 // }) => {
+// const renderTemplate = (page: Page) => {
+//   const props = {
+//     content: page.content,
+//     baseColor,
+//     fontSize,
+//     fontFamily,
+//     lineHeight,
+//     margin,
+//     pageFormat
+//   };
+
+//   switch (page.template) {
+//     case 1:
+//       return <CoverTemplate1 {...props} />;
+//     case 2:
+//       return <CoverTemplate2 {...props} />;
+//     case 3:
+//       return <CoverTemplate3 {...props} />;
+//     case 4:
+//       return <CoverTemplate4 {...props} />;
+//     case 5:
+//       return <CoverTemplate5 {...props} />;
+//     default:
+//       return <CoverTemplate1 {...props} />;
+//   }
+// };
+
 //   return (
 //     <div
 //       id={`page-${page.id}`}
@@ -92,14 +120,7 @@
 //       <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
 //         Page {pageNumber}
 //       </div>
-//       <CoverTemplate1
-//         content={page.content}
-//         baseColor={baseColor}
-//         fontSize={fontSize}
-//         fontFamily={fontFamily}
-//         lineHeight={lineHeight}
-//         margin={margin}
-//       />
+//       {renderTemplate(page)}
 //       <div
 //         className="absolute inset-x-0 border-b border-dashed"
 //         style={{
@@ -125,11 +146,15 @@
 //   isMobileMenuOpen,
 //   setIsMobileMenuOpen,
 // }: CoverLetterPagesProps) {
+//   const templateNumber: number = useAppSelector(
+//     (state) => state.rightsidebar.id
+//   );
+
 //   const [pages, setPages] = useState<Page[]>([
-//     { id: 1, content: coverLetterData },
+//     { id: 1, template: templateNumber, content: coverLetterData },
 //   ]);
 //   const [history, setHistory] = useState<Page[][]>([
-//     [{ id: 1, content: coverLetterData }],
+//     [{ id: 1, template: templateNumber, content: coverLetterData }],
 //   ]);
 //   const [historyIndex, setHistoryIndex] = useState<number>(0);
 //   const [isHovering, setIsHovering] = useState(false);
@@ -139,6 +164,7 @@
 //   useEffect(() => {
 //     const updatedPages = pages.map((page) => ({
 //       ...page,
+//       template: templateNumber,
 //       content: coverLetterData,
 //     }));
 //     setPages(updatedPages);
@@ -147,7 +173,7 @@
 //     const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
 //     setHistory(newHistory);
 //     setHistoryIndex(newHistory.length - 1);
-//   }, [coverLetterData]);
+//   }, [templateNumber, coverLetterData]);
 
 //   useEffect(() => {
 //     const handleMessage = (event: MessageEvent) => {
@@ -334,15 +360,14 @@
 //       )}
 //     </div>
 //   );
-// }
+// } 
 
-"use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import ThemeAwareLogo from "./ThemeAwareLogo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Undo,
   Redo,
@@ -358,13 +383,14 @@ import {
   TransformComponent,
   TransformWrapper,
 } from "react-zoom-pan-pinch";
+import { useAppSelector } from "@/hooks/hooks";
+import { CoverLetterState } from "@/types/types";
+import ThemeAwareLogo from "./ThemeAwareLogo";
 import CoverTemplate1 from "@/templates/coverlettertemplates/covertemplate1";
 import CoverTemplate2 from "@/templates/coverlettertemplates/covertemplate2";
 import CoverTemplate3 from "@/templates/coverlettertemplates/covertemplate3";
 import CoverTemplate4 from "@/templates/coverlettertemplates/covertemplate4";
 import CoverTemplate5 from "@/templates/coverlettertemplates/covertemplate5";
-import { useAppSelector } from "@/hooks/hooks";
-import { CoverLetterState } from "@/types/types";
 
 interface Page {
   id: number;
@@ -372,12 +398,90 @@ interface Page {
   content: CoverLetterState;
 }
 
-const PAGE_FORMATS: {
-  a4: { width: number; height: number };
-  letter: { width: number; height: number };
-} = {
+const PAGE_FORMATS = {
   a4: { width: 210, height: 297 },
   letter: { width: 216, height: 279 },
+};
+
+const MM_TO_PX = 3.78;
+
+interface CoverLetterPageProps {
+  page: Page;
+  pageNumber: number;
+  pageFormat: "a4" | "letter";
+  baseColor: string;
+  fontSize: number;
+  fontFamily: string;
+  lineHeight: number;
+  margin: number;
+  isLoading: boolean;
+}
+
+const CoverLetterPage: React.FC<CoverLetterPageProps> = ({
+  page,
+  pageNumber,
+  pageFormat,
+  baseColor,
+  fontSize,
+  fontFamily,
+  lineHeight,
+  margin,
+  isLoading,
+}) => {
+  const renderTemplate = (page: Page) => {
+    const props = {
+      content: page.content,
+      baseColor,
+      fontSize,
+      fontFamily,
+      lineHeight,
+      margin,
+      pageFormat,
+    };
+
+    switch (page.template) {
+      case 1:
+        return <CoverTemplate1 {...props} />;
+      case 2:
+        return <CoverTemplate2 {...props} />;
+      case 3:
+        return <CoverTemplate3 {...props} />;
+      case 4:
+        return <CoverTemplate4 {...props} />;
+      case 5:
+        return <CoverTemplate5 {...props} />;
+      default:
+        return <CoverTemplate1 {...props} />;
+    }
+  };
+
+  return (
+    <div
+      id={`page-${page.id}`}
+      data-page={pageNumber}
+      className="relative bg-white text-foreground shadow-2xl mb-8"
+      style={{
+        fontFamily,
+        width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
+        minHeight: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+      }}
+    >
+      <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
+        Page {pageNumber}
+      </div>
+      {isLoading ? (
+        <Skeleton className="w-full h-full" />
+      ) : (
+        renderTemplate(page)
+      )}
+      <div
+        className="absolute inset-x-0 border-b border-dashed"
+        style={{
+          top: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+        }}
+      />
+    </div>
+  );
 };
 
 interface CoverLetterPagesProps {
@@ -394,82 +498,10 @@ interface CoverLetterPagesProps {
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isLoading: boolean;
 }
 
-const MM_TO_PX = 3.78;
-
-const CoverLetterPage: React.FC<{
-  page: Page;
-  pageNumber: number;
-  pageFormat: "a4" | "letter";
-  baseColor: string;
-  fontSize: number;
-  fontFamily: string;
-  lineHeight: number;
-  margin: number;
-}> = ({
-  page,
-  pageNumber,
-  pageFormat,
-  baseColor,
-  fontSize,
-  fontFamily,
-  lineHeight,
-  margin,
-}) => {
-const renderTemplate = (page: Page) => {
-  const props = {
-    content: page.content,
-    baseColor,
-    fontSize,
-    fontFamily,
-    lineHeight,
-    margin,
-    pageFormat
-  };
-
-  switch (page.template) {
-    case 1:
-      return <CoverTemplate1 {...props} />;
-    case 2:
-      return <CoverTemplate2 {...props} />;
-    case 3:
-      return <CoverTemplate3 {...props} />;
-    case 4:
-      return <CoverTemplate4 {...props} />;
-    case 5:
-      return <CoverTemplate5 {...props} />;
-    default:
-      return <CoverTemplate1 {...props} />;
-  }
-};
-
-  return (
-    <div
-      id={`page-${page.id}`}
-      data-page={pageNumber}
-      className="relative bg-white text-foreground shadow-2xl mb-8"
-      style={{
-        fontFamily,
-        width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
-        minHeight: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
-      }}
-    >
-      <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
-        Page {pageNumber}
-      </div>
-      {renderTemplate(page)}
-      <div
-        className="absolute inset-x-0 border-b border-dashed"
-        style={{
-          top: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
-        }}
-      />
-    </div>
-  );
-};
-
-export default function CoverLetterPages({
+export default function Component({
   pageFormat,
   baseColor,
   fontSize,
@@ -483,11 +515,11 @@ export default function CoverLetterPages({
   setIsPanelOpen,
   isMobileMenuOpen,
   setIsMobileMenuOpen,
+  isLoading,
 }: CoverLetterPagesProps) {
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
   );
-
   const [pages, setPages] = useState<Page[]>([
     { id: 1, template: templateNumber, content: coverLetterData },
   ]);
@@ -499,6 +531,8 @@ export default function CoverLetterPages({
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
+  const currCoverName = useAppSelector((state) => state?.currentCoverLetter?.currCoverName)
+
   useEffect(() => {
     const updatedPages = pages.map((page) => ({
       ...page,
@@ -507,30 +541,10 @@ export default function CoverLetterPages({
     }));
     setPages(updatedPages);
 
-    // Update history
     const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
     setHistory(newHistory);
     setHistoryIndex(newHistory.length - 1);
   }, [templateNumber, coverLetterData]);
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-
-      if (event.data.type === "ZOOM_IN") transformRef.current?.zoomIn(0.2);
-      if (event.data.type === "ZOOM_OUT") transformRef.current?.zoomOut(0.2);
-      if (event.data.type === "CENTER_VIEW") transformRef.current?.centerView();
-      if (event.data.type === "RESET_VIEW") {
-        resetView();
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
-  }, [transformRef]);
 
   const undo = () => {
     if (historyIndex > 0) {
@@ -584,30 +598,28 @@ export default function CoverLetterPages({
       <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
         {isPhoneView && (
           <AnimatePresence>
-            {
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="z-50 md:hidden"
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="z-50 md:hidden"
+            >
+              <Button
+                variant="secondary"
+                size="icon"
+                onClick={() => setIsPanelOpen(!isPanelOpen)}
+                className="rounded-md shadow-md bg-background border border-border"
               >
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => setIsPanelOpen(!isPanelOpen)}
-                  className="rounded-md shadow-md bg-background border border-border"
-                >
-                  <Menu className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            }
+                <Menu className="h-4 w-4" />
+              </Button>
+            </motion.div>
           </AnimatePresence>
         )}
         <div className="flex items-center space-x-3">
           <ThemeAwareLogo />
           <Separator orientation="vertical" className="h-6" />
-          <span className="font-semibold text-lg">John Doe's Cover Letter</span>
+          <span className="font-semibold text-lg">{currCoverName}'s' Cover Letter</span>
         </div>
         {isPhoneView && (
           <div>
@@ -617,7 +629,7 @@ export default function CoverLetterPages({
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
             >
-              <Settings className="h-6 w-6" />
+              <Settings className="h-6 w-4" />
             </Button>
           </div>
         )}
@@ -663,6 +675,7 @@ export default function CoverLetterPages({
                           fontFamily={fontFamily}
                           lineHeight={lineHeight}
                           margin={margin}
+                          isLoading={isLoading}
                         />
                       </motion.div>
                     ))}
@@ -698,4 +711,4 @@ export default function CoverLetterPages({
       )}
     </div>
   );
-} 
+}
