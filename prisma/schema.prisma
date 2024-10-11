@@ -116,3 +116,22 @@ model Coverletter {
 
   @@map("coverletter")
 }
+
+model Blog {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?  // Optional, for SEO/meta description
+  content     String
+  category    String
+  thumbnail   String
+  author      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  published   Boolean  @default(false) // To handle drafts
+  tags        String[] // For SEO and content categorization
+  spark       Int      @default(0) // Optional, tracking popularity or rating
+  views       Int      @default(0) // Optional, track the number of views
+
+  @@map("blog")
+}
