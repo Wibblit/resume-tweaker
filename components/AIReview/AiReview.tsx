@@ -124,6 +124,7 @@ function RadialChart({ data, chartConfig }: { data: AIReviewResult, chartConfig:
               <RadialBar
                 key={entry.name}
                 dataKey="score"
+                name={entry.name}
                 data={[entry]}
                 cornerRadius={5}
                 fill={`hsl(var(--chart-${Object.keys(chartConfig).indexOf(entry.name) + 1}))`}
@@ -147,7 +148,6 @@ function RadialChart({ data, chartConfig }: { data: AIReviewResult, chartConfig:
 }
 
 export default function AIReview() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [reviewType, setReviewType] = useState("generic")
   const [resumeOption, setResumeOption] = useState<"select" | "upload">("select")
   const [selectedResume, setSelectedResume] = useState("")
@@ -161,44 +161,44 @@ export default function AIReview() {
   const chartConfig: ChartConfig = jd ? {
     alignment_with_jd_requirements: {
       label: "Alignment",
-      color: "hsl(var(--chart-1) / <alpha-value>)",
+      color: "hsl(var(--chart-1))",
     },
     completeness_for_jd: {
       label: "Completeness",
-      color: "hsl(var(--chart-2) / <alpha-value>)",
+      color: "hsl(var(--chart-2))",
     },
     specific_achievements_relevant_to_jd: {
       label: "Achievements",
-      color: "hsl(var(--chart-3) / <alpha-value>)",
+      color: "hsl(var(--chart-3))",
     },
     keyword_matching: {
       label: "Keywords",
-      color: "hsl(var(--chart-4) / <alpha-value>)",
+      color: "hsl(var(--chart-4))",
     },
     overall_suitability: {
       label: "Suitability",
-      color: "hsl(var(--chart-5) / <alpha-value>)",
+      color: "hsl(var(--chart-5))",
     },
   } : {
     clarity_and_readability: {
       label: "Clarity",
-      color: "hsl(var(--chart-1) / <alpha-value>)",
+      color: "hsl(var(--chart-1))",
     },
     completeness: {
       label: "Completeness",
-      color: "hsl(var(--chart-2) / <alpha-value>)",
+      color: "hsl(var(--chart-2))",
     },
     detail_and_specificity: {
       label: "Detail",
-      color: "hsl(var(--chart-3) / <alpha-value>)",
+      color: "hsl(var(--chart-3))",
     },
     relevance: {
       label: "Relevance",
-      color: "hsl(var(--chart-4) / <alpha-value>)",
+      color: "hsl(var(--chart-4))",
     },
     grammar_and_language: {
       label: "Grammar",
-      color: "hsl(var(--chart-5) / <alpha-value>)",
+      color: "hsl(var(--chart-5))",
     },
   };
   
@@ -255,29 +255,6 @@ export default function AIReview() {
 
   return (
     <div className="flex h-screen bg-background text-foreground">
-      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed top-4 left-4 z-50 md:hidden"
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle Sidebar</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-          <nav className="flex flex-col gap-4">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-lg font-semibold"
-            >
-              <FileText className="h-6 w-6" />
-              AI Resume Review
-            </Link>
-          </nav>
-        </SheetContent>
-      </Sheet>
       <motion.main
         className="flex-1 overflow-auto p-4 md:p-6"
         initial={{ opacity: 0, y: 20 }}
