@@ -1,35 +1,30 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import SidebarContent from "@/components/SideBar";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useEffect, useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Textarea } from "@/components/ui/textarea"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import {
   FileText,
   Menu,
-  MessageSquare,
-  Star,
   Upload,
-  User,
   TrendingUp,
-} from "lucide-react";
-import axios from "axios";
-import { RecentResume as UserResume } from "@/types/types";
+} from "lucide-react"
+import axios from "axios"
+import { RecentResume as UserResume } from "@/types/types"
 import {
   Card,
   CardContent,
@@ -37,73 +32,48 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+} from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/components/ui/accordion"
 import {
   Label as RechartsLabel,
   PolarRadiusAxis,
   RadialBar,
   RadialBarChart,
-} from "recharts";
+} from "recharts"
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/components/ui/chart"
 
 interface AIReviewCriteria {
-  score: number;
-  comments: string;
+  score: number
+  comments: string
 }
 
 interface AIReviewResult {
   criteria: {
-    clarity_and_readability: AIReviewCriteria;
-    completeness: AIReviewCriteria;
-    detail_and_specificity: AIReviewCriteria;
-    relevance: AIReviewCriteria;
-    grammar_and_language: AIReviewCriteria;
-  };
+    [key: string]: AIReviewCriteria
+  }
 }
 
-const chartConfig: ChartConfig = {
-  clarity_and_readability: {
-    label: "Clarity",
-    color: "hsl(var(--chart-1))",
-  },
-  completeness: {
-    label: "Completeness",
-    color: "hsl(var(--chart-2))",
-  },
-  detail_and_specificity: {
-    label: "Detail",
-    color: "hsl(var(--chart-3))",
-  },
-  relevance: {
-    label: "Relevance",
-    color: "hsl(var(--chart-4))",
-  },
-  grammar_and_language: {
-    label: "Grammar",
-    color: "hsl(var(--chart-5))",
-  },
-};
 
-function RadialChart({ data }: { data: AIReviewResult }) {
+
+function RadialChart({ data, chartConfig }: { data: AIReviewResult, chartConfig: ChartConfig }) {
   const chartData = Object.entries(data.criteria).map(([key, value]) => ({
     name: key,
     score: value.score,
-  }));
+  }))
 
-  const totalScore = chartData.reduce((sum, item) => sum + item.score, 0);
-  const averageScore = totalScore / chartData.length;
+  const totalScore = chartData.reduce((sum, item) => sum + item.score, 0)
+  const averageScore = totalScore / chartData.length
 
   return (
     <Card className="flex flex-col">
@@ -145,18 +115,18 @@ function RadialChart({ data }: { data: AIReviewResult }) {
                           Average Score
                         </tspan>
                       </text>
-                    );
+                    )
                   }
                 }}
               />
             </PolarRadiusAxis>
-            {chartData.map((entry, index) => (
+            {chartData.map((entry) => (
               <RadialBar
                 key={entry.name}
                 dataKey="score"
                 data={[entry]}
                 cornerRadius={5}
-                fill={`var(--color-${entry.name})`}
+                fill={`hsl(var(--chart-${Object.keys(chartConfig).indexOf(entry.name) + 1}))`}
                 className="stroke-transparent stroke-2"
               />
             ))}
@@ -173,71 +143,115 @@ function RadialChart({ data }: { data: AIReviewResult }) {
         </div>
       </CardFooter>
     </Card>
-  );
+  )
 }
 
 export default function AIReview() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [reviewType, setReviewType] = useState("generic");
-  const [resumeOption, setResumeOption] = useState<"select" | "upload">(
-    "select"
-  );
-  const [selectedResume, setSelectedResume] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [jd, setJd] = useState("");
-  const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult | null>(
-    null
-  );
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-  const [userResumes, setUserResumes] = useState<UserResume[]>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [reviewType, setReviewType] = useState("generic")
+  const [resumeOption, setResumeOption] = useState<"select" | "upload">("select")
+  const [selectedResume, setSelectedResume] = useState("")
+  const [file, setFile] = useState<File | null>(null)
+  const [jd, setJd] = useState("")
+  const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult | null>(null)
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false)
+  const [userResumes, setUserResumes] = useState<UserResume[]>()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const chartConfig: ChartConfig = jd ? {
+    alignment_with_jd_requirements: {
+      label: "Alignment",
+      color: "hsl(var(--chart-1) / <alpha-value>)",
+    },
+    completeness_for_jd: {
+      label: "Completeness",
+      color: "hsl(var(--chart-2) / <alpha-value>)",
+    },
+    specific_achievements_relevant_to_jd: {
+      label: "Achievements",
+      color: "hsl(var(--chart-3) / <alpha-value>)",
+    },
+    keyword_matching: {
+      label: "Keywords",
+      color: "hsl(var(--chart-4) / <alpha-value>)",
+    },
+    overall_suitability: {
+      label: "Suitability",
+      color: "hsl(var(--chart-5) / <alpha-value>)",
+    },
+  } : {
+    clarity_and_readability: {
+      label: "Clarity",
+      color: "hsl(var(--chart-1) / <alpha-value>)",
+    },
+    completeness: {
+      label: "Completeness",
+      color: "hsl(var(--chart-2) / <alpha-value>)",
+    },
+    detail_and_specificity: {
+      label: "Detail",
+      color: "hsl(var(--chart-3) / <alpha-value>)",
+    },
+    relevance: {
+      label: "Relevance",
+      color: "hsl(var(--chart-4) / <alpha-value>)",
+    },
+    grammar_and_language: {
+      label: "Grammar",
+      color: "hsl(var(--chart-5) / <alpha-value>)",
+    },
+  };
+  
 
   useEffect(() => {
     async function getUserResumes() {
       try {
         const response = await axios.get<{
-          recentResumes: UserResume[];
-          message: string;
-        }>("/api/get-recent-resumes/");
-        console.log(response, "user resumes");
-        setUserResumes(response.data.recentResumes);
+          recentResumes: UserResume[]
+          message: string
+        }>("/api/get-recent-resumes/")
+        console.log(response, "user resumes")
+        setUserResumes(response.data.recentResumes)
       } catch (error) {
-        console.error("Error fetching user resumes:", error);
+        console.error("Error fetching user resumes:", error)
       }
     }
-    getUserResumes();
-  }, []);
+    getUserResumes()
+  }, [])
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = event.target.files?.[0];
+    const uploadedFile = event.target.files?.[0]
     if (uploadedFile) {
-      setFile(uploadedFile);
-      setIsUploadDialogOpen(false);
-      setResumeOption("upload");
+      setFile(uploadedFile)
+      setIsUploadDialogOpen(false)
+      setResumeOption("upload")
     }
-  };
+  }
 
   const handleResumeSelect = (value: string) => {
-    setSelectedResume(value);
-    setResumeOption("select");
-    setFile(null);
-  };
+    setSelectedResume(value)
+    setResumeOption("select")
+    setFile(null)
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setIsLoading(true);
-    setAiSuggestions(null);
+    event.preventDefault()
+    setIsLoading(true)
+    setAiSuggestions(null)
     try {
-      const response = await axios.get(
-        `/api/get-resume-review/${selectedResume}`
-      );
-      setAiSuggestions(response.data.resumeReview);
+      const response = await axios.post(`/api/get-resume-review/`, {
+        resumeId: selectedResume,
+        jd: jd,
+        reviewType: reviewType,
+      })
+      setJd("")
+      setAiSuggestions(response.data.resumeReview)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="flex h-screen bg-background text-foreground">
@@ -373,12 +387,12 @@ export default function AIReview() {
                   <Label htmlFor="generic">Generic Review</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="deep" id="deep" />
-                  <Label htmlFor="deep">Deep Analysis</Label>
+                  <RadioGroupItem value="tailored" id="tailored" />
+                  <Label htmlFor="tailored">Tailored Review</Label>
                 </div>
               </RadioGroup>
             </div>
-            {reviewType === "deep" && (
+            {reviewType === "tailored" && (
               <div>
                 <Label htmlFor="jd">Job Description</Label>
                 <Textarea
@@ -404,13 +418,14 @@ export default function AIReview() {
                 transition={{ duration: 0.5 }}
                 className="mt-8 space-y-8"
               >
-                <RadialChart data={aiSuggestions} />
+                <RadialChart data={aiSuggestions} chartConfig={chartConfig} />
                 <Card>
                   <CardHeader>
                     <CardTitle>AI Resume Review Results</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
+                      
                       {Object.entries(aiSuggestions.criteria).map(
                         ([criterion, { score, comments }]) => (
                           <Accordion type="single" collapsible key={criterion}>
@@ -449,5 +464,5 @@ export default function AIReview() {
         </div>
       </motion.main>
     </div>
-  );
+  )
 }
