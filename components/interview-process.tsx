@@ -547,6 +547,14 @@ export function InterviewProcess({
   const dispatch = useDispatch();
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const lastRecognizedTextRef = useRef("");
+  const isMobileRef = useRef(false);
+
+  useEffect(() => {
+    isMobileRef.current =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -626,25 +634,35 @@ export function InterviewProcess({
       let finalTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          finalTranscript += result[0].transcript;
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          if (isMobileRef.current) {
+            finalTranscript = transcript;
+          } else {
+            finalTranscript += transcript;
+          }
         } else {
-          interimTranscript += result[0].transcript;
+          if (isMobileRef.current) {
+            interimTranscript = transcript;
+          } else {
+            interimTranscript += transcript;
+          }
         }
       }
 
-      // Combine the last recognized text with the new transcripts
-      const updatedTranscript = removeDuplicates(
-        `${lastRecognizedTextRef.current}${finalTranscript}${interimTranscript}`
-      );
+      const updatedTranscript = isMobileRef.current
+        ? `${lastRecognizedTextRef.current}${finalTranscript}`
+        : `${lastRecognizedTextRef.current}${finalTranscript}${interimTranscript}`;
 
       setUserAnswer(updatedTranscript);
       setRecognizedText(updatedTranscript);
 
-      // Update the last recognized text only with final results
       if (finalTranscript) {
         lastRecognizedTextRef.current = updatedTranscript;
+      }
+
+      if (finalTranscript && !isMobileRef.current) {
+        recognition.stop();
       }
     };
 
@@ -668,14 +686,6 @@ export function InterviewProcess({
       recognitionRef.current.stop();
       setIsRecording(false);
     }
-  };
-
-  const removeDuplicates = (text: string) => {
-    const words = text.trim().split(/\s+/);
-    const uniqueWords = words.filter((word, index, array) => {
-      return index === 0 || word !== array[index - 1];
-    });
-    return uniqueWords.join(" ");
   };
 
   const submitAnswer = () => {
