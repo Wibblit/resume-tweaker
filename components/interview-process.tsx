@@ -258,7 +258,6 @@
 //     </Card>
 //   );
 // }
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -268,10 +267,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkipForward, StopCircle, Mic, Send } from "lucide-react";
 import { VoiceAnimation } from "@/components/voice-animation";
 
-declare global { interface Window {
-  SpeechRecognition?: any;
-  webkitSpeechRecognition?: any;
-}} 
+declare global {
+  interface Window {
+    SpeechRecognition?: any;
+    webkitSpeechRecognition?: any;
+  }
+}
 
 interface InterviewProcessProps {
   questions: string[];
@@ -292,6 +293,7 @@ export function InterviewProcess({
   const recognitionRef = useRef<any>(null);
   const dispatch = useDispatch();
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const lastRecognizedTextRef = useRef("");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -350,7 +352,6 @@ export function InterviewProcess({
     };
   };
 
-
   const startRecording = () => {
     if (
       !("webkitSpeechRecognition" in window || "SpeechRecognition" in window)
@@ -367,8 +368,6 @@ export function InterviewProcess({
     recognition.continuous = true;
     recognitionRef.current = recognition;
 
-    let finalTranscriptBuffer = userAnswer;
-
     recognition.onresult = (event: any) => {
       let interimTranscript = "";
       let finalTranscript = "";
@@ -382,9 +381,18 @@ export function InterviewProcess({
         }
       }
 
-      finalTranscriptBuffer += finalTranscript;
-      setUserAnswer(`${finalTranscriptBuffer} ${interimTranscript}`);
-      setRecognizedText(`${finalTranscriptBuffer} ${interimTranscript}`);
+      // Combine the last recognized text with the new transcripts
+      const updatedTranscript = removeDuplicates(
+        `${lastRecognizedTextRef.current}${finalTranscript}${interimTranscript}`
+      );
+
+      setUserAnswer(updatedTranscript);
+      setRecognizedText(updatedTranscript);
+
+      // Update the last recognized text only with final results
+      if (finalTranscript) {
+        lastRecognizedTextRef.current = updatedTranscript;
+      }
     };
 
     recognition.onstart = () => {
@@ -393,6 +401,10 @@ export function InterviewProcess({
 
     recognition.onend = () => {
       setIsRecording(false);
+      // Restart recognition if it stops unexpectedly
+      if (isRecording) {
+        recognition.start();
+      }
     };
 
     recognition.start();
@@ -403,6 +415,14 @@ export function InterviewProcess({
       recognitionRef.current.stop();
       setIsRecording(false);
     }
+  };
+
+  const removeDuplicates = (text: string) => {
+    const words = text.trim().split(/\s+/);
+    const uniqueWords = words.filter((word, index, array) => {
+      return index === 0 || word !== array[index - 1];
+    });
+    return uniqueWords.join(" ");
   };
 
   const submitAnswer = () => {
@@ -416,6 +436,7 @@ export function InterviewProcess({
     });
     setUserAnswer("");
     setRecognizedText("");
+    lastRecognizedTextRef.current = "";
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setShowButtons(false);
     setIsAISpeaking(false);
@@ -424,6 +445,7 @@ export function InterviewProcess({
   const skipQuestion = () => {
     setUserAnswer("");
     setRecognizedText("");
+    lastRecognizedTextRef.current = "";
     stopRecording();
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     setShowButtons(false);
