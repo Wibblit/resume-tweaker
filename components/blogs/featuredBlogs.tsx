@@ -75,7 +75,7 @@ interface Blog {
   content: string;
   category: string;
   author: string;
-  image: string; // Base64 string
+  thumbnail: string; // Base64 string
   date: string; // Add the appropriate type
   readTime: string; // Add the appropriate type
 }
@@ -113,8 +113,8 @@ export default function BentoGrid() {
             }`}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 transition-opacity group-hover:opacity-80" />
-            <img
-              src={blog.image} // Use the base64 string directly
+            <Image
+              src={blog.thumbnail}
               alt={blog.title}
               width={800}
               height={600}
