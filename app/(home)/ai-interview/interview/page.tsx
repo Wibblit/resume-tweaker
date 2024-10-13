@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
-import { InterviewProcess } from '@/components/interview-process'
+import InterviewProcess from '@/components/interview-process'
 
 export default function InterviewPage() {
   const router = useRouter()
