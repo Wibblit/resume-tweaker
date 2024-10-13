@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: Request) {
-  const { history } = await request.json();
-
   try {
+    const { history } = await request.json();
+
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
     const prompt = `Generate a comprehensive interview report based on the following question-answer pairs:

@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, Clock, User, Zap, Eye } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  User,
+  Zap,
+  Eye,
+  ChevronUp,
+  ExternalLink,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
@@ -13,8 +21,8 @@ import { auth } from "@/auth";
 import { Session } from "next-auth";
 
 interface BlogPostProps {
-    session: Session | null; // Explicitly type the session prop
-    slug : string
+  session: Session | null;
+  slug: string;
 }
 
 interface Blog {
@@ -42,6 +50,7 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
   const [hasSparked, setHasSparked] = useState<boolean>(false);
   const [showSparkAnimation, setShowSparkAnimation] = useState<boolean>(false);
   const [views, setViews] = useState<number>(0);
+  const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -55,7 +64,6 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
         setSparkCount(data.spark);
         setViews(data.views);
 
-        // Check if the blog has been sparked in local storage
         const sparkedBlogs = JSON.parse(
           localStorage.getItem("sparkedBlogs") || "[]"
         );
@@ -87,27 +95,32 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
     incrementViews();
   }, [blog]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleSparkClick = async () => {
     if (!hasSparked && blog) {
       try {
+        setSparkCount((prev) => prev + 1);
+        setShowSparkAnimation(true);
+        setHasSparked(true);
         const response = await fetch(`/api/increment-spark/${blog.slug}`, {
           method: "POST",
         });
-
         if (response.ok) {
-          setSparkCount((prev) => prev + 1);
-          setShowSparkAnimation(true);
-          setHasSparked(true);
-
-          // Store the sparked blog ID in local storage
           const sparkedBlogs = JSON.parse(
             localStorage.getItem("sparkedBlogs") || "[]"
           );
           sparkedBlogs.push(blog.id);
           localStorage.setItem("sparkedBlogs", JSON.stringify(sparkedBlogs));
 
-          // Hide the spark animation after a short delay
-          setTimeout(() => setShowSparkAnimation(false), 500);
+          setTimeout(() => setShowSparkAnimation(false), 1000);
         } else {
           console.error("Failed to increment Spark count");
         }
@@ -132,6 +145,10 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
         console.error("Error deleting blog post:", error);
       }
     }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (!blog) {
@@ -165,10 +182,10 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
             <Zap className="h-6 w-6 text-yellow-400" />
             <span>{sparkCount}</span>
           </div>
-          <div className="flex gap-x-1 items-center">
+          {/* <div className="flex gap-x-1 items-center">
             <Eye className="h-6 w-6" />
             <span>{views}</span>
-          </div>
+          </div> */}
         </div>
       </header>
       <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
@@ -203,9 +220,6 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
 
       <div className="mt-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex gap-2">
-          <Button variant="outline" asChild className="w-full sm:w-auto">
-            <Link href="/blogs">Back to all blogs</Link>
-          </Button>
           {session?.user?.email === process.env.ADMIN_EMAIL && (
             <>
               <Button variant="outline" asChild className="w-full sm:w-auto">
@@ -221,34 +235,61 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
             </>
           )}
         </div>
-        <div className="flex flex-col md:flex-row gap-4 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            onClick={handleSparkClick}
-            disabled={hasSparked}
-            className={`relative w-full xs:w-auto ${
-              hasSparked ? "bg-yellow-100 dark:bg-yellow-900" : ""
-            }`}
-          >
-            <Zap
-              className={`h-5 w-5 mr-2 ${hasSparked ? "text-yellow-400" : ""}`}
-            />
-            Spark {sparkCount > 0 && `(${sparkCount})`}
-            <AnimatePresence>
-              {showSparkAnimation && (
-                <motion.span
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  className="absolute -top-1 -right-1"
-                >
-                  💥
-                </motion.span>
-              )}
-            </AnimatePresence>
+        <div className="flex flex-col md:flex-row md:justify-between gap-y-4 w-full ">
+          <Button variant="outline" asChild className="w-full md:w-auto">
+            <Link href="/blogs">Back to all blogs</Link>
           </Button>
+          <div className="flex-col md:flex-row flex gap-4">
+            <Button
+              variant="outline"
+              onClick={handleSparkClick}
+              disabled={hasSparked}
+              className={`relative w-full xs:w-auto ${
+                hasSparked ? "bg-yellow-100 dark:bg-yellow-900" : ""
+              }`}
+            >
+              <Zap
+                className={`h-5 w-5 mr-2 ${
+                  hasSparked ? "text-yellow-400" : ""
+                }`}
+              />
+              Spark {sparkCount > 0 && `(${sparkCount})`}
+              <AnimatePresence>
+                {showSparkAnimation && (
+                  <motion.div
+                    className="absolute inset-0 flex items-center justify-center"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1.5, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Zap className="h-8 w-8 text-yellow-400" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+            <Button className="w-full xs:w-auto">
+              {" "}
+              <Link
+                href="/product"
+                className="flex items-center justify-center"
+              >
+                {" "}
+                Try Our Product <ExternalLink className="ml-2 h-4 w-4" />{" "}
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
+      {showScrollTop && (
+        <Button
+          className="fixed bottom-8 right-8 rounded-full p-2"
+          onClick={scrollToTop}
+          aria-label="Scroll to top"
+        >
+          <ChevronUp className="h-6 w-6" />
+        </Button>
+      )}
     </article>
   );
 }
