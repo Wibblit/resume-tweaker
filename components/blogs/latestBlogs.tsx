@@ -116,6 +116,7 @@ export default function LatestBlogs() {
       try {
         const response = await fetch("/api/get-blogs");
         const data: Blog[] = await response.json();
+        console.log(data)
         setBlogs(data);
       } catch (error) {
         console.error("Error fetching blogs:", error);

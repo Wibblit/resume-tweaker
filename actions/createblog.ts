@@ -11,7 +11,8 @@ export async function createBlogPost(
   author: string,
   thumbnail: string,
   published: boolean,
-  tags: string[] // Corrected this line
+  tags: string[], // Corrected this line
+  isFeatured : boolean
 ) {
   try {
     const session = await auth();
@@ -44,6 +45,7 @@ export async function createBlogPost(
         tags: tags, // Correctly passing the string array
         spark: 0,
         views: 0,
+        isFeatured : isFeatured
       },
     });
 

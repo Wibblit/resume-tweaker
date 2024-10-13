@@ -5,6 +5,7 @@
 // import Link from "next/link";
 // import { Badge } from "@/components/ui/badge";
 // import { CalendarIcon, ClockIcon, ArrowRightIcon } from "lucide-react";
+// import { Skeleton } from "@/components/ui/skeleton";
 
 // interface Blog {
 //   id: string;
@@ -46,12 +47,19 @@
 
 // export default function BentoGrid() {
 //   const [blogs, setBlogs] = useState<Blog[]>([]);
+//   const [isLoading, setIsLoading] = useState(true);
 
 //   useEffect(() => {
 //     const fetchBlogs = async () => {
-//       const response = await fetch("/api/get-blogs");
-//       const data: Blog[] = await response.json();
-//       setBlogs(data);
+//       try {
+//         const response = await fetch("/api/get-featured-blogs");
+//         const data: Blog[] = await response.json();
+//         setBlogs(data);
+//       } catch (error) {
+//         console.error("Error fetching blogs:", error);
+//       } finally {
+//         setIsLoading(false);
+//       }
 //     };
 
 //     fetchBlogs();
@@ -63,20 +71,45 @@
 //         Featured Blogs
 //       </h1>
 //       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//         {blogs.length > 0 && (
-//           <div className="md:col-span-2 md:row-span-2">
-//             <BlogCard blog={blogs[0]} isLarge={true} />
-//           </div>
-//         )}
-//         <div className="space-y-6">
-//           {blogs.slice(1, 3).map((blog) => (
-//             <BlogCard key={blog.id} blog={blog} />
-//           ))}
-//         </div>
-//         {blogs.length > 3 && (
-//           <div className="md:col-span-3">
-//             <BlogCard blog={blogs[3]} isWide={true} />
-//           </div>
+//         {isLoading ? (
+//           <>
+//             <div className="md:col-span-2 md:row-span-2">
+//               <SkeletonBlogCard isLarge />
+//             </div>
+//             <div className="space-y-6">
+//               <SkeletonBlogCard />
+//               <SkeletonBlogCard />
+//             </div>
+//             <div className="md:col-span-3">
+//               <SkeletonBlogCard isWide />
+//             </div>
+//           </>
+//         ) : (
+//           <>
+//             {blogs.length === 0 ? (
+//               <div>
+//                 <h1>No Blogs Yet</h1>
+//               </div>
+//             ) : (
+//               <>
+//                 {blogs.length > 0 && (
+//                   <div className="md:col-span-2 md:row-span-2">
+//                     <BlogCard blog={blogs[0]} isLarge={true} />
+//                   </div>
+//                 )}
+//                 <div className="space-y-6">
+//                   {blogs.slice(1, 3).map((blog) => (
+//                     <BlogCard key={blog.id} blog={blog} />
+//                   ))}
+//                 </div>
+//                 {blogs.length > 3 && (
+//                   <div className="md:col-span-3">
+//                     <BlogCard blog={blogs[3]} isWide={true} />
+//                   </div>
+//                 )}
+//               </>
+//             )}
+//           </>
 //         )}
 //       </div>
 //     </div>
@@ -141,6 +174,36 @@
 //   );
 // }
 
+// interface SkeletonBlogCardProps {
+//   isLarge?: boolean;
+//   isWide?: boolean;
+// }
+
+// function SkeletonBlogCard({
+//   isLarge = false,
+//   isWide = false,
+// }: SkeletonBlogCardProps) {
+//   return (
+//     <div
+//       className={`relative overflow-hidden rounded-xl ${
+//         isLarge ? "h-full" : isWide ? "h-64" : "h-64"
+//       }`}
+//     >
+//       <Skeleton className="h-full w-full" />
+//       <div className="absolute inset-0 flex flex-col justify-end p-6">
+//         <Skeleton className="w-20 h-6 mb-3" />
+//         <Skeleton className={`h-8 w-3/4 mb-2 ${isLarge ? "h-10" : ""}`} />
+//         <Skeleton className="h-4 w-full mb-4" />
+//         <Skeleton className="h-4 w-full mb-2" />
+//         <div className="flex items-center space-x-4">
+//           <Skeleton className="h-4 w-24" />
+//           <Skeleton className="h-4 w-24" />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -191,15 +254,21 @@ function calculateReadTime(content: string): string {
 export default function BentoGrid() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("/api/get-blogs");
-        const data: Blog[] = await response.json();
-        setBlogs(data);
+        const response = await fetch("/api/get-featured-blogs");
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setBlogs(data);
+        } else {
+          throw new Error("Received invalid data format");
+        }
       } catch (error) {
         console.error("Error fetching blogs:", error);
+        setError("Failed to load blogs. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -207,6 +276,17 @@ export default function BentoGrid() {
 
     fetchBlogs();
   }, []);
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-extrabold tracking-tight lg:text-5xl mb-8">
+          Featured Blogs
+        </h1>
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -229,20 +309,29 @@ export default function BentoGrid() {
           </>
         ) : (
           <>
-            {blogs.length > 0 && (
-              <div className="md:col-span-2 md:row-span-2">
-                <BlogCard blog={blogs[0]} isLarge={true} />
-              </div>
-            )}
-            <div className="space-y-6">
-              {blogs.slice(1, 3).map((blog) => (
-                <BlogCard key={blog.id} blog={blog} />
-              ))}
-            </div>
-            {blogs.length > 3 && (
+            {blogs.length === 0 ? (
               <div className="md:col-span-3">
-                <BlogCard blog={blogs[3]} isWide={true} />
+                <h2 className="text-xl font-semibold">No Blogs Yet</h2>
+                <p>Check back later for featured blog posts.</p>
               </div>
+            ) : (
+              <>
+                {blogs.length > 0 && (
+                  <div className="md:col-span-2 md:row-span-2">
+                    <BlogCard blog={blogs[0]} isLarge={true} />
+                  </div>
+                )}
+                <div className="space-y-6">
+                  {blogs.slice(1, 3).map((blog) => (
+                    <BlogCard key={blog.id} blog={blog} />
+                  ))}
+                </div>
+                {blogs.length > 3 && (
+                  <div className="md:col-span-3">
+                    <BlogCard blog={blogs[3]} isWide={true} />
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
