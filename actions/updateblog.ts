@@ -13,7 +13,8 @@ export async function updateBlogPost(
   author: string,
   thumbnail: string,
   published: boolean,
-  tags: string[]
+  tags: string[],
+  isFeatured : boolean
 ) {
   try {
     const session = await auth();
@@ -39,6 +40,7 @@ export async function updateBlogPost(
         thumbnail: thumbnail,
         published: published,
         tags: tags,
+        isFeatured : isFeatured
         // Note: We're not updating spark and views here as they should be managed separately
       },
     });

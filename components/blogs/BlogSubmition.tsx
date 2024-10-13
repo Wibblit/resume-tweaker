@@ -27,6 +27,7 @@
 // import { ArrowLeft } from "lucide-react";
 // import Link from "next/link";
 // import { useTheme } from "next-themes";
+// import { createBlogPost } from "@/actions/createblog";
 
 // const categories = [
 //   "Web Development",
@@ -52,14 +53,17 @@
 //     author: "",
 //     published: false,
 //     tags: [] as string[],
+//     image: "",
 //   });
 //   const [slugError, setSlugError] = useState("");
+//   const [imagePreview, setImagePreview] = useState<string | null>(null);
 //   const editorRef = useRef<SunEditorCore>();
 //   const { theme } = useTheme();
 
 //   const getSunEditorInstance = (sunEditor: SunEditorCore) => {
 //     editorRef.current = sunEditor;
 //   };
+  
 
 //   useEffect(() => {
 //     // Apply custom styles to SunEditor based on the current theme
@@ -176,11 +180,25 @@
 //     setFormData((prevData) => ({ ...prevData, published: e.target.checked }));
 //   };
 
+//   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     const file = e.target.files?.[0];
+//     if (file) {
+//       const reader = new FileReader();
+//       reader.onloadend = () => {
+//         const base64String = reader.result as string;
+//         setFormData((prevData) => ({ ...prevData, image: base64String }));
+//         setImagePreview(base64String);
+//       };
+//       reader.readAsDataURL(file);
+//     }
+//   };
+
 //   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
 //     setIsSubmitting(true);
 
 //     try {
+//       // Check if required fields are filled
 //       if (
 //         !formData.title ||
 //         !formData.slug ||
@@ -191,9 +209,22 @@
 //         throw new Error("Please fill in all required fields");
 //       }
 
-//       // Assuming you have an API function to submit the form data
-//       // await submitBlogPost(formData)
+//       // Call the createBlogPost function and pass form data
+//       await createBlogPost(
+//         formData.title,
+//         formData.slug,
+//         formData.excerpt || null, // Optional field
+//         formData.content,
+//         formData.category,
+//         formData.author,
+//         formData.image, // Assuming the image is the thumbnail field
+//         formData.published,
+//         formData.tags
+//       );
 
+//       console.log("Blog post submitted successfully:", formData);
+
+//       // Redirect to blogs page after submission
 //       router.push("/blogs");
 //     } catch (error) {
 //       console.error("Error submitting blog post:", error);
@@ -201,6 +232,7 @@
 //       setIsSubmitting(false);
 //     }
 //   };
+
 
 //   return (
 //     <div className="container mt-8 mx-auto px-4 py-8 max-w-3xl">
@@ -232,7 +264,7 @@
 //                 required
 //               />
 //               <div className="text-sm text-muted-foreground">
-//                 {formData.title.length} / { MAX_SLUG_LENGTH} characters
+//                 {formData.title.length} / {MAX_SLUG_LENGTH} characters
 //               </div>
 //             </div>
 //             <div className="space-y-2">
@@ -321,6 +353,26 @@
 //                 value={formData.author}
 //                 onChange={handleInputChange}
 //                 required
+//               />
+//             </div>
+//             <div className="space-y-2">
+//               <Label htmlFor="image">Cover Image</Label>
+//               {imagePreview && (
+//                 <div className="mb-2">
+//                   <img
+//                     src={imagePreview}
+//                     alt="Cover image preview"
+//                     className="max-w-full h-auto rounded-lg"
+//                   />
+//                 </div>
+//               )}
+//               <Input
+//                 id="image"
+//                 name="image"
+//                 type="file"
+//                 accept="image/*"
+//                 onChange={handleImageChange}
+//                 className="input"
 //               />
 //             </div>
 //             <div className="space-y-2">
@@ -455,7 +507,7 @@ const categories = [
   "Cybersecurity",
 ];
 
-const MAX_SLUG_LENGTH = 60; // Maximum length for the slug
+const MAX_SLUG_LENGTH = 60;
 
 export default function BlogForm() {
   const router = useRouter();
@@ -470,6 +522,7 @@ export default function BlogForm() {
     published: false,
     tags: [] as string[],
     image: "",
+    isFeatured: false,
   });
   const [slugError, setSlugError] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -479,10 +532,8 @@ export default function BlogForm() {
   const getSunEditorInstance = (sunEditor: SunEditorCore) => {
     editorRef.current = sunEditor;
   };
-  
 
   useEffect(() => {
-    // Apply custom styles to SunEditor based on the current theme
     const style = document.createElement("style");
     style.textContent = `
       .sun-editor {
@@ -596,6 +647,10 @@ export default function BlogForm() {
     setFormData((prevData) => ({ ...prevData, published: e.target.checked }));
   };
 
+  const handleIsFeaturedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prevData) => ({ ...prevData, isFeatured: e.target.checked }));
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -614,7 +669,6 @@ export default function BlogForm() {
     setIsSubmitting(true);
 
     try {
-      // Check if required fields are filled
       if (
         !formData.title ||
         !formData.slug ||
@@ -625,22 +679,20 @@ export default function BlogForm() {
         throw new Error("Please fill in all required fields");
       }
 
-      // Call the createBlogPost function and pass form data
       await createBlogPost(
         formData.title,
         formData.slug,
-        formData.excerpt || null, // Optional field
+        formData.excerpt || null,
         formData.content,
         formData.category,
         formData.author,
-        formData.image, // Assuming the image is the thumbnail field
+        formData.image,
         formData.published,
-        formData.tags
+        formData.tags,
+        formData.isFeatured
       );
 
       console.log("Blog post submitted successfully:", formData);
-
-      // Redirect to blogs page after submission
       router.push("/blogs");
     } catch (error) {
       console.error("Error submitting blog post:", error);
@@ -648,7 +700,6 @@ export default function BlogForm() {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="container mt-8 mx-auto px-4 py-8 max-w-3xl">
@@ -805,6 +856,17 @@ export default function BlogForm() {
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
+                id="isFeatured"
+                name="isFeatured"
+                checked={formData.isFeatured}
+                onChange={handleIsFeaturedChange}
+                className="form-checkbox h-5 w-5 text-primary"
+              />
+              <Label htmlFor="isFeatured">Feature this post</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
                 id="published"
                 name="published"
                 checked={formData.published}
@@ -851,6 +913,7 @@ export default function BlogForm() {
         }
         .sun-editor-editable img {
           max-width: 100%;
+
           height: auto;
           display: block !important;
           margin-left: auto !important;

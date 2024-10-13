@@ -132,6 +132,7 @@ model Blog {
   tags        String[] // For SEO and content categorization
   spark       Int      @default(0) // Optional, tracking popularity or rating
   views       Int      @default(0) // Optional, track the number of views
+  isFeatured  Boolean  @default(false) 
 
   @@map("blog")
 }
