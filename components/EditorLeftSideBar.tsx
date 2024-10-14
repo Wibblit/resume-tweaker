@@ -401,6 +401,7 @@ export default function LeftSideBar({
               {field === "summary" || field === "content" ? (
                 <RichInput
                   content={entry[field] || ""}
+                  section={section}
                   onContentChange={(value) =>
                     updateEntry(section, entry.id, field, value)
                   }

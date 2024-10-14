@@ -31,7 +31,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils";
 import { Highlight } from "@tiptap/extension-highlight";
@@ -64,7 +64,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Toggle } from "./ui/toggle";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
-import { Sparkles, WandSparkles } from "lucide-react";
+import { Sparkles, Wand2 } from "lucide-react";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -135,9 +135,10 @@ const InsertImageForm = ({ onInsert }: InsertImageProps) => {
 
 interface AIPopoverProps {
   onSuggestionApply: (suggestion: string) => void;
+  section: string;
 }
 
-function AIPopover({ onSuggestionApply }: AIPopoverProps) {
+function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [suggestion, setSuggestion] = useState("");
@@ -148,6 +149,7 @@ function AIPopover({ onSuggestionApply }: AIPopoverProps) {
     setIsLoading(true);
     const response = await axios.post<{ content: string }>("/api/ai-assist/", {
       prompt,
+      section,
     });
     setSuggestion(response.data.content);
     setIsLoading(false);
@@ -160,13 +162,11 @@ function AIPopover({ onSuggestionApply }: AIPopoverProps) {
     setPrompt("");
   };
 
-  return (
+  return (  
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm">
-          <div className="flex gap-x-2">
-            <Sparkles className="h-4 w-4" />
-          </div>
+        <Button variant="outline" size="sm" className="px-2">
+          <Sparkles className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
@@ -192,7 +192,7 @@ function AIPopover({ onSuggestionApply }: AIPopoverProps) {
   );
 }
 
-const Toolbar = ({ editor }: { editor: Editor }) => {
+const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes("link").href;
     const url = window.prompt("URL", previousUrl);
@@ -208,6 +208,27 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
 
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }, [editor]);
+
+  const handleEnhanceText = async () => {
+    const content = editor.getHTML().replace(/<[^>]*>?/gm, '');
+    if (!content.trim()) {
+      return alert("Please add some text to enhance.");
+    }
+    try {
+      const response = await axios.post<{ content: string }>(
+        "/api/ai-assist/",
+        {
+          content,
+          action: "enhance",
+          section,
+        }
+      );
+      editor.commands.setContent(response.data.content);
+    } catch (error) {
+      console.error("Error enhancing text:", error);
+      alert("Failed to enhance text. Please try again.");
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -458,21 +479,40 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
             className="px-2"
             onClick={() => editor.chain().focus().redo().run()}
           >
+            
             <ArrowClockwise className="h-4 w-4" />
           </Button>
         </Tooltip>
 
         <AIPopover
+          section={section}
           onSuggestionApply={(suggestion) =>
             editor.commands.insertContent(suggestion)
           }
         />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              className="px-2"
+              onClick={handleEnhanceText}
+            >
+              <Wand2 className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Enhance text with AI</p>
+          </TooltipContent>
+        </Tooltip>
       </div>
     </TooltipProvider>
   );
 };
 
 type RichInputProps = {
+  section: string;
   content: string;
   onContentChange: (value: string) => void;
   hideToolbar?: boolean;
@@ -486,6 +526,7 @@ type RichInputProps = {
 export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
   (
     {
+      section,
       content,
       onContentChange,
       hideToolbar = false,
@@ -575,7 +616,7 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
 
     return (
       <div className="custom-editor" ref={ref}>
-        {!hideToolbar && <Toolbar editor={editor} />}
+        {!hideToolbar && <Toolbar editor={editor} section={section} />}
 
         <EditorContent
           editor={editor}
@@ -595,11 +636,13 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
 RichInput.displayName = "RichInput";
 
 export default function Component({
+  section,
   content,
   onContentChange,
 }: {
+  section: string;
   content: string;
   onContentChange: (content: string) => void;
 }) {
-  return <RichInput content={content} onContentChange={onContentChange} />;
+  return <RichInput section={section} content={content} onContentChange={onContentChange} />;
 }

@@ -811,7 +811,8 @@ export default function CoverLeftSideBar({
                 onChange={(e) => updateCoverLetterData(section, e.target.value)}
               />
             ) : richInputSections.includes(section) ? (
-              <RichInput
+                <RichInput
+                  section={section}
                 content={coverLetterData[section]}
                 onContentChange={(value) =>
                   updateCoverLetterData(section, value)
