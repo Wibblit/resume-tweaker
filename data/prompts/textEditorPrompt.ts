@@ -1,8 +1,4 @@
-import { ResumeData, CoverLetterData } from "@/types/types";
-
-type CombinedKeys = keyof ResumeData | keyof CoverLetterData;
-
-const sectionPrompts: { [K in CombinedKeys]: string } = {
+const sectionPrompts: any = {
   basics: ``,
   awards: `{
         "sentence_count": "2-3 bullet points",
@@ -93,12 +89,21 @@ const sectionPrompts: { [K in CombinedKeys]: string } = {
     }`,
 };
 
-export function getAISuggestionPrompt(prompt: string, section: CombinedKeys) {
-
-  const isSection = (section: string): section is CombinedKeys =>
-    section in sectionPrompts;
-
-  const prompts = isSection(section)
+export function getAISuggestionPrompt(prompt: string, section: string) {
+  const isSection =
+  section === "salutation" ||
+  section === "date" ||
+  section === "recipientInfo" ||
+  section === "subject" ||
+  section === "opening" ||
+  section === "interestInPosition" ||
+  section === "professionalSummary" ||
+  section === "keyAchievements" ||
+  section === "culturalFit" ||
+  section === "closing" ||
+    section === "signOff";
+  
+  const prompts = isSection
     ? `Generate a professional and polished cover letter section based on the following input: ${prompt}.
 
 Write the content following these rules: ${sectionPrompts[section]}
@@ -123,23 +128,29 @@ Adapt the language and tone to fit a professional context, applicable across ind
 2) If specific details (such as achievements, dates, or metrics) are missing, provide reasonable assumptions based on common professional standards.
 PROVIDE ONLY REQUESTED INFORMATION, NO ADDITIONAL EXPLANATIONS OR COMMENTS.
 `;
-  
-  return prompts
+
+  return prompts;
 }
 
-export function getAIEnhancementPrompt(
-  content: string,
-  section: CombinedKeys | string
-) {
-  const isSection = (section: string): section is CombinedKeys =>
-    section in sectionPrompts;
-
-  const getSectionPrompt = (section: CombinedKeys) => sectionPrompts[section];
-
-  const prompt = isSection(section)
+export function getAIEnhancementPrompt(content: string, section: string) {
+  const isSection =
+    section === "salutation" ||
+    section === "date" ||
+    section === "recipientInfo" ||
+    section === "subject" ||
+    section === "opening" ||
+    section === "interestInPosition" ||
+    section === "professionalSummary" ||
+    section === "keyAchievements" ||
+    section === "culturalFit" ||
+    section === "closing" ||
+    section === "signOff";
+  
+ 
+  const prompt = isSection
     ? `Enhance the following cover letter section based on the input provided: ${content}.
 
-Write the content following these rules: ${getSectionPrompt(section)}
+Write the content following these rules: ${sectionPrompts[section]}
 
 IMPROVE THE CLARITY, CONCISENESS, AND PROFESSIONALISM of the content while preserving the original meaning and intent.
 ENSURE THE LANGUAGE IS FORMAL, action-oriented, and fits the tone of a professional cover letter.
@@ -148,9 +159,7 @@ Adapt the content to a professional context that is applicable across industries
 ONLY REPLY IN PLAIN TEXT, WITH NO ADDITIONAL EXPLANATIONS OR COMMENTS.
 PROVIDE ONLY THE ENHANCED VERSION OF THE INPUT. DO NOT INTRODUCE NEW INFORMATION OR SIGNIFICANTLY ALTER THE STRUCTURE UNLESS NECESSARY TO IMPROVE READABILITY AND FLOW.`
     : `Enhance the following resume section based on the input provided: ${content}".
-Write the content following these rules: ${
-        sectionPrompts[section as keyof typeof sectionPrompts] || ""
-      }
+Write the content following these rules: ${sectionPrompts[section]}
 IMPROVE THE CLARITY, CONCISENESS, AND PROFESSIONALISM of the content while preserving the original meaning and intent.
 ENSURE THE LANGUAGE IS FORMAL, action-oriented, and focused on achievements and responsibilities relevant to the resume.
 REMOVE ANY IRRELEVANT, INAPPROPRIATE, OR NONSENSICAL INFORMATION while maintaining the focus on the section's purpose (e.g., professional summary, experience description, key achievements).
