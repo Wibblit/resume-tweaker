@@ -23,11 +23,15 @@ import {
   TextHOne,
   TextHThree,
   TextHTwo,
-  TextIndent,
   TextItalic,
-  TextOutdent,
   TextStrikethrough,
 } from "@phosphor-icons/react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils";
 import { Highlight } from "@tiptap/extension-highlight";
@@ -42,7 +46,7 @@ import {
   useEditor,
 } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import { forwardRef, useCallback, useEffect } from "react";
+import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
@@ -58,7 +62,9 @@ import { Input } from "./ui/input";
 import { Popover, PopoverContent } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 import { Toggle } from "./ui/toggle";
-import { Tooltip, TooltipProvider } from "./ui/tooltip";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { Sparkles, WandSparkles } from "lucide-react";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -126,6 +132,65 @@ const InsertImageForm = ({ onInsert }: InsertImageProps) => {
     </Form>
   );
 };
+
+interface AIPopoverProps {
+  onSuggestionApply: (suggestion: string) => void;
+}
+
+function AIPopover({ onSuggestionApply }: AIPopoverProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [suggestion, setSuggestion] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    const response = await axios.post<{ content: string }>("/api/ai-assist/", {
+      prompt,
+    });
+    setSuggestion(response.data.content);
+    setIsLoading(false);
+  };
+
+  const handleApply = () => {
+    onSuggestionApply(suggestion);
+    setIsOpen(false);
+    setSuggestion("");
+    setPrompt("");
+  };
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" size="sm">
+          <div className="flex gap-x-2">
+            <Sparkles className="h-4 w-4" />
+          </div>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <h4 className="font-medium">AI Suggestion</h4>
+          <Input
+            placeholder="Enter your prompt..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+          />
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Generating..." : "Generate"}
+          </Button>
+        </form>
+        {suggestion && (
+          <div className="mt-4 space-y-2">
+            <Textarea value={suggestion} readOnly className="min-h-[100px]" />
+            <Button onClick={handleApply}>Apply Suggestion</Button>
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 const Toolbar = ({ editor }: { editor: Editor }) => {
   const setLink = useCallback(() => {
@@ -353,33 +418,6 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
           </Toggle>
         </Tooltip>
 
-        {/* <Tooltip>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="px-2"
-            onClick={() =>
-              editor.chain().focus().liftListItem("listItem").run()
-            }
-          >
-            <TextOutdent className="h-4 w-4" />
-          </Button>
-        </Tooltip>
-
-        <Tooltip>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="px-2"
-            onClick={() =>
-              editor.chain().focus().sinkListItem("listItem").run()
-            }
-          >
-            <TextIndent className="h-4 w-4" />
-          </Button>
-        </Tooltip> */}
-
-
         <Tooltip>
           <Button
             size="sm"
@@ -423,6 +461,12 @@ const Toolbar = ({ editor }: { editor: Editor }) => {
             <ArrowClockwise className="h-4 w-4" />
           </Button>
         </Tooltip>
+
+        <AIPopover
+          onSuggestionApply={(suggestion) =>
+            editor.commands.insertContent(suggestion)
+          }
+        />
       </div>
     </TooltipProvider>
   );
@@ -451,34 +495,6 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
     },
     ref
   ) => {
-    // const editor = useEditor({
-    //   extensions: [
-    //     StarterKit.configure({
-    //       heading: {
-    //         levels: [1, 2, 3],
-    //       },
-    //       bulletList: {},
-    //       orderedList: {},
-    //     }),
-    //     Image,
-    //     Underline,
-    //     Highlight,
-    //     TextAlign.configure({ types: ["heading", "paragraph"] }),
-    //     Link.extend({ inclusive: false }).configure({ openOnClick: false }),
-    //   ],
-    //   editorProps: {
-    //     attributes: {
-    //       class: cn(
-    //         "prose prose-sm prose-zinc max-h-[200px] max-w-none overflow-y-scroll dark:prose-invert focus:outline-none [&_*]:my-2",
-    //         editorClassName
-    //       ),
-    //     },
-    //   },
-    //   content,
-    //   onUpdate: ({ editor }) => {
-    //     onContentChange(editor.getHTML());
-    //   },
-    // });
     const editor = useEditor({
       extensions: [
         StarterKit.configure({
@@ -568,7 +584,7 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
             hideToolbar && "pt-2",
             className
           )}
-          style={{ fontWeight: "normal" }} // Change 'normal' to whatever font-weight you need
+          style={{ fontWeight: "normal" }}
           {...props}
         />
       </div>
@@ -585,5 +601,5 @@ export default function Component({
   content: string;
   onContentChange: (content: string) => void;
 }) {
-  return <RichInput content={content} onContentChange={onContentChange} />
+  return <RichInput content={content} onContentChange={onContentChange} />;
 }

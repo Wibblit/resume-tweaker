@@ -51,17 +51,17 @@ export default function CoverEditor() {
       console.error("Error saving cover letter data:", error);
     }
   };
-
-  useEffect(() => {
-    async function getCoverData() {
-      try {
-        setIsLoading(true);
-        const coverId = currCoverId
-          ? currCoverId
-          : localStorage.getItem("currCoverId");
-        const response = await axios.get<{
-          coverData: CPageData;
-          message: string;
+  
+    useEffect(() => {
+      async function getCoverData() {
+        try {
+          setIsLoading(true);
+          const coverId = currCoverId
+            ? currCoverId
+            : localStorage.getItem("currCoverId");
+            const response = await axios.get<{
+            coverData: CPageData;
+            message: string;
         }>(`/api/get-cover-letter-data/${coverId}`);
         console.log(response);
         const coverData = response.data.coverData;
