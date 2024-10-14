@@ -350,7 +350,7 @@ export interface ResumeData {
   references: Reference[];
 }
 
-export interface CoverLetterData {
+export type CoverLetterData = {
   salutation: string;
   date: string;
   recipientInfo: string;
