@@ -166,13 +166,15 @@ export default function AIReview() {
   const [isLoading, setIsLoading] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const workerRef = useRef<Tesseract.Worker | null>(null);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [isOcrInProgress, setIsOcrInProgress] = useState(false);
 
   useEffect(() => {
     async function worker() {
       workerRef.current = await createWorker({
         logger: (message) => {
           if ("progress" in message) {
-            console.log("progress", message.progress);
+            setOcrProgress(message.progress);
             console.log(message.progress === 1 ? "Done" : message.status);
           }
         },
@@ -251,30 +253,35 @@ export default function AIReview() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const uploadedFile = event.target.files?.[0];
+    if (!uploadedFile) return;
+
+    setIsOcrInProgress(true);
+    setOcrProgress(0);
+
     const worker = workerRef.current;
     await worker?.load();
     await worker?.loadLanguage("eng");
     await worker?.initialize("eng");
-    await worker?.setParameters({ tessjs_create_hocr: '1', tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD })
+    await worker?.setParameters({ tessjs_create_hocr: '1', tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD });
 
     let ocrText = "";
-    // let hocr = "";
 
-    if (uploadedFile && uploadedFile.type === "application/pdf") {
+    if (uploadedFile.type === "application/pdf") {
       setFile(uploadedFile);
       const pdfUrl = URL.createObjectURL(uploadedFile);
       const imageUrls = await pdfToImages(pdfUrl);
       for (let i = 0; i < imageUrls.length; i++) {
         const response = await worker?.recognize(imageUrls[i]);
-        // hocr += " " + response?.data.hocr;
         ocrText += " " + response?.data.text;
       }
       setIsUploadDialogOpen(false);
       setResumeOption("upload");
     } 
-    // console.log(hocr);
+
     setResumeText(ocrText);
     console.log(ocrText);
+    setIsOcrInProgress(false);
+    setOcrProgress(1);
   };
 
   const handleResumeSelect = (value: string) => {
@@ -366,7 +373,7 @@ export default function AIReview() {
                     accept=".pdf"
                     onChange={handleFileUpload}
                     className="flex-1"
-                    disabled={resumeOption !== "upload"}
+                    disabled={resumeOption !== "upload" || isOcrInProgress}
                   />
                   <Dialog
                     open={isUploadDialogOpen}
@@ -377,7 +384,7 @@ export default function AIReview() {
                         type="button"
                         size="icon"
                         variant="outline"
-                        disabled={resumeOption !== "upload"}
+                        disabled={resumeOption !== "upload" || isOcrInProgress}
                       >
                         <Upload className="h-4 w-4" />
                       </Button>
@@ -391,6 +398,7 @@ export default function AIReview() {
                         accept=".pdf,.doc,.docx"
                         onChange={handleFileUpload}
                         className="w-full"
+                        disabled={isOcrInProgress}
                       />
                     </DialogContent>
                   </Dialog>
@@ -399,6 +407,15 @@ export default function AIReview() {
                   <p className="mt-2 text-sm text-muted-foreground">
                     File uploaded: {file.name}
                   </p>
+                )}
+                {isOcrInProgress && (
+                  <div className="mt-4">
+                    <Label>Extracting data from PDF...</Label>
+                    <Progress value={ocrProgress * 100} className="mt-2" />
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {(ocrProgress * 100).toFixed(0)}% complete
+                    </p>
+                  </div>
                 )}
               </div>
             )}
@@ -433,7 +450,11 @@ export default function AIReview() {
                 />
               </div>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading || isOcrInProgress}
+            >
               {isLoading ? "Analyzing..." : "Get AI Suggestions"}
             </Button>
           </form>
