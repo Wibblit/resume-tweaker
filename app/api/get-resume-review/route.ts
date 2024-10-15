@@ -9,22 +9,25 @@ import { jdTailoredPrompt } from "@/data/prompts/jdTailoredPrompt";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: NextRequest, response: NextResponse) {
-  const { resumeId, jd } = await request.json();
+  const { resumeId, jd, resumeOption, resumeText } = await request.json();
   const prompt = jd ? jdTailoredPrompt : genericPrompt;
   const session = await auth();
   let result = null;
   try {
-    result = await prisma.resume.findUnique({
+    result = resumeOption === "upload" ? resumeText : await prisma.resume.findUnique({
       where: {
         id: resumeId,
         userId: session?.user?.id,
       },
     });
     if (result) {
-      const { id, userId, resumeName, ...resumeDetails } = result;
+      if (resumeOption !== "upload") {
+        const { id, userId, resumeName, ...resumeDetails } = result;
+        result = JSON.stringify(resumeDetails);
+      }
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      console.log("resume: ", resumeDetails);
-      const detailedPrompt = resumeDetails + jd + prompt;
+      console.log("resume: ", result);
+      const detailedPrompt = `${result} ${jd} ${prompt}`;
       const generatedContent = await model.generateContent(detailedPrompt);
       const response = generatedContent.response;
       const text = response.text();
