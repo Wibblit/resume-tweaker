@@ -77,6 +77,7 @@
 //   const [showReport, setShowReport] = useState(false);
 //   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 //   const [isThinking, setIsThinking] = useState(false);
+//   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
 //   const recognitionRef = useRef<any>(null);
 //   const dispatch = useDispatch();
 //   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -235,35 +236,38 @@
 //     setIsThinking(true);
 
 //     try {
-//       const response = await fetch("/api/generate-next-question", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({
-//           formData,
-//           history: [...history, newHistoryItem],
-//           questionCount,
-//           maxQuestions,
-//         }),
+//       const queryParams = new URLSearchParams({
+//         formData: JSON.stringify(formData),
+//         history: JSON.stringify([...history, newHistoryItem]),
+//         questionCount: questionCount.toString(),
+//         maxQuestions: maxQuestions.toString(),
 //       });
 
-//       if (!response.ok) {
-//         throw new Error("Failed to generate next question");
-//       }
+//       const eventSource = new EventSource(
+//         `/api/generate-next-question?${queryParams}`
+//       );
 
-//       const data = await response.json();
-//       if (data.shouldEndInterview || questionCount >= maxQuestions) {
-//         generateReport();
-//       } else {
-//         setCurrentQuestion(data.nextQuestion);
-//         setQuestionCount((prev) => prev + 1);
-//         speakQuestion(data.nextQuestion);
-//       }
+//       eventSource.onmessage = (event) => {
+//         const data = JSON.parse(event.data);
+//         if (data.shouldEndInterview || questionCount >= maxQuestions) {
+//           setIsInterviewComplete(true);
+//           generateReport();
+//         } else {
+//           setCurrentQuestion(data.nextQuestion);
+//           setQuestionCount((prev) => prev + 1);
+//           speakQuestion(data.nextQuestion);
+//         }
+//         eventSource.close();
+//         setIsThinking(false);
+//       };
+
+//       eventSource.onerror = (error) => {
+//         console.error("EventSource failed:", error);
+//         eventSource.close();
+//         setIsThinking(false);
+//       };
 //     } catch (error) {
 //       console.error("Error generating next question:", error);
-//       // Handle error (e.g., show error message to user)
-//     } finally {
 //       setIsThinking(false);
 //     }
 //   };
@@ -284,35 +288,38 @@
 //     setIsThinking(true);
 
 //     try {
-//       const response = await fetch("/api/generate-next-question", {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({
-//           formData,
-//           history: [...history, newHistoryItem],
-//           questionCount,
-//           maxQuestions,
-//         }),
+//       const queryParams = new URLSearchParams({
+//         formData: JSON.stringify(formData),
+//         history: JSON.stringify([...history, newHistoryItem]),
+//         questionCount: questionCount.toString(),
+//         maxQuestions: maxQuestions.toString(),
 //       });
 
-//       if (!response.ok) {
-//         throw new Error("Failed to generate next question");
-//       }
+//       const eventSource = new EventSource(
+//         `/api/generate-next-question?${queryParams}`
+//       );
 
-//       const data = await response.json();
-//       if (data.shouldEndInterview || questionCount >= maxQuestions) {
-//         generateReport();
-//       } else {
-//         setCurrentQuestion(data.nextQuestion);
-//         setQuestionCount((prev) => prev + 1);
-//         speakQuestion(data.nextQuestion);
-//       }
+//       eventSource.onmessage = (event) => {
+//         const data = JSON.parse(event.data);
+//         if (data.shouldEndInterview || questionCount >= maxQuestions) {
+//           setIsInterviewComplete(true);
+//           generateReport();
+//         } else {
+//           setCurrentQuestion(data.nextQuestion);
+//           setQuestionCount((prev) => prev + 1);
+//           speakQuestion(data.nextQuestion);
+//         }
+//         eventSource.close();
+//         setIsThinking(false);
+//       };
+
+//       eventSource.onerror = (error) => {
+//         console.error("EventSource failed:", error);
+//         eventSource.close();
+//         setIsThinking(false);
+//       };
 //     } catch (error) {
 //       console.error("Error generating next question:", error);
-//       // Handle error (e.g., show error message to user)
-//     } finally {
 //       setIsThinking(false);
 //     }
 //   };
@@ -380,7 +387,7 @@
 //     URL.revokeObjectURL(url);
 //   };
 
-//   if (showReport) {
+//   if (isInterviewComplete) {
 //     return (
 //       <div className="flex flex-col items-center justify-center h-full">
 //         <h2 className="text-2xl font-bold mb-4">Interview completed!</h2>
@@ -389,7 +396,7 @@
 //             <p className="mb-2">Generating report...</p>
 //             <Progress value={66} className="w-[60%]" />
 //           </div>
-//         ) : (
+//         ) : showReport ? (
 //           <Dialog open={showReport} onOpenChange={setShowReport}>
 //             <DialogTrigger asChild>
 //               <Button>View Report</Button>
@@ -432,6 +439,8 @@
 //               </div>
 //             </DialogContent>
 //           </Dialog>
+//         ) : (
+//           <Button onClick={() => setShowReport(true)}>View Report</Button>
 //         )}
 //       </div>
 //     );
@@ -611,7 +620,7 @@ export default function AdaptiveInterview({
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const lastRecognizedTextRef = useRef("");
   const isMobileOrTabletRef = useRef(false);
-  const maxQuestions = Math.floor(formData.duration / 2); // Assuming 2 minutes per question
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
     isMobileOrTabletRef.current = mobileAndTabletCheck();
@@ -619,7 +628,14 @@ export default function AdaptiveInterview({
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(timer);
+          endInterview();
+          return 0;
+        }
+        return prevTime - 1;
+      });
     }, 1000);
 
     return () => clearInterval(timer);
@@ -764,36 +780,37 @@ export default function AdaptiveInterview({
     setIsThinking(true);
 
     try {
-      const response = await fetch("/api/generate-next-question", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          formData,
-          history: [...history, newHistoryItem],
-          questionCount,
-          maxQuestions,
-        }),
+      const queryParams = new URLSearchParams({
+        formData: JSON.stringify(formData),
+        history: JSON.stringify([...history, newHistoryItem]),
+        questionCount: questionCount.toString(),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate next question");
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
       }
 
-      const data = await response.json();
-      if (data.shouldEndInterview || questionCount >= maxQuestions) {
-        setIsInterviewComplete(true);
-        generateReport();
-      } else {
+      eventSourceRef.current = new EventSource(
+        `/api/generate-next-question?${queryParams}`
+      );
+
+      eventSourceRef.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
         setCurrentQuestion(data.nextQuestion);
         setQuestionCount((prev) => prev + 1);
         speakQuestion(data.nextQuestion);
-      }
+        setIsThinking(false);
+      };
+
+      eventSourceRef.current.onerror = (error) => {
+        console.error("EventSource failed:", error);
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+        }
+        setIsThinking(false);
+      };
     } catch (error) {
       console.error("Error generating next question:", error);
-      // Handle error (e.g., show error message to user)
-    } finally {
       setIsThinking(false);
     }
   };
@@ -814,38 +831,47 @@ export default function AdaptiveInterview({
     setIsThinking(true);
 
     try {
-      const response = await fetch("/api/generate-next-question", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          formData,
-          history: [...history, newHistoryItem],
-          questionCount,
-          maxQuestions,
-        }),
+      const queryParams = new URLSearchParams({
+        formData: JSON.stringify(formData),
+        history: JSON.stringify([...history, newHistoryItem]),
+        questionCount: questionCount.toString(),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to generate next question");
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
       }
 
-      const data = await response.json();
-      if (data.shouldEndInterview || questionCount >= maxQuestions) {
-        setIsInterviewComplete(true);
-        generateReport();
-      } else {
+      eventSourceRef.current = new EventSource(
+        `/api/generate-next-question?${queryParams}`
+      );
+
+      eventSourceRef.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
         setCurrentQuestion(data.nextQuestion);
         setQuestionCount((prev) => prev + 1);
         speakQuestion(data.nextQuestion);
-      }
+        setIsThinking(false);
+      };
+
+      eventSourceRef.current.onerror = (error) => {
+        console.error("EventSource failed:", error);
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+        }
+        setIsThinking(false);
+      };
     } catch (error) {
       console.error("Error generating next question:", error);
-      // Handle error (e.g., show error message to user)
-    } finally {
       setIsThinking(false);
     }
+  };
+
+  const endInterview = () => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+    setIsInterviewComplete(true);
+    generateReport();
   };
 
   const generateReport = async () => {
@@ -974,7 +1000,7 @@ Comment: ${item.comment}
     <Card className="max-w-4xl mx-auto relative bg-card text-card-foreground">
       <CardHeader className="relative">
         <CardTitle className="text-2xl font-bold">
-          Adaptive Interview - Question {questionCount} of {maxQuestions}
+          Adaptive Interview - Question {questionCount}
         </CardTitle>
         <div className="absolute top-2 right-2 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm">
           Time: {Math.floor(timeLeft / 60)}:
@@ -1036,6 +1062,13 @@ Comment: ${item.comment}
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
                   Skip Question
+                </Button>
+                <Button
+                  onClick={endInterview}
+                  variant="outline"
+                  className="bg-muted text-muted-foreground"
+                >
+                  End Interview
                 </Button>
               </div>
               {recognizedText && (
