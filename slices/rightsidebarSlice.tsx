@@ -201,11 +201,11 @@ const rightsidebarSlice = createSlice({
   reducers: {
     UpdateId(state, action) {
       state.id = action.payload;
-      state.baseColor = Defaults[state.id - 1].baseColor;
-      state.font = Defaults[state.id - 1].font;
-      state.fontSize = Defaults[state.id - 1].fontSize;
-      state.lineHeight = Defaults[state.id - 1].lineHeight;
-      state.margin = Defaults[state.id - 1].margin;
+      // state.baseColor = Defaults[state.id - 1].baseColor;
+      // state.font = Defaults[state.id - 1].font;
+      // state.fontSize = Defaults[state.id - 1].fontSize;
+      // state.lineHeight = Defaults[state.id - 1].lineHeight;
+      // state.margin = Defaults[state.id - 1].margin;
       state.sectionOrder = Defaults[state.id - 1].sectionOrder;
     },
     ResetStyle(state) {
