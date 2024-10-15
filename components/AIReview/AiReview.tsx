@@ -483,7 +483,7 @@ export default function AIReview() {
                                   <span className="capitalize">
                                     {criterion.replace(/_/g, " ")}
                                   </span>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 mr-2">
                                     <Progress
                                       value={score * 10}
                                       className="w-24"
