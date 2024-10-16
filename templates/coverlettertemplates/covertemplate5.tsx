@@ -25,10 +25,6 @@ export default function Component({
 }: CoverLetterTemplateProps) {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(UpdateBaseColor(baseColor));
-  }, [dispatch]);
-
   const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,
