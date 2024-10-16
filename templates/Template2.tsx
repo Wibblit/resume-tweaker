@@ -1,18 +1,7 @@
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import {
-  UpdateBaseColor,
-  UpdateFont,
-  UpdateLineHeight,
-  UpdateMargin,
-} from "@/slices/rightsidebarSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { MapPin, Mail, Phone, Globe, Linkedin, Github } from "lucide-react";
 import HTMLViewer from "@/components/HTMLViewer";
 
 interface TemplateProps {
@@ -193,7 +182,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   lineHeight,
   margin,
 }) => {
-  const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
@@ -201,35 +189,59 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
     (state) => state?.rightsidebar?.icons
   );
 
-
-  console.log(sectionOrder);
   const scaleFactor = fontSize / 16;
 
-  const styles = {
-    container: {
-      fontFamily,
-      fontSize: `${fontSize}px`,
-      lineHeight: `${lineHeight}`,
-      padding: `${margin}mm`,
-      color: "black",
-      minHeight: "100vh",
-      height: "100%",
-      display: "flex",
-    },
-    body: {
-      fontSize: `${1.1 * scaleFactor}rem`,
-      color: "black",
-    },
-    col2: {
-      width: "65%",
-    },
-    col2Content: {
-      height: "100%",
-    },
-    col1Content: {
-      width: "35%",
-    },
-  };
+  // const styles = {
+  //   container: {
+  //     fontFamily,
+  //     fontSize: `${fontSize}px`,
+  //     lineHeight: `${lineHeight}`,
+  //     padding: `${margin}mm`,
+  //     color: "black",
+  //     minHeight: "100vh",
+  //     height: "100%",
+  //     display: "flex",
+  //   },
+  //   body: {
+  //     fontSize: `${1.1 * scaleFactor}rem`,
+  //     color: "black",
+  //   },
+  //   col2: {
+  //     width: "65%",
+  //   },
+  //   col2Content: {
+  //     height: "100%",
+  //   },
+  //   col1Content: {
+  //     width: "35%",
+  //   },
+  // };
+
+    const styles = {
+      container: {
+        fontFamily: fontFamily,
+        fontSize: `${fontSize}px`,
+        lineHeight: `${lineHeight}`,
+        padding: `${margin}mm`,
+        color: "black",
+        minHeight: "100vh",
+        height: "100%",
+        display: "flex",
+      },
+      body: {
+        fontSize: `${1.1 * scaleFactor}rem`,
+        color: "black",
+      },
+      col2: {
+        width: "65%",
+      },
+      col2Content: {
+        height: "100%",
+      },
+      col1Content: {
+        width: "35%",
+      },
+    };
 
   const renderSection = (sectionName: string) => {
     switch (sectionName) {
@@ -603,11 +615,16 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 
   return (
     <div style={styles.container} className="flex gap-4">
-      <div style={styles.col1Content}>
+      <style>{`
+        .resume-content * {
+          font-family: ${fontFamily}, sans-serif;
+        }
+      `}</style>
+      <div style={styles.col1Content} className="resume-content">
         {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
       </div>
       <div style={styles.col2}>
-        <div style={styles.col2Content}>
+        <div style={styles.col2Content} className="resume-content">
           {sectionOrder.column2.map((sectionName) =>
             renderSection(sectionName)
           )}

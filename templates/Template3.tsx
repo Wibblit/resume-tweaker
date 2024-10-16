@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
+import { ResumeData, Basics } from "@/types/types";
+import { SocialIcon } from "react-social-icons";
+import HTMLViewer from "@/components/HTMLViewer";
 import {
   UpdateBaseColor,
   UpdateFontSize,
   UpdateLineHeight,
   UpdateMargin,
 } from "@/slices/rightsidebarSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { ResumeData, Basics } from "@/types/types";
-import { SocialIcon } from "react-social-icons";
-import HTMLViewer from "@/components/HTMLViewer";
 
 interface TemplateProps {
   content: ResumeData;
@@ -214,20 +214,13 @@ const Template3: React.FC<TemplateProps> = ({
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
-  const scaleFactor = fontSize / 16;
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#16a34a"));
-    dispatch(UpdateFontSize(12));
-    dispatch(UpdateMargin(6));
-    dispatch(UpdateLineHeight(1.2));
-  }, [dispatch]);
 
   const styles = {
     container: {
-      fontFamily,
+      fontFamily: fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
       color: "black",
@@ -236,7 +229,7 @@ const Template3: React.FC<TemplateProps> = ({
       display: "flex",
     },
     body: {
-      fontSize: `${1.1 * scaleFactor}rem`,
+      fontSize: `${1.1 * (fontSize / 16)}rem`,
       color: "black",
     },
     sidebar: {
@@ -634,12 +627,12 @@ const Template3: React.FC<TemplateProps> = ({
   };
 
   return (
-    <div style={styles.container}>
-      <style>
-        {`.no-ltwave * {
-        font-family: inherit; /* Ensures all elements inside no-ltwave inherit the default font */
-      }`}
-      </style>
+    <div className="resume-content" style={styles.container}>
+      <style>{`
+        .resume-content, .resume-content * {
+          font-family: ${fontFamily}, sans-serif !important;
+        }
+      `}</style>
       <div style={styles.mainContent}>
         {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
       </div>

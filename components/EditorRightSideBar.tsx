@@ -279,7 +279,6 @@ export default function RightSideBar({
                 </SheetHeader>
                 <ScrollArea className="flex-grow mt-4">
                   <div className="grid grid-cols-2 gap-4 pr-4">
-                
                     {!show
                       ? covertemplate.map((template) => (
                           <SheetClose asChild key={template.id}>
@@ -564,24 +563,30 @@ export default function RightSideBar({
             </div>
           </div>
           <div className="flex flex-col items-start justify-between space-y-6">
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="separator"
-                checked={separator}
-                onCheckedChange={(checked) =>
-                  dispatch(UpdateSeparator(checked))
-                }
-              />
-              <Label htmlFor="separator"> Separators</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="icons"
-                checked={icons}
-                onCheckedChange={(checked) => dispatch(UpdateIcons(checked))}
-              />
-              <Label htmlFor="icons">Icons</Label>
-            </div>
+            {show && (
+              <>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="separator"
+                    checked={separator}
+                    onCheckedChange={(checked) =>
+                      dispatch(UpdateSeparator(checked))
+                    }
+                  />
+                  <Label htmlFor="separator"> Separators</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="icons"
+                    checked={icons}
+                    onCheckedChange={(checked) =>
+                      dispatch(UpdateIcons(checked))
+                    }
+                  />
+                  <Label htmlFor="icons">Icons</Label>
+                </div>
+              </>
+            )}
             <div className="flex items-center space-x-2">
               <Switch
                 id="dark-mode"
@@ -594,7 +599,9 @@ export default function RightSideBar({
 
           <div>
             <Button
-              onClick={() => dispatch(ResetStyle())}
+              onClick={() =>
+                dispatch(ResetStyle(show ? "Resume" : "Cover Letter"))
+              }
               className="w-full bg-[hsl(var(--background))] text-[hsl(var(--foreground))] border-2 border-[hsl(var(--border))] rounded-[var(--radius)] px-4 py-2 font-ltwave cursor-pointer transition duration-300 hover:bg-[hsl(var(--secondary))] hover:text-[hsl(var(--secondary-foreground))]"
             >
               Reset

@@ -27,10 +27,6 @@ export default function CoverTemplate3({
 }: CoverLetterTemplateProps) {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#10b981"));
-  }, [dispatch]);
-
   return (
     <div
       className="cover-letter"

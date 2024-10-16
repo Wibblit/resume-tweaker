@@ -1,9 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics, Profile } from "@/types/types";
-import { position } from "html2canvas/dist/types/css/property-descriptors/position";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
 
@@ -27,17 +25,23 @@ const Link: React.FC<{
 
   return (
     <div className="flex items-center gap-x-1.5">
-      {!iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
+      {!iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
       <a
         href={url.href}
         target="_blank"
         rel="noreferrer noopener nofollow"
         className={cn("inline-block", className)}
-        style={{ color: 'currentColor' }}
+        style={{ color: "currentColor" }}
       >
         {label ?? (url.label || url.href)}
       </a>
-      {iconOnRight && (icon ?? <i className="ph ph-bold ph-link" style={{ color: 'currentColor' }} />)}
+      {iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
     </div>
   );
 };
@@ -52,7 +56,9 @@ const LinkedEntity: React.FC<{
     <Link
       url={url}
       label={name}
-      icon={<i className="ph ph-bold ph-globe" style={{ color: 'currentColor' }} />}
+      icon={
+        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+      }
       iconOnRight={true}
       className={className}
     />
@@ -66,10 +72,8 @@ const Section: React.FC<{
   children: React.ReactNode;
   baseColor: string;
   isRightColumn?: boolean;
-}>
-  = ({ title, children, baseColor, isRightColumn }) => {
-
-    const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator)
+}> = ({ title, children, baseColor, isRightColumn }) => {
+  const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator);
 
   return (
     <section
@@ -103,15 +107,21 @@ const hexToRgba = (hex: string, alpha: number) => {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
-const Profiles: React.FC<{profiles: Profile[]; baseColor: string; fontSize: number; lineHeight: number; margin: number}> = ({ profiles, baseColor, fontSize, lineHeight, margin }) => {
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+const Profiles: React.FC<{
+  profiles: Profile[];
+  baseColor: string;
+  fontSize: number;
+  lineHeight: number;
+  margin: number;
+}> = ({ profiles, baseColor, fontSize, lineHeight, margin }) => {
   const styles = {
     container: {
       fontSize: `${fontSize}px`,
-      color: 'black',
+      color: "black",
       background: hexToRgba(baseColor, 0.4),
     },
     link: {
@@ -119,12 +129,12 @@ const Profiles: React.FC<{profiles: Profile[]; baseColor: string; fontSize: numb
       textDecoration: "none",
     },
     dot: {
-      margin: '0 8px',
+      margin: "0 8px",
     },
-  }
+  };
 
-  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons)
-  
+  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
+
   return (
     <div
       style={styles.container}
@@ -150,9 +160,15 @@ const Profiles: React.FC<{profiles: Profile[]; baseColor: string; fontSize: numb
       ))}
     </div>
   );
-}
+};
 
-const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; lineHeight: number; margin: number }> = ({ basics, baseColor, fontSize, lineHeight, margin }) => {
+const Header: React.FC<{
+  basics: Basics;
+  baseColor: string;
+  fontSize: number;
+  lineHeight: number;
+  margin: number;
+}> = ({ basics, baseColor, fontSize, lineHeight, margin }) => {
   const scaleFactor = fontSize / 16;
   const imageSize = 128;
   const contentWidth = `calc(100% - ${imageSize}px - 1rem)`;
@@ -170,14 +186,14 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
     },
     name: {
       fontSize: `${Math.max(2, imageSize / 64) * scaleFactor}rem`,
-      fontWeight: 'bold',
-      marginBottom: '0.5rem',
+      fontWeight: "bold",
+      marginBottom: "0.5rem",
       lineHeight: 1.2,
     },
     headline: {
       fontSize: `${Math.max(1.2, imageSize / 96) * scaleFactor}rem`,
-      marginBottom: '1rem',
-      color: 'white',
+      marginBottom: "1rem",
+      color: "white",
       lineHeight: 1.4,
     },
     details: {
@@ -191,7 +207,10 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
       <div style={styles.content}>
         <h2 style={styles.name}>{basics?.name}</h2>
         <p style={styles.headline}>{basics?.headLine}</p>
-        <div style={styles.details} className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div
+          style={styles.details}
+          className="flex flex-wrap items-center gap-x-4 gap-y-2"
+        >
           {basics?.location && (
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-map-pin" />
@@ -209,25 +228,31 @@ const Header: React.FC<{ basics: Basics; baseColor: string; fontSize: number; li
           {basics?.email && (
             <div className="flex items-center gap-x-1.5 mr-2">
               <i className="ph ph-bold ph-at" />
-              <a href={`mailto:${basics.email}`} target="_blank" rel="noreferrer">
+              <a
+                href={`mailto:${basics.email}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {basics.email}
               </a>
             </div>
           )}
-          {isUrl(basics?.url?.href) && (
-            <Link url={basics.url!} />
-          )}
+          {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
       </div>
-      <Picture 
-        src={typeof basics?.picture === 'string' && basics?.picture !== "" ? basics?.picture : "/placeholder-user.jpeg"} 
-        alt={basics?.name || "Profile picture"} 
+      <Picture
+        src={
+          typeof basics?.picture === "string" && basics?.picture !== ""
+            ? basics?.picture
+            : "/placeholder-user.jpeg"
+        }
+        alt={basics?.name || "Profile picture"}
       />
     </div>
   );
 };
 
-const Template3: React.FC<TemplateProps> = ({
+const Template5: React.FC<TemplateProps> = ({
   content,
   baseColor,
   fontSize,
@@ -235,13 +260,14 @@ const Template3: React.FC<TemplateProps> = ({
   lineHeight,
   margin,
 }) => {
-  const dispatch = useAppDispatch();
-  const sectionOrder = useAppSelector((state) => state.rightsidebar.sectionOrder);
+  const sectionOrder = useAppSelector(
+    (state) => state.rightsidebar.sectionOrder
+  );
   const scaleFactor = fontSize / 16;
 
   const styles = {
     container: {
-      fontFamily,
+      fontFamily: fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
       minHeight: "100vh",
@@ -254,8 +280,8 @@ const Template3: React.FC<TemplateProps> = ({
     },
     sidebar: {
       width: "50%",
-      hight: "100%",
-      color: 'black',
+      height: "100%",
+      color: "black",
     },
     sidebarContent: {
       padding: `${margin}mm`,
@@ -268,7 +294,10 @@ const Template3: React.FC<TemplateProps> = ({
     },
   };
 
-  const renderSection = (sectionName: string, isRightColumn: boolean = false) => {
+  const renderSection = (
+    sectionName: string,
+    isRightColumn: boolean = false
+  ) => {
     const sectionStyle = styles.body;
 
     switch (sectionName) {
@@ -592,33 +621,52 @@ const Template3: React.FC<TemplateProps> = ({
   };
 
   return (
-    <>
+    <div className="resume-content">
+      <style>{`
+        .resume-content, .resume-content * {
+          font-family: ${fontFamily}, sans-serif !important;
+        }
+      `}</style>
       <div>
-        <Header basics={content.basics[0]} baseColor={baseColor} fontSize={fontSize} margin={margin} lineHeight={lineHeight} />
-        <Profiles profiles={content.profiles} baseColor={baseColor} fontSize={fontSize} margin={margin} lineHeight={lineHeight} />
+        <Header
+          basics={content.basics[0]}
+          baseColor={baseColor}
+          fontSize={fontSize}
+          margin={margin}
+          lineHeight={lineHeight}
+        />
+        <Profiles
+          profiles={content.profiles}
+          baseColor={baseColor}
+          fontSize={fontSize}
+          margin={margin}
+          lineHeight={lineHeight}
+        />
       </div>
       <div style={styles.container}>
         <div style={styles.mainContent}>
-        <style>
-          {`
+          <style>{`
             p {
               white-space: pre-wrap; 
               word-wrap: break-word; 
               overflow-wrap: break-word;
               text-align: justify;
             }
-          `}
-        </style>
-          {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+          `}</style>
+          {sectionOrder.column1.map((sectionName) =>
+            renderSection(sectionName)
+          )}
         </div>
         <div style={styles.sidebar}>
           <div style={styles.sidebarContent}>
-            {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+            {sectionOrder.column2.map((sectionName) =>
+              renderSection(sectionName)
+            )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Template3;
+export default Template5;

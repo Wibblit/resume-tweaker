@@ -36,8 +36,7 @@ const Section: React.FC<{
   children: React.ReactNode;
   baseColor: string;
 }> = ({ title, children, baseColor }) => {
-
-  const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator)
+  const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator);
   return (
     <section className="mb-4">
       <h2
@@ -73,7 +72,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 
   const styles = {
     container: {
-      fontFamily,
+      fontFamily: fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
       color: "#333",
@@ -379,10 +378,15 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
     }
   };
 
-  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons)
+  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
 
   return (
-    <div style={styles.container} className="flex flex-col">
+    <div style={styles.container} className="flex flex-col resume-content">
+      <style>{`
+        .resume-content, .resume-content * {
+          font-family: ${fontFamily}, sans-serif !important;
+        }
+      `}</style>
       <div className="mb-4 flex items-start">
         <div className="w-3/4 ">
           <div className="md:mb-0">
@@ -415,7 +419,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           </div>
         </div>
 
-        <div className=" flex flex-col items-start justify-start">
+        <div className="flex flex-col items-start justify-start">
           <p className="text-xs break-words">{content.basics[0].location}</p>
           <p className="text-xs break-words">
             <a href={`tel:${content.basics[0].phone}`}>
@@ -459,4 +463,3 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 };
 
 export default ResumeTemplate;
-
