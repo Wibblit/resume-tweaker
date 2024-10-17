@@ -33,24 +33,42 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
+import { prisma } from "@/prisma";
+import { auth } from "@/auth";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: Request) {
-  const { job, position, companyName, jd, numberOfQuestions, interviewType } =
+  const { job, position, companyName, jd, numberOfQuestions, interviewType, resumeOption, resumeText, resumeId } =
     await request.json();
-
+  
+  console.log(resumeText, "ocr text")
+  const session = await auth();
+  let resume = null;
+  if (resumeOption === "select") {
+    resume = await prisma.resume.findUnique({
+      where: {
+        id: resumeId,
+        userId: session?.user?.id,
+      },
+    });
+  } else {
+    resume = resumeText;
+  }
+  
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Generate ${numberOfQuestions} interview questions for a ${position} ${job} position at ${companyName}. 
     ${jd ? `Consider this job description: ${jd}` : ""}
+    ${resume ? `Also consider the candidate's resume: ${resume}` : ""}
     ${
       interviewType === "adaptive"
         ? "Provide only the first question as a string."
         : "Provide the questions as a JSON array of strings."
     }
-    Ensure the questions are challenging and relevant to the position.`;
+    Ensure the questions are challenging and relevant to the position. 
+    Tailor the questions to the candidate's experience and skills as presented in their resume, if provided.`;
 
     const result = await model.generateContent(prompt);
     const response = await result.response;
