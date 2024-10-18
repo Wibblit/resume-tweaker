@@ -13,6 +13,13 @@ const nextConfig = {
       bodySizeLimit: '30mb', // set to 30 MB
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  }
 };
 
 export default nextConfig;
