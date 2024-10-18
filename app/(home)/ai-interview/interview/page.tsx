@@ -53,6 +53,7 @@ export default function InterviewPage() {
     return <div className="text-center p-4">Loading...</div>;
   }
 
+  return router.push("/")
   return (
     <main className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-8 text-center text-foreground">

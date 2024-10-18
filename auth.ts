@@ -31,7 +31,7 @@ export const providerMap = providers.map((provider) => {
 });
 
 //main
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth, } = NextAuth({
   theme: {
     logo: "/rt-light-bg.svg",
   },

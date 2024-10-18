@@ -1,13 +1,13 @@
-import Editor from "@/components/Editor"
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
+import Editor from "@/components/Editor";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function ResumeBuilder() {
-  const session = await auth()
-  
+  const session = await auth();
+  return redirect("/");
   if (!session?.user) {
-    redirect("/login?callbackUrl=/editor")
+    redirect("/login?callbackUrl=/editor");
   }
 
-  return <Editor />
+  return <Editor />;
 }

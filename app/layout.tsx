@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Provider } from "react-redux";
 import store from "@/store";
 import { Toaster } from "@/components/ui/toaster";
-import AuthSessionProvider from "@/components/AuthSessionProvider";
 
 // const LTWave = localFont({
 //   src: "./fonts/LTWave-Regular.ttf",

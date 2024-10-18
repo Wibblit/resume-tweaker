@@ -52,12 +52,12 @@ export function LandingNav() {
               </div>
             </div>
           )}
-          <div className="hidden md:block">
+          {/* <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
               <ModeToggle />
               <Button className="ml-3" onClick={() => router.push("/login")}>Login</Button>
             </div>
-          </div>
+          </div> */}
           <div className="-mr-2 flex md:hidden">
             <button
               onClick={toggleMenu}
@@ -93,12 +93,12 @@ export function LandingNav() {
               </Link>
             ))}
           </div>
-          <div className="pt-4 pb-3 border-t border-primary">
+          {/* <div className="pt-4 pb-3 border-t border-primary">
             <div className="flex items-center px-5">
               <ModeToggle />
               <Button className="ml-auto" onClick={() => router.push("/login")}>Login</Button>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
     </nav>

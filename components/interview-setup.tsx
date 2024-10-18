@@ -129,6 +129,7 @@ export default function InterviewSetup() {
       const imageUrls = await pdfToImages(pdfUrl)
       for (let i = 0; i < imageUrls.length; i++) {
         const response = await worker?.recognize(imageUrls[i])
+        console.log("Yoo......" + response?.data.text)
         ocrText += " " + response?.data.text
       }
     } else {

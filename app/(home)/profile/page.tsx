@@ -1,6 +1,8 @@
-import ProfileContent from "@/components/profile/ProfileContent"
+import ProfileContent from "@/components/profile/ProfileContent";
+import { redirect } from "next/navigation";
 
 export default function ProfilePage() {
+  return redirect("/");
   return (
     <div className="flex h-screen bg-background text-foreground">
       <main className="flex-1 overflow-auto p-4 md:p-6">
@@ -8,5 +10,5 @@ export default function ProfilePage() {
         <ProfileContent />
       </main>
     </div>
-  )
+  );
 }
