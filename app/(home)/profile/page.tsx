@@ -1,13 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import {
+  updateBasics,
+  updateProfileSection,
+  updateNestedField,
+  addItemToSection,
+  removeItemFromSection,
+  updateSkillCategory,
+  addSkillToCategory,
+  removeSkillFromCategory,
+  addSkillCategory,
+  removeSkillCategory,
+  addProfile,
+  updateProfile,
+  removeProfile,
+  setFullProfileData,
+} from "@/slices/profileSlice";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -16,772 +27,1272 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Menu, Plus, Trash } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ResumeData,
-  Basics,
-  Education,
-  Experience,
-  Project,
-  Skill,
-  SkillCategory,
-  Summary,
-  URL,
-} from "@/types/types";
-import { DatePicker } from "@/components/DatePicker";
-
-const emptyResumeData: ResumeData = {
-  basics: [
-    {
-      name: "",
-      email: "",
-      phone: "",
-      location: "",
-      headLine: "",
-      url: { href: "", label: "" },
-      picture: undefined,
-    },
-  ],
-  summary: [{ content: "" }],
-  profiles: [],
-  skills: [{ id: "", categories: [] }],
-  projects: [],
-  education: [],
-  experience: [],
-  languages: [],
-  volunteer: [],
-  awards: [],
-  publications: [],
-  certifications: [],
-  references: [],
-};
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useAppSelector } from "@/hooks/hooks";
+import { updateProfiles } from "@/actions/updateProfile";
+import axios from "axios";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { ResumeData } from "@/slices/profileSlice";
 
 export default function ProfilePage() {
-  const [resumeData, setResumeData] = useState<ResumeData>(emptyResumeData);
+  const profileData : ResumeData  = useAppSelector((state) => state.profile);
+  const dispatch = useDispatch();
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [credits, setCredits] = useState({ current: 12, max: 100 });
   const [activeTab, setActiveTab] = useState("personal");
+  const [loading, setLoading] = useState(false);
 
-  const handleBasicsChange = (
-    field: keyof Basics,
-    value: string | File | URL | undefined
-  ) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      basics: [{ ...prevData.basics[0], [field]: value }],
-    }));
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/get-profile");
+
+        const { profileData } = response.data;
+        console.log(profileData);
+
+        if (profileData) {
+          const parsedData = {
+            basics: profileData.basics,
+            summary: profileData.summary,
+            profiles: profileData.profiles,
+            skills: profileData.skills,
+            projects: profileData.projects,
+            education: profileData.education,
+            experience: profileData.experience,
+            languages: profileData.languages,
+            volunteer: profileData.volunteer,
+            awards: profileData.awards,
+            publications: profileData.publications,
+            certifications: profileData.certifications,
+            references: profileData.references,
+          };
+
+          dispatch(setFullProfileData(parsedData));
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching resume data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    setHasUnsavedChanges(true);
+  }, [profileData]);
+
+  const handleSaveChanges = async () => {
+    console.log(profileData);
+    setLoading(true);
+    try {
+      //@ts-ignore
+      const response = await updateProfiles(profileData);
+      console.log(response);
+
+      if (response.success) {
+        setHasUnsavedChanges(false);
+        toast({
+          title: "Success",
+          description: "Changes updated successfully",
+        });
+        console.log("Resume data saved successfully");
+      } else {
+        toast({
+          title: "Error",
+          description: "Cannot update changes",
+          variant: "destructive",
+        });
+        console.error("Failed to save resume data");
+      }
+    } catch (error) {
+      console.error("Error saving resume data:", error);
+    }
+    setLoading(false);
   };
 
-  const handleArrayInputChange = <T extends keyof ResumeData>(
-    field: T,
+  const handleUpdateBasics = (field: string, value: any) => {
+    dispatch(updateBasics({ field, value }));
+  };
+
+  const handleUpdateNestedField = (
+    section: keyof ResumeData,
     index: number,
-    value: Partial<ResumeData[T][number]>
+    field: string,
+    value: any
   ) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      [field]: prevData[field].map((item, i) =>
-        i === index ? { ...item, ...value } : item
-      ),
-    }));
+    dispatch(updateNestedField({ section, index, field, value }));
   };
 
-  const handleAddArrayItem = <T extends keyof ResumeData>(field: T) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      [field]: [...prevData[field], {} as ResumeData[T][number]],
-    }));
+  const handleAddItemToSection = (section: keyof ResumeData, item: any) => {
+    dispatch(addItemToSection({ section, item }));
   };
 
-  const handleRemoveArrayItem = <T extends keyof ResumeData>(
-    field: T,
+  const handleRemoveItemFromSection = (
+    section: keyof ResumeData,
     index: number
   ) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      [field]: prevData[field].filter((_, i) => i !== index),
-    }));
+    dispatch(removeItemFromSection({ section, index }));
   };
 
-  const handleSkillChange = (
+  const handleUpdateSkillCategory = (
     categoryIndex: number,
-    skillIndex: number,
-    value: Partial<Skill>
+    field: string,
+    value: any
   ) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.map((skillData, i) => {
-        if (i === 0) {
-          const updatedCategories = skillData.categories.map(
-            (category, cIndex) => {
-              if (cIndex === categoryIndex) {
-                const updatedSkills = category.skills.map((skill, sIndex) =>
-                  sIndex === skillIndex ? { ...skill, ...value } : skill
-                );
-                return { ...category, skills: updatedSkills };
-              }
-              return category;
-            }
-          );
-          return { ...skillData, categories: updatedCategories };
-        }
-        return skillData;
-      }),
-    }));
+    dispatch(updateSkillCategory({ categoryIndex, field, value }));
+  };
+
+  const handleAddSkillToCategory = (categoryIndex: number, skill: any) => {
+    dispatch(addSkillToCategory({ categoryIndex, skill }));
+  };
+
+  const handleRemoveSkillFromCategory = (
+    categoryIndex: number,
+    skillIndex: number
+  ) => {
+    dispatch(removeSkillFromCategory({ categoryIndex, skillIndex }));
   };
 
   const handleAddSkillCategory = () => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.map((skillData, i) => {
-        if (i === 0) {
-          return {
-            ...skillData,
-            categories: [
-              ...skillData.categories,
-              { id: Date.now().toString(), name: "", skills: [] },
-            ],
-          };
-        }
-        return skillData;
-      }),
-    }));
-  };
-
-  const handleAddSkill = (categoryIndex: number) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.map((skillData, i) => {
-        if (i === 0) {
-          const updatedCategories = skillData.categories.map(
-            (category, cIndex) => {
-              if (cIndex === categoryIndex) {
-                return {
-                  ...category,
-                  skills: [...category.skills, { name: "", level: "" }],
-                };
-              }
-              return category;
-            }
-          );
-          return { ...skillData, categories: updatedCategories };
-        }
-        return skillData;
-      }),
-    }));
+    dispatch(
+      addSkillCategory({ id: Date.now().toString(), name: "", skills: [] })
+    );
   };
 
   const handleRemoveSkillCategory = (categoryIndex: number) => {
-    setResumeData((prevData) => ({
-      ...prevData,
-      skills: prevData.skills.map((skillData, i) => {
-        if (i === 0) {
-          return {
-            ...skillData,
-            categories: skillData.categories.filter(
-              (_, index) => index !== categoryIndex
-            ),
-          };
-        }
-        return skillData;
-      }),
-    }));
+    dispatch(removeSkillCategory(categoryIndex));
   };
 
-  const renderTabContent = (tab: string) => {
-    switch (tab) {
-      case "personal":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>
-                Update your personal details here
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="John Doe"
-                    value={resumeData.basics[0].name}
-                    onChange={(e) => handleBasicsChange("name", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Contact Number</Label>
-                  <Input
-                    id="phone"
-                    placeholder="+1 (555) 123-4567"
-                    value={resumeData.basics[0].phone}
-                    onChange={(e) =>
-                      handleBasicsChange("phone", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="johndoe@example.com"
-                    value={resumeData.basics[0].email}
-                    onChange={(e) =>
-                      handleBasicsChange("email", e.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    placeholder="New York, NY"
-                    value={resumeData.basics[0].location}
-                    onChange={(e) =>
-                      handleBasicsChange("location", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="headLine">Headline</Label>
-                <Input
-                  id="headLine"
-                  placeholder="Experienced Software Engineer | AI Enthusiast"
-                  value={resumeData.basics[0].headLine}
-                  onChange={(e) =>
-                    handleBasicsChange("headLine", e.target.value)
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="url">Website URL</Label>
-                <Input
-                  id="url"
-                  placeholder="https://www.johndoe.com"
-                  value={resumeData.basics[0].url.href}
-                  onChange={(e) =>
-                    handleBasicsChange("url", {
-                      href: e.target.value,
-                      label: resumeData.basics[0].url.label,
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="urlLabel">Website Label</Label>
-                <Input
-                  id="urlLabel"
-                  placeholder="Personal Portfolio"
-                  value={resumeData.basics[0].url.label}
-                  onChange={(e) =>
-                    handleBasicsChange("url", {
-                      href: resumeData.basics[0].url.href,
-                      label: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="picture">Profile Picture</Label>
-                <Input
-                  id="picture"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      handleBasicsChange("picture", file);
-                    }
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        );
-      case "professional":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Professional Information</CardTitle>
-              <CardDescription>
-                Update your professional details here
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Summary</Label>
-                <Textarea
-                  value={resumeData.summary[0]?.content || ""}
-                  onChange={(e) =>
-                    handleArrayInputChange("summary", 0, {
-                      content: e.target.value,
-                    })
-                  }
-                  placeholder="Write a brief summary about yourself"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="mr-4">Skills</Label>
-                {resumeData.skills[0]?.categories.map(
-                  (category, categoryIndex) => (
-                    <div key={category.id} className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Input
-                          value={category.name}
-                          onChange={(e) => {
-                            const updatedCategory = {
-                              ...category,
-                              name: e.target.value,
-                            };
-                            handleArrayInputChange("skills", 0, {
-                              categories: resumeData.skills[0].categories.map(
-                                (c, i) =>
-                                  i === categoryIndex ? updatedCategory : c
-                              ),
-                            });
-                          }}
-                          placeholder="Category Name"
-                        />
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() =>
-                            handleRemoveSkillCategory(categoryIndex)
-                          }
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      {category.skills.map((skill, skillIndex) => (
-                        <div
-                          key={skillIndex}
-                          className="flex items-center space-x-2"
-                        >
-                          <Input
-                            value={skill.name}
-                            onChange={(e) =>
-                              handleSkillChange(categoryIndex, skillIndex, {
-                                name: e.target.value,
-                              })
-                            }
-                            placeholder="Skill Name"
-                          />
-                          <Input
-                            value={skill.level || ""}
-                            onChange={(e) =>
-                              handleSkillChange(categoryIndex, skillIndex, {
-                                level: e.target.value,
-                              })
-                            }
-                            placeholder="Skill Level"
-                          />
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            onClick={() => {
-                              const updatedSkills = category.skills.filter(
-                                (_, i) => i !== skillIndex
-                              );
-                              const updatedCategory = {
-                                ...category,
-                                skills: updatedSkills,
-                              };
-                              handleArrayInputChange("skills", 0, {
-                                categories: resumeData.skills[0].categories.map(
-                                  (c, i) =>
-                                    i === categoryIndex ? updatedCategory : c
-                                ),
-                              });
-                            }}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                      <Button onClick={() => handleAddSkill(categoryIndex)}>
-                        <Plus className="mr-2 h-4 w-4" /> Add Skill
-                      </Button>
-                    </div>
-                  )
-                )}
-                <Button onClick={handleAddSkillCategory}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Skill Category
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      case "education":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Education</CardTitle>
-              <CardDescription>
-                Update your educational background
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {resumeData.education.map((edu, index) => (
-                <div key={index} className="space-y-2">
-                  <Label>Education {index + 1}</Label>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <Input
-                      placeholder="Institution"
-                      value={edu.institution}
-                      onChange={(e) =>
-                        handleArrayInputChange("education", index, {
-                          institution: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      placeholder="Degree"
-                      value={edu.degree}
-                      onChange={(e) =>
-                        handleArrayInputChange("education", index, {
-                          degree: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      placeholder="Field of Study"
-                      value={edu.field}
-                      onChange={(e) =>
-                        handleArrayInputChange("education", index, {
-                          field: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      placeholder="Specialization"
-                      value={edu.specialization}
-                      onChange={(e) =>
-                        handleArrayInputChange("education", index, {
-                          specialization: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      placeholder="Score"
-                      value={edu.score}
-                      onChange={(e) =>
-                        handleArrayInputChange("education", index, {
-                          score: e.target.value,
-                        })
-                      }
-                    />
-                    <DatePicker
-                      placeholder="Start Date"
-                      date={edu.startDate ? new Date(edu.startDate) : undefined}
-                      setDate={(date) =>
-                        handleArrayInputChange("education", index, {
-                          startDate: date?.toISOString(),
-                        })
-                      }
-                    />
-                    <DatePicker
-                      placeholder="End Date"
-                      date={edu.endDate ? new Date(edu.endDate) : undefined}
-                      setDate={(date) =>
-                        handleArrayInputChange("education", index, {
-                          endDate: date?.toISOString(),
-                        })
-                      }
-                    />
-                  </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleRemoveArrayItem("education", index)}
-                  >
-                    <Trash className="mr-2 h-4 w-4" /> Remove Education
-                  </Button>
-                </div>
-              ))}
-              <Button onClick={() => handleAddArrayItem("education")}>
-                <Plus className="mr-2 h-4 w-4" /> Add Education
-              </Button>
-            </CardContent>
-          </Card>
-        );
-      case "projects":
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Projects & Experience</CardTitle>
-              <CardDescription>
-                Update your projects and work experience
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label className="mr-4">Projects</Label>
-                {resumeData.projects.map((project, index) => (
-                  <div key={index} className="space-y-2">
-                    <Input
-                      placeholder="Project Name"
-                      value={project.name}
-                      onChange={(e) =>
-                        handleArrayInputChange("projects", index, {
-                          name: e.target.value,
-                        })
-                      }
-                    />
-                    <Textarea
-                      placeholder="Summary"
-                      value={project.summary}
-                      onChange={(e) =>
-                        handleArrayInputChange("projects", index, {
-                          summary: e.target.value,
-                        })
-                      }
-                    />
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <DatePicker
-                        placeholder="Start Date"
-                        date={
-                          project.startDate
-                            ? new Date(project.startDate)
-                            : undefined
-                        }
-                        setDate={(date) =>
-                          handleArrayInputChange("projects", index, {
-                            startDate: date?.toISOString(),
-                          })
-                        }
-                      />
-                      <DatePicker
-                        placeholder="End Date"
-                        date={
-                          project.endDate
-                            ? new Date(project.endDate)
-                            : undefined
-                        }
-                        setDate={(date) =>
-                          handleArrayInputChange("projects", index, {
-                            endDate: date?.toISOString(),
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`project-url-${index}`}>
-                        Project URL
-                      </Label>
-                      <Input
-                        id={`project-url-${index}`}
-                        placeholder="Project URL"
-                        value={project.url?.href}
-                        onChange={(e) =>
-                          handleArrayInputChange("projects", index, {
-                            url: {
-                              href: e.target.value,
-                              label: project.url?.label || e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`project-url-label-${index}`}>
-                        URL Label
-                      </Label>
-                      <Input
-                        id={`project-url-label-${index}`}
-                        placeholder="URL Label"
-                        value={project.url?.label}
-                        onChange={(e) =>
-                          handleArrayInputChange("projects", index, {
-                            url: {
-                              href: project.url?.href || "",
-                              label: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </div>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleRemoveArrayItem("projects", index)}
-                    >
-                      <Trash className="mr-2 h-4 w-4" /> Remove Project
-                    </Button>
-                  </div>
-                ))}
-                <Button onClick={() => handleAddArrayItem("projects")}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Project
-                </Button>
-              </div>
-              <div className="space-y-2">
-                <Label className="mr-4">Work Experience</Label>
-                {resumeData.experience.map((exp, index) => (
-                  <div key={index} className="space-y-2">
-                    <Input
-                      placeholder="Organization"
-                      value={exp.organization}
-                      onChange={(e) =>
-                        handleArrayInputChange("experience", index, {
-                          organization: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      placeholder="Role"
-                      value={exp.role}
-                      onChange={(e) =>
-                        handleArrayInputChange("experience", index, {
-                          role: e.target.value,
-                        })
-                      }
-                    />
-                    <Textarea
-                      placeholder="Summary"
-                      value={exp.summary}
-                      onChange={(e) =>
-                        handleArrayInputChange("experience", index, {
-                          summary: e.target.value,
-                        })
-                      }
-                    />
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <DatePicker
-                        placeholder="Start Date"
-                        date={
-                          exp.startDate ? new Date(exp.startDate) : undefined
-                        }
-                        setDate={(date) =>
-                          handleArrayInputChange("experience", index, {
-                            startDate: date?.toISOString(),
-                          })
-                        }
-                      />
-                      <DatePicker
-                        placeholder="End Date"
-                        date={exp.endDate ? new Date(exp.endDate) : undefined}
-                        setDate={(date) =>
-                          handleArrayInputChange("experience", index, {
-                            endDate: date?.toISOString(),
-                          })
-                        }
-                      />
-                    </div>
-                    <Input
-                      placeholder="Location"
-                      value={exp.location}
-                      onChange={(e) =>
-                        handleArrayInputChange("experience", index, {
-                          location: e.target.value,
-                        })
-                      }
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={() => handleRemoveArrayItem("experience", index)}
-                    >
-                      <Trash className="mr-2 h-4 w-4" /> Remove Experience
-                    </Button>
-                  </div>
-                ))}
-                <Button onClick={() => handleAddArrayItem("experience")}>
-                  <Plus className="mr-2 h-4 w-4" /> Add Experience
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        );
-      default:
-        return null;
-    }
+  const handleAddProfile = () => {
+    dispatch(addProfile({ url: { href: "", label: "" } }));
   };
+
+  const handleUpdateProfile = (
+    index: number,
+    url: { href: string; label: string }
+  ) => {
+    dispatch(updateProfile({ index, url }));
+  };
+
+  const handleRemoveProfile = (index: number) => {
+    dispatch(removeProfile(index));
+  };
+
+  const tabs = [
+    { value: "personal", label: "Personal" },
+    { value: "professional", label: "Professional" },
+    { value: "additional", label: "Additional" },
+  ];
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      <main className="flex-1 overflow-auto p-4 md:p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Profile</h1>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Credits</CardTitle>
+          <CardDescription>
+            Your current credit balance and level
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Progress
+            value={(credits.current / credits.max) * 100}
+            className="mb-2"
+          />
+          <p className="text-sm text-muted-foreground">
+            {credits.current} / {credits.max} credits
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button>Upgrade</Button>
+        </CardFooter>
+      </Card>
+
+      {loading ? (
+        <div className="space-y-4">
+          <Skeleton className="w-full h-96" /> {/* A larger skeleton */}
+        </div>
+      ) : (
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
         >
-          <h1 className="mb-6 text-3xl font-bold">Profile</h1>
-
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Credits</CardTitle>
-              <CardDescription>
-                Your current credit balance and level
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Progress
-                value={(credits.current / credits.max) * 100}
-                className="mb-2"
-              />
-              <p className="text-sm text-muted-foreground">
-                {credits.current} / {credits.max} credits
-              </p>
-            </CardContent>
-            <CardFooter>
-              <Button>Upgrade</Button>
-            </CardFooter>
-          </Card>
-
-          {/* Desktop view */}
-          <div className="hidden md:block">
-            <Tabs defaultValue="personal" className="space-y-4">
-              <TabsList>
-                <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                <TabsTrigger value="professional">
-                  Professional Info
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+            <TabsList>
+              {tabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="px-3 py-1.5 text-sm font-medium"
+                >
+                  {tab.label}
                 </TabsTrigger>
-                <TabsTrigger value="education">Education & Skills</TabsTrigger>
-                <TabsTrigger value="projects">
-                  Projects & Experience
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="personal">
-                {renderTabContent("personal")}
-              </TabsContent>
-              <TabsContent value="professional">
-                {renderTabContent("professional")}
-              </TabsContent>
-              <TabsContent value="education">
-                {renderTabContent("education")}
-              </TabsContent>
-              <TabsContent value="projects">
-                {renderTabContent("projects")}
-              </TabsContent>
-            </Tabs>
-          </div>
-
-          {/* Mobile view */}
-          <div className="md:hidden">
-            <Select
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value)}
+              ))}
+            </TabsList>
+            <Button
+              onClick={handleSaveChanges}
+              disabled={!hasUnsavedChanges}
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a section" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="personal">Personal Info</SelectItem>
-                <SelectItem value="professional">Professional Info</SelectItem>
-                <SelectItem value="education">Education & Skills</SelectItem>
-                <SelectItem value="projects">Projects & Experience</SelectItem>
-              </SelectContent>
-            </Select>
-            <div className="mt-4">{renderTabContent(activeTab)}</div>
+              Save Changes
+            </Button>
           </div>
-        </motion.div>
-      </main>
+
+          <TabsContent value="personal">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      value={profileData.basics[0].name}
+                      onChange={(e) =>
+                        handleUpdateBasics("name", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={profileData.basics[0].email}
+                      onChange={(e) =>
+                        handleUpdateBasics("email", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={profileData.basics[0].phone}
+                      onChange={(e) =>
+                        handleUpdateBasics("phone", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={profileData.basics[0].location}
+                      onChange={(e) =>
+                        handleUpdateBasics("location", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="headLine">Headline</Label>
+                    <Input
+                      id="headLine"
+                      value={profileData.basics[0].headLine}
+                      onChange={(e) =>
+                        handleUpdateBasics("headLine", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="url">Website</Label>
+                    <Input
+                      id="url"
+                      value={profileData.basics[0].url.href}
+                      onChange={(e) =>
+                        handleUpdateBasics("url", {
+                          ...profileData.basics[0].url,
+                          href: e.target.value,
+                        })
+                      }
+                      placeholder="https://example.com"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="picture">Profile Picture</Label>
+                    <Input
+                      id="picture"
+                      type="file"
+                      onChange={(e) =>
+                        handleUpdateBasics("picture", e.target.files?.[0])
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Profiles</Label>
+                    {profileData.profiles.map((profile, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={profile.url.label}
+                          onChange={(e) =>
+                            handleUpdateProfile(index, {
+                              ...profile.url,
+                              label: e.target.value,
+                            })
+                          }
+                          placeholder="Profile Label (e.g., LinkedIn, GitHub)"
+                        />
+                        <Input
+                          value={profile.url.href}
+                          onChange={(e) =>
+                            handleUpdateProfile(index, {
+                              ...profile.url,
+                              href: e.target.value,
+                            })
+                          }
+                          placeholder="Profile URL"
+                        />
+                        <Button
+                          onClick={() => handleRemoveProfile(index)}
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Profile
+                        </Button>
+                      </div>
+                    ))}
+                    <Button onClick={handleAddProfile} variant="outline">
+                      Add Profile
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="professional">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  <div>
+                    <Label htmlFor="summary">Professional Summary</Label>
+                    <Textarea
+                      id="summary"
+                      value={profileData.summary[0].content}
+                      onChange={(e) =>
+                        dispatch(
+                          updateProfileSection({
+                            section: "summary",
+                            data: [{ content: e.target.value }],
+                          })
+                        )
+                      }
+                      rows={4}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Skills</Label>
+                    {profileData.skills[0].categories.map(
+                      (category, categoryIndex) => (
+                        <div key={category.id} className="space-y-2">
+                          <Input
+                            value={category.name}
+                            onChange={(e) =>
+                              handleUpdateSkillCategory(
+                                categoryIndex,
+                                "name",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Category name"
+                          />
+                          {category.skills.map((skill, skillIndex) => (
+                            <div key={skillIndex} className="flex space-x-2">
+                              <Input
+                                value={skill.name}
+                                onChange={(e) => {
+                                  const updatedSkills = [...category.skills];
+                                  updatedSkills[skillIndex] = {
+                                    ...skill,
+                                    name: e.target.value,
+                                  };
+                                  handleUpdateSkillCategory(
+                                    categoryIndex,
+                                    "skills",
+                                    updatedSkills
+                                  );
+                                }}
+                                placeholder="Skill name"
+                              />
+                              <select
+                                value={skill.level}
+                                onChange={(e) => {
+                                  const updatedSkills = [...category.skills];
+                                  updatedSkills[skillIndex] = {
+                                    ...skill,
+                                    level: e.target.value,
+                                  };
+                                  handleUpdateSkillCategory(
+                                    categoryIndex,
+                                    "skills",
+                                    updatedSkills
+                                  );
+                                }}
+                                className="border rounded p-2"
+                              >
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">
+                                  Intermediate
+                                </option>
+                                <option value="Advanced">Advanced</option>
+                              </select>
+                              <Button
+                                onClick={() =>
+                                  handleRemoveSkillFromCategory(
+                                    categoryIndex,
+                                    skillIndex
+                                  )
+                                }
+                                variant="destructive"
+                                size="sm"
+                              >
+                                Remove
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            onClick={() =>
+                              handleAddSkillToCategory(categoryIndex, {
+                                name: "",
+                                level: "Beginner",
+                              })
+                            }
+                            variant="outline"
+                            size="sm"
+                          >
+                            Add Skill
+                          </Button>
+                          <Button
+                            onClick={() =>
+                              handleRemoveSkillCategory(categoryIndex)
+                            }
+                            variant="destructive"
+                            size="sm"
+                          >
+                            Remove Category
+                          </Button>
+                        </div>
+                      )
+                    )}
+                    <Button onClick={handleAddSkillCategory} variant="outline">
+                      Add Skill Category
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Experience</Label>
+                    {profileData.experience.map((exp, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={exp.organization}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "experience",
+                              index,
+                              "organization",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Organization"
+                        />
+                        <Input
+                          value={exp.role}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "experience",
+                              index,
+                              "role",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Role"
+                        />
+                        <div className="flex space-x-2">
+                          <Input
+                            type="date"
+                            value={exp.startDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "experience",
+                                index,
+                                "startDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                          <Input
+                            type="date"
+                            value={exp.endDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "experience",
+                                index,
+                                "endDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                        <Input
+                          value={exp.location}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "experience",
+                              index,
+                              "location",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Location"
+                        />
+                        <Textarea
+                          value={exp.summary}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "experience",
+                              index,
+                              "summary",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Summary"
+                          rows={3}
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("experience", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Experience
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("experience", {
+                          organization: "",
+                          role: "",
+                          startDate: "",
+                          endDate: "",
+                          location: "",
+                          summary: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Experience
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Education</Label>
+                    {profileData.education.map((edu, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={edu.institution}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "education",
+                              index,
+                              "institution",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Institution"
+                        />
+                        <Input
+                          value={edu.degree}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "education",
+                              index,
+                              "degree",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Degree"
+                        />
+                        <Input
+                          value={edu.field}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "education",
+                              index,
+                              "field",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Field of Study"
+                        />
+                        <Input
+                          value={edu.specialization}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "education",
+                              index,
+                              "specialization",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Specialization"
+                        />
+                        <div className="flex space-x-2">
+                          <Input
+                            type="date"
+                            value={edu.startDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "education",
+                                index,
+                                "startDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                          <Input
+                            type="date"
+                            value={edu.endDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "education",
+                                index,
+                                "endDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                        <Input
+                          value={edu.score}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "education",
+                              index,
+                              "score",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Score/Grade"
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("education", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Education
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("education", {
+                          institution: "",
+                          degree: "",
+                          field: "",
+                          specialization: "",
+                          startDate: "",
+                          endDate: "",
+                          score: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Education
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="additional">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <Label>Projects</Label>
+                    {profileData.projects.map((project, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={project.name}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "projects",
+                              index,
+                              "name",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Project Name"
+                        />
+                        <Textarea
+                          value={project.summary}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "projects",
+                              index,
+                              "summary",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Project Summary"
+                          rows={3}
+                        />
+                        <div className="flex space-x-2">
+                          <Input
+                            type="date"
+                            value={project.startDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "projects",
+                                index,
+                                "startDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                          <Input
+                            type="date"
+                            value={project.endDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "projects",
+                                index,
+                                "endDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                        <Input
+                          value={project.url.href}
+                          onChange={(e) =>
+                            handleUpdateNestedField("projects", index, "url", {
+                              ...project.url,
+                              href: e.target.value,
+                            })
+                          }
+                          placeholder="Project URL"
+                        />
+                        <Input
+                          value={project.keywords.join(", ")}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "projects",
+                              index,
+                              "keywords",
+                              e.target.value.split(", ")
+                            )
+                          }
+                          placeholder="Keywords (comma-separated)"
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("projects", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Project
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("projects", {
+                          name: "",
+                          summary: "",
+                          startDate: "",
+                          endDate: "",
+                          url: { href: "", label: "" },
+                          keywords: [],
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Project
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Languages</Label>
+                    {profileData.languages.map((language, index) => (
+                      <div key={index} className="flex space-x-2">
+                        <Input
+                          value={language.name}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "languages",
+                              index,
+                              "name",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Language"
+                        />
+                        <Input
+                          value={language.level}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "languages",
+                              index,
+                              "level",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Proficiency Level"
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("languages", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("languages", {
+                          name: "",
+                          level: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Language
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Volunteer Experience</Label>
+                    {profileData.volunteer.map((vol, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={vol.organization}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "volunteer",
+                              index,
+                              "organization",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Organization"
+                        />
+                        <Input
+                          value={vol.role}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "volunteer",
+                              index,
+                              "role",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Role"
+                        />
+                        <div className="flex space-x-2">
+                          <Input
+                            type="date"
+                            value={vol.startDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "volunteer",
+                                index,
+                                "startDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                          <Input
+                            type="date"
+                            value={vol.endDate}
+                            onChange={(e) =>
+                              handleUpdateNestedField(
+                                "volunteer",
+                                index,
+                                "endDate",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </div>
+                        <Input
+                          value={vol.location}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "volunteer",
+                              index,
+                              "location",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Location"
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("volunteer", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Volunteer Experience
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("volunteer", {
+                          organization: "",
+                          role: "",
+                          startDate: "",
+                          endDate: "",
+                          location: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Volunteer Experience
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Awards</Label>
+                    {profileData.awards.map((award, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={award.title}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "awards",
+                              index,
+                              "title",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Award Title"
+                        />
+                        <Input
+                          value={award.awarder}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "awards",
+                              index,
+                              "awarder",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Awarder"
+                        />
+                        <Input
+                          type="date"
+                          value={award.date}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "awards",
+                              index,
+                              "date",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <Textarea
+                          value={award.summary}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "awards",
+                              index,
+                              "summary",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Award Summary"
+                          rows={3}
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("awards", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Award
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("awards", {
+                          title: "",
+                          awarder: "",
+                          date: "",
+                          summary: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Award
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Publications</Label>
+                    {profileData.publications.map((pub, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={pub.name}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "publications",
+                              index,
+                              "name",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Publication Name"
+                        />
+                        <Input
+                          value={pub.publisher}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "publications",
+                              index,
+                              "publisher",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Publisher"
+                        />
+                        <Input
+                          value={pub.publishedIn}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "publications",
+                              index,
+                              "publishedIn",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Published In"
+                        />
+                        <Input
+                          value={pub.url.href}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "publications",
+                              index,
+                              "url",
+                              { ...pub.url, href: e.target.value }
+                            )
+                          }
+                          placeholder="URL"
+                        />
+                        <Input
+                          type="date"
+                          value={pub.date}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "publications",
+                              index,
+                              "date",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("publications", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Publication
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("publications", {
+                          name: "",
+                          publisher: "",
+                          publishedIn: "",
+                          url: { href: "", label: "" },
+                          date: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Publication
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>Certifications</Label>
+                    {profileData.certifications.map((cert, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={cert.name}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "certifications",
+                              index,
+                              "name",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Certification Name"
+                        />
+                        <Input
+                          value={cert.issuer}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "certifications",
+                              index,
+                              "issuer",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Issuer"
+                        />
+                        <Input
+                          type="date"
+                          value={cert.date}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "certifications",
+                              index,
+                              "date",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <Input
+                          value={cert.url.href}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "certifications",
+                              index,
+                              "url",
+                              { ...cert.url, href: e.target.value }
+                            )
+                          }
+                          placeholder="URL"
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("certifications", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Certification
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("certifications", {
+                          name: "",
+                          issuer: "",
+                          date: "",
+                          url: { href: "", label: "" },
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Certification
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <Label>References</Label>
+                    {profileData.references.map((ref, index) => (
+                      <div key={index} className="space-y-2 p-4 border rounded">
+                        <Input
+                          value={ref.name}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "references",
+                              index,
+                              "name",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Reference Name"
+                        />
+                        <Input
+                          value={ref.phone}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "references",
+                              index,
+                              "phone",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Phone"
+                        />
+                        <Input
+                          value={ref.email}
+                          onChange={(e) =>
+                            handleUpdateNestedField(
+                              "references",
+                              index,
+                              "email",
+                              e.target.value
+                            )
+                          }
+                          placeholder="Email"
+                        />
+                        <Button
+                          onClick={() =>
+                            handleRemoveItemFromSection("references", index)
+                          }
+                          variant="destructive"
+                          size="sm"
+                        >
+                          Remove Reference
+                        </Button>
+                      </div>
+                    ))}
+                    <Button
+                      onClick={() =>
+                        handleAddItemToSection("references", {
+                          name: "",
+                          phone: "",
+                          email: "",
+                        })
+                      }
+                      variant="outline"
+                    >
+                      Add Reference
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 }

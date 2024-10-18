@@ -24,6 +24,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   Resume        Resume[]
   CoverLetter   Coverletter[]
+  Profile       Profile[]
 
   @@map("users")
 }
@@ -135,4 +136,27 @@ model Blog {
   isFeatured  Boolean  @default(false) 
 
   @@map("blog")
+}
+
+model Profile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  basics        Json     @default("[]")
+  summary       Json     @default("[]")
+  profiles      Json     @default("[]")
+  skills        Json     @default("[]")
+  projects      Json     @default("[]")
+  education     Json     @default("[]")
+  experience    Json     @default("[]")
+  languages     Json     @default("[]")
+  volunteer     Json     @default("[]")
+  awards        Json     @default("[]")
+  publications  Json     @default("[]")
+  certifications Json    @default("[]")
+  references    Json     @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("profile")
 }
