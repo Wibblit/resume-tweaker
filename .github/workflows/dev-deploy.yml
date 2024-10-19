@@ -48,7 +48,7 @@ jobs:
 
     - name: Commit squashed changes with new author
       run: |
-        git commit -m "Sync from upstream" --author="wibblit-developer <wibblit.developer@yahoo.com>"  # Commit with new author
+        git commit -m "Sync from dev branch upstream" --author="wibblit-developer <wibblit.developer@yahoo.com>"  # Commit with new author
 
     - name: Switch to main branch and reset
       run: |
