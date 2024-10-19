@@ -1,0 +1,62 @@
+name: Sync with Dev Upstream
+
+on:
+  workflow_dispatch:  # Allows manual trigger from GitHub Actions
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout forked repository
+      uses: actions/checkout@v4
+      with:
+        repository: wibblit-developer/resume-tweaker-development
+        token: ${{ secrets.ACCESS_TOKEN }}
+        fetch-depth: 0  # Ensure full history is available
+
+    - name: Configure Git user
+      run: |
+        git config --global user.email "wibblit.developer@yahoo.com"
+        git config --global user.name "wibblit-developer"
+
+    - name: Add upstream repository
+      run: |
+        git remote add upstream https://github.com/Wibblit/resume-tweaker.git
+        git fetch upstream
+
+    - name: Create and switch to empty branch 1
+      run: |
+        git checkout --orphan empty-branch-1  # Create the first empty branch
+        git rm -rf .  # Remove all files from the empty branch
+
+    - name: Pull changes from upstream into empty branch 1
+      run: |
+        git pull --allow-unrelated-histories upstream dev  # Pull changes allowing unrelated histories
+
+    - name: Create and switch to empty branch 2
+      run: |
+        git checkout --orphan empty-branch-2  # Create the second empty branch
+        git rm -rf .  # Remove all files from the empty branch
+        echo "Initializing empty branch" > temp-file.txt  # Create a temporary file to enable commit
+        git add temp-file.txt  # Stage the temporary file
+        git commit -m "Initialize empty branch for merging"  # Commit to allow squash merge
+
+    - name: Squash merge changes from empty branch 1 into empty branch 2
+      run: |
+        git merge --squash empty-branch-1 --allow-unrelated-histories # Squash merge changes from the first empty branch
+
+    - name: Commit squashed changes with new author
+      run: |
+        git commit -m "Sync from upstream" --author="wibblit-developer <wibblit.developer@yahoo.com>"  # Commit with new author
+
+    - name: Switch to main branch and reset
+      run: |
+        git checkout main
+        git reset --hard empty-branch-2  # Hard reset main to match empty-branch-2
+
+    - name: Push changes to forked repo (without commit history)
+      run: |
+        git push origin main --force  # Force push to overwrite main with empty-branch-2
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
