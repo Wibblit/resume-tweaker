@@ -33,7 +33,7 @@ export default function GetStartedSection() {
                   key={i}
                   src={`https://avatars.githubusercontent.com/u/107497296?v=4`}
                   alt={`User avatar ${i + 1}`}
-                  className="w-10 h-10 rounded-full border-2 border-black"
+                  className="w-12 h-12 rounded-full border-2 border-black"
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: i * 0.1 }}
@@ -44,11 +44,11 @@ export default function GetStartedSection() {
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
-                  className="w-5 h-5 text-yellow-400 fill-current"
+                  className="w-8 h-8 text-yellow-400 fill-current"
                 />
               ))}
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-md text-gray-400">
               Trusted by 50,000+ job seekers
             </p>
           </div>

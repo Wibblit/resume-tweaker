@@ -9,7 +9,6 @@ import { ArrowRight, FileText } from "lucide-react"
 export function Hero() {
   const scrollToTemplates = () => {
     const ele = document.getElementById("templates");
-    console.log("lj")
     if (ele) {
       ele.scrollIntoView({behavior: "smooth"})
     }
@@ -24,7 +23,7 @@ export function Hero() {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-4xl sm:text-5xl md:text-6xl md:max-w-2xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-foreground to-muted-foreground">
-            Dev branch test Elevate Your Resume with AI
+            Elevate Your Resume with AI
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Craft a standout resume with ease using the power of AI. Receive tailored suggestions, optimize your content, and land your dream job faster.

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 export default async function Home() {
   const session = await auth();
   return (
-    <main className="relative flex justify-center items-center flex-col overflow-hidden mx-auto">
+    <main className="relative flex justify-center items-center flex-col mx-auto">
       <div className="w-full">
         <LandingNav />
         <Hero />

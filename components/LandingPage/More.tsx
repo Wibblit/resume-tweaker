@@ -54,5 +54,9 @@ const content = [
 ];
 
 export function StickyScrollReveal() {
-  return <StickyScroll content={content} />;
+  return (
+    <div className="min-h-screen mt-40">
+      <StickyScroll content={content} />
+    </div>
+  );
 }
