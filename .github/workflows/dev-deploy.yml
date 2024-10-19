@@ -17,7 +17,7 @@ jobs:
 
     - name: Configure Git user
       run: |
-        git config --global user.email "wibblit.developer@yahoo.com"
+        git config --global user.email "mail.wibblit@yahoo.com"
         git config --global user.name "wibblit-developer"
 
     - name: Add upstream repository
@@ -48,7 +48,7 @@ jobs:
 
     - name: Commit squashed changes with new author
       run: |
-        git commit -m "Sync from dev branch upstream" --author="wibblit-developer <wibblit.developer@yahoo.com>"  # Commit with new author
+        git commit -m "Sync from dev branch upstream" --author="wibblit-developer <mail.wibblit@yahoo.com>"  # Commit with new author
 
     - name: Switch to main branch and reset
       run: |
