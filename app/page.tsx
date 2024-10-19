@@ -5,6 +5,9 @@ import { auth } from "@/auth";
 import { TemplatesSection } from "@/components/LandingPage/Templates";
 import { FeaturesSection } from "@/components/LandingPage/Features";
 import { StickyScrollReveal } from "@/components/LandingPage/More";
+import Pricing from "@/components/LandingPage/Pricing";
+import GetStartedSection from "@/components/LandingPage/GetStartedSection";
+import Footer from "@/components/LandingPage/Footer";
 
 export const metadata: Metadata = {
   title: "Wibblit Resume Tweaker",
@@ -30,6 +33,15 @@ export default async function Home() {
         </div>
         <div id="moreFeatures">
           <StickyScrollReveal />
+        </div>
+        <div className="py-24 w-full" id="pricing">
+          <Pricing />
+        </div>
+        <div className="py-24">
+          <GetStartedSection />
+        </div>
+        <div className="w-full">
+          <Footer />
         </div>
       </div>
     </main>

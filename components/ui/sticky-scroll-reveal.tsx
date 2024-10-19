@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useMotionValueEvent, useScroll } from "framer-motion";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { CardContainer, CardBody } from "./3d-card";
 
 export const StickyScroll = ({
   content,
@@ -46,10 +47,12 @@ export const StickyScroll = ({
     // "var(--muted-foreground)",
   ];
   const linearGradients = [
-    "linear-gradient(to bottom right, var(--cyan-500), var(--emerald-500))",
-    "linear-gradient(to bottom right, var(--pink-500), var(--indigo-500))",
-    "linear-gradient(to bottom right, var(--orange-500), var(--yellow-500))",
+    "rgba(0, 0, 0, 0)",  // Fully transparent (no gradient)
+    "rgba(0, 0, 0, 0)",  // Fully transparent (no gradient)
+    "rgba(0, 0, 0, 0)",
+    "rgba(0, 0, 0, 0)", // Fully transparent (no gradient)
   ];
+  
 
   const [backgroundGradient, setBackgroundGradient] = useState(
     linearGradients[0]
@@ -98,15 +101,15 @@ export const StickyScroll = ({
           <div className="h-60" />
         </div>
       </div>
-      <div
-        style={{ background: backgroundGradient }}
+      <CardBody
+        // style={{ background: backgroundGradient }}
         className={cn(
-          "hidden lg:block h-80 w-96 rounded-lg bg-white sticky top-10 overflow-hidden",
+          "hidden lg:block h-96 w-[40rem] bg-transparent rounded-lg bg-gray-50 group/card  dark:shadow-2xl dark:shadow-muted-foreground/[0.1] dark:bg-transparent dark:border-white/[0.2] border-black/[0.1] p-6 sticky top-10 overflow-hidden",
           contentClassName
         )}
       >
         {content[activeCard].content ?? null}
-      </div>
+      </CardBody>
     </motion.div>
   );
 };
