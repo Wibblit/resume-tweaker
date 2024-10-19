@@ -136,3 +136,11 @@ model Blog {
 
   @@map("blog")
 }
+
+model Waitlist {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  joinedAt    DateTime @default(now())
+
+  @@map("waitlist")
+}
