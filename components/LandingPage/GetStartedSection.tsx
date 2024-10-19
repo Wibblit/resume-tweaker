@@ -12,9 +12,9 @@ export default function GetStartedSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-3xl mx-auto"
+          className="max-w-3xl mx-auto flex flex-col justify-center sm:justify-start sm:items-start items-center"
         >
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-pretty">
             Get started today with AI Resume Builder to kickstart your career
           </h2>
           <p className="text-lg mb-8">
@@ -26,7 +26,7 @@ export default function GetStartedSection() {
             Get Started
             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <div className="mt-12 flex items-center">
+          <div className="mt-12 flex items-center flex-wrap gap-4 justify-center">
             <div className="flex -space-x-2 mr-4">
               {[...Array(6)].map((_, i) => (
                 <motion.img

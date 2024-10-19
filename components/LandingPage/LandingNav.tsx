@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { ModeToggle } from "./ModeToggle";
-import { Button } from "./ui/button";
+import { ModeToggle } from "../ModeToggle";
+import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import ThemeAwareLogo from "./ThemeAwareLogo";
+import ThemeAwareLogo from "../ThemeAwareLogo";
 
 export function LandingNav() {
   const pathname = usePathname();

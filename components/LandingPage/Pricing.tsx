@@ -102,10 +102,10 @@ export default function Pricing() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Card
-                className={`h-full flex flex-col ${
+                className={`h-full flex flex-col rounded-none ${
                   tier.highlighted
                     ? "bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent"
-                    : "bg-background border-0"
+                    : "bg-background sm:border-0"
                 } min-h-[600px] sm:min-h-0`}
               >
                 <CardHeader>

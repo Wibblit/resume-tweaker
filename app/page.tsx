@@ -1,4 +1,4 @@
-import { LandingNav } from "@/components/LandingNav";
+import { LandingNav } from "@/components/LandingPage/LandingNav";
 import { Hero } from "@/components/LandingPage/Hero";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
@@ -25,7 +25,7 @@ export default async function Home() {
       <div className="w-full">
         <LandingNav />
         <Hero />
-        <div className="py-24" id="templates">
+        <div className="py-20 sm:py-24" id="templates">
           <TemplatesSection />
         </div>
         <div className="py-24" id="features">
@@ -34,13 +34,13 @@ export default async function Home() {
         <div id="moreFeatures">
           <StickyScrollReveal />
         </div>
-        <div className="py-24 w-full" id="pricing">
+        <div className="py-20 sm:py-24 w-full" id="pricing">
           <Pricing />
         </div>
-        <div className="py-24">
+        <div className="py-20 sm:py-24" id="getstarted">
           <GetStartedSection />
         </div>
-        <div className="w-full">
+        <div className="w-full" id="footer">
           <Footer />
         </div>
       </div>

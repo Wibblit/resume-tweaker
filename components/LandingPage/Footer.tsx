@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { Twitter, Linkedin, Github } from "lucide-react";
 import ThemeAwareLogo from "../ThemeAwareLogo";
+import { SocialIcon } from "react-social-icons";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="text-white py-32 border-t-2">
+    <footer className="py-32 border-t-2">
       <div className=" mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-14  flex justify-between">
-        <div className="flex justify-between w-full">
+        <div className="flex flex-col gap-12 md:flex-row md:justify-between w-full">
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <div className="flex items-center mb-4 gap-2">
               <ThemeAwareLogo />
@@ -17,12 +18,12 @@ export default function Footer() {
                 <span className="font-bold">tweaker</span>
               </span>
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-foreground">
               Copyright © {currentYear} Wibblit INC
             </p>
-            <p className="text-sm text-gray-400">All rights reserved</p>
+            <p className="text-sm text-foreground">All rights reserved</p>
           </div>
-          <div className="flex gap-x-8">
+          <div className="flex gap-x-8 text-foreground">
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
               <ul className="space-y-2">
@@ -67,31 +68,28 @@ export default function Footer() {
               <h3 className="text-lg font-semibold mb-4">Social</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link
-                    href="https://twitter.com"
-                    className="flex items-center hover:text-gray-300"
-                  >
-                    <Twitter className="w-5 h-5 mr-2" />
-                    Twitter
-                  </Link>
+                  <SocialIcon
+                    bgColor="#ffffff00"
+                    style={{ width: "38px", height: "28px" }}
+                    network="x"
+                  />
+                  Twitter
                 </li>
                 <li>
-                  <Link
-                    href="https://linkedin.com"
-                    className="flex items-center hover:text-gray-300"
-                  >
-                    <Linkedin className="w-5 h-5 mr-2" />
-                    LinkedIn
-                  </Link>
+                  <SocialIcon
+                    bgColor="#ffffff00"
+                    style={{ width: "38px", height: "28px" }}
+                    network="linkedin"
+                  />
+                  Linkedin
                 </li>
                 <li>
-                  <Link
-                    href="https://github.com"
-                    className="flex items-center hover:text-gray-300"
-                  >
-                    <Github className="w-5 h-5 mr-2" />
-                    GitHub
-                  </Link>
+                  <SocialIcon
+                    bgColor="#ffffff00"
+                    style={{ width: "38px", height: "28px" }}
+                    network="github"
+                  />
+                  Github
                 </li>
               </ul>
             </div>
