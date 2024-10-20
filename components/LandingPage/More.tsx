@@ -9,49 +9,33 @@ const content = [
     title: "AI-Powered Resume Editing",
     description:
       "Collaborate with our AI to craft the perfect resume. Get real-time suggestions and improvements as you write, ensuring your resume stands out to potential employers.",
-    content: (
-      <div className="h-full w-full flex items-center justify-center text-zinc-800 dark:text-zinc-200">
-        AI Resume Editing
-      </div>
-    ),
+    image: "/editor.png",
   },
   {
     title: "Real-time Updates",
     description:
       "See changes instantly as you edit. Our platform provides immediate feedback, allowing you to fine-tune your resume in real-time for maximum impact.",
-    content: (
-      <div className="h-full w-full flex items-center justify-center">
-        <Image
-          src="/editor.png"
-          width={300}
-          height={300}
-          className="h-full w-full object-cover"
-          alt="Real-time updates demo"
-        />
-      </div>
-    ),
+    image: "/analysis.png",
   },
-  {
+  { 
     title: "Multiple Resume Versions",
     description:
       "Easily create and manage multiple versions of your resume. Tailor each version for different job applications while keeping all your information organized in one place.",
-    content: (
-      <div className="h-full w-full flex items-center justify-center text-zinc-800 dark:text-zinc-200">
-        Version Control
-      </div>
-    ),
-  },
+    image: "/home.png",
+  },  
   {
     title: "AI Interview Preparation",
     description:
       "Practice interviews with our AI, tailored to your resume and target job descriptions. Improve your interview skills and confidence before meeting with potential employers.",
-    content: (
-      <div className="h-full w-full flex items-center justify-center text-zinc-800 dark:text-zinc-200">
-        AI Interview Prep
-      </div>
-    ),
+    image: "/interview.png",
+  },  
+  {
+    title: "",
+    description:
+      "",
+    image: "",
   },
-];
+];      
 
 export function StickyScrollReveal() {
   return (

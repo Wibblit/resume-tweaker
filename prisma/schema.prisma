@@ -149,7 +149,7 @@ model Profile {
   projects      Json     @default("[]")
   education     Json     @default("[]")
   experience    Json     @default("[]")
-  languages     Json     @default("[]")
+  languages     Json     @default("[]")   
   volunteer     Json     @default("[]")
   awards        Json     @default("[]")
   publications  Json     @default("[]")

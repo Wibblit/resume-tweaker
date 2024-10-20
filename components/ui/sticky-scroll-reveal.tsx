@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { useMotionValueEvent, useScroll } from "framer-motion";
+import { AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CardBody } from "./3d-card";
+import Image from "next/image";
 
 export const StickyScroll = ({
   content,
@@ -13,7 +14,7 @@ export const StickyScroll = ({
   content: {
     title: string;
     description: string;
-    content?: React.ReactNode | any;
+    image: string;
   }[];
   contentClassName?: string;
 }) => {
@@ -95,11 +96,27 @@ export const StickyScroll = ({
       </div>
       <CardBody
         className={cn(
-          "hidden lg:block h-96 w-[40rem] bg-transparent rounded-lg bg-gray-50 group/card dark:shadow-2xl dark:shadow-muted-foreground/[0.1] dark:bg-transparent dark:border-white/[0.2] border-black/[0.1] p-6 sticky top-1/2 -translate-y-1/2 overflow-hidden",
+          "hidden lg:block h-[50vh] lg:h-[60vh] w-full lg:w-1/2 rounded-lg p-6 sticky top-1/2 -translate-y-1/2 overflow-hidden shadow-lg bg-gradient-to-b from-neutral-100 dark:from-neutral-800 to-transparent",
           contentClassName
         )}
       >
-        {content[activeCard].content ?? null}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCard}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full relative"
+          >
+            <Image
+              src={content[activeCard].image}
+              alt={content[activeCard].title}
+              fill
+              className="object-cover object-center rounded-md"
+            />
+          </motion.div>
+        </AnimatePresence>
       </CardBody>
     </motion.div>
   );
