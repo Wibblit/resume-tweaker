@@ -11,7 +11,7 @@ export function TemplatesSection() {
         Tailor professional templates to match your unique style and career
         goals
       </p>
-      <div className="mt-6 p-10">
+      <div className="mt-6">
         <ParallaxScroll images={images} />
       </div>
     </div>

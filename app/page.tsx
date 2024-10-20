@@ -23,25 +23,42 @@ export default async function Home() {
   return (
     <main className="relative flex justify-center items-center flex-col mx-auto">
       <div className="w-full">
-        <LandingNav />
-        <Hero />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <LandingNav />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <Hero />
+        </div>
         <div className="py-20 sm:py-24" id="templates">
-          <TemplatesSection />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <TemplatesSection />
+          </div>
         </div>
         <div className="py-24" id="features">
-          <FeaturesSection />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <FeaturesSection />
+          </div>
         </div>
         <div id="moreFeatures">
-          <StickyScrollReveal />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <StickyScrollReveal />
+          </div>
         </div>
         <div className="py-20 sm:py-24 w-full" id="pricing">
-          <Pricing />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <Pricing />
+          </div>
         </div>
         <div className="py-20 sm:py-24" id="getstarted">
-          <GetStartedSection />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <GetStartedSection />
+          </div>
         </div>
         <div className="w-full" id="footer">
-          <Footer />
+          <hr />
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <Footer />
+          </div>
         </div>
       </div>
     </main>
