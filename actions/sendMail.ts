@@ -2,7 +2,6 @@
 
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
 const transporter = nodemailer.createTransport({
@@ -103,10 +102,6 @@ export async function submitEmail(formData: FormData) {
             text-align: center;
             padding: 20px 0;
         }
-        .logo {
-            max-width: 200px;
-            height: auto;
-        }
         h1 {
             color: #18181b;
             font-size: 24px;
@@ -118,13 +113,12 @@ export async function submitEmail(formData: FormData) {
             border-radius: 5px;
         }
         .quote {
-            font-style: italic;
             color: #52525b;
             margin-bottom: 20px;
         }
         .cta-button {
             display: inline-block;
-            background-color: #71717a;
+            background-color:  #18181b;
             color: #ffffff;
             padding: 10px 20px;
             text-decoration: none;
@@ -137,12 +131,16 @@ export async function submitEmail(formData: FormData) {
             font-size: 12px;
             color: #71717a;
         }
+     .logoimg {
+    width: 50px;  
+    height: 50px;
+}
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://example.com/resume-tweaker-logo.png" alt="Resume Tweaker Logo" class="logo">
+            <img src="https://drive.google.com/uc?export=view&id=1NsuqIyx5Ost_uoQ0d4HaxsNJ1HEicApU" alt="Resume Tweaker Logo" class="logoimg">
         </div>
         <div class="content">
             <h1>Welcome to the Resume Tweaker Waitlist!</h1>
@@ -156,7 +154,7 @@ export async function submitEmail(formData: FormData) {
             <a href="https://resumetweaker.wibblit.com/blogs" class="cta-button">Read Our Blog</a>
         </div>
         <div class="footer">
-            <p>Resume Tweaker is a product of <a href="https://wibblit.com">Wibblit</a></p>
+            <p>Resume Tweaker is a product of <a href="https://resumetweaker.wibblit.com">Wibblit</a></p>
             <p>Team Wibblit</p>
             <p>&copy; 2024 Wibblit. All rights reserved.</p>
         </div>
@@ -164,15 +162,6 @@ export async function submitEmail(formData: FormData) {
 </body>
 </html>
         `,
-    });
-
-    // Send notification to admin
-    await transporter.sendMail({
-      from: process.env.GMAIL_USER,
-      to: process.env.ADMIN_EMAIL,
-      subject: "New Waitlist Signup",
-      text: `New signup: ${email}`,
-      html: `<b>New signup: ${email}</b>`,
     });
 
     console.log("Success: Email saved and sent successfully");
@@ -192,3 +181,5 @@ export async function submitEmail(formData: FormData) {
     await prisma.$disconnect();
   }
 }
+
+
