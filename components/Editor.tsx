@@ -26,6 +26,7 @@ import {
 } from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
+import { setFullProfileData } from "@/slices/profileSlice";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<keyof ResumeData | "">("basics");
@@ -75,6 +76,41 @@ export default function Editor() {
       }
     }
     getResumeData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get("/api/get-profile");
+
+        const { profileData } = response.data;
+        console.log(profileData);
+
+        if (profileData) {
+          const parsedData = {
+            basics: profileData.basics,
+            summary: profileData.summary,
+            profiles: profileData.profiles,
+            skills: profileData.skills,
+            projects: profileData.projects,
+            education: profileData.education,
+            experience: profileData.experience,
+            languages: profileData.languages,
+            volunteer: profileData.volunteer,
+            awards: profileData.awards,
+            publications: profileData.publications,
+            certifications: profileData.certifications,
+            references: profileData.references,
+          };
+
+          dispatch(setFullProfileData(parsedData));
+        }
+      } catch (error) {
+        console.error("Error fetching resume data:", error);
+      }
+    };
+
+    fetchProfileData();
   }, [dispatch]);
 
   const saveData = async () => {
