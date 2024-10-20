@@ -39,11 +39,11 @@ export const ParallaxScroll = ({
     [0, 1]
   );
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 180, damping: 20 }); // Increased stiffness for faster animation
 
-  const translateFirst = useTransform(smoothProgress, [0, 1], [0, -200]);
-  const translateSecond = useTransform(smoothProgress, [0, 1], [0, 200]);
-  const translateThird = useTransform(smoothProgress, [0, 1], [0, -200]);
+  const translateFirst = useTransform(smoothProgress, [0, 1], [0, -150]);
+  const translateSecond = useTransform(smoothProgress, [0, 1], [0, 150]);
+  const translateThird = useTransform(smoothProgress, [0, 1], [0, -150]);
 
   const opacityFirst = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.3, 1, 1, 0.3]);
   const opacitySecond = useTransform(smoothProgress, [0, 0.2, 0.8, 1], [0.3, 1, 1, 0.3]);
@@ -64,57 +64,57 @@ export const ParallaxScroll = ({
       ref={gridRef}
     >
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start max-w-7xl mx-auto gap-10 py-40 px-10"
+        className="grid grid-cols-2 lg:grid-cols-3 items-start max-w-7xl mx-auto gap-4 sm:gap-6 lg:gap-8 py-20 sm:py-30 lg:py-40 px-4 sm:px-6 lg:px-8"
         initial={{ opacity: 0, y: 100 }}
         animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="grid gap-10">
+        <div className="grid gap-4 sm:gap-6 lg:gap-8">
           {firstPart.map((el, idx) => (
             <motion.div
               style={{ y: translateFirst, opacity: opacityFirst, scale: scaleFirst }}
               key={"grid-1" + idx}
-              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              className="aspect-[3/4] overflow-hidden rounded-lg shadow-lg"
             >
               <Image
                 src={el}
-                className="h-96 w-full object-cover object-center rounded-lg shadow-lg"
-                height="400"
-                width="400"
+                className="h-full w-full object-cover object-top"
+                height="600"
+                width="450"
                 alt={`Resume template ${idx + 1}`}
               />
             </motion.div>
           ))}
         </div>
-        <div className="grid gap-10">
+        <div className="grid gap-4 sm:gap-6 lg:gap-8">
           {secondPart.map((el, idx) => (
             <motion.div
               style={{ y: translateSecond, opacity: opacitySecond, scale: scaleSecond }}
               key={"grid-2" + idx}
-              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              className="aspect-[3/4] overflow-hidden rounded-lg shadow-lg"
             >
               <Image
                 src={el}
-                className="h-96 w-full object-cover object-center rounded-lg shadow-lg"
-                height="400"
-                width="400"
+                className="h-full w-full object-cover object-top"
+                height="600"
+                width="450"
                 alt={`Resume template ${idx + 1 + third}`}
               />
             </motion.div>
           ))}
         </div>
-        <div className="grid gap-10">
+        <div className="grid gap-4 sm:gap-6 lg:gap-8">
           {thirdPart.map((el, idx) => (
             <motion.div
               style={{ y: translateThird, opacity: opacityThird, scale: scaleThird }}
               key={"grid-3" + idx}
-              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              className="aspect-[3/4] overflow-hidden rounded-lg shadow-lg"
             >
               <Image
                 src={el}
-                className="h-96 w-full object-cover object-center rounded-lg shadow-lg"
-                height="400"
-                width="400"
+                className="h-full w-full object-cover object-top"
+                height="600"
+                width="450"
                 alt={`Resume template ${idx + 1 + 2 * third}`}
               />
             </motion.div>

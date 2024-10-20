@@ -34,7 +34,7 @@ export default async function Home() {
             <TemplatesSection />
           </div>
         </div>
-        <div className="py-24" id="features">
+        <div className="py-8 sm:py-24" id="features">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <FeaturesSection />
           </div>
@@ -44,12 +44,12 @@ export default async function Home() {
             <StickyScrollReveal />
           </div>
         </div>
-        <div className="py-20 sm:py-24 w-full" id="pricing">
+        <div className="py-8 sm:py-24 w-full" id="pricing">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <Pricing />
           </div>
         </div>
-        <div className="py-20 sm:py-24" id="getstarted">
+        <div className="py-8 sm:py-24" id="getstarted">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <GetStartedSection />
           </div>

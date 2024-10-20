@@ -65,18 +65,18 @@ export const StickyScroll = ({
       animate={{
         backgroundColor: backgroundColors[activeCard % backgroundColors.length],
       }}
-      className="flex justify-center relative space-x-14 rounded-md p-14"
+      className="flex justify-center relative md:space-x-14 rounded-md md:p-14"
       style={{ height: containerHeight }}
     >
       <div className="relative flex items-start px-8" ref={containerRef}>
-        <div className="max-w-4xl">
+        <div className="md:max-w-4xl">
           {content.map((item, index) => (
             <div key={item.title + index} className="my-28">
               <motion.h2
                 initial={{ opacity: 0 }}
                 animate={{ opacity: activeCard === index ? 1 : 0.3 }}
                 transition={{ duration: 0.5 }}
-                className="text-4xl font-bold text-slate-100"
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-100"
               >
                 {item.title}
               </motion.h2>
@@ -90,7 +90,7 @@ export const StickyScroll = ({
               </motion.p>
             </div>
           ))}
-          <div className="h-60" />
+          <div className="md:h-60" />
         </div>
       </div>
       <CardBody

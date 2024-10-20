@@ -78,7 +78,7 @@ const tiers = [
 
 export default function Pricing() {
   return (
-    <div className="pt-12 w-full">
+    <div className="md:pt-12 w-full">
       <div className="w-full text-center">
         <h2 className="text-3xl font-extrabold sm:text-4xl bg-clip-text text-center text-transparent bg-gradient-to-b from-foreground to-muted-foreground">
           Simple Pricing
