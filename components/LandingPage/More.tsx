@@ -2,7 +2,6 @@
 
 import React from "react";
 import { StickyScroll } from "../ui/sticky-scroll-reveal";
-import Image from "next/image";
 
 const content = [
   {
@@ -29,12 +28,6 @@ const content = [
       "Practice interviews with our AI, tailored to your resume and target job descriptions. Improve your interview skills and confidence before meeting with potential employers.",
     image: "/interview.png",
   },  
-  {
-    title: "",
-    description:
-      "",
-    image: "",
-  },
 ];      
 
 export function StickyScrollReveal() {

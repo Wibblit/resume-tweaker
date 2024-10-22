@@ -109,10 +109,11 @@ export const StickyScroll = ({
             transition={{ duration: 0.3 }}
             className="w-full h-full relative"
           >
-            <Image
+             <Image
               src={content[activeCard].image}
               alt={content[activeCard].title}
-              fill
+              width={700}
+              height={600}
               className="object-cover object-center rounded-md"
             />
           </motion.div>
