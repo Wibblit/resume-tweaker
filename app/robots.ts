@@ -15,3 +15,4 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     sitemap: `${process.env.NEXT_PUBLIC_BASE_URL}/sitemap.xml`,
   };
 }
+

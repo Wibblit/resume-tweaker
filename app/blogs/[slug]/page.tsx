@@ -1,9 +1,9 @@
 import BlogPost from "@/components/blogs/blogPost";
-import { auth } from "@/auth";
 import { Metadata } from "next";
 import { prisma } from "@/prisma";
 import { cache } from "react";
 import { notFound } from "next/navigation";
+import { Session } from "next-auth";
 
 export async function generateStaticParams() {
   const posts = await prisma.blog.findMany();
@@ -16,7 +16,6 @@ const fetchBlog = cache(async (slug: string) => {
   });
   return blog;
 });
-
 
 export async function generateMetadata({
   params,
@@ -38,13 +37,26 @@ export async function generateMetadata({
   };
 }
 
+async function getSession(): Promise<Session | null> {
+  const res = await fetch("/api/auth/session");
+  if (!res.ok) {
+    return null;
+  }
+  const data = await res.json();
+  return data as Session;
+}
+
 export default async function BlogPostPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const session = await auth();
-  const data = await fetchBlog(params.slug);
+  const [session, data] = await Promise.all([
+    getSession(),
+    fetchBlog(params.slug)
+  ]);
+
   if (!data) return notFound();
-  return <BlogPost session={session} data={data!} />;
+
+  return <BlogPost session={session} data={data} />;
 }
