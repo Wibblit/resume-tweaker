@@ -10,189 +10,28 @@ export type BlogType = {
     image: string;
 }
 
-
-  
-//   // export interface Project {
-//   //   project_name: string
-//   //   description: string
-//   //   StartDate: string
-//   //   EndDate: string
-//   //   project_url: string
-//   // }
-  
-//   // export interface Experience {
-//   //   company_name: string
-//   //   role: string
-//   //   description: string
-//   //   StartDate: string
-//   //   EndDate: string
-//   // }
-  
-//   export interface SocialMediaLink {
-//     platform: string
-//     url: string
-//   }
-  
-//   // export interface Reference {
-//   //   name: string
-//   //   contact: string
-//   //   relationship: string
-//   // }
-  
-//   export interface UserData {
-//     id: number
-//     user_id: number
-//     fullname: string
-//     contact_number: string
-//     email: string
-//     address: string
-//     bio: string
-//     links: string[]
-//     skills: string[]
-//     role: string
-//     experience_years: number
-//     education_level: Education[]
-//     certifications: string[]
-//     languages: string[]
-//     projects: Project[]
-//     Experience: Experience[]
-//     achievements: string[]
-//     social_media_links: SocialMediaLink[]
-//     references: Reference[]
-//     updated_at: Date
-//     credits: number
-//     max_credits: number
-//   }
-
-//   type URL = {
-//     href: string;
-//     label: string;
-//   };
-
-//   type Skill = {
-//     name: string;
-//     level?: 1 | 2 | 3 | 4 | 5 | ("Beginner" | "Intermediate" | "Advanced");
-//   }
-
-//   type MonthYear = {
-//     month: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12; 
-//     year: number;
-//   };
+export interface Blog {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content: string;
+  category: string;
+  thumbnail: string;
+  author: string;
+  createdAt: Date;
+  updatedAt: Date;
+  published: boolean;
+  tags: string[];
+  spark: number;
+  views: number;
+  isFeatured: boolean;
+}
 
   type Template = {
     id: number;
     name: string;
   }
-
-
-//   //leftSideBar 
-//   export type Basics = {
-//     url?: URL;
-//     name: string;
-//     email: string;
-//     phone?: string;
-//     location?: string;
-//     headLine: string;
-//     picture?: File | string;
-//   }
-
-//   export type Summary = {
-//     content: string;
-//   }
-
-//   export type Profile = {
-//     url: URL;
-//     icon?: Element;
-//   }
-
-//   export type SkillCatergory = {
-//     categoryName?: string;
-//     skills: Skill[];
-//   }
-
-//   export type Project = {
-//     url?: URL;
-//     name: string;
-//     summary: string;
-//     startDate?: MonthYear;
-//     endDate?: MonthYear;
-//     keywords?: string[];
-//   }
-
-//   export type Education = {
-//     institution: string;
-//     degree: string;
-//     field: string;
-//     specialization?: string;
-//     startDate: MonthYear;
-//     endDate: MonthYear;
-//     score?: number;
-//   }
-
-//   export type Experience = {
-//     organization: string;
-//     role: string;
-//     startDate: MonthYear;
-//     endDate?: MonthYear | "Present";
-//     location?: string;
-//     summary: string;
-//   }
-
-//   export type Language = Skill;
-
-//   export type Volunteering = {
-//     organization: string;
-//     role: string;
-//     location?: string;
-//     startDate: MonthYear;
-//     endDate: MonthYear;
-// }
-
-// export type Award = {
-//     title: string;
-//     awarder?: string;
-//     date?: MonthYear;
-//     summary?: string;
-// }
-
-// export type Publication = {
-//     name: string;
-//     publisher: string;
-//     publishedIn: string;
-//     url?: URL;
-//     date?: MonthYear;
-// }
-
-// export type Certification  = {
-//     name: string;
-//     issuer: string;
-//     date?: MonthYear;
-//     url?: URL;
-// }
-
-// export type Reference = {
-//     name: string;
-//     phone?: string;
-//     email?: string;
-// }
-
-// // & Profile & SkillCatergory & Project & Reference & Certifications & Publications & 
-// // Award & Volunteering & Language & Experience & Education
-// export type Data = {
-//   basics?: Basics;
-//   summary?: Summary;
-//   profile?: Profile[];
-//   skills?: SkillCatergory[];
-//   projects?: Project[];
-//   references?: Reference[];
-//   certifications?: Certification[];
-//   publications?: Publication[];
-//   awards?: Award[];
-//   volunteerings?: Volunteering[];
-//   languages?: Language[];
-//   experiences?: Experience[];
-//   education?: Education[];
-// }
 
 //RightSideBar
 export type SectionName = 'summary' | 'experience' | 'education' | 'skills' | 'projects' | 'certifications' | 'languages' | 'profiles' | 'basics' | 'references' | 'volunteerings' | 'publications' | 'awards'; 

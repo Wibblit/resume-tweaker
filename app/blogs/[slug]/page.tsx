@@ -1,24 +1,50 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import BlogPost from "@/components/blogs/blogPost";
-import { Session } from "next-auth";
+import { auth } from "@/auth";
+import { Metadata } from "next";
+import { prisma } from "@/prisma";
+import { cache } from "react";
+import { notFound } from "next/navigation";
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [session, setSession] = useState<Session | null>(null);
+export async function generateStaticParams() {
+  const posts = await prisma.blog.findMany();
+  return posts.map(({ slug }) => slug).slice(0, 10);
+}
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      const response = await fetch("/api/auth/session");
-      const sessionData = await response.json();
-      setSession(sessionData);
-    };
+const fetchBlog = cache(async (slug: string) => {
+  const blog = await prisma.blog.findUnique({
+    where: { slug },
+  });
+  return blog;
+});
 
-    fetchSession();
-  }, []);
 
-  return <BlogPost session={session} slug={slug} />;
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const data = await fetchBlog(params.slug);
+  if (!data) return { title: "Blog Post Not Found" };
+  return {
+    title: data?.title,
+    description: data?.excerpt,
+    openGraph: {
+      images: [
+        {
+          url: data?.thumbnail! || "No blog image",
+        },
+      ],
+    },
+  };
+}
+
+export default async function BlogPostPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const session = await auth();
+  const data = await fetchBlog(params.slug);
+  if (!data) return notFound();
+  return <BlogPost session={session} data={data!} />;
 }

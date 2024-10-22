@@ -1,4 +1,3 @@
-"use client";
 import { LandingNav } from "@/components/LandingNav";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
