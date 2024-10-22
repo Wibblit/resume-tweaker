@@ -22,13 +22,12 @@ import { deleteBlog } from "@/actions/deleteblog";
 import { Blog } from "@/types/types";
 
 interface BlogPostProps {
-  session: Session | null;
   data: Blog;
 }
 
 
 
-export default function BlogPost({ session, data }: BlogPostProps) {
+export default function BlogPost({ data }: BlogPostProps) {
   const router = useRouter();
 
   const [blog, setBlog] = useState<Blog | null>(null);
@@ -37,25 +36,30 @@ export default function BlogPost({ session, data }: BlogPostProps) {
   const [showSparkAnimation, setShowSparkAnimation] = useState<boolean>(false);
   const [views, setViews] = useState<number>(0);
   const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
-
+  const [session, setSession] = useState<Session | null>(null)
+  
   useEffect(() => {
     const setData = async () => {
       try {
-        setBlog(data);
-        setSparkCount(data.spark);
-        setViews(data.views);
+        const res = await fetch("/api/auth/session")
+        const sessionData = await res.json()
+        setSession(sessionData)
+        
+        setBlog(data)
+        setSparkCount(data.spark)
+        setViews(data.views)
 
         const sparkedBlogs = JSON.parse(
           localStorage.getItem("sparkedBlogs") || "[]"
-        );
-        setHasSparked(sparkedBlogs.includes(data.id));
+        )
+        setHasSparked(sparkedBlogs.includes(data.id))
       } catch (error) {
-        console.error("Error fetching blog:", error);
+        console.error("Error fetching blog:", error)
       }
-    };
+    }
 
-    setData();
-  }, [data]);
+    setData()
+  }, [data])
 
   useEffect(() => {
     const incrementViews = async () => {
