@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @import '/app/fonts/font.css'; */
 
 /* LTWave Regular */
 @font-face {
@@ -9,14 +8,6 @@
   src: url("/fonts/LTWave-Regular.woff") format("woff"),
     url("/fonts/LTWave-Regular.ttf") format("truetype");
   font-weight: 400;
-  font-style: normal;
-}
-
-/* LTWave Bold */
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Bold.woff") format("woff");
-  font-weight: 700;
   font-style: normal;
 }
 
@@ -65,22 +56,6 @@
   font-family: "LTWave";
   src: url("/fonts/LTWave-ThinItalic.woff") format("woff");
   font-weight: 100;
-  font-style: italic;
-}
-
-/* LTWave Black */
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Black.woff") format("woff");
-  font-weight: 900;
-  font-style: normal;
-}
-
-/* LTWave Black Italic */
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-BlackItalic.woff") format("woff");
-  font-weight: 900;
   font-style: italic;
 }
 

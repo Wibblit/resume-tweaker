@@ -110,7 +110,7 @@ export function SignIn() {
             </motion.div>
           ))}
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
+        <CardFooter className="flex flex-col space-y-4 font-normal">
           <div
             className={`text-sm text-center ${
               isDarkTheme ? "text-gray-300" : "text-gray-600"
