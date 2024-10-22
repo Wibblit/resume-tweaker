@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const RATE_LIMIT_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+const RATE_LIMIT_DURATION = (60 * 60 * 1000)/2; // 1 hour in milliseconds
 const MAX_REQUESTS = 5; // Maximum number of requests allowed per hour
 
 interface RateLimitEntry {
@@ -49,7 +49,7 @@ export async function submitEmail(formData: FormData) {
     if (isRateLimited(ip)) {
       return {
         success: false,
-        message: "Rate limit exceeded. Please try again later.",
+        message: "Rate limit exceeded. Please try again after 30 minutes.",
       };
     }
 
