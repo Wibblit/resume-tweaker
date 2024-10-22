@@ -194,7 +194,6 @@ export default function BlogPost({ session, data }: BlogPostProps) {
       </div>
 
       <div className="mt-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex gap-2"></div>
         <div className="flex flex-col md:flex-row md:justify-between gap-y-4 w-full ">
           <Button variant="outline" asChild className="w-full md:w-auto">
             <Link href="/blogs">Back to all blogs</Link>
@@ -244,7 +243,7 @@ export default function BlogPost({ session, data }: BlogPostProps) {
             </Button>
             <Button className="w-full xs:w-auto">
               <Link
-                href="/product"
+                href="/"
                 className="flex items-center justify-center"
               >
                 Try Our Product <ExternalLink className="ml-2 h-4 w-4" />

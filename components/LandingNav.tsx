@@ -16,10 +16,10 @@ export function LandingNav() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const navItems = [
-    { href: "/pricing", label: "Pricing" },
+    // { href: "/pricing", label: "Pricing" },
     { href: "/blogs", label: "Blogs" },
-    { href: "/about", label: "About" },
-    { href: "/features", label: "Features" },
+    // { href: "/about", label: "About" },
+    // { href: "/features", label: "Features" },
   ];
 
   return (
