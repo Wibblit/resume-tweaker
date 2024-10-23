@@ -10,8 +10,12 @@ export async function generateStaticParams() {
 }
 
 const fetchBlog = cache(async (slug: string) => {
+
+  const id = slug.split("-");
+  console.log(id);
+
   const blog = await prisma.blog.findUnique({
-    where: { slug },
+    where: { id:id[id.length-1] },
   });
   return blog;
 });

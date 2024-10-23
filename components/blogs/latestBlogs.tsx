@@ -141,7 +141,7 @@ export default function LatestBlogs() {
                 .map((_, index) => <SkeletonBlogCard key={index} />)
             : blogs.map((blog) => (
                 <Link
-                  href={`blogs/${blog.slug}`}
+                  href={`blogs/${blog.slug}-${blog.id}`}
                   key={blog.id}
                   className="group"
                 >
