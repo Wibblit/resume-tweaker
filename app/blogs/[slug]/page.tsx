@@ -16,7 +16,6 @@ const fetchBlog = cache(async (slug: string) => {
   return blog;
 });
 
-
 export async function generateMetadata({
   params,
 }: {

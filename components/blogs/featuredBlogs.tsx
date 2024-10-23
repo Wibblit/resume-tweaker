@@ -1,129 +1,136 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { CalendarIcon, ClockIcon, ArrowRightIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
+import { CalendarIcon, ClockIcon, ArrowRightIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Blog {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  author: string;
-  thumbnail: string;
-  createdAt: string;
-  updatedAt: string;
-  published: boolean;
-  tags: string[];
-  spark: number;
-  views: number;
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  category: string
+  author: string
+  thumbnail: string
+  createdAt: string
+  updatedAt: string
+  published: boolean
+  tags: string[]
+  spark: number
+  views: number
 }
 
 function calculateReadTime(content: string): string {
-  const wordsPerMinute = 200;
-  const imageReadTime = 12; // seconds per image
+  const wordsPerMinute = 200
+  const imageReadTime = 12 // seconds per image
 
   // Count words
-  const wordCount = content.split(/\s+/).length;
+  const wordCount = content.split(/\s+/).length
 
   // Count base64 images
-  const base64Count = (content.match(/data:image\/[^;]+;base64,/g) || [])
-    .length;
+  const base64Count = (content.match(/data:image\/[^;]+;base64,/g) || []).length
 
   // Calculate total read time in minutes
-  const textReadTimeMinutes = wordCount / wordsPerMinute;
-  const imageReadTimeMinutes = (base64Count * imageReadTime) / 60;
-  const totalReadTimeMinutes = Math.ceil(
-    textReadTimeMinutes + imageReadTimeMinutes
-  );
+  const textReadTimeMinutes = wordCount / wordsPerMinute
+  const imageReadTimeMinutes = (base64Count * imageReadTime) / 60
+  const totalReadTimeMinutes = Math.ceil(textReadTimeMinutes + imageReadTimeMinutes)
 
-  return `${totalReadTimeMinutes} min read`;
+  return `${totalReadTimeMinutes} min read`
 }
 
 export default function BentoGrid() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("/api/get-featured-blogs");
-        const data = await response.json();
+        const response = await fetch("/api/get-featured-blogs")
+        const data = await response.json()
         if (Array.isArray(data)) {
-          setBlogs(data);
+          setBlogs(data)
         } else {
-          throw new Error("Received invalid data format");
+          throw new Error("Received invalid data format")
         }
       } catch (error) {
-        console.error("Error fetching blogs:", error);
-        setError("Failed to load blogs. Please try again later.");
+        console.error("Error fetching blogs:", error)
+        setError("Failed to load blogs. Please try again later.")
+      } finally {
+        setLoading(false)
       }
-    };
+    }
 
-    fetchBlogs();
-  }, []);
+    fetchBlogs()
+  }, [])
 
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-extrabold tracking-tight lg:text-5xl mb-8">
-          Featured Blogs
-        </h1>
+        <h1 className="text-3xl font-extrabold tracking-tight lg:text-5xl mb-8">Featured Blogs</h1>
         <div className="text-red-500">{error}</div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-extrabold tracking-tight lg:text-5xl mb-8">
-        Featured Blogs
-      </h1>
+      <h1 className="text-3xl font-extrabold tracking-tight lg:text-5xl mb-8">Featured Blogs</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <>
-          {blogs.length === 0 ? (
-            <div className="md:col-span-3">
-              <h2 className="text-xl font-semibold">No Blogs Yet</h2>
-              <p>Check back later for featured blog posts.</p>
+        {loading ? (
+          <>
+            <div className="md:col-span-2 md:row-span-2">
+              <SkeletonBlogCard isLarge={true} />
             </div>
-          ) : (
-            <>
-              {blogs.length > 0 && (
-                <div className="md:col-span-2 md:row-span-2">
-                  <BlogCard blog={blogs[0]} isLarge={true} />
-                </div>
-              )}
-              <div className="space-y-6">
-                {blogs.slice(1, 3).map((blog) => (
-                  <BlogCard key={blog.id} blog={blog} />
-                ))}
+            <div className="space-y-6">
+              <SkeletonBlogCard />
+              <SkeletonBlogCard />
+            </div>
+            <div className="md:col-span-3">
+              <SkeletonBlogCard isWide={true} />
+            </div>
+          </>
+        ) : blogs.length === 0 ? (
+          <div className="md:col-span-3">
+            <h2 className="text-xl font-semibold">No Blogs Yet</h2>
+            <p>Check back later for featured blog posts.</p>
+          </div>
+        ) : (
+          <>
+            {blogs.length > 0 && (
+              <div className="md:col-span-2 md:row-span-2">
+                <BlogCard blog={blogs[0]} isLarge={true} />
               </div>
-              {blogs.length > 3 && (
-                <div className="md:col-span-3">
-                  <BlogCard blog={blogs[3]} isWide={true} />
-                </div>
-              )}
-            </>
-          )}
-        </>
+            )}
+            <div className="space-y-6">
+              {blogs.slice(1, 3).map((blog) => (
+                <BlogCard key={blog.id} blog={blog} />
+              ))}
+            </div>
+            {blogs.length > 3 && (
+              <div className="md:col-span-3">
+                <BlogCard blog={blogs[3]} isWide={true} />
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
-  );
+  )
 }
 
 interface BlogCardProps {
-  blog: Blog;
-  isLarge?: boolean;
-  isWide?: boolean;
+  blog: Blog
+  isLarge?: boolean
+  isWide?: boolean
 }
 
 function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
-  const readTime = calculateReadTime(blog.content);
+  const readTime = calculateReadTime(blog.content)
 
   return (
     <Link
@@ -142,18 +149,10 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
       />
       <div className="absolute inset-0 flex flex-col justify-end p-6">
         <Badge className="w-fit mb-3">{blog.category}</Badge>
-        <h3
-          className={`font-bold text-white mb-2 ${
-            isLarge ? "text-2xl" : "text-xl"
-          }`}
-        >
+        <h3 className={`font-bold text-white mb-2 ${isLarge ? "text-2xl" : "text-xl"}`}>
           {blog.title}
         </h3>
-        <p
-          className={`text-gray-200 mb-4 ${
-            isLarge ? "text-lg" : "text-sm"
-          } line-clamp-2`}
-        >
+        <p className={`text-gray-200 mb-4 ${isLarge ? "text-lg" : "text-sm"} line-clamp-2`}>
           {blog.excerpt}
         </p>
         <div className="flex items-center text-gray-300 space-x-4 text-sm">
@@ -171,18 +170,15 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
         <ArrowRightIcon className="w-4 h-4 text-white" />
       </div>
     </Link>
-  );
+  )
 }
 
 interface SkeletonBlogCardProps {
-  isLarge?: boolean;
-  isWide?: boolean;
+  isLarge?: boolean
+  isWide?: boolean
 }
 
-function SkeletonBlogCard({
-  isLarge = false,
-  isWide = false,
-}: SkeletonBlogCardProps) {
+function SkeletonBlogCard({ isLarge = false, isWide = false }: SkeletonBlogCardProps) {
   return (
     <div
       className={`relative overflow-hidden rounded-xl ${
@@ -201,5 +197,5 @@ function SkeletonBlogCard({
         </div>
       </div>
     </div>
-  );
+  )
 }
