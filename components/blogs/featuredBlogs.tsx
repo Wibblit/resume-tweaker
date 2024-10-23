@@ -127,7 +127,7 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
 
   return (
     <Link
-      href={`blogs/${blog.slug}`}
+      href={`blogs/${blog.slug}-${blog.id}`}
       className={`group relative overflow-hidden rounded-xl block ${
         isLarge ? "h-full" : isWide ? "h-64" : "h-64"
       }`}

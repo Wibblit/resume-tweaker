@@ -8,9 +8,12 @@ export async function GET(
 ) {
   const { slug } = params;
 
+  const id = slug.split('-')
+  console.log(id)
+
   try {
     const blog = await prisma.blog.findUnique({
-      where: { slug },
+      where: { id : id[id.length-1] },
     });
 
     if (!blog) {
