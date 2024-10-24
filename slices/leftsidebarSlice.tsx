@@ -30,16 +30,11 @@ const initialState: ResumeData = {
     },
   ],
   skills: [
-    {
-      id: "",
-      categories: [
         {
           id: "",
           name: "",
           skills: [{ name: "", level: "" }],
         },
-      ],
-    },
   ],
   projects: [
     {

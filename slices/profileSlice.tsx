@@ -298,16 +298,11 @@ const initialState: ResumeData = {
     },
   ],
   skills: [
-    {
-      id: "",
-      categories: [
         {
           id: "",
           name: "",
           skills: [{ name: "", level: "" }],
         },
-      ],
-    },
   ],
   projects: [
     {
@@ -405,11 +400,14 @@ const profileSlice = createSlice({
     UpdateProfileData(state, action: PayloadAction<ResumeData>) {
       return { ...action.payload };
     },
+    setFullProfileData(state, action: PayloadAction<ResumeData>) {
+      return { ...action.payload };
+    },
     Reset() {
       return { ...initialState };
     },
   },
 });
 
-export const { UpdateProfileData, Reset } = profileSlice.actions;
+export const { UpdateProfileData, Reset, setFullProfileData } = profileSlice.actions;
 export default profileSlice.reducer;

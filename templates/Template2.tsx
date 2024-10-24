@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
 import HTMLViewer from "@/components/HTMLViewer";
+import DateConverter from "@/components/DateConverter";
 
 interface TemplateProps {
   content: ResumeData;
@@ -276,9 +277,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${exp.startDate} ${
-                          exp.endDate && " - "
-                        } ${exp.endDate}`}</div>
+                        <div className="font-bold">{`${
+                          exp.startDate && DateConverter(exp.startDate)
+                        } ${exp.endDate && " - "} ${
+                          exp.endDate && DateConverter(exp.endDate)
+                        }`}</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -302,11 +305,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section title="Skills" baseColor={baseColor}>
               <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
+                {content.skills.map((category, index) => (
                   <div key={index} className="space-y-2">
                     <div className="font-bold">{category.name}</div>
                     <div className="flex flex-col gap-2">
@@ -378,9 +380,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${edu.startDate} ${
-                        edu.endDate && " - "
-                      } ${edu.endDate}`}</div>
+                      <div className="font-bold">{`${
+                        edu.startDate && DateConverter(edu.startDate)
+                      } ${edu.endDate && " - "} ${
+                        edu.endDate && DateConverter(edu.endDate)
+                      }`}</div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -406,7 +410,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div>{cert.date}</div>
+                    <div>{cert.date && DateConverter(cert.date)}</div>
                   </div>
                 ))}
               </div>
@@ -429,9 +433,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${project.startDate} ${
-                          project.endDate && " - "
-                        } ${project.endDate}`}</div>
+                        <div className="font-bold">{`${
+                          project.startDate && DateConverter(project.startDate)
+                        } ${project.endDate && " - "} ${
+                          project.endDate && DateConverter(project.endDate)
+                        }`}</div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
@@ -483,9 +489,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${vol.startDate} ${
-                          vol.endDate && " - "
-                        } ${vol.endDate}`}</div>
+                        <div className="font-bold">{`${
+                          vol.startDate && DateConverter(vol.startDate)
+                        } ${vol.endDate && " - "} ${
+                          vol.endDate && DateConverter(vol.endDate)
+                        }`}</div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -509,7 +517,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{award.awarder}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{award.date}</div>
+                        <div className="font-bold">
+                          {award.date && DateConverter(award.date)}
+                        </div>
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
@@ -540,7 +550,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{pub.date}</div>
+                        <div className="font-bold">
+                          {pub.date && DateConverter(pub.date)}
+                        </div>
                       </div>
                     </div>
                     <div>{pub.publisher}</div>

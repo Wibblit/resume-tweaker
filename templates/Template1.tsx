@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
+import DateConverter from "@/components/DateConverter";
 
 type SectionName =
   | "summary"
@@ -148,11 +149,11 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         );
 
       case "skills":
-        if (!content.skills?.[0]?.categories) return null;
+        if (content.skills?.length === 0) return null;
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>Skills</h2>
-            {content.skills[0].categories.map((category, index) => (
+            {content.skills.map((category, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
                   <div className="w-full flex items-center justify-between">
@@ -186,7 +187,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {edu.startDate} {edu.endDate && " - "} {edu.endDate}
+                        {edu.startDate && DateConverter(edu.startDate)} {edu.endDate && " - "}{" "}
+                        {edu.endDate &&  DateConverter(edu.endDate)}
                       </h3>
                     </div>
                   </div>
@@ -223,7 +225,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {exp.startDate} {exp.endDate && " - "} {exp.endDate}
+                        {exp.startDate && DateConverter(exp.startDate)} {exp.endDate && " - "}{" "}
+                        {exp.endDate && DateConverter(exp.endDate)}
                       </h3>
                     </div>
                   </div>
@@ -273,8 +276,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                     <div>
                       <h3 style={styles.subtitle}>
-                        {project.startDate} {project.endDate && " - "}{" "}
-                        {project.endDate}
+                        {project.startDate && DateConverter(project.startDate)}{" "}
+                        {project.endDate && " - "}{" "}
+                        {project.endDate && DateConverter(project.endDate)}
                       </h3>
                     </div>
                   </div>
@@ -307,7 +311,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{cert.name}</h3>
                     <div>
-                      <h3 style={styles.subtitle}>{cert.date}</h3>
+                      <h3 style={styles.subtitle}>
+                        {cert.date && DateConverter(cert.date)}
+                      </h3>
                     </div>
                   </div>
                   <div className="w-full flex items-start justify-between">
@@ -410,7 +416,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {vol.startDate} - {vol.endDate}
+                        {vol.startDate && DateConverter(vol.startDate)} -{" "}
+                        {vol.endDate && DateConverter(vol.endDate)}
                       </h3>
                     </div>
                   </div>
@@ -450,7 +457,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         </a>
                       )}
                     </div>
-                    <h3 style={styles.subtitle}>{pub.date}</h3>
+                    <h3 style={styles.subtitle}>
+                      {pub.date &&  DateConverter(pub.date)}
+                    </h3>
                   </div>
 
                   <div className="w-full flex items-center justify-start">
@@ -485,7 +494,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
 
                     <div>
-                      <h3 style={styles.subtitle}>{award.date}</h3>
+                      <h3 style={styles.subtitle}>
+                        {award.date && DateConverter(award.date)}
+                      </h3>
                     </div>
                   </div>
 

@@ -6,6 +6,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
+import DateConverter from "@/components/DateConverter";
 
 interface TemplateProps {
   content: ResumeData;
@@ -110,7 +111,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {exp.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {exp.startDate} - {exp.endDate}
+                      {exp.startDate && DateConverter(exp.startDate)} -{" "}
+                      {exp.endDate && DateConverter(exp.endDate)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
@@ -142,7 +144,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {edu.institution}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {edu.startDate} {edu.endDate && " - "} {edu.endDate}
+                      {edu.startDate && DateConverter(edu.startDate)}{" "}
+                      {edu.endDate && " - "}{" "}
+                      {edu.endDate && DateConverter(edu.endDate)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
@@ -161,10 +165,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section title="Skills" baseColor={baseColor}>
-              {content.skills[0].categories.map((category, index) => (
+              {content.skills.map((category, index) => (
                 <div key={index} className="mb-2">
                   <h3 className="text-sm font-semibold mb-1">
                     {category.name}
@@ -208,7 +211,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       )}
                     </h3>
                     <p className="text-xs text-gray-600">
-                      {project.startDate} - {project.endDate}
+                      {project.startDate && DateConverter(project.startDate)} -{" "}
+                      {project.endDate && DateConverter(project.endDate)}
                     </p>
                   </div>
                   {project.summary && (
@@ -238,7 +242,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   <span className="text-sm font-semibold mr-2">
                     {cert.name}
                   </span>
-                  <span className="text-xs text-gray-600">{cert.date}</span>
+                  <span className="text-xs text-gray-600">
+                    {cert.date && DateConverter(cert.date)}
+                  </span>
                   {cert.url && (
                     <a
                       href={cert.url.href}
@@ -306,7 +312,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {vol.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {vol.startDate} - {vol.endDate}
+                      {vol.startDate && DateConverter(vol.startDate)} -{" "}
+                      {vol.endDate && DateConverter(vol.endDate)}
                     </span>
                   </div>
                   <p className="text-sm italic mb-1">{vol.role}</p>
@@ -329,7 +336,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   <p className="text-xs break-words">
                     {pub.publisher}, {pub.publishedIn}
                   </p>
-                  <p className="text-xs text-gray-600">{pub.date}</p>
+                  <p className="text-xs text-gray-600">
+                    {pub.date && DateConverter(pub.date)}
+                  </p>
                   {pub.url && (
                     <a
                       href={pub.url.href}
@@ -356,7 +365,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     <h3 className="text-sm font-semibold mr-2">
                       {award.title}
                     </h3>
-                    <span className="text-xs text-gray-600">{award.date}</span>
+                    <span className="text-xs text-gray-600">
+                      {award.date && DateConverter(award.date)}
+                    </span>
                   </div>
                   <h3 className="text-xs">{award.awarder}</h3>
                   {award.summary && (

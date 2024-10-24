@@ -259,11 +259,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section title="Skills" baseColor={baseColor}>
               <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
+                {content.skills.map((category, index) => (
                   <div key={index} className="space-y-2">
                     <div className="font-bold">{category.name}</div>
                     <div className="flex flex-wrap gap-2">

@@ -1367,7 +1367,6 @@ import { UpdateProfileData } from "@/slices/profileSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
@@ -1465,9 +1464,9 @@ export default function ProfilePage() {
     const updatedData = { ...profileData };
     if (section === "skills") {
       if (!updatedData.skills || updatedData.skills.length === 0) {
-        updatedData.skills = [{ id: Date.now().toString(), categories: [] }];
+        updatedData.skills = [];
       }
-      updatedData.skills[0].categories.push({
+      updatedData.skills.push({
         id: Date.now().toString(),
         name: "",
         skills: [],
@@ -1483,6 +1482,7 @@ export default function ProfilePage() {
 
   const deleteEntry = (section: keyof ResumeData, id: string) => {
     const updatedData = { ...profileData };
+    //@ts-ignore
     updatedData[section] = updatedData[section].filter(
       (entry: any) => entry.id !== id
     );
@@ -1495,7 +1495,8 @@ export default function ProfilePage() {
       if (entry.id === entryId) {
         return {
           ...entry,
-          categories: entry.categories.filter(
+          categories: entry.skills.filter(
+          //@ts-ignore
             (category) => category.id !== categoryId
           ),
         };
@@ -1511,13 +1512,7 @@ export default function ProfilePage() {
       if (entry.id === entryId) {
         return {
           ...entry,
-          categories: entry.categories.map((category) => {
-            if (category.id === categoryId) {
-              return {
-                ...category,
-                skills: [...category.skills, { name: "", level: "Beginner" }],
-              };
-            }
+          categories: entry.skills.map((category) => {
             return category;
           }),
         };
@@ -1537,15 +1532,8 @@ export default function ProfilePage() {
       if (entry.id === entryId) {
         return {
           ...entry,
-          categories: entry.categories.map((category) => {
-            if (category.id === categoryId) {
-              return {
-                ...category,
-                skills: category.skills.filter(
-                  (_, index) => index !== skillIndex
-                ),
-              };
-            }
+          categories: entry.skills.map((category) => {
+            
             return category;
           }),
         };
@@ -1612,6 +1600,7 @@ export default function ProfilePage() {
   const handleSaveChanges = async () => {
     setIsSaving(true);
     try {
+      //@ts-ignore
       const result = await updateProfiles(profileData);
       if (result.success) {
         setInitialData(profileData);
@@ -1792,6 +1781,7 @@ export default function ProfilePage() {
                   <SelectTrigger>
                     <SelectValue placeholder="Select level" />
                   </SelectTrigger>
+
                   <SelectContent>
                     {["Beginner", "Intermediate", "Advanced", "Native"].map(
                       (level) => (
@@ -1992,11 +1982,7 @@ export default function ProfilePage() {
       </Card>
 
       <div className="flex justify-between items-center mb-4">
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="flex-grow"
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex justify-between items-center">
             <TabsList>
               <TabsTrigger value="personal">Personal</TabsTrigger>
@@ -2017,7 +2003,7 @@ export default function ProfilePage() {
             </Button>
           </div>
 
-          <ScrollArea className="h-[calc(100vh-300px)] overflow-y-auto">
+          <ScrollArea className="h-[calc(100vh-300px)] overflow-y-auto mt-4">
             {isLoadingProfile ? (
               <div className="space-y-4">
                 <Skeleton className="h-[200px] w-full" />
