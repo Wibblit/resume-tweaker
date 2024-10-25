@@ -6,6 +6,7 @@ import { BackgroundBeams } from "../ui/background-beams"
 import { Button } from "../ui/button"
 import { ArrowRight, FileText, Star, BarChart, Palette, CheckCircle } from "lucide-react"
 import Image from "next/image"
+import { SocialIcon } from "react-social-icons"
 
 const resumeImages = [
   "/templates/template1.png",
@@ -64,7 +65,7 @@ export function Hero() {
               <FileText className="ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
             </Button>
           </div>
-          <div className="flex flex-col sm:flex-row gap-8 justify-center lg:justify-start mt-12">
+          {/* <div className="flex flex-col sm:flex-row gap-8 justify-center lg:justify-start mt-12">
             <div className="flex items-center gap-2">
               <Star className="text-yellow-400 h-6 w-6" />
               <div className="text-left">
@@ -81,7 +82,19 @@ export function Hero() {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
+          {/* <div className="-mb-7">
+            <p>Loved by interviewers at</p>
+            <div className="flex gap-4 mt-2">
+              {["github.com", "amazon.com", "google.com", "facebook.com", "tesla.com"].map((url, indx) => (
+                <SocialIcon
+                  key={indx}
+                style={{ width: "46px", height: "46px" }}
+                url={url}
+              />
+              ))}
+            </div>
+          </div> */}
         </motion.div>
         <motion.div
           className="mt-12 lg:mt-0 perspective-[2000px] relative"
