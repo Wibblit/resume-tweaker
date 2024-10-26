@@ -17,9 +17,9 @@ export const metadata: Metadata = {
     siteName: "resumetweaker",
     images: [
       {
-        url: "https://resumetweaker.com/images/og-image.jpg",
-        width: 800,
-        height: 600,
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
         alt: "resumetweaker - AI Resume Builder",
       },
     ],
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: "Use resumetweaker's AI to create and optimize your resume effortlessly.",
     images: [
       {
-        url: "https://resumetweaker.com/images/twitter-card.jpg",
+        url: "/opengraph-image.png",
         alt: "resumetweaker - AI Resume Builder",
       },
     ],
