@@ -37,21 +37,28 @@ export function LandingNav() {
               </span>
             </Link>
           </div>
-          {pathname === "/" && (
-            <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="hover:underline hover:text-primary hover:scale-105 transition-all duration-200 px-3 py-2 rounded-md font-medium"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+          {/* {pathname === "/" && ( */}
+          <div className="hidden md:block">
+            <div className="ml-10 flex items-baseline space-x-4">
+              {navItems.map((item) => (
+                <div className="flex">
+                  {pathname === "/" && (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className="hover:underline hover:text-primary hover:scale-105 transition-all duration-200 px-3 py-2 rounded-md font-medium"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                  <div className="ml-4 flex items-center md:ml-6">
+                    <ModeToggle />
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
+          {/* )} */}
           {/* <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
               <ModeToggle />
@@ -84,13 +91,18 @@ export function LandingNav() {
         <div className="md:hidden" id="mobile-menu">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="hover:bg-primary-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-              >
-                {item.label}
-              </Link>
+              <div className="w-full flex">
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="hover:bg-primary-foreground hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-5/6"
+                >
+                  {item.label}
+                </Link>
+                <div className="flex w-1/6 items-center justify-center">
+                  <ModeToggle />
+                </div>
+              </div>
             ))}
           </div>
           {/* <div className="pt-4 pb-3 border-t border-primary">
