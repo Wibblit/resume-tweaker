@@ -1,9 +1,5 @@
-// redux/rightsidebarSlice.ts
-// @ts-ignore
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ResumeStyles } from "@/types/types";
-import { SectionName } from "@/types/types";
-import { Section } from "lucide-react";
+import { ResumeStyles, SectionName } from "@/types/types";
 
 // Define the initial state using that type
 const initialState: ResumeStyles = {
@@ -18,17 +14,21 @@ const initialState: ResumeStyles = {
   icons: true,
   separator: true,
   sectionOrder: {
-    column1: [
-      "basics",
-      "profiles",
-      "summary",
-      "experience",
-      "education",
-      "projects",
-      "skills",
-      "certifications",
+    sections: [
+      {
+        column1: [
+          "basics",
+          "profiles",
+          "summary",
+          "experience",
+          "education",
+          "projects",
+          "skills",
+          "certifications",
+        ],
+        column2: [],
+      },
     ],
-    column2: [],
     column3: [
       "languages",
       "awards",
@@ -39,53 +39,54 @@ const initialState: ResumeStyles = {
   },
 };
 
- const CDefaults = [
-   {
-     id: 1,
-     name: "Traditional",
-     font: "Arial, sans-serif",
-     fontSize: 12,
-     lineHeight: 1.5,
-     margin: 15,
-     baseColor: "#000000",
-   },
-   {
-     id: 2,
-     name: "Modern Teal",
-     font: "Helvetica, Arial, sans-serif",
-     fontSize: 11,
-     lineHeight: 1.6,
-     margin: 11,
-     baseColor: "#008080",
-   },
-   {
-     id: 3,
-     name: "Framed Teal",
-     font: "Calibri, sans-serif",
-     fontSize: 11,
-     lineHeight: 1.4,
-     margin: 15,
-     baseColor: "#008B8B",
-   },
-   {
-     id: 4,
-     name: "Green Sidebar",
-     font: "Roboto, sans-serif",
-     fontSize: 10,
-     lineHeight: 1.5,
-     margin: 7,
-     baseColor: "#0d9488",
-   },
-   {
-     id: 5,
-     name: "Centered Title",
-     font: "Georgia, serif",
-     fontSize: 12,
-     lineHeight: 1.6,
-     margin: 15,
-     baseColor: "#000000",
-   },
- ] as const;
+const CDefaults = [
+  {
+    id: 1,
+    name: "Traditional",
+    font: "Arial, sans-serif",
+    fontSize: 12,
+    lineHeight: 1.5,
+    margin: 15,
+    baseColor: "#000000",
+  },
+  {
+    id: 2,
+    name: "Modern Teal",
+    font: "Helvetica, Arial, sans-serif",
+    fontSize: 11,
+    lineHeight: 1.6,
+    margin: 11,
+    baseColor: "#008080",
+  },
+  {
+    id: 3,
+    name: "Framed Teal",
+    font: "Calibri, sans-serif",
+    fontSize: 11,
+    lineHeight: 1.4,
+    margin: 15,
+    baseColor: "#008B8B",
+  },
+  {
+    id: 4,
+    name: "Green Sidebar",
+    font: "Roboto, sans-serif",
+    fontSize: 10,
+    lineHeight: 1.5,
+    margin: 7,
+    baseColor: "#0d9488",
+  },
+  {
+    id: 5,
+    name: "Centered Title",
+    font: "Georgia, serif",
+    fontSize: 12,
+    lineHeight: 1.6,
+    margin: 15,
+    baseColor: "#000000",
+  },
+] as const;
+
 const Defaults: Array<ResumeStyles> = [
   {
     id: 1,
@@ -99,17 +100,21 @@ const Defaults: Array<ResumeStyles> = [
     icons: true,
     separator: true,
     sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-        "skills",
-        "certifications",
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "experience",
+            "education",
+            "projects",
+            "skills",
+            "certifications",
+          ],
+          column2: [],
+        },
       ],
-      column2: [],
       column3: [
         "languages",
         "awards",
@@ -131,8 +136,18 @@ const Defaults: Array<ResumeStyles> = [
     icons: true,
     separator: true,
     sectionOrder: {
-      column1: ["basics", "profiles", "summary", "skills", "certifications"],
-      column2: ["education", "experience", "projects", "awards"],
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "skills",
+            "certifications",
+          ],
+          column2: ["education", "experience", "projects", "awards"],
+        },
+      ],
       column3: ["languages", "publications", "references", "volunteerings"],
     },
   },
@@ -148,22 +163,26 @@ const Defaults: Array<ResumeStyles> = [
     icons: true,
     separator: true,
     sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "skills",
-      ],
-      column2: [
-        "projects",
-        "languages",
-        "awards",
-        "publications",
-        "certifications",
-        "volunteerings",
-        "references",
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "experience",
+            "education",
+            "skills",
+          ],
+          column2: [
+            "projects",
+            "languages",
+            "awards",
+            "publications",
+            "certifications",
+            "volunteerings",
+            "references",
+          ],
+        },
       ],
       column3: [],
     },
@@ -180,22 +199,26 @@ const Defaults: Array<ResumeStyles> = [
     icons: true,
     separator: true,
     sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-        "awards",
-        "certifications",
-      ],
-      column2: [
-        "skills",
-        "languages",
-        "publications",
-        "volunteerings",
-        "references",
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "experience",
+            "education",
+            "projects",
+            "awards",
+            "certifications",
+          ],
+          column2: [
+            "skills",
+            "languages",
+            "publications",
+            "volunteerings",
+            "references",
+          ],
+        },
       ],
       column3: [],
     },
@@ -212,20 +235,24 @@ const Defaults: Array<ResumeStyles> = [
     icons: true,
     separator: true,
     sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-      ],
-      column2: [
-        "skills",
-        "awards",
-        "certifications",
-        "languages",
-        "publications",
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "experience",
+            "education",
+            "projects",
+          ],
+          column2: [
+            "skills",
+            "awards",
+            "certifications",
+            "languages",
+            "publications",
+          ],
+        },
       ],
       column3: ["volunteerings", "references"],
     },
@@ -248,22 +275,17 @@ const rightsidebarSlice = createSlice({
   reducers: {
     UpdateId(state, action) {
       state.id = action.payload;
-      // state.baseColor = Defaults[state.id - 1].baseColor;
-      // state.font = Defaults[state.id - 1].font;
-      // state.fontSize = Defaults[state.id - 1].fontSize;
-      // state.lineHeight = Defaults[state.id - 1].lineHeight;
-      // state.margin = Defaults[state.id - 1].margin;
       state.sectionOrder = Defaults[state.id - 1].sectionOrder;
     },
     ResetStyle(state, action) {
       if (action.payload === "Resume") {
-         state.baseColor = Defaults[state.id - 1].baseColor;
-         state.font = Defaults[state.id - 1].font;
-         state.fontSize = Defaults[state.id - 1].fontSize;
-         state.lineHeight = Defaults[state.id - 1].lineHeight;
-         state.margin = Defaults[state.id - 1].margin;
-         state.paperFormat = Defaults[state.id - 1].paperFormat;
-         state.sectionOrder = Defaults[state.id - 1].sectionOrder;
+        state.baseColor = Defaults[state.id - 1].baseColor;
+        state.font = Defaults[state.id - 1].font;
+        state.fontSize = Defaults[state.id - 1].fontSize;
+        state.lineHeight = Defaults[state.id - 1].lineHeight;
+        state.margin = Defaults[state.id - 1].margin;
+        state.paperFormat = Defaults[state.id - 1].paperFormat;
+        state.sectionOrder = Defaults[state.id - 1].sectionOrder;
       } else {
         state.baseColor = CDefaults[state.id - 1].baseColor;
         state.font = CDefaults[state.id - 1].font;
@@ -271,7 +293,6 @@ const rightsidebarSlice = createSlice({
         state.lineHeight = CDefaults[state.id - 1].lineHeight;
         state.margin = CDefaults[state.id - 1].margin;
       }
-     
     },
     UpdateFont(state, action) {
       state.font = action.payload;
@@ -294,12 +315,17 @@ const rightsidebarSlice = createSlice({
     updateSectionOrder: (
       state,
       action: PayloadAction<{
+        sectionIndex: number;
         column: "column1" | "column2" | "column3";
         order: SectionName[];
       }>
     ) => {
-      const { column, order } = action.payload;
-      state.sectionOrder[column] = order;
+      const { sectionIndex, column, order } = action.payload;
+      if (column === "column3") {
+        state.sectionOrder.column3 = order;
+      } else {
+        state.sectionOrder.sections[sectionIndex][column] = order;
+      }
     },
     UpdateBaseColor(state, action) {
       state.baseColor = action.payload;
@@ -396,6 +422,12 @@ const rightsidebarSlice = createSlice({
       state.icons = action.payload;
     },
     DownloadJSON() {},
+    addSection: (state) => {
+      state.sectionOrder.sections.push({ column1: [], column2: [] });
+    },
+    removeSection: (state, action: PayloadAction<number>) => {
+      state.sectionOrder.sections.splice(action.payload, 1);
+    },
   },
 });
 
@@ -415,6 +447,8 @@ export const {
   UpdateIcons,
   DownloadJSON,
   UpdateSectionOrderLayout,
+  addSection,
+  removeSection,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

@@ -216,6 +216,7 @@ export default function ResumePages({
         content: resumeData,
       },
     ];
+    
     setPages(newPages);
 
     // Update history

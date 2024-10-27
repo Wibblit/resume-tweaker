@@ -538,7 +538,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       }
     `}
       </style>
-      {sectionOrder.column1.map((sectionName) =>
+      {sectionOrder.sections[0].column1.map((sectionName) =>
         renderSection(sectionName as SectionName)
       )}
     </div>
