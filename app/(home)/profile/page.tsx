@@ -524,7 +524,7 @@ export default function ProfilePage() {
             onClick={handleUpgradeCredits}
             variant="outline"
             size="sm"
-            className="w-full mt-2"
+            className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Upgrade
