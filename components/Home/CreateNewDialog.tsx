@@ -19,6 +19,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { useToast } from "@/hooks/use-toast";
 import { UpdateId } from "@/slices/rightsidebarSlice";
 import { createCover } from "@/actions/createCover";
+import { Loader2 } from "lucide-react";
 
 const RESUME = "Resume";
 const COVER = "Cover Letter";
@@ -45,73 +46,65 @@ export function CreateNewDialog({
     if (template) {
       dispatch(UpdateId(templateId));
     } else {
-      dispatch(UpdateId(1))
+      dispatch(UpdateId(1));
     }
+    setLoading(true);
     if (name.trim()) {
-      setLoading(true);
       try {
-        type === RESUME
-          ? (async () => {
-              const response = await createResume(name);
+        if (type === RESUME) {
+          const response = await createResume(name);
 
-              if (response && response.success) {
-                localStorage.setItem(
-                  "currResumeId",
-                  response?.resume?.id as string
-                );
-                dispatch(
-                  setCurrentResume({
-                    currResumeId: response?.resume?.id as string,
-                    currResumeName: response?.resume?.resumeName as string,
-                  })
-                );
-                setOpen(false);
-                router.push("/editor");
-              } else {
-                toast({
-                  title: "Error",
-                  description: response.message || "Failed to create resume",
-                  variant: "destructive",
-                });
-              }
-            })()
-          : (async () => {
-            console.log("Yo called")
-            console.log(name);
-            
-              const response = await createCover(name);
-              console.log(response);
-              
-              if (response && response.success) {
-                localStorage.setItem(
-                  "currCoverId",
-                  response?.cover?.id as string
-                );
-                dispatch(
-                  setCurrentCover({
-                    currCoverId: response?.cover?.id as string,
-                    currCoverName: response?.cover?.coverName as string,
-                  })
-                );
-                setOpen(false);
-                router.push("/covereditor");
-              } else {
-                toast({
-                  title: "Error",
-                  description: response.message || "Failed to create resume",
-                  variant: "destructive",
-                });
-              }
-            })();
+          if (response && response.success) {
+            localStorage.setItem(
+              "currResumeId",
+              response?.resume?.id as string
+            );
+            dispatch(
+              setCurrentResume({
+                currResumeId: response?.resume?.id as string,
+                currResumeName: response?.resume?.resumeName as string,
+              })
+            );
+            setOpen(false);
+
+            router.push("/editor");
+                        setLoading(false);
+          } else {
+            toast({
+              title: "Error",
+              description: response.message || "Failed to create resume",
+              variant: "destructive",
+            });
+          }
+        } else {
+          const response = await createCover(name);
+
+          if (response && response.success) {
+            localStorage.setItem("currCoverId", response?.cover?.id as string);
+            dispatch(
+              setCurrentCover({
+                currCoverId: response?.cover?.id as string,
+                currCoverName: response?.cover?.coverName as string,
+              })
+            );
+            setOpen(false);
+
+            router.push("/covereditor");
+                        setLoading(false);
+          } else {
+            toast({
+              title: "Error",
+              description: response.message || "Failed to create resume",
+              variant: "destructive",
+            });
+          }
+        }
       } catch (error) {
-        console.error("An error occurred:", error);
         toast({
           title: "Error",
           description: "An unexpected error occurred",
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
       }
     }
   };
@@ -146,7 +139,14 @@ export function CreateNewDialog({
             onClick={handleCreate}
             disabled={!name.trim() || loading}
           >
-            {loading ? "Creating..." : "Create"}
+            {loading ? (
+              <div className="flex ">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </div>
+            ) : (
+              "Create"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

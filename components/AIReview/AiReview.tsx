@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Menu, Upload, TrendingUp } from "lucide-react";
+import { FileText, Menu, Upload, TrendingUp, Loader2 } from "lucide-react";
 import axios from "axios";
 import { RecentResume as UserResume } from "@/types/types";
 import {
@@ -262,7 +262,10 @@ export default function AIReview() {
     await worker?.load();
     await worker?.loadLanguage("eng");
     await worker?.initialize("eng");
-    await worker?.setParameters({ tessjs_create_hocr: '1', tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD });
+    await worker?.setParameters({
+      tessjs_create_hocr: "1",
+      tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
+    });
 
     let ocrText = "";
 
@@ -276,7 +279,7 @@ export default function AIReview() {
       }
       setIsUploadDialogOpen(false);
       setResumeOption("upload");
-    } 
+    }
 
     setResumeText(ocrText);
     console.log(ocrText);
@@ -450,12 +453,19 @@ export default function AIReview() {
                 />
               </div>
             )}
-            <Button 
-              type="submit" 
-              className="w-full" 
+            <Button
+              type="submit"
+              className="w-full"
               disabled={isLoading || isOcrInProgress}
             >
-              {isLoading ? "Analyzing..." : "Get AI Suggestions"}
+              {isLoading ? (
+                <div className="flex">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Analyzing...
+                </div>
+              ) : (
+                "Get AI Suggestions"
+              )}
             </Button>
           </form>
           <AnimatePresence>

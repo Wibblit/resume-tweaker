@@ -53,22 +53,30 @@ export async function POST(request: Request) {
     Ensure the questions are challenging and relevant to the position.`;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    console.log("Gemini response ", text);
+    const response = result.response;
+    try {
+      const text = response.text();
+      // Clean the response by removing backticks and any potential JSON formatting
+      const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
 
-    // Clean the response by removing backticks and any potential JSON formatting
-    const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
+      let questions;
+      if (interviewType === "adaptive") {
+        questions = [cleanedText]; // For adaptive, we only need the first question
+      } else {
+        // Parse the cleaned JSON string to get the array of questions
+        questions = JSON.parse(cleanedText);
+      }
 
-    let questions;
-    if (interviewType === "adaptive") {
-      questions = [cleanedText]; // For adaptive, we only need the first question
-    } else {
-      // Parse the cleaned JSON string to get the array of questions
-      questions = JSON.parse(cleanedText);
+      console.log(questions);
+      return NextResponse.json({ questions });
+    } catch (error) {
+      //@ts-ignore
+      let questions = []
+      //@ts-ignore
+      return NextResponse.json({ questions });
     }
 
-    return NextResponse.json({ questions });
+   
   } catch (error) {
     console.error("Error processing Gemini API response:", error);
     return NextResponse.json(
