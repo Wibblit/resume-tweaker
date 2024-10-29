@@ -400,67 +400,73 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           font-family: ${fontFamily}, sans-serif !important;
         }
       `}</style>
-      <div className="mb-4 flex items-start">
-        <div className="w-3/4 ">
-          <div className="md:mb-0">
-            <h1 style={{ color: baseColor }} className="text-3xl font-bold">
-              {content.basics[0].name}
-            </h1>
-            <p className="text-base mb-1 text-gray-700 whitespace-pre-wrap">
-              {content.basics[0].headLine}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {content.profiles.map((profile, index) => (
-              <div className="flex gap-2 items-center" key={index}>
-                {isIcons && profile.url.href !== "" && (
-                  <SocialIcon
-                    style={{ width: "16px", height: "16px" }}
-                    url={profile.url.href}
-                  />
-                )}
-                <a
-                  href={profile.url.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline text-sm"
-                >
-                  {profile.url.label}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-xs break-words">{content.basics[0].location}</p>
-          <p className="text-xs break-words">
-            <a href={`tel:${content.basics[0].phone}`}>
-              {content.basics[0].phone}
-            </a>
-          </p>
-          <p className="text-xs break-words">
-            <a href={`mailto:${content.basics[0].email}`}>
-              {content.basics[0].email}
-            </a>
-          </p>
-          {content.basics[0].url && (
-            <a
-              href={content.basics[0].url.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              <p className="text-xs underline break-words">
-                {content.basics[0].url.label}
+      {content.basics && (
+        <div className="mb-4 flex items-start">
+          <div className="w-3/4 ">
+            <div className="md:mb-0">
+              <h1 style={{ color: baseColor }} className="text-3xl font-bold">
+                {content?.basics[0].name}
+              </h1>
+              <p className="text-base mb-1 text-gray-700 whitespace-pre-wrap">
+                {content?.basics[0].headLine}
               </p>
-            </a>
-          )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {content?.profiles?.map((profile, index) => (
+                <div className="flex gap-2 items-center" key={index}>
+                  {isIcons && profile.url.href !== "" && (
+                    <SocialIcon
+                      style={{ width: "16px", height: "16px" }}
+                      url={profile.url.href}
+                    />
+                  )}
+                  <a
+                    href={profile.url.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-sm"
+                  >
+                    {profile.url.label}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start justify-start">
+            <p className="text-xs break-words">{content?.basics[0].location}</p>
+            <p className="text-xs break-words">
+              <a href={`tel:${content?.basics[0].phone}`}>
+                {content?.basics[0].phone}
+              </a>
+            </p>
+            <p className="text-xs break-words">
+              <a href={`mailto:${content?.basics[0].email}`}>
+                {content?.basics[0].email}
+              </a>
+            </p>
+            {content?.basics[0].url && (
+              <a
+                href={content?.basics[0].url.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                <p className="text-xs underline break-words">
+                  {content?.basics[0].url.label}
+                </p>
+              </a>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex flex-row">
-        <div className={`w-3/5 ${sectionOrder.sections[pageIndex].column1.length !== 0 && "pr-8"}`}>
+        <div
+          className={`w-3/5 ${
+            sectionOrder.sections[pageIndex].column1.length !== 0 && "pr-8"
+          }`}
+        >
           {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName as SectionName)
           )}

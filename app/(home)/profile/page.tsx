@@ -142,7 +142,7 @@ export default function ProfilePage() {
   const addEntry = (section: keyof ResumeData) => {
     const updatedProfileData = { ...profileData };
     updatedProfileData[section] = [
-      ...updatedProfileData[section],
+      ...updatedProfileData[section]!,
       createEmptyEntry(section),
     ];
     dispatch(UpdateProfileData(updatedProfileData));
@@ -155,7 +155,7 @@ export default function ProfilePage() {
     value: any
   ) => {
     const updatedProfileData = { ...profileData };
-    updatedProfileData[section] = updatedProfileData[section].map(
+    updatedProfileData[section] = updatedProfileData[section]?.map(
       (entry: any) => (entry.id === id ? { ...entry, [field]: value } : entry)
     );
     dispatch(UpdateProfileData(updatedProfileData));
@@ -172,7 +172,7 @@ export default function ProfilePage() {
 
   const addSkill = (entryId: string) => {
     const updatedProfileData = { ...profileData };
-    updatedProfileData.skills = updatedProfileData.skills.map((entry) => {
+    updatedProfileData.skills = updatedProfileData.skills?.map((entry) => {
       if (entry.id === entryId) {
         return {
           ...entry,
@@ -186,7 +186,7 @@ export default function ProfilePage() {
 
   const deleteSkill = (entryId: string, skillIndex: number) => {
     const updatedProfileData = { ...profileData };
-    updatedProfileData.skills = updatedProfileData.skills.map((entry) => {
+    updatedProfileData.skills = updatedProfileData.skills?.map((entry) => {
       if (entry.id === entryId) {
         return {
           ...entry,
@@ -479,7 +479,7 @@ export default function ProfilePage() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {profileData[section].map((entry: any, index: number) =>
+          {profileData[section]?.map((entry: any, index: number) =>
             renderEntryFields(section, entry, index)
           )}
           {section !== "basics" && section !== "summary" && (
@@ -505,7 +505,6 @@ export default function ProfilePage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Profile</h1>
-
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Credits</CardTitle>
@@ -524,11 +523,7 @@ export default function ProfilePage() {
             onClick={handleUpgradeCredits}
             variant="outline"
             size="sm"
-<<<<<<< HEAD
             className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
-=======
-            className="w-full mt-2"
->>>>>>> afa3681 (commits)
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Upgrade
@@ -565,7 +560,7 @@ export default function ProfilePage() {
                   <CardTitle>Personal Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {profileData.basics.map((basic, index) =>
+                  {profileData.basics?.map((basic, index) =>
                     renderEntryFields("basics", basic, index)
                   )}
                 </CardContent>
@@ -580,7 +575,7 @@ export default function ProfilePage() {
                   <CardTitle>Professional Summary</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {profileData.summary.map((sum, index) =>
+                  {profileData.summary?.map((sum, index) =>
                     renderEntryFields("summary", sum, index)
                   )}
                 </CardContent>

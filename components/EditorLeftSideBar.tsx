@@ -239,7 +239,7 @@ export default function LeftSideBar({
   const addEntry = (section: keyof ResumeData) => {
     const updatedResumeData = { ...resumeData };
     updatedResumeData[section] = [
-      ...updatedResumeData[section],
+      ...updatedResumeData[section]!,
       createEmptyEntry(section),
     ];
     dispatch(UpdateLeftBarData(updatedResumeData));
@@ -252,7 +252,7 @@ export default function LeftSideBar({
     value: any
   ) => {
     const updatedResumeData = { ...resumeData };
-    updatedResumeData[section] = updatedResumeData[section].map((entry: any) =>
+    updatedResumeData[section] = updatedResumeData[section]?.map((entry: any) =>
       entry.id === id ? { ...entry, [field]: value } : entry
     );
     dispatch(UpdateLeftBarData(updatedResumeData));
@@ -269,7 +269,7 @@ export default function LeftSideBar({
 
   const addSkill = (entryId: string) => {
     const updatedResumeData = { ...resumeData };
-    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+    updatedResumeData.skills = updatedResumeData.skills?.map((entry) => {
       if (entry.id === entryId) {
         return {
           ...entry,
@@ -283,7 +283,7 @@ export default function LeftSideBar({
 
   const deleteSkill = (entryId: string, skillIndex: number) => {
     const updatedResumeData = { ...resumeData };
-    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+    updatedResumeData.skills = updatedResumeData.skills?.map((entry) => {
       if (entry.id === entryId) {
         return {
           ...entry,
@@ -331,7 +331,7 @@ export default function LeftSideBar({
 
     const updatedResumeData = { ...resumeData };
     const sectionData = updatedResumeData[section];
-    const updatedSection = sectionData.map((entry: any) => {
+    const updatedSection = sectionData?.map((entry: any) => {
       if (entry.id === id) {
         const currentUrl = entry[field] as URL;
         return {

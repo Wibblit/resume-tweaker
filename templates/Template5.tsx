@@ -644,15 +644,17 @@ const Template5: React.FC<TemplateProps> = ({
         }
       `}</style>
       <div>
-        <Header
-          basics={content.basics[0]}
-          baseColor={baseColor}
-          fontSize={fontSize}
-          margin={margin}
-          lineHeight={lineHeight}
-        />
+        {content.basics && content?.basics[0] && (
+          <Header
+            basics={content.basics[0]!}
+            baseColor={baseColor}
+            fontSize={fontSize}
+            margin={margin}
+            lineHeight={lineHeight}
+          />
+        )}
         <Profiles
-          profiles={content.profiles}
+          profiles={content.profiles!}
           baseColor={baseColor}
           fontSize={fontSize}
           margin={margin}
