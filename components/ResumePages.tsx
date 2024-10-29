@@ -184,7 +184,6 @@
 //   const [isHovering, setIsHovering] = useState(false);
 //   const addButtonRef = useRef<HTMLButtonElement>(null);
 
-
 //   useEffect(() => {
 //     dispatch(updatePageVales({ pageSectionOrders, resumeData, templateNumber }));
 //   }, [templateNumber, resumeData, dispatch, pageSectionOrders]);
@@ -725,7 +724,7 @@ export default function ResumePages({
     }
   };
 
-  const profileData = useAppSelector((state) => state?.profile)
+  const profileData = useAppSelector((state) => state?.profile);
 
   const handleImport = () => {
     // Function to handle importing from profile
@@ -814,7 +813,7 @@ export default function ResumePages({
                   <TooltipTrigger asChild>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                          <Import className="h-4 w-4" />
+                        <Import className="h-4 w-4" />
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
@@ -845,7 +844,7 @@ export default function ResumePages({
                   <TooltipTrigger asChild>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                          <RotateCcw className="h-4 w-4" />
+                        <RotateCcw className="h-4 w-4" />
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
@@ -883,13 +882,22 @@ export default function ResumePages({
             </div>
           </div>
           <div className="flex w-full items-center justify-center">
-            <div className="flex items-center justify-center border border-border px-2 py-1 rounded-b-2xl border-t-0 space-x-2 h-8">
-              <ThemeAwareLogo className="w-4 h-4" />
+            <div className="flex items-center justify-center border border-border px-4 py-1 rounded-b-2xl border-t-0 space-x-2 h-8 relative">
+              <div className="absolute top-0 left-0 right-0 h-8">
+                <div
+                  className="bg-background h-full w-full"
+                  style={{
+                    clipPath:
+                      'path("M 0,0 C 0,20, 20,0, 50,0 C 80,0, 100,20, 100,0 L 100,8 L 0,8 Z")',
+                  }}
+                />
+              </div>
+              <ThemeAwareLogo className="w-4 h-4 z-10" />
               <Separator
                 orientation="vertical"
-                className="h-4 bg-border mx-2"
+                className="h-4 bg-border mx-2 z-10"
               />
-              <span className="font-semibold text-xs text-foreground">
+              <span className="font-semibold text-xs text-foreground z-10">
                 {resumeName}
               </span>
             </div>
