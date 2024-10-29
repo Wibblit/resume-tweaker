@@ -15,6 +15,7 @@ type Template = {
 };
 
 //RightSideBar
+// In your types file (e.g., @/types/types.ts)
 export type SectionName =
   | "summary"
   | "experience"
@@ -26,10 +27,10 @@ export type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
-
+  
 export type ResumeStyles = Template & {
   font: string;
   fontSize: 0 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
@@ -163,19 +164,19 @@ export interface Reference {
 }
 
 export interface ResumeData {
-  basics: Basics[];
-  summary: Summary[];
-  profiles: Profile[];
-  skills: SkillCategory[];
-  projects: Project[];
-  education: Education[];
-  experience: Experience[];
-  languages: Language[];
-  volunteer: Volunteer[];
-  awards: Award[];
-  publications: Publication[];
-  certifications: Certification[];
-  references: Reference[];
+  basics?: Basics[];
+  summary?: Summary[];
+  profiles?: Profile[];
+  skills?: SkillCategory[];
+  projects?: Project[];
+  education?: Education[];
+  experience?: Experience[];
+  languages?: Language[];
+  volunteer?: Volunteer[];
+  awards?: Award[];
+  publications?: Publication[];
+  certifications?: Certification[];
+  references?: Reference[];
 }
 
 export type CoverLetterData = {

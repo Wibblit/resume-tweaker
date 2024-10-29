@@ -15,6 +15,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 export type SectionName =
@@ -66,6 +67,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
@@ -458,13 +460,13 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       </div>
 
       <div className="flex flex-row">
-        <div className={`w-3/5 ${sectionOrder.column1.length !== 0 && "pr-8"}`}>
-          {sectionOrder.column1.map((sectionName) =>
+        <div className={`w-3/5 ${sectionOrder.sections[pageIndex].column1.length !== 0 && "pr-8"}`}>
+          {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName as SectionName)
           )}
         </div>
         <div className="min-w-2/5">
-          {sectionOrder.column2.map((sectionName) =>
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
             renderSection(sectionName as SectionName)
           )}
         </div>

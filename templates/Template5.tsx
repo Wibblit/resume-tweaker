@@ -13,6 +13,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -260,6 +261,7 @@ const Template5: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
@@ -489,7 +491,7 @@ const Template5: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&(
+          content.skills.length > 0 && (
             <Section
               title="Skills"
               baseColor={baseColor}
@@ -667,13 +669,13 @@ const Template5: React.FC<TemplateProps> = ({
               text-align: justify;
             }
           `}</style>
-          {sectionOrder.column1.map((sectionName) =>
+          {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName)
           )}
         </div>
         <div style={styles.sidebar}>
           <div style={styles.sidebarContent}>
-            {sectionOrder.column2.map((sectionName) =>
+            {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
               renderSection(sectionName)
             )}
           </div>

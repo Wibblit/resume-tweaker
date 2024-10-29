@@ -11,6 +11,7 @@ import coverletterReducer from "./slices/coverletterSlice";
 import currentResumeReducer from "./slices/currentResumeSlices";
 import currentCoverLetterReducer from "./slices/currentCoverSlice";
 import profileReducer from "./slices/profileSlice";
+import pageReducer from "./slices/addPageSlice";
 
 const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ const store = configureStore({
     currentResume: currentResumeReducer,
     currentCoverLetter: currentCoverLetterReducer,
     profile: profileReducer,
+    page: pageReducer,
   },
   middleware: (getDefaultMiddleware: GetDefaultMiddleware) =>
     getDefaultMiddleware().concat(logger),

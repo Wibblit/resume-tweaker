@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ResumeStyles, SectionName } from "@/types/types";
+import { addPage, deletePage } from "./addPageSlice";
 
 // Define the initial state using that type
 const initialState: ResumeStyles = {
@@ -29,13 +30,7 @@ const initialState: ResumeStyles = {
         column2: [],
       },
     ],
-    column3: [
-      "languages",
-      "awards",
-      "publications",
-      "references",
-      "volunteerings",
-    ],
+    column3: ["languages", "awards", "publications", "references", "volunteer"],
   },
 };
 
@@ -120,7 +115,7 @@ const Defaults: Array<ResumeStyles> = [
         "awards",
         "publications",
         "references",
-        "volunteerings",
+        "volunteer",
       ],
     },
   },
@@ -148,7 +143,7 @@ const Defaults: Array<ResumeStyles> = [
           column2: ["education", "experience", "projects", "awards"],
         },
       ],
-      column3: ["languages", "publications", "references", "volunteerings"],
+      column3: ["languages", "publications", "references", "volunteer"],
     },
   },
   {
@@ -179,7 +174,7 @@ const Defaults: Array<ResumeStyles> = [
             "awards",
             "publications",
             "certifications",
-            "volunteerings",
+            "volunteer",
             "references",
           ],
         },
@@ -215,7 +210,7 @@ const Defaults: Array<ResumeStyles> = [
             "skills",
             "languages",
             "publications",
-            "volunteerings",
+            "volunteer",
             "references",
           ],
         },
@@ -254,7 +249,7 @@ const Defaults: Array<ResumeStyles> = [
           ],
         },
       ],
-      column3: ["volunteerings", "references"],
+      column3: ["volunteer", "references"],
     },
   },
 ];
@@ -426,8 +421,20 @@ const rightsidebarSlice = createSlice({
       state.sectionOrder.sections.push({ column1: [], column2: [] });
     },
     removeSection: (state, action: PayloadAction<number>) => {
-      state.sectionOrder.sections.splice(action.payload, 1);
+      state.sectionOrder.sections.splice(action.payload - 1, 1);
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(addPage, (state, action) => {
+      state.sectionOrder.sections.push({ column1: [], column2: [] });
+    }),
+      builder.addCase(deletePage, (state, action) => {
+        state.sectionOrder.column3.push(
+          ...state.sectionOrder.sections[action.payload - 1].column1,
+          ...state.sectionOrder.sections[action.payload - 1].column2
+        );
+        state.sectionOrder.sections.splice(action.payload - 1, 1);
+      });
   },
 });
 

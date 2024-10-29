@@ -17,6 +17,7 @@ interface TemplateProps {
   lineHeight: number;
   margin: number;
   photoUrl?: string;
+  pageIndex: number;
 }
 
 const Template7: React.FC<TemplateProps> = ({
@@ -26,7 +27,8 @@ const Template7: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
-  photoUrl
+  photoUrl,
+  pageIndex,
 }) => {
   return (
     <div

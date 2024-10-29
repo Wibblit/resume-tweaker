@@ -16,6 +16,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -183,6 +184,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector(
@@ -540,10 +542,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   return (
     <div style={styles.container} className="p-custom grid grid-cols-2 gap-6">
       <div className="main col-span-2 space-y-4">
-        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
       </div>
       <div className="sidebar col-span-1 space-y-4">
-        {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections[pageIndex]?.column2.map((sectionName) => renderSection(sectionName))}
       </div>
     </div>
   );

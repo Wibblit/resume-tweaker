@@ -12,6 +12,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -182,6 +183,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
@@ -633,11 +635,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
         }
       `}</style>
       <div style={styles.col1Content} className="resume-content">
-        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
       </div>
       <div style={styles.col2}>
         <div style={styles.col2Content} className="resume-content">
-          {sectionOrder.column2.map((sectionName) =>
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
             renderSection(sectionName)
           )}
         </div>

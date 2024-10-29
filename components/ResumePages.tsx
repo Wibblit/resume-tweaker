@@ -1,6 +1,15 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addPage,
+  deletePage,
+  updatePages,
+  undo,
+  redo,
+  updatePageVales,
+} from "../slices/addPageSlice";
 import ThemeAwareLogo from "./ThemeAwareLogo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,12 +21,8 @@ import {
   ZoomIn,
   ZoomOut,
   Plus,
-  FileDown,
   RotateCcw,
   Menu,
-  ChevronDown,
-  ChevronUp,
-  FileText,
   Settings,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -35,6 +40,7 @@ import Template6 from "@/templates/Template6";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { Skeleton } from "./ui/skeleton";
+import { RootState } from "@/store";
 
 interface Page {
   id: number;
@@ -72,6 +78,7 @@ const MM_TO_PX = 3.78;
 const ResumePage: React.FC<{
   page: Page;
   pageNumber: number;
+  pageIndex: number;
   pageFormat: "a4" | "letter";
   baseColor: string;
   fontSize: number;
@@ -81,6 +88,7 @@ const ResumePage: React.FC<{
 }> = ({
   page,
   pageNumber,
+  pageIndex,
   pageFormat,
   baseColor,
   fontSize,
@@ -88,7 +96,7 @@ const ResumePage: React.FC<{
   lineHeight,
   margin,
 }) => {
-  const renderTemplate = (page: Page) => {
+  const renderTemplate = (page: Page, pageIndex: number) => {
     const props = {
       content: page.content,
       baseColor,
@@ -96,6 +104,7 @@ const ResumePage: React.FC<{
       fontFamily,
       lineHeight,
       margin,
+      pageIndex,
     };
 
     switch (page.template) {
@@ -130,7 +139,7 @@ const ResumePage: React.FC<{
       <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
         Page {pageNumber}
       </div>
-      {renderTemplate(page)}
+      {renderTemplate(page, pageIndex)}
       <div
         className="absolute inset-x-0 border-b border-dashed"
         style={{
@@ -157,34 +166,28 @@ export default function ResumePages({
   setIsMobileMenuOpen,
   isLoading,
 }: ResumePagesProps) {
+  const dispatch = useDispatch();
+  const { pages, historyIndex, history } = useSelector(
+    (state: RootState) => state.page
+  );
+  const pageSectionOrders = useAppSelector(
+    (state) => state.rightsidebar.sectionOrder.sections
+  );
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
   );
-  const resumeName = useAppSelector((state) => state.currentResume).currResumeName;
-  const [pages, setPages] = useState<Page[]>([
-    { id: 1, template: templateNumber, content: resumeData },
-  ]);
-  const [history, setHistory] = useState<Page[][]>([
-    [{ id: 1, template: templateNumber, content: resumeData }],
-  ]);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
-  const [isHovering, setIsHovering] = useState(false);
+  const resumeName = useAppSelector(
+    (state) => state.currentResume
+  ).currResumeName;
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+
 
   useEffect(() => {
-    const updatedPages = pages.map((page) => ({
-      ...page,
-      template: templateNumber,
-      content: resumeData,
-    }));
-    setPages(updatedPages);
-
-    // Update history
-    const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  }, [templateNumber, resumeData]);
+    dispatch(updatePageVales({ pageSectionOrders, resumeData, templateNumber }));
+  }, [templateNumber, resumeData, dispatch, pageSectionOrders]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -205,27 +208,10 @@ export default function ResumePages({
     };
   }, [transformRef]);
 
-  const addPage = () => {
-    const newPageId = pages.length + 1;
-    const lastPage = pages[pages.length - 1];
-    const newPages = [
-      ...pages,
-      {
-        id: newPageId,
-        template: lastPage.template,
-        content: resumeData,
-      },
-    ];
-    
-    setPages(newPages);
-
-    // Update history
-    const newHistory = [...history.slice(0, historyIndex + 1), newPages];
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-
-    // Scroll to the new page after a short delay to ensure the page has been rendered
+  function addNewPage() {
+    dispatch(addPage({ template: templateNumber, content: {} }));
     setTimeout(() => {
+      const newPageId = pages.length + 1;
       const newPageElement = document.getElementById(`page-${newPageId}`);
       if (newPageElement && scrollAreaRef.current) {
         const scrollViewport = scrollAreaRef.current.querySelector(
@@ -244,32 +230,19 @@ export default function ResumePages({
         }
       }
     }, 100);
+  }
+
+  const deletePageById = (id: number) => {
+    console.log("delete page id yo", id)
+    dispatch(deletePage(id));
   };
 
-  const deletePage = (id: number) => {
-    if (pages.length > 1) {
-      const newPages = pages.filter((page) => page.id !== id);
-      setPages(newPages);
-
-      // Update history
-      const newHistory = [...history.slice(0, historyIndex + 1), newPages];
-      setHistory(newHistory);
-      setHistoryIndex(newHistory.length - 1);
-    }
+  const undoAction = () => {
+    dispatch(undo());
   };
 
-  const undo = () => {
-    if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setPages(history[historyIndex - 1]);
-    }
-  };
-
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setPages(history[historyIndex + 1]);
-    }
+  const redoAction = () => {
+    dispatch(redo());
   };
 
   const resetView = () => {
@@ -284,13 +257,16 @@ export default function ResumePages({
   const renderControls = (zoomIn: () => void, zoomOut: () => void) => (
     <>
       <div className="flex space-x-2">
-        <Button onClick={undo} disabled={historyIndex === 0}>
+        <Button onClick={undoAction} disabled={historyIndex === 0}>
           <Undo className="h-4 w-4" />
         </Button>
-        <Button onClick={redo} disabled={historyIndex === history.length - 1}>
+        <Button
+          onClick={redoAction}
+          disabled={historyIndex === history.length - 1}
+        >
           <Redo className="h-4 w-4" />
         </Button>
-        <Button onClick={addPage}>
+        <Button ref={addButtonRef} onClick={addNewPage}>
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -308,10 +284,9 @@ export default function ResumePages({
     </>
   );
 
-
   const renderSkeleton = () => (
     <div className="flex flex-col items-center justify-start p-4">
-      <Skeleton 
+      <Skeleton
         className="mb-8"
         style={{
           width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
@@ -321,31 +296,30 @@ export default function ResumePages({
     </div>
   );
 
-
   return (
     <div className="flex flex-col h-[calc(100vh-0px)]">
       <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
         {isPhoneView && (
-           <AnimatePresence>
-           {(
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               transition={{ duration: 0.2 }}
-               className="z-50 md:hidden"
-             >
-               <Button
-                 variant="secondary"
-                 size="icon"
-                 onClick={() => setIsPanelOpen(!isPanelOpen)}
-                 className="rounded-md shadow-md bg-background border border-border"
-               >
-                 <Menu className="h-4 w-4" />
-               </Button>
-             </motion.div>
-           )}
-         </AnimatePresence>
+          <AnimatePresence>
+            {
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="z-50 md:hidden"
+              >
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={() => setIsPanelOpen(!isPanelOpen)}
+                  className="rounded-md shadow-md bg-background border border-border"
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </motion.div>
+            }
+          </AnimatePresence>
         )}
         <div className="flex items-center space-x-3">
           <ThemeAwareLogo />
@@ -403,6 +377,7 @@ export default function ResumePages({
                           <ResumePage
                             page={page}
                             pageNumber={index + 1}
+                            pageIndex={index}
                             pageFormat={pageFormat}
                             baseColor={baseColor}
                             fontSize={fontSize}
@@ -415,14 +390,15 @@ export default function ResumePages({
                               variant="destructive"
                               size="icon"
                               className="absolute top-2 right-1 z-10"
-                              onClick={() => deletePage(page.id)}
+                              onClick={() => deletePageById(page.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           )}
                         </motion.div>
                       ))}
-                    </AnimatePresence>)}
+                    </AnimatePresence>
+                  )}
                 </TransformComponent>
                 {isPhoneView && (
                   <motion.div

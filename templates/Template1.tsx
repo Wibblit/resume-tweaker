@@ -31,6 +31,7 @@ interface ModernResumeTemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
@@ -40,6 +41,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
@@ -153,7 +155,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>Skills</h2>
-            {content.skills.map((category, index) => (
+            {content?.skills?.map((category, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
                   <div className="w-full flex items-center justify-between">
@@ -538,7 +540,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       }
     `}
       </style>
-      {sectionOrder.sections[0].column1.map((sectionName) =>
+      {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
         renderSection(sectionName as SectionName)
       )}
     </div>

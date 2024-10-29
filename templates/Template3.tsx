@@ -15,6 +15,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -204,6 +205,7 @@ const Template3: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector(
@@ -638,11 +640,11 @@ const Template3: React.FC<TemplateProps> = ({
         }
       `}</style>
       <div style={styles.mainContent}>
-        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
       </div>
       <div style={styles.sidebar}>
         <div style={styles.sidebarContent}>
-          {sectionOrder.column2.map((sectionName) =>
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
             renderSection(sectionName, true)
           )}
         </div>

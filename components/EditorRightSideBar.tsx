@@ -12,6 +12,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { updatePages } from "@/slices/addPageSlice";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import { updatePageVales } from "@/slices/addPageSlice";
 
 const fonts = [
   "Arial",
@@ -126,7 +128,7 @@ const abbrv: Record<SectionName, string> = {
   profiles: "profiles",
   basics: "basics",
   references: "refs.",
-  volunteerings: "vols.",
+  volunteer: "vols.",
   publications: "publs.",
   awards: "awards",
 };
@@ -149,6 +151,8 @@ export default function EditorRightSideBar({
     (state) => state.rightsidebar.sectionOrder
   )!;
   const fontSize = useAppSelector((state) => state.rightsidebar.fontSize);
+  const resumeData = useAppSelector((state) => state.leftsidebar);
+  const pages = useAppSelector((state) => state.page.pages)
   const templateID = useAppSelector((state) => state.rightsidebar.id);
   const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight);
   const margin = useAppSelector((state) => state.rightsidebar.margin);
@@ -156,103 +160,100 @@ export default function EditorRightSideBar({
   const id = useAppSelector((state) => state.rightsidebar.id);
   const separator = useAppSelector((state) => state.rightsidebar.separator);
   const icons = useAppSelector((state) => state.rightsidebar.icons);
-
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
 
-  useEffect(() => {
-    setSelectedFont(font);
-  }, [id]);
-
-const onDragEnd = (result: DropResult) => {
-  if (!result.destination) return;
-
-  const sourceDroppableId = result.source.droppableId;
-  const sourceIndex = result.source.index;
-  const destDroppableId = result.destination.droppableId;
-  const destIndex = result.destination.index;
-
-  const sourceColumnParts = sourceDroppableId.split('.');
-  const destColumnParts = destDroppableId.split('.');
-
-  const sourceColumn = sourceColumnParts[1] as "column1" | "column2" | "column3" | undefined;
-  const destColumn = destColumnParts[1] as "column1" | "column2" | "column3" | undefined;
-
-  console.log(sourceColumn, "- source col, ", sourceIndex, "- source indx");
-
-  if (!sourceColumn || !destColumn) {
-    console.error("Invalid source or destination column");
-    return;
-  }
-
-  const newSectionOrder = JSON.parse(JSON.stringify(sectionOrder));
-
-  let sourceSections: SectionName[], destSections: SectionName[];
-  let sourceColumnIndex: number, destColumnIndex: number;
-
-  if (sourceColumn === "column3") {
-    sourceSections = newSectionOrder.column3;
-    sourceColumnIndex = 0;
-  } else {
-    sourceColumnIndex = Number(sourceColumnParts[0]);
-    if (isNaN(sourceColumnIndex) || !newSectionOrder.sections[sourceColumnIndex]) {
-      console.error("Invalid source section index");
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+  
+    const sourceDroppableId = result.source.droppableId;
+    const sourceIndex = result.source.index;
+    const destDroppableId = result.destination.droppableId;
+    const destIndex = result.destination.index;
+    const pageIdx = result.destination.droppableId.split('.')[0];
+    
+    const sourceColumnParts = sourceDroppableId.split('.');
+    const destColumnParts = destDroppableId.split('.');
+  
+    const sourceColumn = sourceColumnParts[1] as "column1" | "column2" | "column3" | undefined;
+    const destColumn = destColumnParts[1] as "column1" | "column2" | "column3" | undefined;
+  
+    console.log(sourceColumn, "- source col, ", sourceIndex, "- source indx");
+    
+    if (!sourceColumn || !destColumn) {
+      console.error("Invalid source or destination column");
       return;
     }
-    sourceSections = newSectionOrder.sections[sourceColumnIndex][sourceColumn];
-  }
-
-  if (destColumn === "column3") {
-    destSections = newSectionOrder.column3;
-    destColumnIndex = 0;
-  } else {
-    destColumnIndex = Number(destColumnParts[0]);
-    if (isNaN(destColumnIndex) || !newSectionOrder.sections[destColumnIndex]) {
-      console.error("Invalid destination section index");
-      return;
+    
+    const newSectionOrder = JSON.parse(JSON.stringify(sectionOrder));
+    
+    let sourceSections: SectionName[], destSections: SectionName[];
+    let sourceColumnIndex: number, destColumnIndex: number;
+    
+    if (sourceColumn === "column3") {
+      sourceSections = newSectionOrder.column3;
+      sourceColumnIndex = 0;
+    } else {
+      sourceColumnIndex = Number(sourceColumnParts[0]);
+      if (isNaN(sourceColumnIndex) || !newSectionOrder.sections[sourceColumnIndex]) {
+        console.error("Invalid source section index");
+        return;
+      }
+      sourceSections = newSectionOrder.sections[sourceColumnIndex][sourceColumn];
     }
-    destSections = newSectionOrder.sections[destColumnIndex][destColumn];
-  }
-
-  if (!Array.isArray(sourceSections) || !Array.isArray(destSections)) {
-    console.error("Source or destination sections are not arrays");
-    return;
-  }
-
-  const [movedItem] = sourceSections.splice(sourceIndex, 1);
-  destSections.splice(destIndex, 0, movedItem);
-
-  // Update the source column
-  if (sourceColumn === "column3") {
-    dispatch(updateSectionOrder({ 
-      sectionIndex: sourceColumnIndex, 
-      column: sourceColumn, 
-      order: sourceSections 
-    }));
-  } else {
-    dispatch(updateSectionOrder({ 
-      sectionIndex: sourceColumnIndex, 
-      column: sourceColumn, 
-      order: newSectionOrder.sections[sourceColumnIndex][sourceColumn] 
-    }));
-  }
-
-  // Update the destination column if it's different from the source
-  if (destColumn !== sourceColumn || sourceColumnIndex !== destColumnIndex) {
+    
     if (destColumn === "column3") {
+      destSections = newSectionOrder.column3;
+      destColumnIndex = 0;
+    } else {
+      destColumnIndex = Number(destColumnParts[0]);
+      if (isNaN(destColumnIndex) || !newSectionOrder.sections[destColumnIndex]) {
+        console.error("Invalid destination section index");
+        return;
+      }
+      destSections = newSectionOrder.sections[destColumnIndex][destColumn];
+    }
+  
+    if (!Array.isArray(sourceSections) || !Array.isArray(destSections)) {
+      console.error("Source or destination sections are not arrays");
+      return;
+    }
+  
+    const [movedItem] = sourceSections.splice(sourceIndex, 1);
+    destSections.splice(destIndex, 0, movedItem);
+  
+    // Update the source column
+    if (sourceColumn === "column3") {
       dispatch(updateSectionOrder({ 
-        sectionIndex: destColumnIndex, 
-        column: destColumn, 
-        order: destSections 
+        sectionIndex: sourceColumnIndex, 
+        column: sourceColumn, 
+        order: sourceSections 
       }));
     } else {
       dispatch(updateSectionOrder({ 
-        sectionIndex: destColumnIndex, 
-        column: destColumn, 
-        order: newSectionOrder.sections[destColumnIndex][destColumn] 
+        sectionIndex: sourceColumnIndex, 
+        column: sourceColumn, 
+        order: newSectionOrder.sections[sourceColumnIndex][sourceColumn] 
       }));
     }
-  }
-};
+  
+    // Update the destination column if it's different from the source
+    if (destColumn !== sourceColumn || sourceColumnIndex !== destColumnIndex) {
+      if (destColumn === "column3") {
+        dispatch(updateSectionOrder({ 
+          sectionIndex: destColumnIndex, 
+          column: destColumn, 
+          order: destSections 
+        }));
+      } else {
+        dispatch(updateSectionOrder({ 
+          sectionIndex: destColumnIndex, 
+          column: destColumn, 
+          order: newSectionOrder.sections[destColumnIndex][destColumn] 
+        }));
+      }
+    }
+  };
+  
 
   const handleDarkModeChange = (checked: boolean) => {
     setDark(checked);
@@ -423,7 +424,7 @@ const onDragEnd = (result: DropResult) => {
                           >
                             <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
                             <span className="truncate text-xs md:text-sm">
-                              {abbrv[section].charAt(0).toUpperCase() + abbrv[section].slice(1)}
+                              {abbrv[section]}
                             </span>
                           </div>
                         )}
@@ -434,7 +435,7 @@ const onDragEnd = (result: DropResult) => {
                 )}
               </Droppable>
             </DragDropContext>
-            <div className="flex justify-between mt-4">
+            {/* <div className="flex justify-between mt-4">
               <Button onClick={() => dispatch(addSection())} size="sm">
                 <Plus className="mr-2 h-4 w-4" /> Add Section
               </Button>
@@ -450,7 +451,7 @@ const onDragEnd = (result: DropResult) => {
               >
                 <Minus className="mr-2 h-4 w-4" /> Remove Section
               </Button>
-            </div>
+            </div> */}
           </div>
         )}
 
