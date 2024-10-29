@@ -672,7 +672,11 @@ export default function LeftSideBar({
                 ))}
               </div>
             </ScrollArea>
-            <div className="p-4 border-t flex justify-center space-x-4">
+            <div
+              className={`p-4 border-t  justify-center  ${
+                isCollapsed ? "flex-col items-center space-y-2" : "flex space-x-4"
+              }`}
+            >
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

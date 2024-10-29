@@ -3,8 +3,9 @@
 import { useTheme } from "next-themes"
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import { cn } from "@/lib/utils"
 
-export default function ThemeAwareLogo() {
+export default function ThemeAwareLogo({ className }: {className? : string}) {
   const { theme, systemTheme } = useTheme()
   const [logoSrc, setLogoSrc] = useState("/rt-light.svg")
 
@@ -19,8 +20,10 @@ export default function ThemeAwareLogo() {
       alt="Resume Tweaker Logo"
       width={16}
       height={16}
-      className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7"
+      className={`lg:w-6 lg:h-6 xl:w-7 xl:h-7 ${
+        className ? className : "w-5 h-5 "
+      }`}
       priority={true}
     />
-  )
+  );
 }
