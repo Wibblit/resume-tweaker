@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
 
+
 export async function createBlogPost(
   title: string,
   slug: string,
