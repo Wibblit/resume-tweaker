@@ -225,6 +225,7 @@ export default function BlogForm() {
       );
 
       console.log("Blog post submitted successfully:", formData);
+      
       router.push("/blogs");
     } catch (error) {
       console.error("Error submitting blog post:", error);

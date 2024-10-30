@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function createBlogPost(
   title: string,
@@ -50,6 +51,8 @@ export async function createBlogPost(
     });
 
     console.log("Blog post created:", blogPost);
+
+    revalidatePath('/blogs')
 
     return {
       success: true,
