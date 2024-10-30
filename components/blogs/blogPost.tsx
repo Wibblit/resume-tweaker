@@ -171,12 +171,13 @@ export default function BlogPost({ data }: BlogPostProps) {
           </div>
         </div>
       </header>
-      <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
+      <div className="relative w-full md:h-[400px] h-auto mb-8 rounded-lg overflow-hidden">
         <Image
           src={blog.thumbnail}
           alt={blog.title}
-          layout="fill"
-          className="md:object-cover"
+          height={600}
+          width={600}
+          className="md:object-cover object-contain w-full h-auto"
           priority
         />
       </div>
