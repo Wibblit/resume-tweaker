@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { prisma } from "@/prisma";
 import { cache } from "react";
 import { notFound } from "next/navigation";
-export const dynamic = "auto"
+// export const dynamic = "auto"
 
 export async function generateStaticParams() {
   const posts = await prisma.blog.findMany();
