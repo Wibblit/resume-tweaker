@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function updateBlogPost(
   id: string,
@@ -46,7 +47,7 @@ export async function updateBlogPost(
     });
 
     console.log("Blog post updated:", updatedBlogPost);
-
+    revalidatePath('/', "layout")
     return {
       success: true,
       message: "Blog post updated successfully",

@@ -25,6 +25,7 @@ export async function createBlogPost(
     console.log(author);
     console.log(thumbnail), console.log(published);
     console.log(tags);
+    
     // Ensure user is authenticated
     if (!session || !session.user || !session.user.id) {
       return {
