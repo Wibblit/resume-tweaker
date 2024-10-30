@@ -176,7 +176,7 @@ export default function BlogPost({ data }: BlogPostProps) {
           src={blog.thumbnail}
           alt={blog.title}
           layout="fill"
-          objectFit="cover"
+          className="md:object-cover"
           priority
         />
       </div>

@@ -8,6 +8,7 @@ import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import ThemeAwareLogo from "./ThemeAwareLogo";
+import Logo from "./Logo";
 
 export function LandingNav() {
   const pathname = usePathname();
@@ -31,10 +32,7 @@ export function LandingNav() {
               href="/"
               className="font-semibold flex items-center gap-2 group justify-center"
             >
-              <span className="sm:block md:text-xl text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
-                <span className="text-zinc-500 dark:text-zinc-400">resume</span>
-                <span className="font-bold">tweaker</span>
-              </span>
+              <Logo />
             </Link>
           </div>
           {/* {pathname === "/" && ( */}
