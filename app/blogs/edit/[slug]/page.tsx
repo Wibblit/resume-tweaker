@@ -67,6 +67,8 @@ export default function EditBlogPost() {
   const [slugError, setSlugError] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  console.log(slug)
+
   useEffect(() => {
     const fetchBlogData = async () => {
       try {

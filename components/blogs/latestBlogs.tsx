@@ -117,7 +117,7 @@ export default function LatestBlogs() {
         const response = await fetch("/api/get-blogs");
         const data: Blog[] = await response.json();
         console.log(data)
-        setBlogs(data);
+        setBlogs(data ? data : []);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       } finally {
@@ -137,51 +137,54 @@ export default function LatestBlogs() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {isLoading
             ? Array(6)
-                .fill(0)
-                .map((_, index) => <SkeletonBlogCard key={index} />)
-            : blogs.map((blog) => (
-                <Link
-                  href={`blogs/${blog.slug}-${blog.id}`}
-                  key={blog.id}
-                  className="group"
-                >
-                  <Card className="cursor-pointer h-full overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
-                    <CardHeader className="p-0">
-                      <div className="overflow-hidden">
-                        <Image
-                          src={blog.thumbnail}
-                          alt={blog.title}
-                          width={800}
-                          height={400}
-                          className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-4 p-6 flex-grow">
-                      <Badge className="w-fit">{blog.category}</Badge>
-                      <CardTitle className="text-xl md:text-2xl line-clamp-2">
-                        {blog.title}
-                      </CardTitle>
-                      <CardDescription className="line-clamp-3">
-                        {blog.excerpt}
-                      </CardDescription>
-                    </CardContent>
-                    <CardFooter className="flex items-center justify-between p-6 mt-auto">
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {new Date(blog.createdAt).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Clock className="mr-2 h-4 w-4" />
-                        {calculateReadTime(blog.content)}
-                      </div>
-                    </CardFooter>
-                    <div className="absolute top-4 right-4 bg-white/20 p-2 rounded-full opacity-0 transition-opacity group-hover:opacity-100">
-                      <ArrowUpRight className="h-4 w-4 text-white" />
+              .fill(0)
+              .map((_, index) => <SkeletonBlogCard key={index} />)
+            : blogs.length === 0 ? <div className="md:col-span-3">
+              <h2 className="text-xl font-semibold">No Blogs Yet</h2>
+              <p>Check back later for latest blog posts.</p>
+            </div> : blogs.map((blog) => (
+              <Link
+                href={`blogs/${blog.slug}-${blog.id}`}
+                key={blog.id}
+                className="group"
+              >
+                <Card className="cursor-pointer h-full overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
+                  <CardHeader className="p-0">
+                    <div className="overflow-hidden">
+                      <Image
+                        src={blog.thumbnail}
+                        alt={blog.title}
+                        width={800}
+                        height={400}
+                        className="w-full h-48 object-cover rounded-t-lg transition-transform duration-300 group-hover:scale-105"
+                      />
                     </div>
-                  </Card>
-                </Link>
-              ))}
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-4 p-6 flex-grow">
+                    <Badge className="w-fit">{blog.category}</Badge>
+                    <CardTitle className="text-xl md:text-2xl line-clamp-2">
+                      {blog.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-3">
+                      {blog.excerpt}
+                    </CardDescription>
+                  </CardContent>
+                  <CardFooter className="flex items-center justify-between p-6 mt-auto">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {new Date(blog.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Clock className="mr-2 h-4 w-4" />
+                      {calculateReadTime(blog.content)}
+                    </div>
+                  </CardFooter>
+                  <div className="absolute top-4 right-4 bg-white/20 p-2 rounded-full opacity-0 transition-opacity group-hover:opacity-100">
+                    <ArrowUpRight className="h-4 w-4 text-white" />
+                  </div>
+                </Card>
+              </Link>
+            ))}
         </div>
       </div>
     </section>

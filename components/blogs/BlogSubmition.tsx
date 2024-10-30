@@ -167,7 +167,7 @@ export default function BlogForm() {
   };
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tags = e.target.value.split(",").map((tag) => tag.trim());
+    const tags = e.target.value.split(",").map((tag) => tag);
     setFormData((prevData) => ({ ...prevData, tags }));
   };
 
@@ -381,7 +381,7 @@ export default function BlogForm() {
                 name="tags"
                 className="input"
                 placeholder="Enter tags, separated by commas"
-                value={formData.tags.join(", ")}
+                value={formData.tags}
                 onChange={handleTagsChange}
               />
             </div>
