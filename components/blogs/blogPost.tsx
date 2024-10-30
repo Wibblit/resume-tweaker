@@ -176,13 +176,13 @@ export default function BlogPost({ data }: BlogPostProps) {
           src={blog.thumbnail}
           alt={blog.title}
           layout="fill"
-          objectFit="contain"
+          objectFit="cover"
           priority
         />
       </div>
 
       <div
-        className="prose max-w-none dark:prose-invert"
+        className="prose max-w-none dark:prose-invert text-xl"
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
 

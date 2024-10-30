@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import { ToastProvider } from "@/components/ToastProviderWrapper";
 import { ReduxProvider } from "@/components/ReduxProvider";
+import { Roboto_Mono as FontSans } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: {
@@ -65,6 +67,13 @@ export const metadata: Metadata = {
 };
 
 
+const fontSans = FontSans({
+  // weight: ['100', '300', '400', '500', '700', '900'],
+  subsets: ["latin"], 
+  variable: "--font-roboto"
+})
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -74,7 +83,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
       </head>
-      <body className={` antialiased font-custom`}>
+      <body className={cn(` antialiased font-custom`, fontSans.variable)}>
         <ThemeProviderWrapper>
           <ReduxProvider>{children}</ReduxProvider>
         </ThemeProviderWrapper>
