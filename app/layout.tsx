@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import { ToastProvider } from "@/components/ToastProviderWrapper";
 import { ReduxProvider } from "@/components/ReduxProvider";
-import { Roboto_Mono as FontSans } from "next/font/google";
+import { Roboto_Flex as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
