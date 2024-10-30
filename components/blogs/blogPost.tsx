@@ -20,15 +20,15 @@ import { useParams, useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { deleteBlog } from "@/actions/deleteblog";
 import { Blog } from "@/types/types";
-
+import { Suspense } from "react";
+import Loading from "@/app/blogs/[slug]/loading";
 interface BlogPostProps {
   data: Blog;
 }
 
-
-
 export default function BlogPost({ data }: BlogPostProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false)
 
   const [blog, setBlog] = useState<Blog | null>(null);
   const [sparkCount, setSparkCount] = useState<number>(0);
@@ -39,6 +39,7 @@ export default function BlogPost({ data }: BlogPostProps) {
   const [session, setSession] = useState<Session | null>(null)
   
   useEffect(() => {
+    setLoading(true)
     const setData = async () => {
       try {
         const res = await fetch("/api/auth/session")
@@ -53,8 +54,10 @@ export default function BlogPost({ data }: BlogPostProps) {
           localStorage.getItem("sparkedBlogs") || "[]"
         )
         setHasSparked(sparkedBlogs.includes(data.id))
+        setLoading(false)
       } catch (error) {
         console.error("Error fetching blog:", error)
+        setLoading(false)
       }
     }
 
@@ -108,6 +111,7 @@ export default function BlogPost({ data }: BlogPostProps) {
           setTimeout(() => setShowSparkAnimation(false), 1000);
         } else {
           console.error("Failed to increment Spark count");
+          setTimeout(() => setShowSparkAnimation(false), 1000);
         }
       } catch (error) {
         console.error("Failed to increment Spark count:", error);
@@ -172,7 +176,7 @@ export default function BlogPost({ data }: BlogPostProps) {
           src={blog.thumbnail}
           alt={blog.title}
           layout="fill"
-          objectFit="cover"
+          objectFit="contain"
           priority
         />
       </div>
@@ -186,7 +190,7 @@ export default function BlogPost({ data }: BlogPostProps) {
         <p className="text-lg text-muted-foreground mb-8">{blog.excerpt}</p>
       )}
 
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <h3 className="text-lg font-semibold mb-2">Tags</h3>
         <div className="flex flex-wrap gap-2">
           {blog.tags.map((tag) => (
@@ -195,7 +199,7 @@ export default function BlogPost({ data }: BlogPostProps) {
             </Badge>
           ))}
         </div>
-      </div>
+      </div> */}
 
       <div className="mt-12 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex flex-col md:flex-row md:justify-between gap-y-4 w-full ">
@@ -205,7 +209,7 @@ export default function BlogPost({ data }: BlogPostProps) {
           {session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
             <>
               <Button variant="outline" asChild className="w-full sm:w-auto">
-                <Link href={`/blogs/edit/${blog.slug}`}>Edit</Link>
+                <Link href={`/blogs/edit/${blog.slug}-${blog.id}`}>Edit</Link>
               </Button>
               <Button
                 variant="destructive"

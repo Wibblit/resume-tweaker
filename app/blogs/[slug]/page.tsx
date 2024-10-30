@@ -14,10 +14,17 @@ const fetchBlog = cache(async (slug: string) => {
   const id = slug.split("-");
   console.log(id);
 
-  const blog = await prisma.blog.findUnique({
-    where: { id:id[id.length-1] },
-  });
-  return blog;
+  try {
+    const blog = await prisma.blog.findUnique({
+      where: { id: id[id.length - 1] },
+    });
+    return blog;
+  } catch (error) {
+    console.error(error)
+  } finally {
+    prisma.$disconnect()
+  }
+  
 });
 
 export async function generateMetadata({
@@ -27,16 +34,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const data = await fetchBlog(params.slug);
   if (!data) return { title: "Blog Post Not Found" };
+
+  const thumbnailUrl = data.thumbnail || "No blog image";
+
   return {
-    title: data?.title,
-    description: data?.excerpt,
+    title: data.title,
+    description: data.excerpt,
     openGraph: {
       images: [
         {
-          url: data?.thumbnail! || "No blog image",
+          url: thumbnailUrl,
         },
       ],
     },
+    keywords: data.tags,
   };
 }
 
@@ -47,5 +58,7 @@ export default async function BlogPostPage({
 }) {
   const data = await fetchBlog(params.slug);
   if (!data) return notFound();
-  return <BlogPost data={data!} />;
+  return (
+      <BlogPost data={data!} />
+  );
 }

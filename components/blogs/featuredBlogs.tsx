@@ -53,7 +53,7 @@ export default function BentoGrid() {
         const response = await fetch("/api/get-featured-blogs")
         const data = await response.json()
         if (Array.isArray(data)) {
-          setBlogs(data)
+          setBlogs(data ? data : [])
         } else {
           throw new Error("Received invalid data format")
         }
