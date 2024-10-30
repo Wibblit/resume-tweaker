@@ -11,10 +11,12 @@ export const metadata: Metadata = {
     default: "resumetweaker | AI Resume Builder",
     template: "%s - resumetweaker",
   },
-  description: "resumetweaker is an AI-powered resume builder that helps you create, tweak, and perfect resumes tailored to your career goals. Boost your job search with smart suggestions and custom templates.",
+  description:
+    "resumetweaker is an AI-powered resume builder that helps you create, tweak, and perfect resumes tailored to your career goals. Boost your job search with smart suggestions and custom templates.",
   openGraph: {
     title: "resumetweaker - AI Resume Builder",
-    description: "Create, tweak, and perfect your resume with resumetweaker’s AI-powered resume builder. Stand out in your job search with optimized and tailored resumes.",
+    description:
+      "Create, tweak, and perfect your resume with resumetweaker’s AI-powered resume builder. Stand out in your job search with optimized and tailored resumes.",
     url: "https://resumetweaker.wibblit.com",
     siteName: "resumetweaker",
     images: [
@@ -32,7 +34,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@wibblitofficial",
     title: "resumetweaker - AI Resume Builder",
-    description: "Use resumetweaker's AI to create and optimize your resume effortlessly.",
+    description:
+      "Use resumetweaker's AI to create and optimize your resume effortlessly.",
     images: [
       {
         url: "/opengraph-image.png",
@@ -54,9 +57,9 @@ export const metadata: Metadata = {
   keywords: [
     "AI resume builder",
     "resume maker",
-    "AI resume review", 
+    "AI resume review",
     "AI resume analysis",
-    "AI Interviw",  
+    "AI Interviw",
     "resume optimizer",
     "resumetweaker",
     "job search tools",
@@ -70,13 +73,11 @@ export const metadata: Metadata = {
   ],
 };
 
-
 const fontSans = FontSans({
   // weight: ['100', '300', '400', '500', '700', '900'],
-  subsets: ["latin"], 
-  variable: "--font-roboto"
-})
-
+  subsets: ["latin"],
+  variable: "--font-roboto",
+});
 
 export default function RootLayout({
   children,
@@ -86,6 +87,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/icon.ico" sizes="any" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org/",
+              "@type": "WebSite",
+              "name": "resumetweaker",
+              "url": "https://resumetweaker.wibblit.com",
+              "alternateName": "Wibblit ResumeTweaker",
+            }),
+          }}
+        />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.variable)}>
         <ThemeProviderWrapper>
