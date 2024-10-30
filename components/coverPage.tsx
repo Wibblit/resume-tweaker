@@ -466,9 +466,6 @@ const CoverLetterPage: React.FC<CoverLetterPageProps> = ({
         minHeight: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
       }}
     >
-      <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
-        Page {pageNumber}
-      </div>
       {isLoading ? (
         <Skeleton className="w-full h-full" />
       ) : (
