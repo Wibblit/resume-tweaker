@@ -50,11 +50,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/icon.ico",
-    apple: "/apple-touch-icon.png",
   },
   keywords: [
     "AI resume builder",
     "resume maker",
+    "AI resume review", 
+    "AI resume analysis",
+    "AI Interviw",  
     "resume optimizer",
     "resumetweaker",
     "job search tools",
@@ -63,6 +65,8 @@ export const metadata: Metadata = {
     "AI resume writing",
     "career tools",
     "wibblit",
+    "resumetweaker",
+    "resume tweaker",
   ],
 };
 
