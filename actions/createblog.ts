@@ -53,7 +53,7 @@ export async function createBlogPost(
 
     console.log("Blog post created:", blogPost);
 
-    revalidatePath('/blogs/[slug]/page', "page")
+    revalidatePath('/blogs', "layout")
 
     return {
       success: true,
