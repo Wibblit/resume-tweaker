@@ -50,7 +50,7 @@ export default function BlogForm() {
     excerpt: "",
     content: "",
     category: "",
-    author: "",
+    author: "Wibblit",
     published: false,
     tags: [] as string[],
     image: "",
@@ -128,6 +128,7 @@ export default function BlogForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    console.log(name, value)
     if (name === "title") {
       const newTitle = value;
       const newSlug = generateSlug(newTitle);
@@ -326,7 +327,7 @@ export default function BlogForm() {
                 }}
               />
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <Select
                 name="category"
@@ -344,6 +345,17 @@ export default function BlogForm() {
                   ))}
                 </SelectContent>
               </Select>
+            </div> */}
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Input
+                id="category"
+                name="category"
+                className="input"
+                value={formData.category}
+                onChange={handleInputChange}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="author">Author</Label>

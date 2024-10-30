@@ -338,24 +338,15 @@ export default function EditBlogPost() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select
+              <Label htmlFor="categoryr">Category</Label>
+              <Input
+                id="category"
                 name="category"
-                onValueChange={handleCategoryChange}
+                className="input"
                 value={blogData.category}
+                onChange={handleInputChange}
                 required
-              >
-                <SelectTrigger className="input">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="author">Author</Label>
@@ -436,6 +427,17 @@ export default function EditBlogPost() {
           </CardFooter>
         </form>
       </Card>
+      <Card className="mt-8 shadow-lg">
+        <CardHeader>
+          <CardTitle>Content Preview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div
+            className="prose max-w-none dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: blogData.content }}
+          />
+        </CardContent>
+      </Card>
       <style jsx global>{`
         .sun-editor-editable {
           background-color: ${theme === "dark"
@@ -447,7 +449,7 @@ export default function EditBlogPost() {
           border-collapse: collapse;
           width: 100%;
         }
-        
+
         .sun-editor-editable table td,
         .sun-editor-editable table th {
           border: 1px solid ${theme === "dark" ? "#374151" : "#e5e7eb"};
