@@ -210,7 +210,7 @@ export default function BlogPost({ data }: BlogPostProps) {
           {session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL && (
             <>
               <Button variant="outline" asChild className="w-full sm:w-auto">
-                <Link href={`/blogs/edit/${blog.slug}-${blog.id}`}>Edit</Link>
+                <Link href={`/blogs/edit/${blog.slug}`}>Edit</Link>
               </Button>
               <Button
                 variant="destructive"

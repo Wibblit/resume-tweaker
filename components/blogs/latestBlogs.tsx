@@ -144,7 +144,7 @@ export default function LatestBlogs() {
               <p>Check back later for latest blog posts.</p>
             </div> : blogs.map((blog) => (
               <Link
-                href={`blogs/${blog.slug}-${blog.id}`}
+                href={`blogs/${blog.slug}`}
                 key={blog.id}
                 className="group"
               >
