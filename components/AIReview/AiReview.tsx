@@ -49,6 +49,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useToast } from "@/hooks/use-toast";
 
 interface AIReviewCriteria {
   score: number;
@@ -163,11 +164,15 @@ export default function AIReview() {
   );
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [userResumes, setUserResumes] = useState<UserResume[]>();
+  const [resuLoading, setresuLoading] = useState<boolean>(false);
+  const [funcdisabler, setFuncDisabler] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const workerRef = useRef<Tesseract.Worker | null>(null);
   const [ocrProgress, setOcrProgress] = useState(0);
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+
+  const { toast } = useToast();
 
   useEffect(() => {
     async function worker() {
@@ -236,14 +241,23 @@ export default function AIReview() {
   useEffect(() => {
     async function getUserResumes() {
       try {
+        setresuLoading(true);
         const response = await axios.get<{
           recentResumes: UserResume[];
           message: string;
         }>("/api/get-recent-resumes/");
         console.log(response, "user resumes");
         setUserResumes(response.data.recentResumes);
+        response.data.recentResumes.length === 0 && setFuncDisabler(true)
+        setresuLoading(false);
       } catch (error) {
         console.error("Error fetching user resumes:", error);
+        toast({
+          title: "Error",
+          description: "Unable to fetch your resume. Please reload the page.",
+          variant: "destructive",
+        });
+        setresuLoading(false);
       }
     }
     getUserResumes();
@@ -288,9 +302,13 @@ export default function AIReview() {
   };
 
   const handleResumeSelect = (value: string) => {
-    setSelectedResume(value);
-    setResumeOption("select");
-    setFile(null);
+    
+    if (!resuLoading || funcdisabler) {
+      console.log("Now you called master!!");
+      setSelectedResume(value);
+      setResumeOption("select");
+      setFile(null);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -358,11 +376,23 @@ export default function AIReview() {
                     <SelectValue placeholder="Choose a resume" />
                   </SelectTrigger>
                   <SelectContent>
-                    {userResumes?.map((resume) => (
-                      <SelectItem key={resume.id} value={resume.id}>
-                        {resume.resumeName}
+                    {resuLoading ? (
+                      <SelectItem
+                        value={"null"}
+                        className="flex items-center justify-center"
+                      >
+                        <Loader2 className="mr-4 h-4 w-4 animate-spin" />
                       </SelectItem>
-                    ))}
+                    ) :
+                      userResumes?.length === 0 ? <SelectItem value="noresumes">
+                        No resumes found
+                      </SelectItem> : (
+                      userResumes?.map((resume) => (
+                        <SelectItem key={resume.id} value={resume.id}>
+                          {resume.resumeName}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
