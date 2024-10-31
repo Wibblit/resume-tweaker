@@ -183,7 +183,7 @@ export default function BlogPost({ data }: BlogPostProps) {
       </div>
 
       <div
-        className="prose max-w-none dark:prose-invert text-xl"
+        className="prose max-w-none dark:prose-invert md:text-xl text-lg"
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
 
