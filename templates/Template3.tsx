@@ -7,6 +7,7 @@ import { ResumeData, Basics } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
 import HTMLViewer from "@/components/HTMLViewer";
 import DateConverter from "@/components/DateConverter";
+import Base64Image from "@/components/base64toPhoto";
 
 interface TemplateProps {
   content: ResumeData;
@@ -150,14 +151,19 @@ const Header: React.FC<{
 
   return (
     <div style={styles.container} className="flex items-center gap-4">
-      <Picture
-        src={
-          typeof basics?.picture === "string" && basics?.picture !== ""
-            ? basics?.picture
-            : "/placeholder-user.jpeg"
-        }
-        alt={basics?.name || "Profile picture"}
-      />
+      {basics.picture ? (
+        <Base64Image base64String={basics?.picture} width={128} height={128} alt={basics?.name} />
+      ) : (
+        <Picture
+          src={
+            typeof basics?.picture === "string" && basics?.picture !== ""
+              ? basics?.picture
+              : "/placeholder-user.jpeg"
+          }
+          alt={basics?.name || "Profile picture"}
+        />
+      )}
+
       <div style={styles.content}>
         <h2 style={styles.name}>{basics?.name}</h2>
         <p style={styles.headline}>{basics?.headLine}</p>

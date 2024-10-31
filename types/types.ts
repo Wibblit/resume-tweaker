@@ -82,7 +82,7 @@ export interface Basics {
   phone: string;
   location: string;
   headLine: string;
-  picture?: File;
+  picture?: string;
   url: URL;
 }
 

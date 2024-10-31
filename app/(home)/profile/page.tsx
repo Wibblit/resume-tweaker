@@ -23,6 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "@/components/TextEditor";
 import { CustomDatePicker } from "@/components/DatePicker";
+import Base64Image from "@/components/base64toPhoto";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -328,17 +329,38 @@ export default function ProfilePage() {
                   />
                 </div>
               ) : field === "picture" ? (
-                <Input
-                  id={`${field}-${entry.id}`}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      updateEntry(section, entry.id, field, file);
-                    }
-                  }}
-                  type="file"
-                  accept="image/*"
-                />
+                <div className="flex-col items-center justify-center">
+                  {profileData?.basics && profileData?.basics[0]?.picture && (
+                    <Base64Image
+                      base64String={profileData?.basics[0]?.picture}
+                      width={150}
+                      height={150}
+                      alt={profileData?.basics[0].name}
+                    />
+                  )}
+                  <Input
+                    id={`${field}-${entry.id}`}
+                    // onChange={(e) => {
+                    //   const file = e.target.files?.[0];
+                    //   if (file) {
+                    //     updateEntry(section, entry.id, field, file);
+                    //   }
+                    // }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          const base64String = reader.result as string;
+                          updateEntry(section, entry.id, field, base64String); // Pass base64 string
+                        };
+                        reader.readAsDataURL(file); // This will encode the file as base64
+                      }
+                    }}
+                    type="file"
+                    accept="image/*"
+                  />
+                </div>
               ) : field === "startDate" ||
                 field === "endDate" ||
                 field === "date" ? (

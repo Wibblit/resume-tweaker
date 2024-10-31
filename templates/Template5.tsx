@@ -5,6 +5,7 @@ import { ResumeData, Basics, Profile } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
 import DateConverter from "@/components/DateConverter";
+import Base64Image from "@/components/base64toPhoto";
 
 interface TemplateProps {
   content: ResumeData;
@@ -242,14 +243,23 @@ const Header: React.FC<{
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
       </div>
-      <Picture
-        src={
-          typeof basics?.picture === "string" && basics?.picture !== ""
-            ? basics?.picture
-            : "/placeholder-user.jpeg"
-        }
-        alt={basics?.name || "Profile picture"}
-      />
+      {basics.picture ? (
+        <Base64Image
+          base64String={basics?.picture}
+          width={128}
+          height={128}
+          alt={basics?.name}
+        />
+      ) : (
+        <Picture
+          src={
+            typeof basics?.picture === "string" && basics?.picture !== ""
+              ? basics?.picture
+              : "/placeholder-user.jpeg"
+          }
+          alt={basics?.name || "Profile picture"}
+        />
+      )}
     </div>
   );
 };

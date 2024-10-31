@@ -822,7 +822,8 @@ export default function ResumePages({
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             Are you sure you want to import data from your
-                            profile? This action cannot be undone.
+                            profile? This action cannot be undone and the
+                            current data will be overwritten.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

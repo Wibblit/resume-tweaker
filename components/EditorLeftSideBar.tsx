@@ -65,6 +65,7 @@ import { useMediaQuery } from "react-responsive";
 import { ResumeData, ResumeSection } from "@/types/types";
 import { CustomDatePicker } from "./DatePicker";
 import { UpdateLeftBarData, Reset } from "@/slices/leftsidebarSlice";
+import Base64Image from "./base64toPhoto";
 
 interface LeftSideBarProps {
   activeSection: keyof ResumeData | "";
@@ -417,17 +418,39 @@ export default function LeftSideBar({
                   />
                 </div>
               ) : field === "picture" ? (
-                <Input
-                  id={`${field}-${entry.id}`}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      updateEntry(section, entry.id, field, file);
-                    }
-                  }}
-                  type="file"
-                  accept="image/*"
-                />
+                <div className="flex-col items-center justify-center">
+                  {resumeData?.basics && resumeData?.basics[0]?.picture && (
+                    <Base64Image
+                            base64String={resumeData?.basics[0]?.picture}
+                            width={150}
+                            height={150}
+                            alt={resumeData?.basics[0].name}
+                    />
+                  )}
+                  <Input
+                    id={`${field}-${entry.id}`}
+                    // onChange={(e) => {
+                    //   const file = e.target.files?.[0];
+                    //   if (file) {
+                    //     updateEntry(section, entry.id, field, file);
+                    //   }
+                    // }}
+                    className="my-2"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          const base64String = reader.result as string;
+                          updateEntry(section, entry.id, field, base64String); // Pass base64 string
+                        };
+                        reader.readAsDataURL(file); // This will encode the file as base64
+                      }
+                    }}
+                    type="file"
+                    accept="image/*"
+                  />
+                </div>
               ) : field === "startDate" ||
                 field === "endDate" ||
                 field === "date" ? (
@@ -693,7 +716,7 @@ export default function LeftSideBar({
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             Are you sure you want to import data from your
-                            profile? This action cannot be undone.
+                            profile? This action cannot be undone and the current data will be overwritten.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
