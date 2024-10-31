@@ -24,6 +24,7 @@ import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "@/components/TextEditor";
 import { CustomDatePicker } from "@/components/DatePicker";
 import Base64Image from "@/components/base64toPhoto";
+import { Trash } from "lucide-react";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -161,6 +162,30 @@ export default function ProfilePage() {
     );
     dispatch(UpdateProfileData(updatedProfileData));
   };
+
+
+const DeleteProfilePicture = () => {
+  // Clone `basics[0]` to make it mutable
+  const updatedProfileData = {
+    ...profileData,
+    basics:
+      profileData.basics && profileData.basics.length
+        ? [
+            { ...profileData.basics[0], picture: "" }, // Update the picture property
+            ...profileData.basics.slice(1), // Keep the rest of the basics intact
+          ]
+        : [], // Fallback to an empty array if `basics` is undefined or empty
+  };
+
+  console.log(updatedProfileData);
+
+  // Dispatch the updated resume data only if basics exist
+  if (updatedProfileData.basics.length > 0) {
+    dispatch(UpdateProfileData(updatedProfileData));
+  }
+};
+
+
 
   const deleteEntry = (section: keyof ResumeData, id: string) => {
     const updatedProfileData = { ...profileData };
@@ -331,12 +356,15 @@ export default function ProfilePage() {
               ) : field === "picture" ? (
                 <div className="flex-col items-center justify-center">
                   {profileData?.basics && profileData?.basics[0]?.picture && (
-                    <Base64Image
-                      base64String={profileData?.basics[0]?.picture}
-                      width={150}
-                      height={150}
-                      alt={profileData?.basics[0].name}
-                    />
+                          <div className="inline-block relative my-2">
+                            <Trash onClick={DeleteProfilePicture} className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer" />
+                      <Base64Image
+                        base64String={profileData?.basics[0]?.picture}
+                        width={150}
+                        height={150}
+                        alt={profileData?.basics[0].name}
+                      />
+                    </div>
                   )}
                   <Input
                     id={`${field}-${entry.id}`}

@@ -66,6 +66,7 @@ import { ResumeData, ResumeSection } from "@/types/types";
 import { CustomDatePicker } from "./DatePicker";
 import { UpdateLeftBarData, Reset } from "@/slices/leftsidebarSlice";
 import Base64Image from "./base64toPhoto";
+import {Trash} from "lucide-react"
 
 interface LeftSideBarProps {
   activeSection: keyof ResumeData | "";
@@ -246,6 +247,26 @@ export default function LeftSideBar({
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
+const DeleteProfilePicture = () => {
+  // Clone `basics[0]` to make it mutable
+  const updatedResumeData = {
+    ...resumeData,
+    basics: resumeData.basics?.length
+      ? [
+          { ...resumeData.basics[0], picture: "" },
+          ...resumeData.basics.slice(1),
+        ]
+      : [], // Fallback to an empty array if `basics` is undefined
+  };
+
+  console.log(updatedResumeData);
+
+  if (updatedResumeData.basics) {
+    dispatch(UpdateLeftBarData(updatedResumeData));
+  }
+};
+
+
   const updateEntry = (
     section: keyof ResumeData,
     id: string,
@@ -419,14 +440,22 @@ export default function LeftSideBar({
                 </div>
               ) : field === "picture" ? (
                 <div className="flex-col items-center justify-center">
-                  {resumeData?.basics && resumeData?.basics[0]?.picture && (
-                    <Base64Image
-                            base64String={resumeData?.basics[0]?.picture}
-                            width={150}
-                            height={150}
-                            alt={resumeData?.basics[0].name}
-                    />
-                  )}
+
+                    {resumeData?.basics && resumeData?.basics[0]?.picture && (
+                      <div className="relative flex items-center justify-center">
+                        <Trash
+                          onClick={DeleteProfilePicture}
+                          className="absolute right-0 -top-2 w-4 h-4 my-3 text-red-500 cursor-pointer"
+                        />
+                        <Base64Image
+                          base64String={resumeData?.basics[0]?.picture}
+                          width={150}
+                          height={150}
+                          alt={resumeData?.basics[0].name}
+                        />
+                      </div>
+                    )}
+
                   <Input
                     id={`${field}-${entry.id}`}
                     // onChange={(e) => {
