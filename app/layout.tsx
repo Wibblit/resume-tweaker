@@ -7,6 +7,7 @@ import { Roboto_Flex as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
   title: {
     default: "resumetweaker | AI Resume Builder",
     template: "%s - resumetweaker",
@@ -87,19 +88,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/icon.ico" sizes="any" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org/",
-              "@type": "WebSite",
-              "name": "resumetweaker",
-              "url": "https://resumetweaker.wibblit.com",
-              "alternateName": "Wibblit ResumeTweaker",
-            }),
-          }}
-        />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.variable)}>
         <ThemeProviderWrapper>
