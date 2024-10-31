@@ -3,6 +3,12 @@ import FeaturedBlogs from "@/components/blogs/featuredBlogs";
 import { AdminAddButton } from "@/components/AdminAddButton";
 import { Separator } from "@radix-ui/react-separator";
 import { auth } from "@/auth";
+import { Metadata } from "next";
+
+export const metadata:Metadata = {
+  title: "Blogs - resumetweaker",
+  description: "Explore the latest blogs from resumetweaker, covering topics on resume building, career tips, and more.",
+};
 
 export default async function Blogs() {
   const session = await auth();
