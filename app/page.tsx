@@ -1,12 +1,5 @@
 import { LandingNav } from "@/components/LandingNav";
 import { Hero } from "@/components/Hero";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-   icons: {
-    icon : '/icon.ico'
-  }
-};
 
 export default async function Home() {
   return (

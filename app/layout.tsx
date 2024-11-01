@@ -52,9 +52,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://wibblit.com",
   },
-  icons: {
-    icon: "/icon.ico",
-  },
   keywords: [
     "AI resume builder",
     "resume maker",
