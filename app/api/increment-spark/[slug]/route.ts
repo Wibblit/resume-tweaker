@@ -1,11 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/prisma";
+import { auth } from "@/auth";
+import { rateLimiter } from "@/lib/rateLimiter";
 
 export async function POST(
   request: Request,
   { params }: { params: { slug: string } }
 ) {
   const { slug } = params;
+  const session = await auth();
+  const userId = session?.user?.id;
+  const ip = (request.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0];
+
+  if (rateLimiter(userId, ip)) {
+    return NextResponse.json({ status: 429, message: "Rate limit exceeded" });
+  }
 
   try {
     // Find the blog post by slug and increment the spark value by 1

@@ -646,7 +646,7 @@ const Template3: React.FC<TemplateProps> = ({
         }
       `}</style>
       <div style={styles.mainContent}>
-        {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections.length > 0 && sectionOrder?.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
       </div>
       <div style={styles.sidebar}>
         <div style={styles.sidebarContent}>

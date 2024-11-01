@@ -16,9 +16,7 @@ export default function BlogPostPage() {
       const sessionData = await response.json();
       setSession(sessionData);
     };
-
     fetchSession();
   }, []);
-
   return <BlogPost session={session} slug={slug} />;
 }

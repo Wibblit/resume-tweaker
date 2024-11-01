@@ -1,12 +1,16 @@
 "use server"
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
+import { headers } from "next/headers";
 
 const prisma = new PrismaClient();
 
 export async function createResume(resumeName: string) {
   try {
     const session = await auth();
+    const userId = session?.user?.id;
+
+    
 
     if (!session || !session.user || !session.user.id) {
       return {
