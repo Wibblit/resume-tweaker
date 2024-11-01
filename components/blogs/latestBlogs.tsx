@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface Blog {
   id: string;
@@ -54,13 +55,18 @@ export default function LatestBlogs() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const {toast} = useToast();
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         const response = await fetch("/api/get-blogs");
         if (response.status === 429) {
-          router.push("/error?status=429")
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          })
           return;
         }
         const data: Blog[] = await response.json();

@@ -6,7 +6,6 @@ import { ArrowLeft, Home } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { LandingNav } from "@/components/LandingPage/LandingNav";
-import { useSearchParams } from "next/navigation";
 
 interface Orb {
   x: number;
@@ -32,28 +31,18 @@ export default function Custom404() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [orbs, setOrbs] = useState<Orb[]>([]);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-	  setMounted(true);
-	  console.log(parseInt(searchParams.get("status")!))
+    setMounted(true);
     setOrbs(Array.from({ length: 5 }, generateOrb));
   }, []);
 
-  const errorContent = {
-    429: {
-      title: "429",
-      message: "Whoa there! You've hit the rate limit.",
-      description: "Please slow down and try again in a few minutes.",
-    },
-    404: {
-      title: "404",
-      message: " Oops! You've ventured into the void.",
-      description: "The page you're looking for doesn't exist or has been moved to another dimension.",
-    },
+  const content = {
+    title: "404",
+    message: " Oops! You've ventured into the void.",
+    description:
+      "The page you're looking for doesn't exist or has been moved to another dimension.",
   };
-	
-	const content = parseInt(searchParams.get("status")!) == 429 ? errorContent[429]: errorContent[404];
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
@@ -62,10 +51,10 @@ export default function Custom404() {
       <main className="flex-grow flex items-center justify-center p-4 relative z-10">
         <div className="text-center">
           <h1 className="text-9xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r dark:from-zinc-500 dark:to-zinc-500 from-zinc-900 to-zinc-900 animate-pulse">
-           {content.title}
+            {content.title}
           </h1>
           <p className="text-2xl mb-8 animate-fade-in-up dark:text-zinc-400 text-zinc-900">
-           {content.message}
+            {content.message}
           </p>
           <p className="text-lg mb-8 max-w-md mx-auto dark:text-zinc-400 text-zinc-900">
             {content.description}
