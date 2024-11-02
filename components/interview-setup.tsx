@@ -67,33 +67,20 @@ export default function InterviewSetup() {
     setLoading(true)
     const numberOfQuestions = Math.floor(formData.duration / 2); // Assuming 2 minutes per question
     try {
-      const response = await fetch("/api/generate-questions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          job: formData.job,
-          position: formData.position,
-          companyName: formData.companyName,
-          jd: formData.jd,
-          numberOfQuestions,
-          interviewType: formData.interviewType,
-        }),
-      });
-      if (!response.ok) {
-        toast({
-          description: "Unable to join the interview. Please try again.",
-          title: "error",
-          variant: "destructive",
-        });
-        setLoading(false)
-      }
-      const data = await response.json();
-      dispatch(setQuestions(data.questions ? data.questions : []));
+      
+      const queryParams = new URLSearchParams({
+        job: formData.job,
+        position: formData.position,
+        companyName: formData.companyName,
+        jd: formData.jd,
+        numberOfQuestions: numberOfQuestions.toString(),
+        interviewType: formData.interviewType,
+        duration: formData.duration.toString(),
+      }).toString();
       dispatch(setFormData(formData));
-      router.push(`/ai-interview/interview`);
+      router.push(`/ai-interview/interview?${queryParams}`);
       setLoading(false)
+
     } catch (error) {
       console.error("Error generating questions:", error);
       toast({
@@ -209,12 +196,12 @@ export default function InterviewSetup() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="interviewer" className="text-foreground">
-              Interviewer Name
+              Interviewer 
             </Label>
             <Input
               id="interviewer"
               name="interviewer"
-              placeholder="e.g. John Doe"
+              placeholder="e.g. HR, Senior Developer"
               onChange={handleInputChange}
               required
               className="bg-background text-foreground"
