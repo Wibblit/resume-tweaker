@@ -69,6 +69,31 @@ export const metadata: Metadata = {
     "resumetweaker",
     "resume tweaker",
   ],
+  appleWebApp:{
+    title: "ResTweak",
+  },
+  icons:{
+    icon: [{
+      rel: "icon",
+      type: "image/png",
+      url:"/favicons/favicon-96x96.png",
+      sizes:"96x96"
+    },{
+      rel: "icon",
+      type: "image/svg+xml",
+      url:"/favicons/favicon.svg"
+    },
+    {
+      rel: "shortcut icon",
+      url:"/favicons/favicon.ico"
+    },
+    {
+      rel: "apple-touch-icon",
+      url:"/favicons/apple-touch-icon.png",
+      sizes:"180x180"
+    }, ]
+  },
+  manifest: "/favicons/site.webmanifest"
 };
 
 const fontSans = FontSans({

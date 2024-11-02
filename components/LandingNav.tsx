@@ -5,9 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { ModeToggle } from "./ModeToggle";
-import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
-import ThemeAwareLogo from "./ThemeAwareLogo";
 import Logo from "./Logo";
 
 export function LandingNav() {
@@ -30,8 +28,7 @@ export function LandingNav() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="font-semibold flex items-center gap-2 group justify-center"
-            >
+              className="flex items-center gap-2 group justify-center">
               <Logo />
             </Link>
           </div>
