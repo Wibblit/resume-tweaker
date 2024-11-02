@@ -75,6 +75,7 @@ export function CreateNewDialog({
               description: response.message || "Failed to create resume",
               variant: "destructive",
             });
+             setLoading(false);
           }
         } else {
           const response = await createCover(name);
@@ -97,6 +98,7 @@ export function CreateNewDialog({
               description: response.message || "Failed to create resume",
               variant: "destructive",
             });
+             setLoading(false);
           }
         }
       } catch (error) {
@@ -105,6 +107,7 @@ export function CreateNewDialog({
           description: "An unexpected error occurred",
           variant: "destructive",
         });
+         setLoading(false);
       }
     }
   };
