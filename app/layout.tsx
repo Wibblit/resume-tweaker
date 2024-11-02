@@ -110,6 +110,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script
+            id="schema-org-script"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "resumetweaker",
+                "alternateName": ["ResumeTweaker", "Resume Tweaker"],
+                "url": "https://resumetweaker.wibblit.com/",
+              })
+            }}
+          />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.variable)}>
         <ThemeProviderWrapper>
