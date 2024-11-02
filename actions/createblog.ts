@@ -1,6 +1,8 @@
 "use server";
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 
 export async function createBlogPost(
   title: string,
@@ -12,17 +14,21 @@ export async function createBlogPost(
   thumbnail: string,
   published: boolean,
   tags: string[], // Corrected this line
-  isFeatured : boolean
+  isFeatured: boolean
 ) {
   try {
     const session = await auth();
-    console.log(title);
-    console.log(slug);
-    console.log(excerpt);
-    console.log(category);
-    console.log(author);
-    console.log(thumbnail), console.log(published);
-    console.log(tags);
+    
+    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;
+    console.log(ip, "ip address")
+    const ratelimit = rateLimiter(session?.user?.id, ip)
+    console.log(ratelimit);
+    if (ratelimit) {
+      console.log("rate limit exceeded")
+      return { message: "Rate limit exceeded.", status: 429 };
+    }
+
     // Ensure user is authenticated
     if (!session || !session.user || !session.user.id) {
       return {
@@ -45,11 +51,9 @@ export async function createBlogPost(
         tags: tags, // Correctly passing the string array
         spark: 0,
         views: 0,
-        isFeatured : isFeatured
+        isFeatured: isFeatured,
       },
     });
-
-    console.log("Blog post created:", blogPost);
 
     return {
       success: true,

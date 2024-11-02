@@ -6,8 +6,9 @@ import { auth } from "@/auth";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  const ip = (req.headers.get('x-forwarded-for') ?? '127.0.0.1').split(',')[0] 
-  console.log("ip from headers", req.headers.get('x-forwarded-for'));
+  let ip = req.ip || req.headers.get('x-forwarded-for') || '127.0.0.1';
+  ip = ip === '::1' ? '127.0.0.1' : ip;  
+  console.log(ip, "ip address")
   try {
     if (rateLimiter(session?.user?.id, ip)) {
       return NextResponse.json(
