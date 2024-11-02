@@ -25,6 +25,7 @@ import { RichInput } from "@/components/TextEditor";
 import { CustomDatePicker } from "@/components/DatePicker";
 import Base64Image from "@/components/base64toPhoto";
 import { Trash } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -36,6 +37,8 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [urlErrors, setUrlErrors] = useState<{ [key: string]: string }>({});
+
+  const { toast } = useToast()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -269,11 +272,25 @@ const DeleteProfilePicture = () => {
         setInitialData(profileData);
         setIsChanged(false);
         console.log(result.message);
+        toast({
+          title: "Success",
+          description: "Profile has been saved successfully.",
+        })
       } else {
         console.error(result.message);
+        toast({
+          title: "Error",
+          description: "Failed to save profile.",
+          variant : "destructive"
+        });
       }
     } catch (error) {
       console.error("Error saving profile:", error);
+       toast({
+         title: "Error",
+         description: "Failed to save profile.",
+         variant: "destructive",
+       });
     } finally {
       setIsSaving(false);
     }
