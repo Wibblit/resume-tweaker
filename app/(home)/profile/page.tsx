@@ -26,6 +26,7 @@ import { CustomDatePicker } from "@/components/DatePicker";
 import Base64Image from "@/components/base64toPhoto";
 import { Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { initialState } from "@/slices/profileSlice";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
