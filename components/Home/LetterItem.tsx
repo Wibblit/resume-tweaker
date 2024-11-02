@@ -56,17 +56,25 @@ export default function LetterItem({
   const handleDuplicate = async () => {
     try {
       const response = await duplicateCoverLetter(letter.id);
-      setRecentCoverLetters((prev) => {
-        if (!prev) return prev;
-        return [
-          {
-            id: response.duplicatedCoverLetter.id,
-            userId: response.duplicatedCoverLetter.userId,
-            coverName: response.duplicatedCoverLetter.coverName,
-          },
-          ...prev,
-        ];
-      });
+       if (response.status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
+     setRecentCoverLetters((prev) => {
+       if (!prev || !response.duplicatedCoverLetter) return prev;
+       return [
+         {
+           id: response.duplicatedCoverLetter.id,
+           userId: response.duplicatedCoverLetter.userId,
+           coverName: response.duplicatedCoverLetter.coverName,
+         },
+         ...prev,
+       ];
+     });
       toast({
         title: "Success",
         description: response.message,
@@ -83,7 +91,15 @@ export default function LetterItem({
 
   const handleDelete = async () => {
     try {
-      const { success, message } = await deleteCoverLetter(letter.id);
+      const { success, message, status } = await deleteCoverLetter(letter.id);
+       if (status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
       if (success) {
         setRecentCoverLetters((prev) =>
           prev?.filter((item) => item.id !== letter.id)

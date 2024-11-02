@@ -1,14 +1,23 @@
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { initialState } from "@/slices/profileSlice";
+import { rateLimiter } from "@/lib/rateLimiter";
 
-export async function GET() {
+export async function GET(req : NextRequest) {
   const session = await auth();
   const prisma = new PrismaClient();
+    let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;  
   let result = null;
   if (session?.user?.id) {
     try {
+       if (rateLimiter(session?.user?.id, ip)) {
+         return NextResponse.json(
+           { message: "Rate limit exceeded." },
+           { status: 429 }
+         );
+       } 
       result = await prisma.profile.findUnique({
         where: {
           userId: session?.user?.id,

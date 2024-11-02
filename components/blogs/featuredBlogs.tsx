@@ -212,6 +212,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, ClockIcon, ArrowRightIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 interface Blog {
   id: string;
@@ -255,11 +256,20 @@ export default function BentoGrid() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast()
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         const response = await fetch("/api/get-featured-blogs");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         const data = await response.json();
         if (Array.isArray(data)) {
           setBlogs(data);

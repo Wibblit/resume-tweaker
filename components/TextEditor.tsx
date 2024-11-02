@@ -65,6 +65,7 @@ import { Toggle } from "./ui/toggle";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Sparkles, Wand2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -144,6 +145,8 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
   const [suggestion, setSuggestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const { toast } = useToast()
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -151,6 +154,14 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
       prompt,
       section,
     });
+    if (response.status === 429) {
+      toast({
+        title: "Whoa there! You've hit the rate limit.",
+        description: "Please slow down and try again in a few minutes.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSuggestion(response.data.content);
     setIsLoading(false);
   };

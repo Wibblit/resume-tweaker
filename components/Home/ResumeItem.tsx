@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useMediaQuery } from "react-responsive";
 import { useRouter } from "next/navigation";
@@ -15,12 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  FileText,
-  Pencil,
-  Copy,
-  Trash2,
-} from "lucide-react";
+import { FileText, Pencil, Copy, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { useAppDispatch } from "@/hooks/hooks";
@@ -60,35 +55,51 @@ export default function ResumeItem({
 
   const handleDuplicate = async () => {
     try {
-        const response = await duplicateResume(resume.id);
-        setRecentResumes((prev) => {
-            if (!prev) return prev;
-            return [
-               {
-                    id: response.duplicatedResume.id, 
-                    userId: response.duplicatedResume.userId, 
-                    resumeName: response.duplicatedResume.resumeName, 
-              },
-              ...prev,  
-            ];
-        });
+      const response = await duplicateResume(resume.id);
+       if (response.status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
+      setRecentResumes((prev) => {
+        if (!prev || !response.duplicatedResume) return prev;
+        return [
+          {
+            id: response.duplicatedResume.id,
+            userId: response.duplicatedResume.userId,
+            resumeName: response.duplicatedResume.resumeName,
+          },
+          ...prev,
+        ];
+      });
+
       toast({
-        title: "Success", 
+        title: "Success",
         description: response.message,
-      })
+      });
     } catch (error) {
       console.error("Failed to duplicate resume:", error);
       toast({
-        title: "Success", 
+        title: "Success",
         description: "Failed to duplicate the resume :(",
-      })
+      });
     }
-};
-
+  };
 
   const handleDelete = async () => {
     try {
-      const { success, message } = await deleteResume(resume.id);
+      const { success, message, status } = await deleteResume(resume.id);
+      if (status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
       if (success) {
         setRecentResumes((prev) =>
           prev?.filter((item) => item.id !== resume.id)
@@ -115,7 +126,11 @@ export default function ResumeItem({
         <FileText className="mr-2 h-4 w-4" />
         Open
       </ContextMenuItem>
-      <RenameDialog setRecentResumes={setRecentResumes} resumeId={resume?.id} resumeName={resume.resumeName}>
+      <RenameDialog
+        setRecentResumes={setRecentResumes}
+        resumeId={resume?.id}
+        resumeName={resume.resumeName}
+      >
         <ContextMenuItem onSelect={(e) => e.preventDefault()}>
           <Pencil className="mr-2 h-4 w-4" />
           Rename
@@ -149,7 +164,11 @@ export default function ResumeItem({
           <FileText className="mr-2 h-4 w-4" />
           Open
         </DropdownMenuItem>
-        <RenameDialog setRecentResumes={setRecentResumes} resumeId={resume?.id} resumeName={resume.resumeName}>
+        <RenameDialog
+          setRecentResumes={setRecentResumes}
+          resumeId={resume?.id}
+          resumeName={resume.resumeName}
+        >
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <Pencil className="mr-2 h-4 w-4" />
             Rename

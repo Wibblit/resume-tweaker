@@ -11,6 +11,7 @@ import { CreateNewCoverButton } from "./CreateNewButton";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
+import { useToast } from "@/hooks/use-toast";
 
 const COVER = "Cover Letter";
 
@@ -30,6 +31,7 @@ export default function LetterContent({
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { toast } = useToast()
 
   useEffect(() => {
     async function getRecentCoverLetters() {
@@ -39,6 +41,14 @@ export default function LetterContent({
           recentCoverLetters: RecentCoverLetter[];
           message: string;
         }>("/api/get-recent-cover-letter/");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         console.log(response, "recent cover letters");
         setRecentCoverLetters(response.data.recentCoverLetters);
       } catch (error) {

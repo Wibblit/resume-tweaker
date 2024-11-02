@@ -1,27 +1,38 @@
 "use server";
 import { auth } from "@/auth";
-
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 import { prisma } from "@/prisma";
 
 export async function createCover(coverName: string) {
   try {
     const session = await auth();
-    console.log("Hello", coverName)
+    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;
+    console.log(ip, "ip address");
+    const ratelimit = rateLimiter(session?.user?.id, ip);
+    console.log(ratelimit);
+    if (ratelimit) {
+      console.log("rate limit exceeded");
+      return { message: "Rate limit exceeded.", status: 429 };
+    }
+    console.log("Hello", coverName);
+
     if (!session || !session.user || !session.user.id) {
       return {
         success: false,
         message: "User is not authenticated",
       };
-    }  
-      
+    }
+
     const cover = await prisma.coverletter.create({
       data: {
         userId: session.user.id.toString(),
         coverName: coverName.toString(),
       },
     });
-      
-      console.log(cover)
+
+    console.log(cover);
 
     return {
       success: true,
@@ -30,7 +41,7 @@ export async function createCover(coverName: string) {
     };
   } catch (error) {
     let errorMessage = "An unknown error occurred";
-    throw error
+    throw error;
     // if (error instanceof Error) {
     //   errorMessage = error.message;
     // }

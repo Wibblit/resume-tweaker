@@ -479,6 +479,7 @@ import SunEditorCore from "suneditor/src/lib/core";
 import "suneditor/dist/css/suneditor.min.css";
 import { useTheme } from "next-themes";
 import { updateBlogPost } from "@/actions/updateblog";
+import { useToast } from "@/hooks/use-toast";
 
 interface BlogData {
   id: string;
@@ -508,6 +509,7 @@ const MAX_SLUG_LENGTH = 60;
 
 export default function EditBlogPost() {
   const { slug } = useParams();
+  const { toast } = useToast();
   const router = useRouter();
   const { theme } = useTheme();
   const [blogData, setBlogData] = useState<BlogData | null>(null);
@@ -521,6 +523,14 @@ export default function EditBlogPost() {
     const fetchBlogData = async () => {
       try {
         const response = await fetch(`/api/get-blogs/${slug}`);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         if (!response.ok) {
           throw new Error("Failed to fetch blog data");
         }
@@ -643,6 +653,14 @@ export default function EditBlogPost() {
         blogData.tags,
         blogData.isFeatured
       );
+       if (result.status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
 
       if (result.success) {
         console.log("Blog post updated successfully:", result.blogPost);

@@ -5,6 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { genericPrompt } from "@/data/prompts/genericPrompt";
 import { jdTailoredPrompt } from "@/data/prompts/jdTailoredPrompt";
+import { rateLimiter } from "@/lib/rateLimiter";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -12,8 +13,16 @@ export async function POST(request: NextRequest, response: NextResponse) {
   const { resumeId, jd, resumeOption, resumeText } = await request.json();
   const prompt = jd ? jdTailoredPrompt : genericPrompt;
   const session = await auth();
+   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
+   ip = ip === "::1" ? "127.0.0.1" : ip; 
   let result = null;
   try {
+    if (rateLimiter(session?.user?.id, ip)) {
+      return NextResponse.json(
+        { message: "Rate limit exceeded." },
+        { status: 429 }
+      );
+    } 
     result = resumeOption === "upload" ? resumeText : await prisma.resume.findUnique({
       where: {
         id: resumeId,

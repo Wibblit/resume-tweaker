@@ -2,6 +2,8 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 
 export async function updateProfiles(profileData: {
   basics?: {
@@ -89,7 +91,16 @@ export async function updateProfiles(profileData: {
   console.log("yop", profileData);
   try {
     const session = await auth();
+    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;
+    console.log(ip, "ip address");
+    const ratelimit = rateLimiter(session?.user?.id, ip);
 
+    console.log(ratelimit);
+    if (ratelimit) {
+      console.log("rate limit exceeded");
+      return { message: "Rate limit exceeded.", status: 429 };
+    }
     if (!session || !session.user || !session.user.id) {
       return {
         success: false,

@@ -53,7 +53,14 @@ export function CreateNewDialog({
       try {
         if (type === RESUME) {
           const response = await createResume(name);
-
+          if (response.status === 429) {
+            toast({
+              title: "Whoa there! You've hit the rate limit.",
+              description: "Please slow down and try again in a few minutes.",
+              variant: "destructive",
+            });
+            return;
+          }
           if (response && response.success) {
             localStorage.setItem(
               "currResumeId",
@@ -68,17 +75,25 @@ export function CreateNewDialog({
             setOpen(false);
 
             router.push("/editor");
-                        setLoading(false);
+            setLoading(false);
           } else {
             toast({
               title: "Error",
               description: response.message || "Failed to create resume",
               variant: "destructive",
             });
-             setLoading(false);
+            setLoading(false);
           }
         } else {
           const response = await createCover(name);
+          if (response.status === 429) {
+            toast({
+              title: "Whoa there! You've hit the rate limit.",
+              description: "Please slow down and try again in a few minutes.",
+              variant: "destructive",
+            });
+            return;
+          }
 
           if (response && response.success) {
             localStorage.setItem("currCoverId", response?.cover?.id as string);
@@ -91,14 +106,14 @@ export function CreateNewDialog({
             setOpen(false);
 
             router.push("/covereditor");
-                        setLoading(false);
+            setLoading(false);
           } else {
             toast({
               title: "Error",
               description: response.message || "Failed to create resume",
               variant: "destructive",
             });
-             setLoading(false);
+            setLoading(false);
           }
         }
       } catch (error) {
@@ -107,7 +122,7 @@ export function CreateNewDialog({
           description: "An unexpected error occurred",
           variant: "destructive",
         });
-         setLoading(false);
+        setLoading(false);
       }
     }
   };

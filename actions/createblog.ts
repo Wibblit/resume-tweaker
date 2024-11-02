@@ -23,6 +23,7 @@ export async function createBlogPost(
     ip = ip === "::1" ? "127.0.0.1" : ip;
     console.log(ip, "ip address")
     const ratelimit = rateLimiter(session?.user?.id, ip)
+    
     console.log(ratelimit);
     if (ratelimit) {
       console.log("rate limit exceeded")

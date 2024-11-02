@@ -1,8 +1,10 @@
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
+import { rateLimiter } from "@/lib/rateLimiter";
+import { auth } from "@/auth";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import {
   getAISuggestionPrompt,
   getAIEnhancementPrompt,
@@ -10,8 +12,17 @@ import {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const session = await auth();
+  let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
+  ip = ip === "::1" ? "127.0.0.1" : ip;  
   try {
+    if (rateLimiter(session?.user?.id, ip)) {
+      return NextResponse.json(
+        { message: "Rate limit exceeded." },
+        { status: 429 }
+      );
+    } 
     const { prompt, content, action, section } = await request.json();
     const detailedPrompt =
       action === "enhance"

@@ -51,6 +51,14 @@ export function RenameDialog({
       setLoading(true);
       try {
         const response = await renameCoverLetter(name, coverId);
+         if (response.status === 429) {
+           toast({
+             title: "Whoa there! You've hit the rate limit.",
+             description: "Please slow down and try again in a few minutes.",
+             variant: "destructive",
+           });
+           return;
+         }
         setOpen(false);
         setRecentCoverLetters((prev) =>
           prev?.map((cover) =>

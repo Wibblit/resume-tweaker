@@ -316,6 +316,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { deleteBlog } from "@/actions/deleteblog";
+import { useToast } from "@/hooks/use-toast";
 
 interface BlogPostProps {
   session: Session | null;
@@ -341,7 +342,7 @@ interface Blog {
 
 export default function BlogPost({ session, slug }: BlogPostProps) {
   const router = useRouter();
-
+  const { toast} = useToast()
   const [blog, setBlog] = useState<Blog | null>(null);
   const [sparkCount, setSparkCount] = useState<number>(0);
   const [hasSparked, setHasSparked] = useState<boolean>(false);
@@ -353,6 +354,14 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
     const fetchBlog = async () => {
       try {
         const response = await fetch(`/api/get-blogs/${slug}`);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         if (!response.ok) {
           throw new Error("Failed to fetch blog");
         }
@@ -431,6 +440,14 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
     if (confirm("Are you sure you want to delete this blog post?")) {
       try {
         const result = await deleteBlog(blog?.slug || "");
+         if (result.status === 429) {
+           toast({
+             title: "Whoa there! You've hit the rate limit.",
+             description: "Please slow down and try again in a few minutes.",
+             variant: "destructive",
+           });
+           return;
+         }
         if (result.success) {
           router.push("/blogs");
         } else {

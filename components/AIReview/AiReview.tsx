@@ -246,6 +246,14 @@ export default function AIReview() {
           recentResumes: UserResume[];
           message: string;
         }>("/api/get-recent-resumes/");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         console.log(response, "user resumes");
         setUserResumes(response.data.recentResumes);
         response.data.recentResumes.length === 0 && setFuncDisabler(true)
@@ -323,6 +331,14 @@ export default function AIReview() {
         jd: jd,
         reviewType: reviewType,
       });
+      if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          })
+          return;
+        }
       setJd("");
       setAiSuggestions(response.data.resumeReview);
     } catch (error) {

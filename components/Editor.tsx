@@ -27,13 +27,14 @@ import {
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 import { setFullProfileData } from "@/slices/profileSlice";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<keyof ResumeData | "">("basics");
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { toast } = useToast()
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
@@ -50,6 +51,14 @@ export default function Editor() {
         setIsLoading(true);
         const resumeId = currResumeId ? currResumeId : localStorage.getItem("currResumeId");
         const response = await axios.get<{ resumeData: PageData; message: string }>(`/api/get-resume-data/${resumeId}`);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         const resumeData = response.data.resumeData;
         console.log(resumeData);
         const { id, styles, resumeName, userId, ...leftSidebBarContent } = resumeData;
@@ -82,6 +91,14 @@ export default function Editor() {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get("/api/get-profile");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
 
         const { profileData } = response.data;
         console.log(profileData);
@@ -116,7 +133,15 @@ export default function Editor() {
   const saveData = async () => {
     try {
       console.log(resumeStyles);
-      await saveResumeData(ResumeData, resumeStyles, currResumeId);
+      const res = await saveResumeData(ResumeData, resumeStyles, currResumeId);
+       if (res.status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
       console.log("Resume data saved successfully");
     } catch (error) {
       console.error("Error saving resume data:", error);

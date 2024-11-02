@@ -1,13 +1,25 @@
 "use server";
 import { PrismaClient } from "@prisma/client";
 import { auth } from "@/auth";
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export async function renameCoverLetter(name: string, coverId: string) {
   try {
     // Retrieve the authenticated user session
     const session = await auth();
+     let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+     ip = ip === "::1" ? "127.0.0.1" : ip;
+     console.log(ip, "ip address");
+     const ratelimit = rateLimiter(session?.user?.id, ip);
+
+     console.log(ratelimit);
+     if (ratelimit) {
+       console.log("rate limit exceeded");
+       return { message: "Rate limit exceeded.", status: 429 };
+     }
     const updatedCoverLetter = await prisma.coverletter.updateMany({
       where: {
         id: coverId,

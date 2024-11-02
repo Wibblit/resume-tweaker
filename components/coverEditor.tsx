@@ -24,6 +24,7 @@ import {
   UpdatePaperFormat,
   UpdateSeparator,
 } from "@/slices/rightsidebarSlice";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<
@@ -36,7 +37,7 @@ export default function CoverEditor() {
   const CoverLetterData = useAppSelector((state) => state.coverletter);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
   const { currCoverId } = useAppSelector((state) => state.currentCoverLetter);
-
+  const {toast} = useToast()
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const dispatch = useAppDispatch();
@@ -45,7 +46,15 @@ export default function CoverEditor() {
 
   const saveData = async () => {
     try {
-      await savecoverData(CoverLetterData, ResumeAppearance, currCoverId);
+      const response = await savecoverData(CoverLetterData, ResumeAppearance, currCoverId);
+       if (response.status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
       console.log("Cover letter data saved successfully");
     } catch (error) {
       console.error("Error saving cover letter data:", error);
@@ -62,7 +71,15 @@ export default function CoverEditor() {
             const response = await axios.get<{
             coverData: CPageData;
             message: string;
-        }>(`/api/get-cover-letter-data/${coverId}`);
+            }>(`/api/get-cover-letter-data/${coverId}`);
+          if (response.status === 429) {
+            toast({
+              title: "Whoa there! You've hit the rate limit.",
+              description: "Please slow down and try again in a few minutes.",
+              variant: "destructive",
+            });
+            return;
+          }
         console.log(response);
         const coverData = response.data.coverData;
         console.log(coverData);

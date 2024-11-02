@@ -26,7 +26,6 @@ import { CustomDatePicker } from "@/components/DatePicker";
 import Base64Image from "@/components/base64toPhoto";
 import { Trash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { initialState } from "@/slices/profileSlice";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -48,6 +47,14 @@ export default function ProfilePage() {
           fetch("/api/get-profile"),
           // fetch("/api/get-credits"),
         ]);
+        if (profileResponse.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         const profileData = await profileResponse.json();
         // const creditsData = await creditsResponse.json();
 
@@ -269,6 +276,14 @@ const DeleteProfilePicture = () => {
     try {
       //@ts-ignore
       const result = await updateProfiles(profileData);
+       if (result.status === 429) {
+         toast({
+           title: "Whoa there! You've hit the rate limit.",
+           description: "Please slow down and try again in a few minutes.",
+           variant: "destructive",
+         });
+         return;
+       }
       if (result.success) {
         setInitialData(profileData);
         setIsChanged(false);

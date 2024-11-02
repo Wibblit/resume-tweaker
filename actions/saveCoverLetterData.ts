@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { CoverLetterData, CoverLetterState } from "@/types/types";
 import { PrismaClient } from "@prisma/client";
 import { ResumeStyles as CoverStyle } from "@/types/types";
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 
 const prisma = new PrismaClient();
 
@@ -17,6 +19,16 @@ export async function savecoverData(
   console.log(coverData);
 
   try {
+    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;
+    console.log(ip, "ip address");
+    const ratelimit = rateLimiter(session?.user?.id, ip);
+
+    console.log(ratelimit);
+    if (ratelimit) {
+      console.log("rate limit exceeded");
+      return { message: "Rate limit exceeded.", status: 429 };
+    }
     const result = await prisma.coverletter.update({
       where: {
         id: coverId,

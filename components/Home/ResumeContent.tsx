@@ -11,6 +11,7 @@ import { CreateNewResumeButton } from "./CreateNewButton";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface RecentResume {
   id: string;
@@ -27,6 +28,7 @@ export default function ResumeContent({
   const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { toast } = useToast()
 
   useEffect(() => {
     async function getRecentResumes() {
@@ -36,6 +38,14 @@ export default function ResumeContent({
           recentResumes: RecentResume[];
           message: string;
         }>("/api/get-recent-resumes/");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         console.log(response, "recent resumes");
         setRecentResumes(response.data.recentResumes);
       } catch (error) {

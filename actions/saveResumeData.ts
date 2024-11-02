@@ -3,8 +3,10 @@
 import { auth } from "@/auth";
 import { ResumeData, ResumeStyles } from "@/types/types";
 import { PrismaClient } from "@prisma/client";
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export async function saveResumeData(
   resumeData: ResumeData,
@@ -16,6 +18,17 @@ export async function saveResumeData(
   console.log("Save data request reached...");
 
   try {
+
+    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;
+    console.log(ip, "ip address");
+    const ratelimit = rateLimiter(session?.user?.id, ip);
+
+    console.log(ratelimit);
+    if (ratelimit) {
+      console.log("rate limit exceeded");
+      return { message: "Rate limit exceeded.", status: 429 };
+    }
  
     const parsedProfiles = JSON.parse(JSON.stringify(resumeData.profiles));
     const parsedBasics = JSON.parse(JSON.stringify(resumeData.basics));

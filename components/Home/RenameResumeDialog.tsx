@@ -49,6 +49,14 @@ export function RenameDialog({
       setLoading(true);
       try {
         const response = await renameResume(name, resumeId);
+         if (response.status === 429) {
+           toast({
+             title: "Whoa there! You've hit the rate limit.",
+             description: "Please slow down and try again in a few minutes.",
+             variant: "destructive",
+           });
+           return;
+         }
         setOpen(false);
         setRecentResumes((prev) => 
           prev?.map((resume) => 

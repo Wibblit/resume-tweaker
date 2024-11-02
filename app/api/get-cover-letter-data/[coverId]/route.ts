@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { rateLimiter } from "@/lib/rateLimiter";
 
 const prisma = new PrismaClient();
 
@@ -10,8 +11,16 @@ export async function GET(
 ) {
   const coverId = params.coverId;
   const session = await auth();
+    let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;  
   let result = null;
   try {
+    if (rateLimiter(session?.user?.id, ip)) {
+      return NextResponse.json(
+        { message: "Rate limit exceeded." },
+        { status: 429 }
+      );
+    } 
     result = await prisma.coverletter.findUnique({
       where: {
         id: coverId,

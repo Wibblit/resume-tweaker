@@ -1,13 +1,23 @@
 "use server";
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
+import { prisma } from "@/prisma";
 
 export async function duplicateResume(resumeId: string) {
-  const session = await auth();
-
   try {
+    const session = await auth();
+    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
+    ip = ip === "::1" ? "127.0.0.1" : ip;
+    console.log(ip, "ip address");
+    const ratelimit = rateLimiter(session?.user?.id, ip);
+
+    console.log(ratelimit);
+    if (ratelimit) {
+      console.log("rate limit exceeded");
+      return { message: "Rate limit exceeded.", status: 429 };
+    }
     if (!session || !session.user?.id) {
       throw new Error("Unauthorized");
     }
