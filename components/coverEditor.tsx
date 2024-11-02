@@ -55,9 +55,18 @@ export default function CoverEditor() {
          });
          return;
        }
-      console.log("Cover letter data saved successfully");
+      toast({
+        title: "Success",
+        description: "The cover letter has been saved successfully.",
+      });
+
     } catch (error) {
-      console.error("Error saving cover letter data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save the cover letter.",
+        variant : "destructive"
+      });
+
     }
   };
   

@@ -323,11 +323,6 @@ const Template5: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              {/* <div
-              dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-              style={sectionStyle}
-              className="text-justify"
-            /> */}
               <HTMLViewer
                 lineHeight={lineHeight}
                 content={content.summary[0].content}
@@ -387,11 +382,11 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${
+                        <div className="font-bold">{
                           vol.startDate && DateConverter(vol.startDate)
-                        } ${vol.endDate && " - "} ${
+                        } {vol.endDate && " - "} {
                           vol.endDate && DateConverter(vol.endDate)
-                        }`}</div>
+                        }</div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -475,18 +470,13 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div>{`${
+                        <div>{
                           exp.startDate && DateConverter(exp.startDate)
-                        } - ${exp.endDate && DateConverter(exp.endDate)}`}</div>
+                        } {exp.endDate && " - "} {exp.endDate && DateConverter(exp.endDate)}</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
                     {exp.summary && !isEmptyString(exp.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
                       <HTMLViewer
                         lineHeight={lineHeight}
                         content={exp.summary}
@@ -561,9 +551,9 @@ const Template5: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div>{`${
+                      <div>{
                         edu.startDate && DateConverter(edu.startDate)
-                      } - ${edu.endDate && DateConverter(edu.endDate)}`}</div>
+                      } {edu.endDate && " - "} {edu.endDate && DateConverter(edu.endDate)}</div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -617,19 +607,14 @@ const Template5: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div>{`${
+                        <div>{
                           project.startDate && DateConverter(project.startDate)
-                        } - ${
+                        } {project.endDate && " - "} {
                           project.endDate && DateConverter(project.endDate)
-                        }`}</div>
+                        }</div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
                       <HTMLViewer
                         lineHeight={lineHeight}
                         content={project.summary}
@@ -652,6 +637,9 @@ const Template5: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
+           p {
+          color:black
+          }
       `}</style>
       <div>
         {content.basics && content?.basics[0] && (

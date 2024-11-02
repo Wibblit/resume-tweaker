@@ -369,11 +369,11 @@ const Template3: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${
+                        <div className="font-bold">{
                           vol.startDate && DateConverter(vol.startDate)
-                        } ${vol.endDate && " - "} ${
+                        } {vol.endDate && " - "} {
                           vol.endDate && DateConverter(vol.endDate)
-                        }`}</div>
+                        }</div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -422,11 +422,11 @@ const Template3: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div>{`${
+                        <div>{
                           exp.startDate && DateConverter(exp.startDate)
-                        } ${exp.endDate && " - "} ${
+                        } {exp.endDate && " - "} {
                           exp.endDate && DateConverter(exp.endDate)
-                        }`}</div>
+                        }</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -542,9 +542,9 @@ const Template3: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div>{`${edu.startDate && DateConverter(edu.startDate)} ${
+                      <div>{edu.startDate && DateConverter(edu.startDate)} {
                         edu.endDate && " - "
-                      } ${edu.endDate && DateConverter(edu.endDate)}`}</div>
+                      } {edu.endDate && DateConverter(edu.endDate)} </div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -598,11 +598,11 @@ const Template3: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div>{`${
+                        <div>{
                           project.startDate && DateConverter(project.startDate)
-                        } ${project.endDate && " - "} ${
+                        } {project.endDate && " - "} {
                           project.endDate && DateConverter(project.endDate)
-                        }`}</div>
+                        }</div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
@@ -644,9 +644,15 @@ const Template3: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
+           p {
+          color:black
+          }
       `}</style>
       <div style={styles.mainContent}>
-        {sectionOrder.sections.length > 0 && sectionOrder?.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections.length > 0 &&
+          sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
+            renderSection(sectionName)
+          )}
       </div>
       <div style={styles.sidebar}>
         <div style={styles.sidebarContent}>

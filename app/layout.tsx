@@ -5,12 +5,20 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Provider } from "react-redux";
 import store from "@/store";
 import { Toaster } from "@/components/ui/toaster";
+import { Roboto_Flex as FontSans } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 // const LTWave = localFont({
 //   src: "./fonts/LTWave-Regular.ttf",
 //   variable: "--font-geist-sans",
 //   weight: "100 900",
 // });
+
+const fontSans = FontSans({
+  // weight: ['100', '300', '400', '500', '700', '900'],
+  subsets: ["latin"],
+  variable: "--font-roboto",
+});
 
 export default function RootLayout({
   children,
@@ -25,16 +33,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={` antialiased font-custom`}>
+      <body className={cn(` antialiased font-custom`, fontSans.variable)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <Provider store={store}>
-            {children}
-          </Provider>
+          <Provider store={store}>{children}</Provider>
         </ThemeProvider>
         <Toaster />
         <script

@@ -220,31 +220,31 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   //   },
   // };
 
-    const styles = {
-      container: {
-        fontFamily: fontFamily,
-        fontSize: `${fontSize}px`,
-        lineHeight: `${lineHeight}`,
-        padding: `${margin}mm`,
-        color: "black",
-        minHeight: "100vh",
-        height: "100%",
-        display: "flex",
-      },
-      body: {
-        fontSize: `${1.1 * scaleFactor}rem`,
-        color: "black",
-      },
-      col2: {
-        width: "65%",
-      },
-      col2Content: {
-        height: "100%",
-      },
-      col1Content: {
-        width: "35%",
-      },
-    };
+  const styles = {
+    container: {
+      fontFamily: fontFamily,
+      fontSize: `${fontSize}px`,
+      lineHeight: `${lineHeight}`,
+      padding: `${margin}mm`,
+      color: "black",
+      minHeight: "100vh",
+      height: "100%",
+      display: "flex",
+    },
+    body: {
+      fontSize: `${1.1 * scaleFactor}rem`,
+      color: "black",
+    },
+    col2: {
+      width: "65%",
+    },
+    col2Content: {
+      height: "100%",
+    },
+    col1Content: {
+      width: "35%",
+    },
+  };
 
   const renderSection = (sectionName: string) => {
     switch (sectionName) {
@@ -253,11 +253,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.summary &&
           content.summary.length > 0 && (
             <Section title="Summary" baseColor={baseColor}>
-              {/* <div
-                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-                style={styles.body}
-                className="text-justify"
-              /> */}
               <HTMLViewer
                 lineHeight={lineHeight}
                 content={content.summary[0].content}
@@ -279,11 +274,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${
+                        <div className="font-bold">{
                           exp.startDate && DateConverter(exp.startDate)
-                        } ${exp.endDate && " - "} ${
+                        } {exp.endDate && " - "} {
                           exp.endDate && DateConverter(exp.endDate)
-                        }`}</div>
+                        }</div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -382,11 +377,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${
-                        edu.startDate && DateConverter(edu.startDate)
-                      } ${edu.endDate && " - "} ${
-                        edu.endDate && DateConverter(edu.endDate)
-                      }`}</div>
+                      <div className="font-bold">
+                        {edu.startDate && DateConverter(edu.startDate)}
+                        {edu.endDate && " - "}
+                        {edu.endDate && DateConverter(edu.endDate)}
+                      </div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -435,11 +430,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${
+                        <div className="font-bold">{
                           project.startDate && DateConverter(project.startDate)
-                        } ${project.endDate && " - "} ${
+                        } {project.endDate && " - "} {
                           project.endDate && DateConverter(project.endDate)
-                        }`}</div>
+                        }</div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
@@ -491,11 +486,11 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${
+                        <div className="font-bold">{
                           vol.startDate && DateConverter(vol.startDate)
-                        } ${vol.endDate && " - "} ${
+                        } {vol.endDate && " - "} {
                           vol.endDate && DateConverter(vol.endDate)
-                        }`}</div>
+                        }</div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -633,9 +628,14 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
         .resume-content * {
           font-family: ${fontFamily}, sans-serif;
         }
+          p {
+          color:black
+          }
       `}</style>
       <div style={styles.col1Content} className="resume-content">
-        {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
+          renderSection(sectionName)
+        )}
       </div>
       <div style={styles.col2}>
         <div style={styles.col2Content} className="resume-content">

@@ -1,9 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @import '/app/fonts/font.css'; */
 
-/* LTWave Regular */
+/* LTWave Regular
 @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-Regular.woff") format("woff"),
@@ -12,93 +11,69 @@
   font-style: normal;
 }
 
-/* LTWave Bold */
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Bold.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
-}
-
 /* LTWave Italic */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-Italic.woff") format("woff");
   font-weight: 400;
   font-style: italic;
-}
+} */
 
 /* LTWave Bold Italic */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-BoldItalic.woff") format("woff");
   font-weight: 700;
   font-style: italic;
-}
+} */
 
 /* LTWave Light */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-Light.woff") format("woff");
   font-weight: 300;
   font-style: normal;
-}
+} */
 
 /* LTWave Light Italic */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-LightItalic.woff") format("woff");
   font-weight: 300;
   font-style: italic;
-}
+} */
 
 /* LTWave Thin */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-Thin.woff") format("woff");
   font-weight: 100;
   font-style: normal;
-}
+} */
 
 /* LTWave Thin Italic */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-ThinItalic.woff") format("woff");
   font-weight: 100;
   font-style: italic;
-}
-
-/* LTWave Black */
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Black.woff") format("woff");
-  font-weight: 900;
-  font-style: normal;
-}
-
-/* LTWave Black Italic */
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-BlackItalic.woff") format("woff");
-  font-weight: 900;
-  font-style: italic;
-}
+} */
 
 /* LTWave Medium */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-Medium.woff") format("woff");
   font-weight: 500;
   font-style: normal;
-}
+} */
 
 /* LTWave Medium Italic */
-@font-face {
+/* @font-face {
   font-family: "LTWave";
   src: url("/fonts/LTWave-MediumItalic.woff") format("woff");
   font-weight: 500;
   font-style: italic;
-}
+} */ 
 
 /* Apply LTWave globally */
 /* @layer base {
@@ -106,13 +81,12 @@
     font-family: 'LTWave', sans-serif;
   }
 } */
-
-@layer base {
+ @layer base { 
   /* Apply LTWave font globally, but exclude containers with the .no-ltwave class */
-  *:not(.no-ltwave) {
-    font-family: "LTWave", sans-serif;
-  }
-}
+  /* *:not(.no-ltwave) {
+    font-family: "Poppins", sans-serif;
+  } */
+ } 
 
 @layer base {
   :root {
@@ -188,23 +162,14 @@
       @apply !font-light;
     }
   } */
-
-  p {
-    @apply text-lg text-muted-foreground font-light;
-  }
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-  span {
-    font-style: normal;
-  }
   body {
-    @apply bg-background text-foreground;
-    font-optical-sizing: auto;
-    font-style: normal;
+    @apply bg-background ;
   }
   .wysiwyg {
     @apply prose max-w-none prose-headings:mt-0 prose-headings:mb-2 prose-p:mt-0 prose-p:mb-2 prose-ul:mt-0 prose-ul:mb-2 prose-li:mt-0 prose-li:mb-2 prose-ol:mt-0 prose-ol:mb-2 prose-img:mt-0 prose-img:mb-2 prose-hr:mt-0 prose-hr:mb-2 prose-p:leading-normal prose-li:leading-normal prose-a:break-all;

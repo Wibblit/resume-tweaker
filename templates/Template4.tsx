@@ -91,9 +91,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.summary &&
           content.summary.length > 0 && (
             <Section title="Summary" baseColor={baseColor}>
-              {/* <p className="text-sm text-justify leading-snug whitespace-pre-wrap">
-                {content.summary[0].content}
-              </p> */}
               <HTMLViewer
                 lineHeight={lineHeight}
                 content={content.summary[0].content}
@@ -213,14 +210,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       )}
                     </h3>
                     <p className="text-xs text-gray-600">
-                      {project.startDate && DateConverter(project.startDate)} -{" "}
+                      {project.startDate && DateConverter(project.startDate)}
+                      {project.endDate && " - "}
                       {project.endDate && DateConverter(project.endDate)}
                     </p>
                   </div>
                   {project.summary && (
-                    // <p className="text-sm text-gray-700 leading-snug mb-1 text-justify whitespace-pre-wrap">
-                    //   {project.summary}
-                    // </p>
                     <HTMLViewer
                       lineHeight={lineHeight}
                       content={project.summary}
@@ -314,7 +309,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {vol.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {vol.startDate && DateConverter(vol.startDate)} -{" "}
+                      {vol.startDate && DateConverter(vol.startDate)} {vol.endDate && " - "}
                       {vol.endDate && DateConverter(vol.endDate)}
                     </span>
                   </div>
@@ -373,9 +368,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   </div>
                   <h3 className="text-xs">{award.awarder}</h3>
                   {award.summary && (
-                    // <p className="text-xs mt-1 text-justify leading-snug whitespace-pre-wrap">
-                    //   {award.summary}
-                    // </p>
                     <HTMLViewer
                       lineHeight={lineHeight}
                       content={award.summary}
@@ -399,6 +391,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
+           p {
+          color:black
+          }
       `}</style>
       {content.basics && (
         <div className="mb-4 flex items-start">

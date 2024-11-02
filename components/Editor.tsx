@@ -142,9 +142,18 @@ export default function Editor() {
          });
          return;
        }
-      console.log("Resume data saved successfully");
+      toast({
+        title: "Success",
+        description: "The resume has been saved successfully.",
+      });
+
     } catch (error) {
-      console.error("Error saving resume data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save the resume.",
+        variant : "destructive"
+      });
+
     }
   };
 
