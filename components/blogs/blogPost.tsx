@@ -1,64 +1,74 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { Calendar, Clock, User, Zap, Eye, ChevronUp, ExternalLink, ChevronDown, Share2 } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Breadcrumbs } from "@/components/BlogBreadCrumbs"
-import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
-import { Session } from "next-auth"
-import { deleteBlog } from "@/actions/deleteblog"
-import { Blog } from "@/types/types"
-import { Separator } from "@/components/ui/separator"
-import { ShareComponent } from "./ShareComponent"
-
-
+import { useState, useEffect, useRef } from "react";
+import {
+  Calendar,
+  Clock,
+  User,
+  Zap,
+  Eye,
+  ChevronUp,
+  ExternalLink,
+  ChevronDown,
+  Share2,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Breadcrumbs } from "@/components/BlogBreadCrumbs";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
+import { deleteBlog } from "@/actions/deleteblog";
+import { Blog } from "@/types/types";
+import { Separator } from "@/components/ui/separator";
+import { ShareComponent } from "./ShareComponent";
 
 interface BlogPostProps {
-  data: Blog
+  data: Blog;
 }
 
 export default function BlogPost({ data }: BlogPostProps) {
-  const router = useRouter()
-  const [loading, setLoading] = useState<boolean>(false)
-  const [blog, setBlog] = useState<Blog | null>(null)
-  const [sparkCount, setSparkCount] = useState<number>(0)
-  const [hasSparked, setHasSparked] = useState<boolean>(false)
-  const [showSparkAnimation, setShowSparkAnimation] = useState<boolean>(false)
-  const [views, setViews] = useState<number>(0)
-  const [showScrollTop, setShowScrollTop] = useState<boolean>(false)
-  const [session, setSession] = useState<Session | null>(null)
-  const [activeSection, setActiveSection] = useState<string>("")
-  const [showAllToc, setShowAllToc] = useState<boolean>(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [blog, setBlog] = useState<Blog | null>(null);
+  const [sparkCount, setSparkCount] = useState<number>(0);
+  const [hasSparked, setHasSparked] = useState<boolean>(false);
+  const [showSparkAnimation, setShowSparkAnimation] = useState<boolean>(false);
+  const [views, setViews] = useState<number>(0);
+  const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [activeSection, setActiveSection] = useState<string>("");
+  const [showAllToc, setShowAllToc] = useState<boolean>(false);
 
-  const contentRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     const setData = async () => {
       try {
-        const res = await fetch("/api/auth/session")
-        const sessionData = await res.json()
-        setSession(sessionData)
+        const res = await fetch("/api/auth/session");
+        const sessionData = await res.json();
+        setSession(sessionData);
 
-        setBlog(data)
-        setSparkCount(data.spark)
-        setViews(data.views)
+        setBlog(data);
+        setSparkCount(data.spark);
+        setViews(data.views);
 
-        const sparkedBlogs = JSON.parse(localStorage.getItem("sparkedBlogs") || "[]")
-        setHasSparked(sparkedBlogs.includes(data.id))
-        setLoading(false)
+        const sparkedBlogs = JSON.parse(
+          localStorage.getItem("sparkedBlogs") || "[]"
+        );
+        setHasSparked(sparkedBlogs.includes(data.id));
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching blog:", error)
-        setLoading(false)
+        console.error("Error fetching blog:", error);
+        setLoading(false);
       }
-    }
+    };
 
-    setData()
-  }, [data])
+    setData();
+  }, [data]);
 
   useEffect(() => {
     const incrementViews = async () => {
@@ -66,118 +76,124 @@ export default function BlogPost({ data }: BlogPostProps) {
         try {
           const response = await fetch(`/api/blogs/${blog.id}/views`, {
             method: "POST",
-          })
+          });
           if (response.ok) {
-            const data = await response.json()
-            setViews(data.views)
+            const data = await response.json();
+            setViews(data.views);
           }
         } catch (error) {
-          console.error("Failed to increment view count:", error)
+          console.error("Failed to increment view count:", error);
         }
       }
-    }
-    incrementViews()
-  }, [blog])
+    };
+    incrementViews();
+  }, [blog]);
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300)
-    }
+      setShowScrollTop(window.scrollY > 300);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
+            setActiveSection(entry.target.id);
           }
-        })
+        });
       },
       { threshold: 0.5 }
-    )
+    );
 
-    const headings = contentRef.current?.querySelectorAll("h2, h3")
-    headings?.forEach((heading) => observer.observe(heading))
+    const headings = contentRef.current?.querySelectorAll("h2, h3");
+    headings?.forEach((heading) => observer.observe(heading));
 
     return () => {
-      headings?.forEach((heading) => observer.unobserve(heading))
-    }
-  }, [blog])
+      headings?.forEach((heading) => observer.unobserve(heading));
+    };
+  }, [blog]);
 
   const handleSparkClick = async () => {
     if (!hasSparked && blog) {
       try {
-        setSparkCount((prev) => prev + 1)
-        setShowSparkAnimation(true)
-        setHasSparked(true)
+        setSparkCount((prev) => prev + 1);
+        setShowSparkAnimation(true);
+        setHasSparked(true);
         const response = await fetch(`/api/increment-spark/${blog.slug}`, {
           method: "POST",
-        })
+        });
         if (response.ok) {
           const sparkedBlogs = JSON.parse(
             localStorage.getItem("sparkedBlogs") || "[]"
-          )
-          sparkedBlogs.push(blog.id)
-          localStorage.setItem("sparkedBlogs", JSON.stringify(sparkedBlogs))
+          );
+          sparkedBlogs.push(blog.id);
+          localStorage.setItem("sparkedBlogs", JSON.stringify(sparkedBlogs));
 
-          setTimeout(() => setShowSparkAnimation(false), 1000)
+          setTimeout(() => setShowSparkAnimation(false), 1000);
         } else {
-          console.error("Failed to increment Spark count")
-          setTimeout(() => setShowSparkAnimation(false), 1000)
+          console.error("Failed to increment Spark count");
+          setTimeout(() => setShowSparkAnimation(false), 1000);
         }
       } catch (error) {
-        console.error("Failed to increment Spark count:", error)
+        console.error("Failed to increment Spark count:", error);
       }
     }
-  }
+  };
 
   const handleDelete = async () => {
     if (confirm("Are you sure you want to delete this blog post?")) {
       try {
-        const result = await deleteBlog(blog?.slug || "")
+        const result = await deleteBlog(blog?.slug || "");
         if (result.success) {
-          router.push("/blogs")
+          router.push("/blogs");
         } else {
-          console.error("Failed to delete blog post:", result.message)
+          console.error("Failed to delete blog post:", result.message);
         }
       } catch (error) {
-        console.error("Error deleting blog post:", error)
+        console.error("Error deleting blog post:", error);
       }
     }
-  }
+  };
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
-    e.preventDefault()
-    const element = document.querySelector(href)
+    e.preventDefault();
+    const element = document.querySelector(href);
     if (element) {
-      const navbarHeight = 64 // Adjust this value based on your navbar height
+      const navbarHeight = 64; // Adjust this value based on your navbar height
       const elementPosition =
-        element.getBoundingClientRect().top + window.pageYOffset
-      const offsetPosition = elementPosition - navbarHeight
+        element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - navbarHeight;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
-      })
+      });
     }
-  }
+  };
 
   const TableOfContents = ({ isMobile = false }: { isMobile?: boolean }) => {
-    const visibleItems = showAllToc ? blog?.tableOfContents : blog?.tableOfContents?.slice(0, 5)
+    const visibleItems = showAllToc
+      ? blog?.tableOfContents
+      : blog?.tableOfContents?.slice(0, 4);
 
     return (
-      <div className={`my-8 md:my-0 border rounded-lg p-4 bg-background ${isMobile ? 'lg:hidden' : 'hidden lg:block'}`}>
+      <div
+        className={`my-8 md:my-0 border rounded-lg p-4 bg-background ${
+          isMobile ? "lg:hidden" : "hidden lg:block"
+        }`}
+      >
         <h3 className="font-semibold mb-4">Table of Contents</h3>
         <nav className="space-y-2">
           {visibleItems?.map((item) => {
@@ -185,23 +201,25 @@ export default function BlogPost({ data }: BlogPostProps) {
               .toLowerCase()
               .replace(/,/g, "")
               .replace(/[^\w\s-]/g, "")
-              .replace(/\s+/g, "-")
+              .replace(/\s+/g, "-");
 
             return (
               <a
                 key={sanitizedId}
                 href={`#${sanitizedId}`}
                 onClick={(e) => scrollToSection(e, `#${sanitizedId}`)}
-                className={`block text-sm text-muted-foreground hover:text-foreground transition-colors truncate ${
-                  activeSection === sanitizedId ? "text-foreground font-medium" : ""
+                className={`block text-sm text-muted-foreground hover:text-foreground transition-colors ${
+                  activeSection === sanitizedId
+                    ? "text-foreground font-medium"
+                    : ""
                 }`}
               >
                 {item}
               </a>
-            )
+            );
           })}
         </nav>
-        {blog?.tableOfContents && blog.tableOfContents.length > 5 && (
+        {blog?.tableOfContents && blog.tableOfContents.length > 4 && (
           <Button
             variant="ghost"
             className="mt-2 w-full text-sm"
@@ -219,11 +237,11 @@ export default function BlogPost({ data }: BlogPostProps) {
           </Button>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   if (!blog) {
-    return <div>Blog post not found</div>
+    return <div>Blog post not found</div>;
   }
 
   return (
@@ -268,7 +286,12 @@ export default function BlogPost({ data }: BlogPostProps) {
             />
           </div>
           {/* Table of Contents for mobile */}
-          <ShareComponent url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`} title={blog.title} />
+          <div className="md:hidden">
+            <ShareComponent
+              url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`}
+              title={blog.title}
+            />
+          </div>
           <TableOfContents isMobile={true} />
           {blog.excerpt && (
             <p className="text-gray-400 text-lg">{blog.excerpt}</p>
@@ -343,7 +366,10 @@ export default function BlogPost({ data }: BlogPostProps) {
         </div>
         <div className="space-y-8 hidden md:block">
           <div className="lg:sticky lg:top-20 space-y-6">
-             <ShareComponent url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`} title={blog.title} />
+            <ShareComponent
+              url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`}
+              title={blog.title}
+            />
             <TableOfContents />
             <div className="border rounded-lg overflow-hidden bg-background">
               <Image
@@ -356,7 +382,8 @@ export default function BlogPost({ data }: BlogPostProps) {
               <div className="p-4 w-full">
                 <h4 className="font-semibold mb-2">Your Resume, Elevated</h4>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Take your career to the next level! Start building your resume today at no cost—your journey begins here!
+                  Take your career to the next level! Start building your resume
+                  today at no cost—your journey begins here!
                 </p>
                 <Link
                   href="/"
@@ -381,5 +408,5 @@ export default function BlogPost({ data }: BlogPostProps) {
         </Button>
       )}
     </article>
-  )
+  );
 }
