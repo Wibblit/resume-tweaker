@@ -190,7 +190,7 @@ export default function BlogPost({ data }: BlogPostProps) {
 
     return (
       <div
-        className={`my-8 md:my-0 border rounded-lg p-4 bg-background ${
+        className={`my-4 md:my-0 border rounded-lg p-4 bg-background ${
           isMobile ? "lg:hidden" : "hidden lg:block"
         }`}
       >
@@ -275,7 +275,7 @@ export default function BlogPost({ data }: BlogPostProps) {
               </div>
             </div>
           </header>
-          <div className="relative w-full md:h-[400px] h-auto mb-8 rounded-lg overflow-hidden">
+          <div className="relative w-full md:h-[400px] h-auto mb-4 md:mb-8 rounded-lg overflow-hidden">
             <Image
               src={blog.thumbnail}
               alt={blog.title}
