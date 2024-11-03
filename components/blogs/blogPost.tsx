@@ -364,7 +364,7 @@ export default function BlogPost({ data }: BlogPostProps) {
             </div>
           </div>
         </div>
-        <div className="space-y-8 hidden md:block">
+        <div className="space-y-4 hidden md:block">
           <div className="lg:sticky lg:top-20 space-y-6">
             <ShareComponent
               url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`}
