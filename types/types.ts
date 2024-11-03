@@ -26,6 +26,7 @@ export interface Blog {
   spark: number;
   views: number;
   isFeatured: boolean;
+  tableOfContents?: string[];
 }
 
   type Template = {

@@ -2,78 +2,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
-
-
-// export async function createBlogPost(
-//   title: string,
-//   slug: string,
-//   excerpt: string | null,
-//   content: string,
-//   category: string,
-//   author: string,
-//   thumbnail: string,
-//   published: boolean,
-//   tags: string[], // Corrected this line
-//   isFeatured : boolean
-// ) {
-//   try {
-//     const session = await auth();
-//     console.log(title);
-//     console.log(slug);
-//     console.log(excerpt);
-//     console.log(category);
-//     console.log(author);
-//     console.log(thumbnail), console.log(published);
-//     console.log(tags);
-    
-//     // Ensure user is authenticated
-//     if (!session || !session.user || !session.user.id) {
-//       return {
-//         success: false,
-//         message: "User is not authenticated",
-//       };
-//     }
-
-    // Create blog post entry in Prisma
-    // const blogPost = await prisma.blog.create({
-    //   data: {
-    //     title: title.toString(),
-    //     slug: slug.toString(),
-    //     excerpt: excerpt ? excerpt.toString() : null,
-    //     content: content.toString(),
-    //     category: category.toString(),
-    //     author: author.toString(),
-    //     thumbnail: thumbnail,
-    //     published: published,
-    //     tags: tags, // Correctly passing the string array
-    //     spark: 0,
-    //     views: 0,
-    //     isFeatured : isFeatured
-    //   },
-    // });
-
-//     console.log("Blog post created:", blogPost);
-
-//     revalidatePath('/', "layout")
-
-//     return {
-//       success: true,
-//       message: "Blog post created successfully",
-//       blogPost,
-//     };
-//   } catch (error) {
-//     console.error("Error creating blog post:", error);
-//     return {
-//       success: false,
-//       message: "Failed to create blog post",
-//       error: error instanceof Error ? error.message : "Unknown error",
-//     };
-//   } finally {
-//     await prisma.$disconnect();
-//   }
-// }
-
-
+import { headers } from "next/headers";
 
 export async function createBlogPost(
   title: string,
@@ -89,7 +18,8 @@ export async function createBlogPost(
 ) {
   try {
     const session = await auth();
-
+    const ip = headers().get("x-forwarded-for");
+    console.log(ip, "this is ip")
     // Ensure user is authenticated
     if (!session || !session.user || !session.user.id) {
       return {

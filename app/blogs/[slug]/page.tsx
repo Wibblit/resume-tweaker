@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { prisma } from "@/prisma";
 import { cache } from "react";
 import { notFound } from "next/navigation";
-// export const dynamic = "auto"
+import { load } from "cheerio"; // Update import
 
 export async function generateStaticParams() {
   const posts = await prisma.blog.findMany();
@@ -11,7 +11,6 @@ export async function generateStaticParams() {
 }
 
 const fetchBlog = cache(async (slug: string) => {
-
   const id = slug.split("-");
   console.log(id);
 
@@ -21,11 +20,10 @@ const fetchBlog = cache(async (slug: string) => {
     });
     return blog;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   } finally {
-    prisma.$disconnect()
+    prisma.$disconnect();
   }
-  
 });
 
 export async function generateMetadata({
@@ -57,9 +55,44 @@ export default async function BlogPostPage({
 }: {
   params: { slug: string };
 }) {
-  const data = await fetchBlog(params.slug);
+  let data = await fetchBlog(params.slug);
   if (!data) return notFound();
-  return (
-      <BlogPost data={data!} />
-  );
+
+  data.content = addIdToH2Tags(data?.content);
+  console.log(data, "blogs from slug/page.ts");
+
+  const tableOfContents = extractH2Content(data.content);
+  const newData = { ...data, tableOfContents };
+  console.log(tableOfContents);
+  return <BlogPost data={newData!} />;
+}
+
+function addIdToH2Tags(htmlString: string) {
+  const $ = load(htmlString);
+
+  $("h2").each((_, h2) => {
+    const h2Content = $(h2).text().trim();
+    const id = h2Content
+    .toLowerCase()
+    .replace(/^\d+\.\s*/, "")        
+    .replace(/[^\w\s-]/g, "")       
+    .trim()
+    .replace(/\s+/g, "-"); 
+    $(h2).attr("id", id);
+  });
+
+  return $.html();
+}
+
+function extractH2Content(htmlStr: string) {
+  const $ = load(htmlStr);
+
+  let h2Content = $("h2")
+    .map((_, h2) => {
+      let text = $(h2).text();
+      return text.replace(/^\d+\.\s*/, "").trim();
+    })
+    .get();
+
+  return h2Content;
 }
