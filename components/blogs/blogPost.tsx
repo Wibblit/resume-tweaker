@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from "react"
-import { Calendar, Clock, User, Zap, Eye, ChevronUp, ExternalLink, ChevronDown } from "lucide-react"
+import { Calendar, Clock, User, Zap, Eye, ChevronUp, ExternalLink, ChevronDown, Share2 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +13,9 @@ import { Session } from "next-auth"
 import { deleteBlog } from "@/actions/deleteblog"
 import { Blog } from "@/types/types"
 import { Separator } from "@/components/ui/separator"
+import { ShareComponent } from "./ShareComponent"
+
+
 
 interface BlogPostProps {
   data: Blog
@@ -174,7 +177,7 @@ export default function BlogPost({ data }: BlogPostProps) {
     const visibleItems = showAllToc ? blog?.tableOfContents : blog?.tableOfContents?.slice(0, 5)
 
     return (
-      <div className={`border rounded-lg p-4 bg-background ${isMobile ? 'lg:hidden' : 'hidden lg:block'}`}>
+      <div className={`my-8 md:my-0 border rounded-lg p-4 bg-background ${isMobile ? 'lg:hidden' : 'hidden lg:block'}`}>
         <h3 className="font-semibold mb-4">Table of Contents</h3>
         <nav className="space-y-2">
           {visibleItems?.map((item) => {
@@ -189,7 +192,7 @@ export default function BlogPost({ data }: BlogPostProps) {
                 key={sanitizedId}
                 href={`#${sanitizedId}`}
                 onClick={(e) => scrollToSection(e, `#${sanitizedId}`)}
-                className={`block text-sm text-muted-foreground hover:text-foreground transition-colors ${
+                className={`block text-sm text-muted-foreground hover:text-foreground transition-colors truncate ${
                   activeSection === sanitizedId ? "text-foreground font-medium" : ""
                 }`}
               >
@@ -265,6 +268,7 @@ export default function BlogPost({ data }: BlogPostProps) {
             />
           </div>
           {/* Table of Contents for mobile */}
+          <ShareComponent url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`} title={blog.title} />
           <TableOfContents isMobile={true} />
           {blog.excerpt && (
             <p className="text-gray-400 text-lg">{blog.excerpt}</p>
@@ -330,16 +334,16 @@ export default function BlogPost({ data }: BlogPostProps) {
                 </Button>
                 <Button className="w-full xs:w-auto">
                   <Link href="/" className="flex items-center justify-center">
-                    Try Our Product <ExternalLink className="ml-2 h-4 w-4" />
+                    Try Our Product <ExternalLink className="ml-2 h-4  w-4" />
                   </Link>
                 </Button>
               </div>
             </div>
           </div>
         </div>
-        <div className="space-y-8">
+        <div className="space-y-8 hidden md:block">
           <div className="lg:sticky lg:top-20 space-y-6">
-            {/* Desktop Table of Contents */}
+             <ShareComponent url={`${process.env.NEXT_PUBLIC_BASE_URL}/blogs/${blog.slug}`} title={blog.title} />
             <TableOfContents />
             <div className="border rounded-lg overflow-hidden bg-background">
               <Image
