@@ -116,8 +116,8 @@ export const pageSlice = createSlice({
       }>
     ) => {
       const { resumeData, pageSectionOrders, templateNumber } = action.payload;
-      if (pageSectionOrders.length !== state.pages.length) {
-        for (let i = 0; i < pageSectionOrders.length - state.pages.length; i++) {
+      if (pageSectionOrders?.length !== state.pages.length) {
+        for (let i = 0; i < pageSectionOrders?.length - state.pages.length; i++) {
           const newPage = {
             id: state.pages.length + 1,
             template: templateNumber,
@@ -127,7 +127,7 @@ export const pageSlice = createSlice({
         }
       }
       state.pages.forEach((page, idx) => {
-        if (idx < action.payload.pageSectionOrders.length) {
+        if (idx < action.payload.pageSectionOrders?.length) {
           const { column1 = [], column2 = [] } = action.payload.pageSectionOrders[idx];
           const cols = [...column1, ...column2];
           cols.forEach((sec) => {

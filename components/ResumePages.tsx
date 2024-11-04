@@ -154,8 +154,8 @@ const ResumePage: React.FC<{
       className="relative bg-white text-foreground shadow-2xl mb-8"
       style={{
         fontFamily,
-        width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
-        minHeight: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+        width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+        minHeight: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
       }}
     >
       <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
@@ -165,7 +165,7 @@ const ResumePage: React.FC<{
       <div
         className="absolute inset-x-0 border-b border-dashed"
         style={{
-          top: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+          top: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
         }}
       />
     </div>
@@ -193,7 +193,7 @@ export default function ResumePages({
     (state: RootState) => state.page
   );
   const pageSectionOrders = useAppSelector(
-    (state) => state.rightsidebar.sectionOrder.sections
+    (state) => state.rightsidebar?.sectionOrder?.sections
   );
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id

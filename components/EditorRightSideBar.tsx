@@ -107,6 +107,7 @@ const templates = [
   { id: 3, name: "Executive Edge", image: "/templates/template3.jpg" },
   { id: 4, name: "Fresh Start", image: "/templates/template4.png" },
   { id: 5, name: "Eco Essence", image: "/templates/template5.png" },
+  { id: 6, name: "Eco Essence", image: "/templates/template5.png" },
   { id: 7, name: "Maroon mavlin", image: "/templates/template7.png" },
 ];
 
