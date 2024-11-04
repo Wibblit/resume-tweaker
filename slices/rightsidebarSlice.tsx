@@ -252,6 +252,42 @@ const Defaults: Array<ResumeStyles> = [
       column3: ["volunteer", "references"],
     },
   },
+  {
+    id: 7,
+    name: "",
+    font: "Arial",
+    fontSize: 16,
+    lineHeight: 1.5,
+    margin: 15,
+    paperFormat: "a4",
+    baseColor: "#8B1F41",
+    icons: true,
+    separator: true,
+    sectionOrder: {
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "experience",
+            "education",
+            "projects",
+            "skills",
+            "certifications",
+          ],
+          column2: [],
+        },
+      ],
+      column3: [
+        "languages",
+        "awards",
+        "publications",
+        "references",
+        "volunteer",
+      ],
+    },
+  },
 ];
 
 const MM_TO_PX = 3.78;
@@ -270,9 +306,9 @@ const rightsidebarSlice = createSlice({
   reducers: {
     UpdateId(state, action) {
       state.id = action.payload;
-      state.sectionOrder = Defaults[state.id - 1].sectionOrder;
+      // state.sectionOrder = Defaults[state.id - 1].sectionOrder;
     },
-    ResetStyle(state, action) {
+    ResetStyle(state, action) { 
       if (action.payload === "Resume") {
         state.baseColor = Defaults[state.id - 1].baseColor;
         state.font = Defaults[state.id - 1].font;

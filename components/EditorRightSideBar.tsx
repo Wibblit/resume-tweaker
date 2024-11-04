@@ -107,6 +107,7 @@ const templates = [
   { id: 3, name: "Executive Edge", image: "/templates/template3.jpg" },
   { id: 4, name: "Fresh Start", image: "/templates/template4.png" },
   { id: 5, name: "Eco Essence", image: "/templates/template5.png" },
+  { id: 7, name: "Maroon mavlin", image: "/templates/template7.png" },
 ];
 
 const covertemplate = [
@@ -152,7 +153,7 @@ export default function EditorRightSideBar({
   )!;
   const fontSize = useAppSelector((state) => state.rightsidebar.fontSize);
   const resumeData = useAppSelector((state) => state.leftsidebar);
-  const pages = useAppSelector((state) => state.page.pages)
+  const pages = useAppSelector((state) => state.page.pages);
   const templateID = useAppSelector((state) => state.rightsidebar.id);
   const lineHeight = useAppSelector((state) => state.rightsidebar.lineHeight);
   const margin = useAppSelector((state) => state.rightsidebar.margin);
@@ -164,96 +165,118 @@ export default function EditorRightSideBar({
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-  
+
     const sourceDroppableId = result.source.droppableId;
     const sourceIndex = result.source.index;
     const destDroppableId = result.destination.droppableId;
     const destIndex = result.destination.index;
-    const pageIdx = result.destination.droppableId.split('.')[0];
-    
-    const sourceColumnParts = sourceDroppableId.split('.');
-    const destColumnParts = destDroppableId.split('.');
-  
-    const sourceColumn = sourceColumnParts[1] as "column1" | "column2" | "column3" | undefined;
-    const destColumn = destColumnParts[1] as "column1" | "column2" | "column3" | undefined;
-  
+    const pageIdx = result.destination.droppableId.split(".")[0];
+
+    const sourceColumnParts = sourceDroppableId.split(".");
+    const destColumnParts = destDroppableId.split(".");
+
+    const sourceColumn = sourceColumnParts[1] as
+      | "column1"
+      | "column2"
+      | "column3"
+      | undefined;
+    const destColumn = destColumnParts[1] as
+      | "column1"
+      | "column2"
+      | "column3"
+      | undefined;
+
     console.log(sourceColumn, "- source col, ", sourceIndex, "- source indx");
-    
+
     if (!sourceColumn || !destColumn) {
       console.error("Invalid source or destination column");
       return;
     }
-    
+
     const newSectionOrder = JSON.parse(JSON.stringify(sectionOrder));
-    
+
     let sourceSections: SectionName[], destSections: SectionName[];
     let sourceColumnIndex: number, destColumnIndex: number;
-    
+
     if (sourceColumn === "column3") {
       sourceSections = newSectionOrder.column3;
       sourceColumnIndex = 0;
     } else {
       sourceColumnIndex = Number(sourceColumnParts[0]);
-      if (isNaN(sourceColumnIndex) || !newSectionOrder.sections[sourceColumnIndex]) {
+      if (
+        isNaN(sourceColumnIndex) ||
+        !newSectionOrder.sections[sourceColumnIndex]
+      ) {
         console.error("Invalid source section index");
         return;
       }
-      sourceSections = newSectionOrder.sections[sourceColumnIndex][sourceColumn];
+      sourceSections =
+        newSectionOrder.sections[sourceColumnIndex][sourceColumn];
     }
-    
+
     if (destColumn === "column3") {
       destSections = newSectionOrder.column3;
       destColumnIndex = 0;
     } else {
       destColumnIndex = Number(destColumnParts[0]);
-      if (isNaN(destColumnIndex) || !newSectionOrder.sections[destColumnIndex]) {
+      if (
+        isNaN(destColumnIndex) ||
+        !newSectionOrder.sections[destColumnIndex]
+      ) {
         console.error("Invalid destination section index");
         return;
       }
       destSections = newSectionOrder.sections[destColumnIndex][destColumn];
     }
-  
+
     if (!Array.isArray(sourceSections) || !Array.isArray(destSections)) {
       console.error("Source or destination sections are not arrays");
       return;
     }
-  
+
     const [movedItem] = sourceSections.splice(sourceIndex, 1);
     destSections.splice(destIndex, 0, movedItem);
-  
+
     // Update the source column
     if (sourceColumn === "column3") {
-      dispatch(updateSectionOrder({ 
-        sectionIndex: sourceColumnIndex, 
-        column: sourceColumn, 
-        order: sourceSections 
-      }));
+      dispatch(
+        updateSectionOrder({
+          sectionIndex: sourceColumnIndex,
+          column: sourceColumn,
+          order: sourceSections,
+        })
+      );
     } else {
-      dispatch(updateSectionOrder({ 
-        sectionIndex: sourceColumnIndex, 
-        column: sourceColumn, 
-        order: newSectionOrder.sections[sourceColumnIndex][sourceColumn] 
-      }));
+      dispatch(
+        updateSectionOrder({
+          sectionIndex: sourceColumnIndex,
+          column: sourceColumn,
+          order: newSectionOrder.sections[sourceColumnIndex][sourceColumn],
+        })
+      );
     }
-  
+
     // Update the destination column if it's different from the source
     if (destColumn !== sourceColumn || sourceColumnIndex !== destColumnIndex) {
       if (destColumn === "column3") {
-        dispatch(updateSectionOrder({ 
-          sectionIndex: destColumnIndex, 
-          column: destColumn, 
-          order: destSections 
-        }));
+        dispatch(
+          updateSectionOrder({
+            sectionIndex: destColumnIndex,
+            column: destColumn,
+            order: destSections,
+          })
+        );
       } else {
-        dispatch(updateSectionOrder({ 
-          sectionIndex: destColumnIndex, 
-          column: destColumn, 
-          order: newSectionOrder.sections[destColumnIndex][destColumn] 
-        }));
+        dispatch(
+          updateSectionOrder({
+            sectionIndex: destColumnIndex,
+            column: destColumn,
+            order: newSectionOrder.sections[destColumnIndex][destColumn],
+          })
+        );
       }
     }
   };
-  
 
   const handleDarkModeChange = (checked: boolean) => {
     setDark(checked);
@@ -366,10 +389,15 @@ export default function EditorRightSideBar({
             <DragDropContext onDragEnd={onDragEnd}>
               {sectionOrder?.sections?.map((section, sectionIndex) => (
                 <div key={sectionIndex} className="mb-4">
-                  <h3 className="text-sm font-semibold mb-2">Page {sectionIndex + 1}</h3>
+                  <h3 className="text-sm font-semibold mb-2">
+                    Page {sectionIndex + 1}
+                  </h3>
                   <div className="grid grid-cols-2 gap-2">
                     {(["column1", "column2"] as const).map((columnId) => (
-                      <Droppable key={`${sectionIndex}.${columnId}`} droppableId={`${sectionIndex}.${columnId}`}>
+                      <Droppable
+                        key={`${sectionIndex}.${columnId}`}
+                        droppableId={`${sectionIndex}.${columnId}`}
+                      >
                         {(provided) => (
                           <div
                             ref={provided.innerRef}
@@ -379,23 +407,31 @@ export default function EditorRightSideBar({
                             <h4 className="text-xs font-medium mb-1">
                               {columnId === "column1" ? "Sidebar" : "Main"}
                             </h4>
-                            {section[columnId] && section[columnId].map((sectionName, index) => (
-                              <Draggable key={sectionName} draggableId={sectionName} index={index}>
-                                {(provided) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    className="p-1 md:p-2 mb-2 bg-primary flex items-center text-primary-foreground rounded-md shadow-sm text-xs"
-                                  >
-                                    <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
-                                    <span className="truncate text-xs md:text-sm">
-                                      {abbrv[sectionName].charAt(0).toUpperCase() + abbrv[sectionName].slice(1)}
-                                    </span>
-                                  </div>
-                                )}
-                              </Draggable>
-                            ))}
+                            {section[columnId] &&
+                              section[columnId].map((sectionName, index) => (
+                                <Draggable
+                                  key={sectionName}
+                                  draggableId={sectionName}
+                                  index={index}
+                                >
+                                  {(provided) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className="p-1 md:p-2 mb-2 bg-primary flex items-center text-primary-foreground rounded-md shadow-sm text-xs"
+                                    >
+                                      <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
+                                      <span className="truncate text-xs md:text-sm">
+                                        {abbrv[sectionName]
+                                          .charAt(0)
+                                          .toUpperCase() +
+                                          abbrv[sectionName].slice(1)}
+                                      </span>
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
                             {provided.placeholder}
                           </div>
                         )}
@@ -411,10 +447,16 @@ export default function EditorRightSideBar({
                     {...provided.droppableProps}
                     className="bg-muted p-2 rounded-md  mt-4"
                   >
-                    <h3 className="text-sm font-semibold mb-2">Unused Sections</h3>
-                    
+                    <h3 className="text-sm font-semibold mb-2">
+                      Unused Sections
+                    </h3>
+
                     {sectionOrder?.column3?.map((section, index) => (
-                      <Draggable key={section} draggableId={section} index={index}>
+                      <Draggable
+                        key={section}
+                        draggableId={section}
+                        index={index}
+                      >
                         {(provided) => (
                           <div
                             ref={provided.innerRef}
@@ -459,13 +501,8 @@ export default function EditorRightSideBar({
           <Label>Font Family</Label>
           <Sheet>
             <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between mt-2"
-              >
-                <span style={{ fontFamily: selectedFont }}>
-                  {selectedFont}
-                </span>
+              <Button variant="outline" className="w-full justify-between mt-2">
+                <span style={{ fontFamily: selectedFont }}>{selectedFont}</span>
                 <ChevronRight className="h-4 w-4 opacity-50" />
               </Button>
             </SheetTrigger>
@@ -529,9 +566,7 @@ export default function EditorRightSideBar({
               max={16}
               min={10}
               value={fontSize}
-              onChange={(e) =>
-                dispatch(UpdateFontSize(Number(e.target.value)))
-              }
+              onChange={(e) => dispatch(UpdateFontSize(Number(e.target.value)))}
               className="w-16"
             />
           </div>
@@ -614,6 +649,7 @@ export default function EditorRightSideBar({
               "#7c3aed",
               "#9333ea",
               "#c026d3",
+              "#8B1F41",
               "#db2777",
               "#e11d48",
             ].map((color) => (
@@ -643,9 +679,7 @@ export default function EditorRightSideBar({
                 <Switch
                   id="icons"
                   checked={icons}
-                  onCheckedChange={(checked) =>
-                    dispatch(UpdateIcons(checked))
-                  }
+                  onCheckedChange={(checked) => dispatch(UpdateIcons(checked))}
                 />
                 <Label htmlFor="icons">Icons</Label>
               </div>
@@ -715,9 +749,7 @@ export default function EditorRightSideBar({
                 Customize your resume appearance here.
               </SheetDescription>
             </SheetHeader>
-            <ScrollArea className="flex-grow">
-              {renderContent()}
-            </ScrollArea>
+            <ScrollArea className="flex-grow">{renderContent()}</ScrollArea>
             <div className="p-4 border-t border-border mt-auto">
               {renderDownloadButton()}
             </div>
@@ -728,9 +760,7 @@ export default function EditorRightSideBar({
           <div className="p-4 border-b border-border">
             <h2 className="text-lg font-semibold">Styling Options</h2>
           </div>
-          <ScrollArea className="flex-grow">
-            {renderContent()}
-          </ScrollArea>
+          <ScrollArea className="flex-grow">{renderContent()}</ScrollArea>
           <div className="p-4 border-t border-border">
             {renderDownloadButton()}
           </div>
