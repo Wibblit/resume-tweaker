@@ -24,20 +24,14 @@ interface InterviewData {
   jd: string;
 }
 
-export default function AdaptiveInterview({
-  formData,
-}: {
-  formData: InterviewData;
-}) {
+export default function AdaptiveInterview({ formData }: { formData: InterviewData }) {
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isAISpeaking, setIsAISpeaking] = useState(false);
   const [userAnswer, setUserAnswer] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [showButtons, setShowButtons] = useState(true);
   const [recognizedText, setRecognizedText] = useState("");
-  const [history, setHistory] = useState<{ role: string; content: string }[]>(
-    []
-  );
+  const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const recognitionRef = useRef<any>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
@@ -72,6 +66,12 @@ export default function AdaptiveInterview({
       fetchNextQuestion();
     }
   }, [currentQuestion, isInterviewComplete]);
+
+  useEffect(() => {
+    if (currentQuestion && !isAISpeaking) {
+      speakQuestion(currentQuestion);
+    }
+  }, [currentQuestion]);
 
   const fetchNextQuestion = async () => {
     try {
@@ -110,7 +110,6 @@ export default function AdaptiveInterview({
           ...prevHistory,
           { role: "assistant", content: question },
         ]);
-        speakQuestion(question);
       }
     } catch (error) {
       console.error("Error fetching question:", error);
@@ -143,6 +142,10 @@ export default function AdaptiveInterview({
 
       setIsAISpeaking(true);
       setShowButtons(false);
+
+      utterance.onstart = () => {
+        console.log("AI is speaking")
+      }
 
       utterance.onend = () => {
         setIsAISpeaking(false);

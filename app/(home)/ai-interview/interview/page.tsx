@@ -16,6 +16,7 @@ interface InterviewData {
   duration: number
 }
 
+
 export default function InterviewPage() {
   const { toast } = useToast()
   const searchParams = useSearchParams()
