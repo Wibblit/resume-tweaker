@@ -11,30 +11,33 @@ import { usePathname } from "next/navigation";
 import { saveResumeData } from "@/actions/saveResumeData";
 import axios from "axios";
 import { PageData } from "@/types/types";
-import { 
-  UpdateBaseColor, 
-  UpdateFont, 
-  UpdateFontSize, 
-  UpdateIcons, 
-  UpdateId, 
-  UpdateLineHeight, 
-  UpdateMargin, 
-  UpdatePaperFormat, 
-  updateSectionOrder, 
-  UpdateSectionOrderLayout, 
-  UpdateSeparator 
+import {
+  UpdateBaseColor,
+  UpdateFont,
+  UpdateFontSize,
+  UpdateIcons,
+  UpdateId,
+  UpdateLineHeight,
+  UpdateMargin,
+  UpdatePaperFormat,
+  updateSectionOrder,
+  UpdateSectionOrderLayout,
+  UpdateSeparator,
 } from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 import { setFullProfileData } from "@/slices/profileSlice";
 import { useToast } from "@/hooks/use-toast";
+import { initialState } from "@/slices/leftsidebarSlice";
 
 export default function Editor() {
-  const [activeSection, setActiveSection] = useState<keyof ResumeData | "">("basics");
+  const [activeSection, setActiveSection] = useState<keyof ResumeData | "">(
+    "basics"
+  );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast()
+  const { toast } = useToast();
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
@@ -49,8 +52,13 @@ export default function Editor() {
     async function getResumeData() {
       try {
         setIsLoading(true);
-        const resumeId = currResumeId ? currResumeId : localStorage.getItem("currResumeId");
-        const response = await axios.get<{ resumeData: PageData; message: string }>(`/api/get-resume-data/${resumeId}`);
+        const resumeId = currResumeId
+          ? currResumeId
+          : localStorage.getItem("currResumeId");
+        const response = await axios.get<{
+          resumeData: PageData;
+          message: string;
+        }>(`/api/get-resume-data/${resumeId}`);
         if (response.status === 429) {
           toast({
             title: "Whoa there! You've hit the rate limit.",
@@ -61,23 +69,66 @@ export default function Editor() {
         }
         const resumeData = response.data.resumeData;
         console.log(resumeData);
-        const { id, styles, resumeName, userId, ...leftSidebBarContent } = resumeData;
-        dispatch(setCurrentResume({
-          currResumeId: resumeData.id,
-          currResumeName: resumeData.resumeName,
-        }));
-        console.log(styles.baseColor)
-        dispatch(UpdateId(styles.id));
-        dispatch(UpdateLeftBarData(leftSidebBarContent));
-        dispatch(UpdateFont(styles.font));
-        dispatch(UpdateFontSize(styles.fontSize));
-        dispatch(UpdateLineHeight(styles.lineHeight));
-        dispatch(UpdateMargin(styles.margin));
-        dispatch(UpdateIcons(styles.icons));
-        dispatch(UpdateSeparator(styles.separator));
-        dispatch(UpdatePaperFormat(styles.paperFormat));
-        dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
-        dispatch(UpdateBaseColor(styles.baseColor));
+        const { id, styles, resumeName, userId, ...leftSidebBarContent } =
+          resumeData;
+        dispatch(
+          setCurrentResume({
+            currResumeId: resumeData.id,
+            currResumeName: resumeData.resumeName,
+          })
+        );
+        console.log(styles.baseColor);
+
+        if (styles.id) {
+          dispatch(UpdateId(styles.id));
+        }
+
+        if (leftSidebBarContent.basics?.length !== 0) {
+          dispatch(UpdateLeftBarData(leftSidebBarContent));
+        } else {
+          dispatch(UpdateLeftBarData(initialState));
+        }
+        if (styles.font) {
+          dispatch(UpdateFont(styles.font));
+        }
+        if (styles.fontSize) {
+          dispatch(UpdateFontSize(styles.fontSize));
+        }
+        if (styles.lineHeight) {
+          dispatch(UpdateLineHeight(styles.lineHeight));
+        }
+        if (styles.margin) {
+          dispatch(UpdateMargin(styles.margin));
+        }
+        if (styles.icons) {
+          dispatch(UpdateIcons(styles.icons));
+        }
+        if (styles.separator) {
+          dispatch(UpdateSeparator(styles.separator));
+        }
+        if (styles.paperFormat) {
+          dispatch(UpdatePaperFormat(styles.paperFormat));
+        }
+        if (styles.sectionOrder) {
+          dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
+        }
+        if (styles.baseColor) {
+          dispatch(UpdateBaseColor(styles.baseColor));
+        }
+
+        // if (resumeData) {
+
+        //   dispatch(UpdateLeftBarData(leftSidebBarContent));
+        //   dispatch(UpdateFont(styles.font));
+        //   dispatch(UpdateFontSize(styles.fontSize));
+        //   dispatch(UpdateLineHeight(styles.lineHeight));
+        //   dispatch(UpdateMargin(styles.margin));
+        //   dispatch(UpdateIcons(styles.icons));
+        //   dispatch(UpdateSeparator(styles.separator));
+        //   dispatch(UpdatePaperFormat(styles.paperFormat));
+        //   dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
+        //   dispatch(UpdateBaseColor(styles.baseColor));
+        // }
       } catch (error) {
         console.error("Error fetching resume data:", error);
       } finally {
@@ -134,26 +185,24 @@ export default function Editor() {
     try {
       console.log(resumeStyles);
       const res = await saveResumeData(ResumeData, resumeStyles, currResumeId);
-       if (res.status === 429) {
-         toast({
-           title: "Whoa there! You've hit the rate limit.",
-           description: "Please slow down and try again in a few minutes.",
-           variant: "destructive",
-         });
-         return;
-       }
+      if (res.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
       toast({
         title: "Success",
         description: "The resume has been saved successfully.",
       });
-
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to save the resume.",
-        variant : "destructive"
+        variant: "destructive",
       });
-
     }
   };
 
