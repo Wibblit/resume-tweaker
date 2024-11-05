@@ -109,6 +109,7 @@ const templates = [
   { id: 5, name: "Eco Essence", image: "/templates/template5.png" },
   { id: 6, name: "Eco Essence", image: "/templates/template5.png" },
   { id: 7, name: "Maroon mavlin", image: "/templates/template7.png" },
+  { id: 8, name: "Eco Essence", image: "/templates/template5.png" },
 ];
 
 const covertemplate = [

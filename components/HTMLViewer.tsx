@@ -1,11 +1,13 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface HTMLViewerProps {
   content: string;
   lineHeight: number; // Pass lineHeight as a prop to the HTMLViewer
+  className?: string;
 }
 
-const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight }) => {
+const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight, className}) => {
   return (
     <>
       <style>
@@ -18,7 +20,7 @@ const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight }) => {
         `}
       </style>
       <div
-        className="wysiwyg"
+        className={cn("wysiwyg", className)}
         dangerouslySetInnerHTML={{ __html: content }}
       ></div>
     </>

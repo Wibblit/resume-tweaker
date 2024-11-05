@@ -39,6 +39,7 @@ import Template4 from "@/templates/Template4";
 import Template5 from "@/templates/Template5";
 import Template6 from "@/templates/Template6";
 import Template7 from "@/templates/Template7";
+import Template8 from "@/templates/Template8";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { Skeleton } from "./ui/skeleton";
@@ -142,6 +143,8 @@ const ResumePage: React.FC<{
         return <Template6 {...props} />;
       case 7:
         return <Template7 {...props} />;
+      case 8:
+        return <Template8 {...props} />;
       default:
         return <Template1 {...props} />;
     }
