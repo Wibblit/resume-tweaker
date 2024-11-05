@@ -108,7 +108,7 @@ const templates = [
   { id: 4, name: "Fresh Start", image: "/templates/template4.png" },
   { id: 5, name: "Eco Essence", image: "/templates/template5.png" },
   { id: 6, name: "Eco Essence", image: "/templates/template5.png" },
-  { id: 7, name: "Maroon mavlin", image: "/templates/template7.png" },
+  { id: 7, name: "Maroon mavlin", image: "/templates/template5.png" },
   { id: 8, name: "Eco Essence", image: "/templates/template5.png" },
 ];
 

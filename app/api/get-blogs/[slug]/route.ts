@@ -8,17 +8,18 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  const session = await auth();
+  // const session = await auth();
   const { slug } = params;
-  let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
-  ip = ip === "::1" ? "127.0.0.1" : ip;
+  // let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
+  // ip = ip === "::1" ? "127.0.0.1" : ip;
   try {
-    if (rateLimiter(session?.user?.id, ip)) {
-      return NextResponse.json(
-        { message: "Rate limit exceeded." },
-        { status: 429 }
-      );
-    }
+    // if (rateLimiter(session?.user?.id, ip)) {
+    //   return NextResponse.json(
+    //     { message: "Rate limit exceeded." },
+    //     { status: 429 }
+    //   );
+    // }
+    
     const blog = await prisma.blog.findUnique({
       where: { slug },
     });

@@ -6,13 +6,9 @@ type RequestData = {
 const userRequests = new Map<string, RequestData>();
 const ipRequests = new Map<string, RequestData>();
 
-// const LIMIT_DURATION = 60 * 1000; // 1 minute in milliseconds
-// const USER_REQUEST_LIMIT = 100; // Max requests per user per minute
-// const IP_REQUEST_LIMIT = 200; // Max requests per IP per minute
-
 const LIMIT_DURATION = 60 * 1000; // 1 minute in milliseconds
-const USER_REQUEST_LIMIT = 100; // Max requests per user per minute 
-const IP_REQUEST_LIMIT = 200; // Max requests per IP per minute
+const USER_REQUEST_LIMIT = 100; // Max requests per user per minute
+const IP_REQUEST_LIMIT = 200; // Max requests per IP per minut
 
 const isRateLimited = (
   keyMap: Map<string, RequestData>,

@@ -306,9 +306,12 @@ const rightsidebarSlice = createSlice({
   reducers: {
     UpdateId(state, action) {
       state.id = action.payload;
-      // state.sectionOrder = Defaults[state.id - 1].sectionOrder;
+      console.log(action.payload)
+      if (Defaults) {
+        state.sectionOrder = Defaults[action.payload - 1]?.sectionOrder;
+      } 
     },
-    ResetStyle(state, action) { 
+    ResetStyle(state, action) {
       if (action.payload === "Resume") {
         state.baseColor = Defaults[state.id - 1].baseColor;
         state.font = Defaults[state.id - 1].font;
@@ -316,7 +319,7 @@ const rightsidebarSlice = createSlice({
         state.lineHeight = Defaults[state.id - 1].lineHeight;
         state.margin = Defaults[state.id - 1].margin;
         state.paperFormat = Defaults[state.id - 1].paperFormat;
-        state.sectionOrder = Defaults[state.id - 1].sectionOrder;
+        state.sectionOrder = Defaults[state.id - 1]?.sectionOrder;
       } else {
         state.baseColor = CDefaults[state.id - 1].baseColor;
         state.font = CDefaults[state.id - 1].font;

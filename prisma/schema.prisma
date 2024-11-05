@@ -24,7 +24,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   Resume        Resume[]
   CoverLetter   Coverletter[]
-  Profile       Profile[]
+  Profile       Profile?
 
   @@map("users")
 }
@@ -141,7 +141,7 @@ model Blog {
 model Profile {
   id            String   @id @default(cuid())
   userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   basics        Json     @default("[]")
   summary       Json     @default("[]")
   profiles      Json     @default("[]")
