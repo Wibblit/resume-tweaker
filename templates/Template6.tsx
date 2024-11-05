@@ -47,6 +47,7 @@ export default function Component({
   );
   const dispatch = useAppDispatch();
   const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
+  const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator)
 
   React.useEffect(() => {
     dispatch(UpdateBaseColor(baseColor));
@@ -63,7 +64,7 @@ export default function Component({
       minHeight: "1122.66px",
     },
     ribbon: {
-      width: "80px",
+      width: "50px",
       backgroundColor: baseColor,
       flexShrink: 0,
       minHeight: "1122.66px",
@@ -72,14 +73,16 @@ export default function Component({
       flex: 1,
       padding: `${margin}mm`,
     },
-    sectionTitle: {
-      color: "#000",
-      fontSize: "1.4em",
-      fontWeight: "bold",
-      marginBottom: "1em",
-      textTransform: "uppercase",
-      letterSpacing: "0.05em",
-    },
+sectionTitle: {
+  color: baseColor,
+  fontSize: "1.4em",
+  fontWeight: "bold",
+  marginBottom: "1em",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  borderBottom: isSeperator ? `2px solid ${baseColor}` : "none", // Conditional border
+}
+,
     subtitle: {
       fontSize: "1.2em",
       fontWeight: "bold",
@@ -172,10 +175,7 @@ export default function Component({
                   </div>
                 </div>
                 {exp.summary && (
-                  <HTMLViewer
-                    lineHeight={lineHeight}
-                    content={exp.summary}
-                  />
+                  <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
                 )}
               </div>
             ))}
@@ -189,23 +189,26 @@ export default function Component({
             <h2 style={styles.sectionTitle}>Education</h2>
             {content.education.map((edu, index) => (
               <div key={index} className="mb-4">
-                <div className="flex justify-between items-start mb-1">
-                  <div>
+                <div className="flex-col justify-between items-start mb-1">
+                  <div className="text-right flex items-center justify-between">
                     <h3 className="font-bold">{edu.institution}</h3>
-                    <p className="text-gray-600">
-                      {edu.degree}
-                      {edu.field && `, ${edu.field}`}
-                    </p>
-                    {edu.score && (
-                      <p className="text-gray-600">GPA: {edu.score}</p>
-                    )}
-                  </div>
-                  <div className="text-right">
                     <p className="font-bold">
                       {edu.startDate && DateConverter(edu.startDate)}
                       {edu.endDate && " - "}
                       {edu.endDate && DateConverter(edu.endDate)}
                     </p>
+                  </div>
+
+                  <div className="flex items-center justify-between w-full">
+                    <p className="text-gray-600">
+                      {edu.degree}
+                      {edu.field && `, ${edu.field}`}
+                    </p>
+                    {edu.score && (
+                      <p className="text-gray-600">
+                        GPA: <span className="font-bold">{edu.score}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -221,7 +224,7 @@ export default function Component({
             <div className="grid grid-cols-2 gap-4">
               {content.skills.map((category, index) => (
                 <div key={index}>
-                  <p>{category.name}</p>
+                  <p className="font-bold">{category.name}</p>
                   {category.skills.map((skill, skillIndex) => (
                     <p key={skillIndex} className="mb-1 text-gray-600">
                       • {skill.name}
@@ -241,7 +244,7 @@ export default function Component({
             {content.projects.map((project, index) => (
               <div key={index} className="mb-6">
                 <div className="flex justify-between items-start mb-1">
-                  <div>
+                  <div className="flex items-center">
                     <h3 className="font-bold">{project.name}</h3>
                     {project.url && (
                       <a
@@ -249,7 +252,7 @@ export default function Component({
                         target="_blank"
                         rel="noopener noreferrer"
                         style={styles.link}
-                        className="text-sm"
+                        className="text-xs ml-2"
                       >
                         {project.url.label}
                       </a>
@@ -263,10 +266,7 @@ export default function Component({
                     </p>
                   </div>
                 </div>
-                <HTMLViewer
-                  lineHeight={lineHeight}
-                  content={project.summary}
-                />
+                <HTMLViewer lineHeight={lineHeight} content={project.summary} />
                 {project.keywords && (
                   <div className="flex flex-wrap gap-2 mt-2">
                     {project.keywords.map((keyword, keywordIndex) => (
@@ -291,28 +291,28 @@ export default function Component({
             <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
             {content.certifications.map((cert, index) => (
               <div key={index} className="mb-4">
-                <div className="flex justify-between items-start mb-1">
-                  <div>
+                <div className="flex-col justify-between items-start mb-1">
+                  <div className="flex items-center justify-between">
                     <h3 className="font-bold">{cert.name}</h3>
-                    <p className="text-gray-600">{cert.issuer}</p>
-                  </div>
-                  <div className="text-right">
                     <p className="font-bold">
                       {cert.date && DateConverter(cert.date)}
                     </p>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-gray-600">{cert.issuer}</p>
+                    {cert.url && (
+                      <a
+                        href={cert.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.link}
+                        className="text-xs"
+                      >
+                        {cert.url.label}
+                      </a>
+                    )}
+                  </div>
                 </div>
-                {cert.url && (
-                  <a
-                    href={cert.url.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.link}
-                    className="text-sm"
-                  >
-                    {cert.url.label}
-                  </a>
-                )}
               </div>
             ))}
           </section>
@@ -323,7 +323,7 @@ export default function Component({
         return (
           <section className="mb-8">
             <h2 style={styles.sectionTitle}>Languages</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-x-4">
               {content.languages.map((lang, index) => (
                 <div key={index} className="mb-2">
                   <span className="font-bold">{lang.name}</span>
@@ -370,13 +370,15 @@ export default function Component({
         return (
           <section className="mb-8">
             <h2 style={styles.sectionTitle}>References</h2>
-            {content.references.map((ref, index) => (
-              <div key={index} className="mb-4">
-                <h3 className="font-bold">{ref.name}</h3>
-                <p className="text-gray-600">{ref.phone}</p>
-                <p className="text-gray-600">{ref.email}</p>
-              </div>
-            ))}
+            <div className="flex flex-wrap gap-4">
+              {content.references.map((ref, index) => (
+                <div key={index} className="mb-4">
+                  <h3 className="font-bold">{ref.name}</h3>
+                  <p className="text-gray-600">{ref.phone}</p>
+                  <p className="text-gray-600">{ref.email}</p>
+                </div>
+              ))}
+            </div>
           </section>
         );
 
@@ -414,11 +416,18 @@ export default function Component({
             {content.publications.map((pub, index) => (
               <div key={index} className="mb-6">
                 <div className="flex justify-between items-start mb-1">
-                  <div>
+                  <div className="flex items-center">
                     <h3 className="font-bold">{pub.name}</h3>
-                    <p className="text-gray-600">{pub.publisher}</p>
-                    {pub.publishedIn && (
-                      <p className="text-gray-600">{pub.publishedIn}</p>
+                    {pub.url && (
+                      <a
+                        href={pub.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.link}
+                        className="text-xs ml-2"
+                      >
+                        {pub.url.label}
+                      </a>
                     )}
                   </div>
                   <div className="text-right">
@@ -427,17 +436,12 @@ export default function Component({
                     </p>
                   </div>
                 </div>
-                {pub.url && (
-                  <a
-                    href={pub.url.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.link}
-                    className="text-sm"
-                  >
-                    {pub.url.label}
-                  </a>
-                )}
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-600">{pub.publisher}</p>
+                  {pub.publishedIn && (
+                    <p className="text-gray-600">{pub.publishedIn}</p>
+                  )}
+                </div>
               </div>
             ))}
           </section>
@@ -451,10 +455,13 @@ export default function Component({
             {content.awards.map((award, index) => (
               <div key={index} className="mb-6">
                 <div className="flex justify-between  items-start mb-1">
-                  <div>
+                  <div className="flex items-center">
                     <h3 className="font-bold">{award.title}</h3>
                     {award.awarder && (
-                      <p className="text-gray-600">{award.awarder}</p>
+                      <p className="text-gray-600">
+                        <span className="mx-1">by</span>
+                        <span className="font-bold">{award.awarder}</span>
+                      </p>
                     )}
                   </div>
                   <div className="text-right">
@@ -464,10 +471,7 @@ export default function Component({
                   </div>
                 </div>
                 {award.summary && (
-                  <HTMLViewer
-                    lineHeight={lineHeight}
-                    content={award.summary}
-                  />
+                  <HTMLViewer lineHeight={lineHeight} content={award.summary} />
                 )}
               </div>
             ))}

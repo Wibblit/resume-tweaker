@@ -15,21 +15,24 @@ export async function GET(req : NextRequest) {
          { message: "Rate limit exceeded." },
          { status: 429 }
        );
-     } 
-    result = await prisma.coverletter.findMany({
-      where: {
-        userId: session?.user?.id,
-      },
-      orderBy: {
-        id: "desc",
-      },
-      take: 3,
-      select: {
-        id: true,
-        userId: true,
-        coverName: true,
-      },
-    });
+    } 
+    if (session?.user?.id) {
+      result = await prisma.coverletter.findMany({
+        where: {
+          userId: session?.user?.id,
+        },
+        orderBy: {
+          id: "desc",
+        },
+        take: 3,
+        select: {
+          id: true,
+          userId: true,
+          coverName: true,
+        },
+      });
+    }
+    
   } catch (error) {
     console.error("Error fetching resume data:", error);
     throw error;
