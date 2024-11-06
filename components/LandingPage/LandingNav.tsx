@@ -7,7 +7,9 @@ import { Menu, X } from "lucide-react";
 import { ModeToggle } from "../ModeToggle";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import ThemeAwareLogo from "../ThemeAwareLogo";
+import { NavItems } from "./NavItems";
+import { navItems } from "./NavItems";
+
 
 export function LandingNav() {
   const pathname = usePathname();
@@ -15,12 +17,7 @@ export function LandingNav() {
   const router = useRouter();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const navItems = [
-    { href: "/pricing", label: "Pricing" },
-    { href: "/blogs", label: "Blogs" },
-    { href: "/about", label: "About" },
-    { href: "/features", label: "Features" },
-  ];
+ 
 
   return (
     <nav className="w-full fixed top-0 left-0 right-0 z-[100000] backdrop-blur-lg">
@@ -39,23 +36,13 @@ export function LandingNav() {
           </div>
           {pathname === "/" && (
             <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="hover:underline hover:text-primary hover:scale-105 transition-all duration-200 px-3 py-2 rounded-md font-medium"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
+              <NavItems />
             </div>
           )}
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
               <ModeToggle />
-              <Button className="ml-3" onClick={() => router.push("/login")}>Login</Button>
+              <Link href={"/login"} className="inline-flex items- py-2 px-3 ml-3 bg-primary justify-center text-secondary gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">Login</Link>
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">

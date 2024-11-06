@@ -35,7 +35,7 @@ const initialState: ResumeStyles = {
 };
 
 const CDefaults = [
-  {
+  {   
     id: 1,
     name: "Traditional",
     font: "Arial, sans-serif",
@@ -256,11 +256,11 @@ const Defaults: Array<ResumeStyles> = [
     id: 7,
     name: "",
     font: "Arial",
-    fontSize: 16,
-    lineHeight: 1.5,
-    margin: 15,
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
     paperFormat: "a4",
-    baseColor: "#8B1F41",
+    baseColor: "#475569",
     icons: true,
     separator: true,
     sectionOrder: {
@@ -279,15 +279,9 @@ const Defaults: Array<ResumeStyles> = [
           column2: [],
         },
       ],
-      column3: [
-        "languages",
-        "awards",
-        "publications",
-        "references",
-        "volunteer",
-      ],
-    },
-  },
+      column3: ["languages", "awards", "publications", "references", "volunteer"],
+    }
+  }
 ];
 
 const MM_TO_PX = 3.78;

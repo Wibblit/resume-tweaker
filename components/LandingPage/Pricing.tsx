@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+
 const tiers = [
   {
     name: "Hobby",
@@ -107,7 +108,7 @@ export default function Pricing() {
                     ? "bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent"
                     : "bg-background sm:border-0"
                 } min-h-[600px] sm:min-h-0`}
-              >
+              > 
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold">
                     {tier.name}
