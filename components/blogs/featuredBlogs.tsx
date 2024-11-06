@@ -135,19 +135,19 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
   return (
     <Link
       href={`blogs/${blog.slug}`}
-      className={`group relative overflow-hidden rounded-xl block ${
+      className={` group relative overflow-hidden rounded-xl block ${
         isLarge ? "h-full" : isWide ? "h-64" : "h-64"
       }`}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 transition-opacity group-hover:opacity-80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black to-black opacity-70 z-10"/>
       <Image
         src={blog.thumbnail}
         alt={blog.title}
         width={800}
         height={600}
-        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+        className="h-full w-full object-cover group-hover:scale-105 z-0 ease-in-out transition-transform"
       />
-      <div className="absolute inset-0 flex flex-col justify-end p-6">
+      <div className="absolute inset-0 flex flex-col justify-end p-6 z-20">
         <Badge className="w-fit mb-3">{blog.category}</Badge>
         <h3 className={`font-bold text-white mb-2 ${isLarge ? "text-2xl" : "text-xl"}`}>
           {blog.title}
@@ -166,7 +166,7 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
           </span>
         </div>
       </div>
-      <div className="absolute top-4 right-4 bg-white/20 p-2 rounded-full opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute top-4 right-4 bg-white/20 p-2 rounded-full opacity-0 transition-opacity hover:opacity-100">
         <ArrowRightIcon className="w-4 h-4 text-white" />
       </div>
     </Link>

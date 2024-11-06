@@ -165,7 +165,7 @@ export default function LatestBlogs() {
                     <CardTitle className="text-xl md:text-2xl line-clamp-2">
                       {blog.title}
                     </CardTitle>
-                    <CardDescription className="line-clamp-3">
+                    <CardDescription className="line-clamp-4 leading-5">
                       {blog.excerpt}
                     </CardDescription>
                   </CardContent>

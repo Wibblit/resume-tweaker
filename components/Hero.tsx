@@ -8,6 +8,7 @@ import { submitEmail } from "@/actions/sendMail";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Suspense } from "react";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -97,7 +98,9 @@ export function Hero() {
           <SubmitButton />
         </motion.form>
       </div>
-      <BackgroundBeams />
+      <Suspense fallback="loading...">
+        <BackgroundBeams/>
+      </Suspense>
     </div>
   );
 }
