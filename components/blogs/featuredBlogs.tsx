@@ -366,7 +366,7 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
         isLarge ? "h-full" : isWide ? "h-64" : "h-64"
       }`}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60 transition-opacity group-hover:opacity-80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black to-black opacity-60 transition-opacity group-hover:opacity-80" />
       <Image
         src={blog.thumbnail}
         alt={blog.title}

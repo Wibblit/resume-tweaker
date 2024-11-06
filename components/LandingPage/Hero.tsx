@@ -4,15 +4,10 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackgroundBeams } from "../ui/background-beams";
 import { Button } from "../ui/button";
-import {
-  ArrowRight,
-  FileText,
-  Star,
-  BarChart,
-  Palette,
-} from "lucide-react";
+import { ArrowRight, FileText, Star, BarChart, Palette } from "lucide-react";
 import Image from "next/image";
 import { SocialIcon } from "react-social-icons";
+import { Suspense } from "react";
 
 const resumeImages = [
   "/templates/template1.png",
@@ -242,7 +237,9 @@ export function Hero() {
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent"></div>
-      <BackgroundBeams />
+      <Suspense fallback="">
+        <BackgroundBeams />
+      </Suspense>
     </div>
   );
 }
