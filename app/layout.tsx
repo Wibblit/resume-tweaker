@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
 import { ToastProvider } from "@/components/ToastProviderWrapper";
 import { ReduxProvider } from "@/components/ReduxProvider";
-import { Roboto_Flex as FontSans } from "next/font/google";
+import { Montserrat as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     nocache: true,
   },
   alternates: {
-    canonical: "https://wibblit.com",
+    canonical: "https://resumetweaker.wibblit.com",
   },
   keywords: [
     "AI resume builder",
@@ -98,8 +98,7 @@ export const metadata: Metadata = {
 
 const fontSans = FontSans({
   // weight: ['100', '300', '400', '500', '700', '900'],
-  subsets: ["latin"],
-  variable: "--font-roboto",
+  subsets: ["latin"]
 });
 
 export default function RootLayout({
@@ -124,7 +123,7 @@ export default function RootLayout({
             }}
           />
       </head>
-      <body className={cn(` antialiased font-custom`, fontSans.variable)}>
+      <body className={cn(` antialiased font-custom`, fontSans.className)}>
         <ThemeProviderWrapper>
           <ReduxProvider>{children}</ReduxProvider>
         </ThemeProviderWrapper>

@@ -131,7 +131,7 @@ export default function LatestBlogs() {
   return (
     <section className="py-12 md:py-24">
       <div className="container px-4 md:px-6">
-        <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-5xl mb-8">
+        <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl mb-8">
           Latest Blogs
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
