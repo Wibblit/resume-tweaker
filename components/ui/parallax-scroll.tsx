@@ -81,6 +81,7 @@ export const ParallaxScroll = ({
                 className="h-full w-full object-cover object-top"
                 height="600"
                 width="450"
+                loading="lazy"
                 alt={`Resume template ${idx + 1}`}
               />
             </motion.div>

@@ -2,7 +2,6 @@
 
 import { auth } from "@/auth";
 import { ResumeData, ResumeStyles } from "@/types/types";
-import { PrismaClient } from "@prisma/client";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 

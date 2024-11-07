@@ -1,10 +1,8 @@
 "use server";
 import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export async function duplicateCoverLetter(coverId: string) {
   const session = await auth();

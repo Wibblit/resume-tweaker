@@ -1,5 +1,4 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";

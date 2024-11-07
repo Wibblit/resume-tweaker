@@ -18,14 +18,14 @@ export function TemplatesSection() {
 }
 
 const images = [
-  "/templates/template1.png",
-  "/templates/template2.jpg",
-  "/templates/template3.jpg",
-  "/templates/template4.png",
-  "/templates/template5.png",
-  "/templates/ctemplate1.png",
-  "/templates/ctemplate2.png",
-  "/templates/ctemplate3.png",
-  "/templates/ctemplate4.png",
-  "/templates/ctemplate5.png",
+  "/templates/template1.avif",
+  "/templates/template2.avif",
+  "/templates/template3.avif",
+  "/templates/template4.avif",
+  "/templates/template5.avif",
+  "/templates/ctemplate1.avif",
+  "/templates/ctemplate2.avif",
+  "/templates/ctemplate3.avif",
+  "/templates/ctemplate4.avif",
+  "/templates/ctemplate5.avif",
 ];

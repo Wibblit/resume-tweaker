@@ -61,11 +61,11 @@ export default function LetterContent({
   }, []);
 
   const letterTemplates = [
-    { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.png" },
-    { id: 2, name: "Modern Header", image: "/templates/ctemplate2.png" },
-    { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.png" },
-    { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.png" },
-    { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.png" },
+    { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.avif" },
+    { id: 2, name: "Modern Header", image: "/templates/ctemplate2.avif" },
+    { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.avif" },
+    { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.avif" },
+    { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
   ];
 
   const filteredTemplates = letterTemplates.filter((template) =>
@@ -122,6 +122,7 @@ export default function LetterContent({
                       alt={template.name}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
                   </div>

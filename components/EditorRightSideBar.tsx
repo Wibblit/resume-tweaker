@@ -66,6 +66,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { updatePageVales } from "@/slices/addPageSlice";
+import Image from "next/image";
 
 const fonts = [
   "Arial",
@@ -102,22 +103,22 @@ interface RightSideBarProps {
 }
 
 const templates = [
-  { id: 1, name: "Classic Charm", image: "/templates/template1.png" },
-  { id: 2, name: "Artistic Flair", image: "/templates/template2.jpg" },
-  { id: 3, name: "Executive Edge", image: "/templates/template3.jpg" },
-  { id: 4, name: "Fresh Start", image: "/templates/template4.png" },
-  { id: 5, name: "Eco Essence", image: "/templates/template5.png" },
-  { id: 6, name: "Eco Essence", image: "/templates/template5.png" },
-  { id: 7, name: "Maroon mavlin", image: "/templates/template5.png" },
-  { id: 8, name: "Eco Essence", image: "/templates/template5.png" },
+  { id: 1, name: "Classic Charm", image: "/templates/template1.avif" },
+  { id: 2, name: "Artistic Flair", image: "/templates/template2.avif" },
+  { id: 3, name: "Executive Edge", image: "/templates/template3.avif" },
+  { id: 4, name: "Fresh Start", image: "/templates/template4.avif" },
+  { id: 5, name: "Eco Essence", image: "/templates/template5.avif" },
+  { id: 6, name: "Eco Essence", image: "/templates/template5.avif" },
+  { id: 7, name: "Maroon mavlin", image: "/templates/template5.avif" },
+  { id: 8, name: "Eco Essence", image: "/templates/template5.avif" },
 ];
 
 const covertemplate = [
-  { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.png" },
-  { id: 2, name: "Modern Header", image: "/templates/ctemplate2.png" },
-  { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.png" },
-  { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.png" },
-  { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.png" },
+  { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.avif" },
+  { id: 2, name: "Modern Header", image: "/templates/ctemplate2.avif" },
+  { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.avif" },
+  { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.avif" },
+  { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
 ];
 
 const abbrv: Record<SectionName, string> = {
@@ -344,10 +345,12 @@ export default function EditorRightSideBar({
                           >
                             <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
                               <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                              <img
+                              <Image
                                 src={template.image}
                                 alt={`${template.name} template`}
-                                className="absolute inset-0 w-full h-full object-cover"
+                                fill
+                              className="absolute inset-0 w-full h-full object-cover"
+                              loading="lazy"
                               />
                             </div>
                             <div className="p-2 text-center font-medium">

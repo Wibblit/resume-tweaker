@@ -1,12 +1,11 @@
 import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { initialState } from "@/slices/profileSlice";
 import { rateLimiter } from "@/lib/rateLimiter";
+import { prisma } from "@/prisma";
 
 export async function GET(req : NextRequest) {
   const session = await auth();
-  const prisma = new PrismaClient();
     let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
     ip = ip === "::1" ? "127.0.0.1" : ip;  
   let result = null;

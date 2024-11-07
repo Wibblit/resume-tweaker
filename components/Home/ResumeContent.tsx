@@ -58,11 +58,11 @@ export default function ResumeContent({
   }, []);
 
   const resumeTemplates = [
-    { id: 1, name: "Classic Charm", img: "/templates/template1.png" },
-    { id: 2, name: "Artistic Flair", img: "/templates/template2.jpg" },
-    { id: 3, name: "Executive Edge", img: "/templates/template3.jpg" },
-    { id: 4, name: "Fresh Start", img: "/templates/template4.png" },
-    { id: 5, name: "Eco Essence", img: "/templates/template5.png" },
+    { id: 1, name: "Classic Charm", img: "/templates/template1.avif" },
+    { id: 2, name: "Artistic Flair", img: "/templates/template2.avif" },
+    { id: 3, name: "Executive Edge", img: "/templates/template3.avif" },
+    { id: 4, name: "Fresh Start", img: "/templates/template4.avif" },
+    { id: 5, name: "Eco Essence", img: "/templates/template5.avif" },
   ];
 
   const filteredTemplates = resumeTemplates.filter((template) =>
@@ -108,6 +108,7 @@ export default function ResumeContent({
                       alt={template.name}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
                   </div>

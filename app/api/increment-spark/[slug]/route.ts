@@ -34,5 +34,7 @@ export async function POST(
       { success: false, message: "Error updating spark" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect()
   }
 }

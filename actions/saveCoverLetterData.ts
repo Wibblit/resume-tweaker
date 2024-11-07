@@ -2,12 +2,10 @@
 
 import { auth } from "@/auth";
 import { CoverLetterData, CoverLetterState } from "@/types/types";
-import { PrismaClient } from "@prisma/client";
 import { ResumeStyles as CoverStyle } from "@/types/types";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export async function savecoverData(
   coverData: CoverLetterData,

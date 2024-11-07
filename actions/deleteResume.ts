@@ -1,10 +1,8 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export async function deleteResume(resumeId: string) {
     console.log("reached delete")

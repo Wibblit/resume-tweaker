@@ -1,9 +1,7 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 import { rateLimiter } from "@/lib/rateLimiter";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export async function GET(
   request: NextRequest,

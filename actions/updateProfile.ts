@@ -181,5 +181,4 @@ export async function updateProfiles(profileData: {
   } finally {
     await prisma.$disconnect();
   }
-  console.log(profileData);
 }
