@@ -7,7 +7,31 @@ interface HTMLViewerProps {
   className?: string;
 }
 
-const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight, className}) => {
+// const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight, className}) => {
+//   return (
+//     <>
+//       <style>
+//         {`
+//           .wysiwyg h1, .wysiwyg h2, .wysiwyg h3, 
+//           .wysiwyg p, .wysiwyg ul, .wysiwyg ol, 
+//           .wysiwyg div, .wysiwyg span {
+//             line-height: ${lineHeight}; /* Apply the line-height dynamically */
+//           }
+//         `}
+//       </style>
+//       <div
+//         className={cn("wysiwyg", className)}
+//         dangerouslySetInnerHTML={{ __html: content }}
+//       ></div>
+//     </>
+//   );
+// };
+
+const HTMLViewer: React.FC<HTMLViewerProps> = ({
+  content,
+  lineHeight,
+  className,
+}) => {
   return (
     <>
       <style>
@@ -16,6 +40,12 @@ const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight, className}
           .wysiwyg p, .wysiwyg ul, .wysiwyg ol, 
           .wysiwyg div, .wysiwyg span {
             line-height: ${lineHeight}; /* Apply the line-height dynamically */
+            color: inherit; /* Ensure all text inherits the parent's color */
+          }
+
+          /* Ensure all child elements inherit the color */
+          .wysiwyg * {
+            color: inherit !important; /* Override any inline styles */
           }
         `}
       </style>
@@ -26,5 +56,7 @@ const HTMLViewer: React.FC<HTMLViewerProps> = ({ content, lineHeight, className}
     </>
   );
 };
+
+
 
 export default HTMLViewer;

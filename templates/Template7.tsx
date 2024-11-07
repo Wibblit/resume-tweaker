@@ -48,11 +48,15 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
   );
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    dispatch(UpdateBaseColor("#8B1F41"));
+  }, []);
+
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
-  
-  const isSeparator = useAppSelector((state) => state.rightsidebar.separator)
+
+  const isSeparator = false;
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -68,7 +72,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
       fontWeight: "bold",
       marginBottom: isSeparator ? "0.5em" : "none",
       textTransform: "uppercase",
-      borderBottom: isSeparator ? `2px solid ${baseColor}` : 'none',
+      borderBottom: isSeparator ? `2px solid ${baseColor}` : "none",
       paddingBottom: "0.25em",
     },
     sectionTitleWithOutBorder: {
@@ -100,12 +104,15 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         const basics = content.basics?.[0];
         if (!basics) return null;
         return (
-          <div className="flex flex-col items-center justify-center mb-3">
-            <h1 className="text-3xl font-bold uppercase mb-1 text-center">
+          <div className="flex flex-col items-left justify-center mb-3">
+            <h1
+              className="text-3xl font-bold uppercase mb-1 text-left"
+              style={{ color: baseColor }}
+            >
               {basics.name}
             </h1>
             <p className="text-lg text-center mb-2">{basics.headLine}</p>
-            <div className="flex justify-around items-center space-x-2">
+            <div className="flex items-left space-x-2">
               <p>{basics.email}</p>
               {basics.phone && (
                 <p>
@@ -140,20 +147,29 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
       case "summary":
         if (!content.summary?.length) return null;
         return (
-          <section className="mb-6 text-black">
-            <h2 style={styles.sectionTitle}>Summary</h2>
-            {/* <p>{content.summary[0].content}</p> */}
-            <HTMLViewer
-              lineHeight={lineHeight}
-              content={content.summary[0].content}
-            />
-          </section>
+          <>
+            <section className="mb-6 text-black">
+              <div
+                className="py-1 mb-1 w-16"
+                style={{ backgroundColor: baseColor }}
+              ></div>
+              <h2 style={styles.sectionTitle}>Summary</h2>
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content}
+              />
+            </section>
+          </>
         );
 
       case "skills":
         if (content.skills?.length === 0) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Skills</h2>
             {content?.skills?.map((category, index) => (
               <div key={index} className="mb-4">
@@ -181,6 +197,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.education?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Education</h2>
             {content.education.map((edu, index) => (
               <div key={index} className="mb-4">
@@ -189,8 +209,9 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {edu.startDate && DateConverter(edu.startDate)} {edu.endDate && " - "}{" "}
-                        {edu.endDate &&  DateConverter(edu.endDate)}
+                        {edu.startDate && DateConverter(edu.startDate)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && DateConverter(edu.endDate)}
                       </h3>
                     </div>
                   </div>
@@ -219,6 +240,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.experience?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Experience</h2>
             {content.experience.map((exp, index) => (
               <div key={index} className="mb-4">
@@ -227,7 +252,8 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {exp.startDate && DateConverter(exp.startDate)} {exp.endDate && " - "}{" "}
+                        {exp.startDate && DateConverter(exp.startDate)}{" "}
+                        {exp.endDate && " - "}{" "}
                         {exp.endDate && DateConverter(exp.endDate)}
                       </h3>
                     </div>
@@ -250,6 +276,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.projects?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Projects</h2>
             {content.projects.map((project, index) => (
               <div key={index} className="mb-4">
@@ -306,6 +336,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.certifications?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
             {content.certifications.map((cert, index) => (
               <div key={index} className="mb-4">
@@ -343,6 +377,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.languages?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Languages</h2>
             <div className="flex flex-col flex-wrap justify-start">
               {content.languages.map((lang, index) => (
@@ -393,6 +431,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.references?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>References</h2>
             {content.references.map((ref, index) => (
               <div key={index} className="mb-2">
@@ -410,6 +452,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.volunteer?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Volunteer Experience</h2>
             {content.volunteer.map((vol, index) => (
               <div key={index} className="mb-4">
@@ -437,6 +483,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.publications?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Publications</h2>
             {content.publications.map((pub, index) => (
               <div key={index} className="mb-4">
@@ -460,7 +510,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                       )}
                     </div>
                     <h3 style={styles.subtitle}>
-                      {pub.date &&  DateConverter(pub.date)}
+                      {pub.date && DateConverter(pub.date)}
                     </h3>
                   </div>
 
@@ -479,6 +529,10 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.awards?.length) return null;
         return (
           <section className="mb-6">
+            <div
+              className="py-1 mb-1 w-16"
+              style={{ backgroundColor: baseColor }}
+            ></div>
             <h2 style={styles.sectionTitle}>Awards</h2>
             {content.awards.map((award, index) => (
               <div key={index} className="mb-4">
@@ -537,6 +591,9 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         word-wrap: break-word; 
         overflow-wrap: break-word;
         text-align: justify;
+      }
+      li {
+        color: black,
       }
     `}
       </style>

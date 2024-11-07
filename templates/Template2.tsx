@@ -194,31 +194,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 
   const scaleFactor = fontSize / 16;
 
-  // const styles = {
-  //   container: {
-  //     fontFamily,
-  //     fontSize: `${fontSize}px`,
-  //     lineHeight: `${lineHeight}`,
-  //     padding: `${margin}mm`,
-  //     color: "black",
-  //     minHeight: "100vh",
-  //     height: "100%",
-  //     display: "flex",
-  //   },
-  //   body: {
-  //     fontSize: `${1.1 * scaleFactor}rem`,
-  //     color: "black",
-  //   },
-  //   col2: {
-  //     width: "65%",
-  //   },
-  //   col2Content: {
-  //     height: "100%",
-  //   },
-  //   col1Content: {
-  //     width: "35%",
-  //   },
-  // };
 
   const styles = {
     container: {

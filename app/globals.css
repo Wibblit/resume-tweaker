@@ -2,92 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LTWave Regular
-@font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Regular.woff") format("woff"),
-    url("/fonts/LTWave-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-/* LTWave Italic */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Italic.woff") format("woff");
-  font-weight: 400;
-  font-style: italic;
-} */
-
-/* LTWave Bold Italic */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-BoldItalic.woff") format("woff");
-  font-weight: 700;
-  font-style: italic;
-} */
-
-/* LTWave Light */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Light.woff") format("woff");
-  font-weight: 300;
-  font-style: normal;
-} */
-
-/* LTWave Light Italic */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-LightItalic.woff") format("woff");
-  font-weight: 300;
-  font-style: italic;
-} */
-
-/* LTWave Thin */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Thin.woff") format("woff");
-  font-weight: 100;
-  font-style: normal;
-} */
-
-/* LTWave Thin Italic */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-ThinItalic.woff") format("woff");
-  font-weight: 100;
-  font-style: italic;
-} */
-
-/* LTWave Medium */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-Medium.woff") format("woff");
-  font-weight: 500;
-  font-style: normal;
-} */
-
-/* LTWave Medium Italic */
-/* @font-face {
-  font-family: "LTWave";
-  src: url("/fonts/LTWave-MediumItalic.woff") format("woff");
-  font-weight: 500;
-  font-style: italic;
-} */ 
-
-/* Apply LTWave globally */
-/* @layer base {
-  * {
-    font-family: 'LTWave', sans-serif;
-  }
-} */
- @layer base { 
-  /* Apply LTWave font globally, but exclude containers with the .no-ltwave class */
-  /* *:not(.no-ltwave) {
-    font-family: "Poppins", sans-serif;
-  } */
- } 
-
 @layer base {
   :root {
     --grad-foreground: #000000;
@@ -153,15 +67,6 @@
   .text-balance {
     text-wrap: balance;
   }
-  /* .input {
-    @apply bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 border-zinc-300 dark:border-zinc-700 focus:border-zinc-500 dark:focus:border-zinc-500 focus:ring-zinc-500 dark:focus:ring-zinc-500;
-  } */
-
-  /* @layer utilities {
-    *:not(.custom-editor *) {
-      @apply !font-light;
-    }
-  } */
 }
 
 @layer base {

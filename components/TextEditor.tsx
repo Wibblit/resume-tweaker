@@ -632,7 +632,7 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
         <EditorContent
           editor={editor}
           className={cn(
-            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 dark:text-white !important",
             hideToolbar && "pt-2",
             className
           )}
