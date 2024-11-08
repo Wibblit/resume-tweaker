@@ -626,17 +626,20 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
     }
 
     return (
-      <div className="custom-editor" ref={ref}>
+      <div className="custom-editor dark:text-white dark:bg-black" ref={ref}>
         {!hideToolbar && <Toolbar editor={editor} section={section} />}
-
         <EditorContent
           editor={editor}
           className={cn(
-            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50 dark:text-white !important",
+            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
             hideToolbar && "pt-2",
             className
           )}
-          style={{ fontWeight: "normal" }}
+          style={{
+            fontWeight: "normal",
+            color: "black", // Default text color for light mode
+            background: "transparent",
+          }}
           {...props}
         />
       </div>

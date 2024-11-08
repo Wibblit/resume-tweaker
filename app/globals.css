@@ -69,6 +69,20 @@
   }
 }
 
+/* Force the text color inside the editor content */
+.grid * {
+  color: black !important; /* Light mode */
+}
+
+.dark .grid * {
+  color: white !important; /* Dark mode */
+}
+
+.wysiwyg, .wysiwyg * {
+  color: inherit !important;
+}
+
+
 @layer base {
   * {
     @apply border-border;

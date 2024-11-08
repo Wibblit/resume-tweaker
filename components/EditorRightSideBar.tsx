@@ -349,8 +349,8 @@ export default function EditorRightSideBar({
                                 src={template.image}
                                 alt={`${template.name} template`}
                                 fill
-                              className="absolute inset-0 w-full h-full object-cover"
-                              loading="lazy"
+                                className="absolute inset-0 w-full h-full object-cover"
+                                loading="lazy"
                               />
                             </div>
                             <div className="p-2 text-center font-medium">
@@ -482,23 +482,6 @@ export default function EditorRightSideBar({
                 )}
               </Droppable>
             </DragDropContext>
-            {/* <div className="flex justify-between mt-4">
-              <Button onClick={() => dispatch(addSection())} size="sm">
-                <Plus className="mr-2 h-4 w-4" /> Add Section
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (sectionOrder?.sections && sectionOrder.sections.length > 1) {
-                    dispatch(removeSection(sectionOrder.sections.length - 1));
-                  }
-                }} 
-                size="sm" 
-                variant="destructive" 
-                disabled={!sectionOrder?.sections || sectionOrder.sections.length <= 1}
-              >
-                <Minus className="mr-2 h-4 w-4" /> Remove Section
-              </Button>
-            </div> */}
           </div>
         )}
 
