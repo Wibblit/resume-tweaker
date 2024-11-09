@@ -330,8 +330,8 @@ export default function ResumePages({
       <Skeleton
         className="mb-8"
         style={{
-          width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
-          height: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+          width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+          height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
         }}
       />
     </div>
