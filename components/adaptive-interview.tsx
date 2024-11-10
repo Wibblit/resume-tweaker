@@ -9,13 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
-
-declare global {
-  interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
-  }
-}
+import { createModel, Model, KaldiRecognizer } from "vosk-browser";
 
 interface InterviewData {
   job: string;
@@ -24,7 +18,16 @@ interface InterviewData {
   jd: string;
 }
 
-export default function AdaptiveInterview({ formData }: { formData: InterviewData }) {
+interface RecognizerMessage {
+  result?: { text: string };
+  partial?: string;
+}
+
+export default function AdaptiveInterview({
+  formData,
+}: {
+  formData: InterviewData;
+}) {
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isAISpeaking, setIsAISpeaking] = useState(false);
   const [userAnswer, setUserAnswer] = useState("");
@@ -33,12 +36,57 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
   const [recognizedText, setRecognizedText] = useState("");
   const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
-  const recognitionRef = useRef<any>(null);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const lastRecognizedTextRef = useRef("");
+  const [recognizer, setRecognizer] = useState<KaldiRecognizer | null>(null);
+  const [model, setModel] = useState<Model | null>(null);
+  const { toast } = useToast();
+
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const speakingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { toast } = useToast();
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const processorRef = useRef<AudioWorkletNode | null>(null);
+
+  useEffect(() => {
+    async function loadVosk() {
+      try {
+        const loadedModel = await createModel("/models/vosk-model-small-en-us-0.15");
+        setModel(loadedModel);
+        const loadedRecognizer = new loadedModel.KaldiRecognizer(16000);
+        setRecognizer(loadedRecognizer);
+
+        //@ts-ignore
+        loadedRecognizer.on("result", (message: RecognizerMessage) => {
+          if (message.result) {
+            const result = message.result.text;
+            if (result) {
+              setRecognizedText((prev) => prev + " " + result);
+              setUserAnswer((prev) => prev + " " + result);
+            }
+          }
+        });
+
+        //@ts-ignore
+        loadedRecognizer.on("partialresult", (message: RecognizerMessage) => {
+          if (message.partial) {
+            setRecognizedText((prev) => prev + " " + message.partial);
+          }
+        });
+      } catch (error) {
+        console.error("Error loading Vosk model:", error);
+      }
+    }
+    loadVosk();
+
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+      if (processorRef.current) {
+        processorRef.current.disconnect();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const getVoices = () => {
@@ -144,8 +192,8 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
       setShowButtons(false);
 
       utterance.onstart = () => {
-        console.log("AI is speaking")
-      }
+        console.log("AI is speaking");
+      };
 
       utterance.onend = () => {
         setIsAISpeaking(false);
@@ -179,63 +227,52 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
     }
   };
 
-  const startRecording = () => {
-    if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
-      window.SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
+  const startRecording = async () => {
+    if (!recognizer || !model) {
+      console.error("Vosk model or recognizer not initialized");
+      return;
+    }
 
-      const recognition = new window.SpeechRecognition();
-      recognition.lang = "en-US";
-      recognition.interimResults = true;
-      recognition.continuous = true;
-      recognitionRef.current = recognition;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
 
-      recognition.onresult = (event: any) => {
-        let interimTranscript = "";
-        let finalTranscript = "";
+      audioContextRef.current = new AudioContext();
+      const source = audioContextRef.current.createMediaStreamSource(stream);
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
+      await audioContextRef.current.audioWorklet.addModule("/audio-processor.js");
+      processorRef.current = new AudioWorkletNode(audioContextRef.current, "audio-processor");
 
-        const updatedTranscript = `${lastRecognizedTextRef.current}${finalTranscript}${interimTranscript}`;
+      source.connect(processorRef.current);
+      processorRef.current.connect(audioContextRef.current.destination);
 
-        setUserAnswer(updatedTranscript);
-        setRecognizedText(updatedTranscript);
-
-        if (finalTranscript) {
-          lastRecognizedTextRef.current = `${lastRecognizedTextRef.current}${finalTranscript}`;
+      processorRef.current.port.onmessage = (event) => {
+        const { audioData } = event.data;
+        if (recognizer && audioData) {
+          recognizer.acceptWaveform(audioData);
         }
       };
 
-      recognition.onstart = () => {
-        setIsRecording(true);
-      };
-
-      recognition.onend = () => {
-        setIsRecording(false);
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error("Speech recognition error", event.error);
-        setIsRecording(false);
-      };
-
-      recognition.start();
-    } else {
-      console.error("Speech Recognition API is not supported in this browser.");
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error starting recording:", error);
     }
   };
 
   const stopRecording = () => {
-    if (recognitionRef.current) {
-      setIsRecording(false);
-      recognitionRef.current.stop();
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
     }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    if (processorRef.current) {
+      processorRef.current.disconnect();
+      processorRef.current = null;
+    }
+    setIsRecording(false);
   };
 
   const submitAnswer = async () => {
@@ -249,7 +286,6 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
 
     setUserAnswer("");
     setRecognizedText("");
-    lastRecognizedTextRef.current = "";
     setCurrentQuestion("");
     setShowButtons(false);
     setIsAISpeaking(false);
@@ -262,7 +298,6 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
     setHistory(newHistory);
     setUserAnswer("");
     setRecognizedText("");
-    lastRecognizedTextRef.current = "";
     stopRecording();
     setCurrentQuestion("");
     setShowButtons(false);

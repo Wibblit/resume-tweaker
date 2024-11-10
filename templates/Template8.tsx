@@ -7,7 +7,6 @@ import { ResumeData, Basics } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
 import HTMLViewer from "@/components/HTMLViewer";
 import DateConverter from "@/components/DateConverter";
-import Base64Image from "@/components/base64toPhoto";
 
 interface TemplateProps {
   content: ResumeData;

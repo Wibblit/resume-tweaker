@@ -1,26 +1,27 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import AdaptiveInterview from "@/components/adaptive-interview"
-import ComprehensiveInterview from "@/components/interview-process"
-import { useSearchParams } from "next/navigation"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import AdaptiveInterview from "@/components/adaptive-interview";
+import ComprehensiveInterview from "@/components/interview-process";
+import { useSearchParams } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface InterviewData {
-  job: string
-  position: string
-  companyName: string
-  jd: string
-  numberOfQuestions: number
-  interviewType: string
-  duration: number
+  job: string;
+  position: string;
+  companyName: string;
+  jd: string;
+  numberOfQuestions: number;
+  interviewType: string;
+  duration: number;
 }
 
-
 export default function InterviewPage() {
-  const { toast } = useToast()
-  const searchParams = useSearchParams()
-  const [comprehensiveQuestions, setComprehensiveQuestion] = useState<string[]>([])
+  const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const [comprehensiveQuestions, setComprehensiveQuestion] = useState<string[]>(
+    []
+  );
   const [interviewData, setInterviewData] = useState<InterviewData>({
     job: "",
     position: "",
@@ -29,8 +30,10 @@ export default function InterviewPage() {
     numberOfQuestions: 0,
     interviewType: "",
     duration: 0,
-  })
-  const [isLoading, setIsLoading] = useState(true)
+  });
+
+  //change this to true after uncommnent
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setInterviewData({
@@ -38,11 +41,14 @@ export default function InterviewPage() {
       position: searchParams.get("position") || "",
       companyName: searchParams.get("companyName") || "",
       jd: searchParams.get("jd") || "",
-      numberOfQuestions: parseInt(searchParams.get("numberOfQuestions") || "0", 10),
+      numberOfQuestions: parseInt(
+        searchParams.get("numberOfQuestions") || "0",
+        10
+      ),
       interviewType: searchParams.get("interviewType") || "",
       duration: parseInt(searchParams.get("duration") || "0", 10),
-    })
-  }, [searchParams])
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -86,7 +92,7 @@ export default function InterviewPage() {
   }, [interviewData, toast])
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -97,8 +103,11 @@ export default function InterviewPage() {
       {interviewData.interviewType === "adaptive" ? (
         <AdaptiveInterview formData={interviewData} />
       ) : (
-        <ComprehensiveInterview questions={comprehensiveQuestions} duration={interviewData.duration} />
+        <ComprehensiveInterview
+          questions={comprehensiveQuestions}
+          duration={interviewData.duration}
+        />
       )}
     </main>
-  )
+  );
 }
