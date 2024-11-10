@@ -86,16 +86,16 @@ const Section: React.FC<{
 
   return (
     <section
-      className="mt-4 pt-4"
+      className="mb-4  pt-4 "
       style={
         isSeparator
-          ? { borderTop: `1px solid ${isRightColumn ? "white" : baseColor}` }
+          ? { borderTop: `1px solid ${isRightColumn ? baseColor : "white" }` }
           : undefined
       }
     >
       <h4
         className="mb-2 text-base font-bold uppercase"
-        style={{ color: isRightColumn ? "white" : baseColor }}
+        style={{ color: isRightColumn ? baseColor : "white"  }}
       >
         {title}
       </h4>
@@ -131,16 +131,16 @@ const Header: React.FC<{
       width: contentWidth,
     },
     name: {
-      fontSize: `${Math.max(2, imageSize / 64) * scaleFactor}rem`,
+      fontSize: `${Math.max(2, imageSize / 38) * scaleFactor}rem`,
       fontWeight: "bold",
-      marginBottom: "0.5rem",
+      marginBottom: "",
       lineHeight: 1.2,
     },
     headline: {
-      fontSize: `${Math.max(1.2, imageSize / 96) * scaleFactor}rem`,
-      marginBottom: "1rem",
-      color: baseColor,
+      fontSize: `${Math.max(1.2, imageSize / 64) * scaleFactor}rem`,
+      marginBottom: "",
       lineHeight: 1.4,
+      color : "inherit"
     },
     details: {
       fontSize: `${Math.max(1, imageSize / 128) * scaleFactor}rem`,
@@ -149,14 +149,15 @@ const Header: React.FC<{
   };
 
   return (
-    <div style={styles.container} className="flex items-center">
-
-      <div style={styles.content}>
-        <h2 style={styles.name}>{basics?.name}</h2>
+    <div style={styles.container} className="flex mb-4">
+      <div className="w-full">
+        <h2 style={styles.name} className="tracking-wider">
+          {basics?.name}
+        </h2>
         <p style={styles.headline}>{basics?.headLine}</p>
         <div
           style={styles.details}
-          className="flex flex-wrap items-center gap-x-4 gap-y-2"
+          className="flex flex-wrap items-center gap-x-4"
         >
           {basics?.location && (
             <div className="flex items-center gap-x-1.5 mr-2">
@@ -224,20 +225,17 @@ const Template3: React.FC<TemplateProps> = ({
     },
     sidebar: {
       backgroundColor: baseColor,
-      position: "absolute" as const,
-      top: 0,
-      bottom: 0,
-      right: 0,
-      width: "60%",
+      width: "40%",
       color: "white",
+      padding: `${margin}mm`,
     },
     sidebarContent: {
       padding: `${margin}mm`,
       height: "100%",
     },
     mainContent: {
+      width: "60%",
       padding: `${margin}mm`,
-      width: "40%",
     },
   };
   const renderSection = (
@@ -252,7 +250,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.summary &&
           content.summary.length > 0 && (
             <Section
-              title="Summary"
+              title=""
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -273,7 +271,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.awards &&
           content.awards.length > 0 && (
             <Section
-              title="Awards"
+              title="AWARDS"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -308,7 +306,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.publications &&
           content.publications.length > 0 && (
             <Section
-              title="Publications"
+              title="PUBLICATIONS"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -342,7 +340,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.volunteer &&
           content.volunteer.length > 0 && (
             <Section
-              title="Volunteer Experience"
+              title="VOLUNTEER EXPERIENCE"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -374,7 +372,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.references &&
           content.references.length > 0 && (
             <Section
-              title="References"
+              title="REFERENCES"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -395,7 +393,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.experience &&
           content.experience.length > 0 && (
             <Section
-              title="Experience"
+              title="EXPERIENCE"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -438,7 +436,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.skills &&
           content.skills.length > 0 && (
             <Section
-              title="Skills"
+              title="SKILLS"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -460,7 +458,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.profiles &&
           content.profiles.length > 0 && (
             <Section
-              title="Profiles"
+              title="PROFILES"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -492,7 +490,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.languages &&
           content.languages.length > 0 && (
             <Section
-              title="Languages"
+              title="LANGUAGES"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -515,7 +513,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.education &&
           content.education.length > 0 && (
             <Section
-              title="Education"
+              title="EDUCATION"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -546,7 +544,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.certifications &&
           content.certifications.length > 0 && (
             <Section
-              title="Certifications"
+              title="CERTIFICATIONS"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -571,7 +569,7 @@ const Template3: React.FC<TemplateProps> = ({
           content.projects &&
           content.projects.length > 0 && (
             <Section
-              title="Projects"
+              title="PROJECTS"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
@@ -627,6 +625,8 @@ const Template3: React.FC<TemplateProps> = ({
     }
   };
 
+  console.log(sectionOrder.sections[0].column1)
+
   return (
     <div className="resume-content" style={styles.container}>
       <style>{`
@@ -637,18 +637,18 @@ const Template3: React.FC<TemplateProps> = ({
           color:black
           }
       `}</style>
-      <div style={styles.mainContent}>
+
+      <div className="w-4/12" style={styles.sidebar}>
         {sectionOrder.sections.length > 0 &&
           sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName)
           )}
       </div>
-      <div style={styles.sidebar}>
-        <div style={styles.sidebarContent}>
-          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
-            renderSection(sectionName, true)
-          )}
-        </div>
+
+      <div style={styles.mainContent}>
+        {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
+          renderSection(sectionName, true)
+        )}
       </div>
     </div>
   );
