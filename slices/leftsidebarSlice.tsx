@@ -125,7 +125,6 @@ export const initialState: ResumeData = {
   ],
 };
 
-
 const leftsidebarSlice = createSlice({
   name: "leftsidebar",
   initialState,

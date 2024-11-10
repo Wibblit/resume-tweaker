@@ -240,4 +240,40 @@ export const Defaults: Array<ResumeStyles> = [
       ],
     },
   },
+  {
+    id: 9,
+    name: "",
+    font: "Helvetica",
+    fontSize: 10,
+    lineHeight: 1,
+    margin: 6,
+    paperFormat: "a4",
+    baseColor: "#475569",
+    icons: true,
+    separator: true,
+    sectionOrder: {
+      sections: [
+        {
+          column1: [
+            "basics",
+            "profiles",
+            "summary",
+            "experience",
+            "education",
+            "projects",
+            "skills",
+            "certifications",
+          ],
+          column2: [],
+        },
+      ],
+      column3: [
+        "languages",
+        "awards",
+        "publications",
+        "references",
+        "volunteer",
+      ],
+    },
+  },
 ];

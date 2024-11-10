@@ -63,6 +63,10 @@ export default function ResumeContent({
     { id: 3, name: "Executive Edge", img: "/templates/template3.avif" },
     { id: 4, name: "Fresh Start", img: "/templates/template4.avif" },
     { id: 5, name: "Eco Essence", img: "/templates/template5.avif" },
+    { id: 6, name: "Naval Professional", img: "/templates/template6.avif" },
+    { id: 7, name: "Classic Centered", img: "/templates/template7.avif" },
+    { id: 8, name: "Split Modern", img: "/templates/template8.avif" },
+    { id: 9, name: "Stanford Minimalist", img: "/templates/template9.avif" },
   ];
 
   const filteredTemplates = resumeTemplates.filter((template) =>

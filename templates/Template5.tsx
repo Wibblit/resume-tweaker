@@ -93,7 +93,7 @@ const Section: React.FC<{
       >
         {title}
       </h4>
-      <div>{children}</div>
+      <div className="text-black">{children}</div>
     </section>
   );
 };
@@ -143,7 +143,7 @@ const Profiles: React.FC<{
       style={styles.container}
       className="flex flex-wrap justify-center space-x-4 py-2"
     >
-      {profiles.map((profile, index) => (
+      {Array.isArray(profiles) && profiles.map((profile, index) => (
         <div className="flex gap-2 items-center" key={index}>
           {isIcons && profile.url.href !== "" && (
             <SocialIcon
@@ -661,14 +661,7 @@ const Template5: React.FC<TemplateProps> = ({
       </div>
       <div style={styles.container}>
         <div style={styles.mainContent}>
-          <style>{`
-            p {
-              white-space: pre-wrap; 
-              word-wrap: break-word; 
-              overflow-wrap: break-word;
-              text-align: justify;
-            }
-          `}</style>
+
           {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName)
           )}

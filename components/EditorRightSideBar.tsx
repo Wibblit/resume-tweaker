@@ -108,9 +108,10 @@ const templates = [
   { id: 3, name: "Executive Edge", image: "/templates/template3.avif" },
   { id: 4, name: "Fresh Start", image: "/templates/template4.avif" },
   { id: 5, name: "Eco Essence", image: "/templates/template5.avif" },
-  { id: 6, name: "Eco Essence", image: "/templates/template5.avif" },
-  { id: 7, name: "Maroon mavlin", image: "/templates/template5.avif" },
-  { id: 8, name: "Eco Essence", image: "/templates/template5.avif" },
+  { id: 6, name: "Naval Professional", image: "/templates/template6.avif" },
+  { id: 7, name: "Classic Centered", image: "/templates/template7.avif" },
+  { id: 8, name: "Split Modern", image: "/templates/template8.avif" },
+  { id: 9, name: "Stanford Minimalist", image: "/templates/template9.avif" },
 ];
 
 const covertemplate = [
