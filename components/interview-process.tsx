@@ -1,154 +1,3 @@
-// 'use client'
-
-// import { useEffect, useState, useRef } from "react"
-// import { Card, CardDescription, CardHeader } from "@/components/ui/card"
-// import { MicroPhone } from "./Microphone"
-// import { createModel, KaldiRecognizer, Model } from "vosk-browser"
-// import { Textarea } from "@/components/ui/textarea"
-// import * as tts from "@diffusionstudio/vits-web";
-
-// interface ComprehensiveInterview {
-//   questions: string[]
-//   duration: number
-// }
-
-// interface VoskResult {
-//   result: Array<{
-//     conf: number
-//     start: number
-//     end: number
-//     word: string
-//   }>
-//   text: string
-// }
-
-// export function ComprehensiveInterview({ questions }: ComprehensiveInterview) {
-//   const [loading, setLoading] = useState(true)
-//   const [utterances, setUtterances] = useState<VoskResult[]>([])
-//   const [model, setModel] = useState<Model | null>(null)
-//   const recognizerRef = useRef<KaldiRecognizer | null>(null)
-//   const [partial, setPartial] = useState("")
-//   const [recognizerReady, setRecognizerReady] = useState(false)
-//   const [error, setError] = useState<string | null>(null)
-//   const [currQuestionIndex, setCurrQuestionIndex] = useState(0);
-
-//   const SpeakQuestion = async () => {
-//     const wav = await tts.predict({
-//       text: questions[currQuestionIndex],
-//       voiceId: 'en_US-hfc_female-medium',
-//     });
-    
-//     const audio = new Audio();
-//     audio.src = URL.createObjectURL(wav);
-//     audio.play();
-//   }
-
-//   useEffect(() => {
-//     const loadModel = async () => {
-//       try {
-//         console.log("Starting to load model...")
-//         setLoading(true)
-//         model?.terminate()
-//         const loadedModel = new Model("/models/vosk-model-small-en-us-0.15.tar.gz")
-//         console.log("Model loaded successfully")
-//         setModel(loadedModel)
-        
-//         loadedModel.on("load", async () => {
-
-//           //start first question
-//           setCurrQuestionIndex(0);
-//           SpeakQuestion();
-
-//           console.log("Initializing recognizer...")
-//           const recognizer = new loadedModel.KaldiRecognizer(48000)
-//           recognizer.setWords(true)
-  
-//           recognizer.on("result", (message: any) => {
-//             console.log("Received result:", message)
-//             const result: VoskResult = message.result
-//             setUtterances((utt) => [...utt, result])
-//           })
-  
-//           recognizer.on("partialresult", (message: any) => {
-//             console.log("Received partial result:", message)
-//             setPartial(message.result.partial)
-//           })
-  
-//           recognizerRef.current = recognizer
-//           setRecognizerReady(true)
-//           console.log("Recognizer initialized and ready")
-//           setLoading(false)
-//         })
-
-
-//         loadedModel.on("error", (err) => {
-//           console.error("Error loading model:", err);
-//           setError(`Error: ${err instanceof Error ? err.message : String(err)}`);
-//         });
-
-
-//       } catch (error) {
-//         console.error("Error loading model or initializing recognizer:", error)
-//         setError(`Error: ${error instanceof Error ? error.message : String(error)}`)
-//         setLoading(false)
-//       }
-//     }
-//     loadModel()
-//   }, [])
-
-//   return (
-//     <div className="space-y-4">
-//       <Questions
-//         recognizer={recognizerRef.current}
-//         questions={questions}
-//         loading={loading}
-//         recognizerReady={recognizerReady}
-//         error={error}
-//       />
-//       <Textarea className="min-h-[100px]" readOnly value={utterances.map((utt) => utt.text).join(" ")} />
-//       <div className="text-sm text-gray-500">{partial}</div>
-//       {error && <div className="text-red-500">{error}</div>}
-//     </div>
-//   )
-// }
-
-// function Questions({
-//   questions,
-//   recognizer,
-//   loading,
-//   recognizerReady,
-//   error,
-// }: {
-//   questions: string[]
-//   recognizer: KaldiRecognizer | null
-//   loading: boolean
-//   recognizerReady: boolean
-//   error: string | null
-// }) {
-//   const [currQuestionIndex, setCurrQuestionIndex] = useState(0)
-
-//   return (
-//     <Card>
-//       <CardHeader>
-//         <div className="text-lg font-semibold">
-//           {questions[currQuestionIndex] || "No more questions"}
-//         </div>
-//       </CardHeader>
-//       <CardDescription className="p-4">
-//         {loading ? (
-//           <div>Loading recognizer... Please wait.</div>
-//         ) : error ? (
-//           <div className="text-red-500">Error: {error}</div>
-//         ) : recognizerReady && recognizer ? (
-//           <MicroPhone recognizer={recognizer} loading={loading} />
-//         ) : (
-//           <div>Recognizer not initialized. Please refresh the page.</div>
-//         )}
-//       </CardDescription>
-//     </Card>
-//   )
-// }
-
 'use client'
 
 import { useEffect, useState, useRef } from "react"
@@ -209,6 +58,7 @@ export default function ComprehensiveInterview({
   const [showReport, setShowReport] = useState(false)
   const [isGeneratingReport, setIsGeneratingReport] = useState(false)
   const [model, setModel] = useState<Model | null>(null)
+  const [audioQueue, setAudioQueue] = useState<Blob[]>([])
   const recognizerRef = useRef<KaldiRecognizer | null>(null)
   const micStreamRef = useRef<any>(null)
   const dispatch = useDispatch()
@@ -250,24 +100,39 @@ export default function ComprehensiveInterview({
     }
   }, [currentQuestionIndex, questions])
 
-  const speakQuestion = async (text: string) => {
-    if (isAISpeaking) {
-      // If there's an ongoing speech, stop it
-      // (Note: @diffusionstudio/vits-web doesn't provide a direct way to stop ongoing speech)
-      
+  const preloadNextQuestion = async (index: number) => {
+    if (index < questions.length) {
+      try {
+        const wav = await tts.predict({
+          text: questions[index],
+          voiceId: 'en_US-hfc_female-medium',
+        })
+        setAudioQueue((prevQueue) => [...prevQueue, wav])
+      } catch (error) {
+        console.error("Error preloading audio:", error)
+      }
     }
+  }
 
+  const speakQuestion = async (text: string) => {
     setIsAISpeaking(true)
     setShowButtons(false)
 
     try {
-      const wav = await tts.predict({
-        text: text,
-        voiceId: 'en_US-hfc_female-medium',
-      })
+      let audioBlob: Blob
+      if (audioQueue.length > 0) {
+        audioBlob = audioQueue[0]
+        setAudioQueue((prevQueue) => prevQueue.slice(1))
+      } else {
+        const wav = await tts.predict({
+          text: text,
+          voiceId: 'en_US-hfc_female-medium',
+        })
+        audioBlob = wav
+      }
       
       const audio = new Audio()
-      audio.src = URL.createObjectURL(wav)
+      audio.src = URL.createObjectURL(audioBlob)
       
       audio.onended = () => {
         setIsAISpeaking(false)
@@ -317,10 +182,11 @@ export default function ComprehensiveInterview({
         setUserAnswer((prev) => prev + " " + result.text)
       })
 
-      // recognizer.on("partialresult", (message: any) => {
-      //   const partial = message.result.partial
-      //   setRecognizedText((prev) => prev + " " + partial)
-      // })
+      recognizer.on("partialresult", (message: any) => {
+        const partial = message.result.partial
+        setRecognizedText((prev) => prev + " " + partial)
+        setUserAnswer((prev) => prev + " " + partial)
+      })
 
       recognizerRef.current = recognizer
 
@@ -372,6 +238,8 @@ export default function ComprehensiveInterview({
     setShowButtons(false)
     setIsAISpeaking(false)
 
+    preloadNextQuestion(currentQuestionIndex + 1)
+
     if (currentQuestionIndex === questions.length - 1) {
       generateReport()
     }
@@ -390,6 +258,8 @@ export default function ComprehensiveInterview({
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
     setShowButtons(false)
     setIsAISpeaking(false)
+
+    preloadNextQuestion(currentQuestionIndex + 1)
 
     if (currentQuestionIndex === questions.length - 1) {
       generateReport()
@@ -557,61 +427,58 @@ Comment: ${item.comment}
           </div>
         ) : (
           showButtons && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-center space-x-4">
-                {!isRecording ? (
-                  <Button
-                    onClick={startRecording}
-                    variant="secondary"
-                    className="bg-secondary text-secondary-foreground"
-                  >
-                    <Mic className="mr-2 h-4 w-4" />
-                    Start Recording
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={stopRecording}
-                    variant="destructive"
-                    className="bg-destructive text-destructive-foreground"
-                  >
-                    <StopCircle className="mr-2 h-4 w-4" />
-                    Stop Recording
-                  </Button>
-                )}
+            <div className="flex items-center justify-center space-x-4">
+              {!isRecording ? (
                 <Button
-                  onClick={submitAnswer}
-                  disabled={isRecording || !recognizedText}
-                  variant="default"
-                  className="bg-primary text-primary-foreground"
+                  onClick={startRecording}
+                  variant="secondary"
+                  className="bg-secondary text-secondary-foreground"
                 >
-                  <Send className="mr-2 h-4 w-4" />
-                  Submit Answer
+                  <Mic className="mr-2 h-4 w-4" />
+                  Start Recording
                 </Button>
+              ) : (
                 <Button
-                  onClick={skipQuestion}
-                  variant="outline"
-                  className="bg-muted text-muted-foreground"
+                  onClick={stopRecording}
+                  variant="destructive"
+                  className="bg-destructive text-destructive-foreground"
                 >
-                  <SkipForward className="mr-2 h-4 w-4" />
-                  Skip Question
+                  <StopCircle className="mr-2 h-4 w-4" />
+                  Stop Recording
                 </Button>
-              </div>
-              {recognizedText && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium mb-2">Recognized Text:</p>
-                  <Textarea
-                    value={recognizedText}
-                    onChange={(e) => {
-                      setRecognizedText(e.target.value)
-                      setUserAnswer(e.target.value)
-                    }}
-                    className="w-full h-32 p-2 text-muted-foreground bg-muted rounded-md"
-                  />
-                </div>
               )}
+              <Button
+                onClick={submitAnswer}
+                disabled={isRecording || !recognizedText}
+                variant="default"
+                className="bg-primary text-primary-foreground"
+              >
+                <Send className="mr-2 h-4 w-4" />
+                Submit Answer
+              </Button>
+              <Button
+                onClick={skipQuestion}
+                variant="outline"
+                className="bg-muted text-muted-foreground"
+              >
+                <SkipForward className="mr-2 h-4 w-4" />
+                Skip Question
+              </Button>
             </div>
           )
         )}
+        <div className="mt-4">
+          <p className="text-sm font-medium mb-2">Your Answer:</p>
+          <Textarea
+            value={recognizedText}
+            onChange={(e) => {
+              setRecognizedText(e.target.value)
+              setUserAnswer(e.target.value)
+            }}
+            className="w-full h-32 p-2 text-muted-foreground bg-muted rounded-md"
+            placeholder="Your answer will appear here. You can also type or edit your answer."
+          />
+        </div>
       </CardContent>
     </Card>
   )
