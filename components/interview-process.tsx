@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useEffect, useState, useRef } from "react"
 import { useDispatch } from "react-redux"
@@ -43,26 +43,26 @@ interface ReportData {
 }
 
 export default function ComprehensiveInterview({
-  questions,
-  duration,
+  questions = [],
+  duration = 60,
 }: InterviewProcessProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [isAISpeaking, setIsAISpeaking] = useState(false)
   const [userAnswer, setUserAnswer] = useState("")
   const [timeLeft, setTimeLeft] = useState(duration * 60)
   const [isRecording, setIsRecording] = useState(false)
-  const [showButtons, setShowButtons] = useState(true)
   const [recognizedText, setRecognizedText] = useState("")
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [report, setReport] = useState<ReportData | null>(null)
   const [showReport, setShowReport] = useState(false)
   const [isGeneratingReport, setIsGeneratingReport] = useState(false)
   const [model, setModel] = useState<Model | null>(null)
-  const [audioQueue, setAudioQueue] = useState<Blob[]>([])
   const recognizerRef = useRef<KaldiRecognizer | null>(null)
   const micStreamRef = useRef<any>(null)
   const dispatch = useDispatch()
   const { toast } = useToast()
+  const [audioBlobQueue, setAudioBlobQueue] = useState<Blob[]>([])
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -72,84 +72,94 @@ export default function ComprehensiveInterview({
     return () => clearInterval(timer)
   }, [])
 
+  const queueAudioForQuestion = async (text: string) => {
+    try {
+      const wav = await tts.predict({
+        text,
+        voiceId: "en_US-hfc_female-medium",
+      })
+      setAudioBlobQueue((prevQueue) => [...prevQueue, wav])
+      setIsAudioLoaded(true)
+    } catch (error) {
+      console.error("Error generating TTS:", error)
+      setIsAudioLoaded(false)
+    }
+  }
+
   useEffect(() => {
     const loadModel = async () => {
       try {
-        const loadedModel = await createModel("/models/vosk-model-small-en-us-0.15.tar.gz")
+        const loadedModel = await createModel(
+          "/models/vosk-model-small-en-us-0.15.tar.gz"
+        )
         setModel(loadedModel)
         console.log("Vosk model loaded successfully")
+
+        if (questions.length > 0) {
+          await queueAudioForQuestion(questions[0])
+        }
       } catch (error) {
         console.error("Error loading Vosk model:", error)
         toast({
           title: "Error",
-          description: "Failed to load speech recognition model. Please try again.",
+          description:
+            "Failed to load speech recognition model. Please try again.",
           variant: "destructive",
         })
       }
     }
     loadModel()
-  }, [toast])
+  }, [questions, toast])
 
   useEffect(() => {
     if (
       questions.length > 0 &&
       currentQuestionIndex < questions.length &&
-      !isAISpeaking
+      !isAISpeaking &&
+      isAudioLoaded
     ) {
       speakQuestion(questions[currentQuestionIndex])
     }
-  }, [currentQuestionIndex, questions])
-
-  const preloadNextQuestion = async (index: number) => {
-    if (index < questions.length) {
-      try {
-        const wav = await tts.predict({
-          text: questions[index],
-          voiceId: 'en_US-hfc_female-medium',
-        })
-        setAudioQueue((prevQueue) => [...prevQueue, wav])
-      } catch (error) {
-        console.error("Error preloading audio:", error)
-      }
-    }
-  }
+  }, [currentQuestionIndex, questions, isAudioLoaded])
 
   const speakQuestion = async (text: string) => {
+    if (isAISpeaking) {
+      return
+    }
+
     setIsAISpeaking(true)
-    setShowButtons(false)
 
     try {
-      let audioBlob: Blob
-      if (audioQueue.length > 0) {
-        audioBlob = audioQueue[0]
-        setAudioQueue((prevQueue) => prevQueue.slice(1))
-      } else {
-        const wav = await tts.predict({
-          text: text,
-          voiceId: 'en_US-hfc_female-medium',
-        })
-        audioBlob = wav
+      if (audioBlobQueue.length === 0) {
+        console.error("No audio available in queue")
+        setIsAISpeaking(false)
+        return
       }
-      
-      const audio = new Audio()
-      audio.src = URL.createObjectURL(audioBlob)
-      
+
+      const wav = audioBlobQueue[0]
+      setAudioBlobQueue((prevQueue) => prevQueue.slice(1))
+
+      const audio = new Audio(URL.createObjectURL(wav))
+      console.log("Created audio URL")
+
       audio.onended = () => {
         setIsAISpeaking(false)
-        setShowButtons(true)
+        URL.revokeObjectURL(audio.src)
       }
 
       audio.onerror = (event) => {
         console.error("Audio playback error:", event)
         setIsAISpeaking(false)
-        setShowButtons(true)
+        URL.revokeObjectURL(audio.src)
       }
 
       await audio.play()
+      if (currentQuestionIndex < questions.length - 1) {
+        queueAudioForQuestion(questions[currentQuestionIndex + 1])
+      }
     } catch (error) {
       console.error("Speech synthesis error:", error)
       setIsAISpeaking(false)
-      setShowButtons(true)
     }
   }
 
@@ -182,12 +192,6 @@ export default function ComprehensiveInterview({
         setUserAnswer((prev) => prev + " " + result.text)
       })
 
-      recognizer.on("partialresult", (message: any) => {
-        const partial = message.result.partial
-        setRecognizedText((prev) => prev + " " + partial)
-        setUserAnswer((prev) => prev + " " + partial)
-      })
-
       recognizerRef.current = recognizer
 
       micStreamRef.current.on("data", (chunk: any) => {
@@ -199,7 +203,8 @@ export default function ComprehensiveInterview({
       console.error("Error starting recording:", error)
       toast({
         title: "Error",
-        description: "Failed to start recording. Please check your microphone and try again.",
+        description:
+          "Failed to start recording. Please check your microphone and try again.",
         variant: "destructive",
       })
     }
@@ -223,7 +228,7 @@ export default function ComprehensiveInterview({
       answer: recognizedText,
     }
     setHistory((prevHistory) => [...prevHistory, newHistoryItem])
-
+    console.log("Entered submit ans func")
     dispatch({
       type: "STORE_ANSWER",
       payload: {
@@ -235,10 +240,7 @@ export default function ComprehensiveInterview({
     setUserAnswer("")
     setRecognizedText("")
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
-    setShowButtons(false)
     setIsAISpeaking(false)
-
-    preloadNextQuestion(currentQuestionIndex + 1)
 
     if (currentQuestionIndex === questions.length - 1) {
       generateReport()
@@ -256,10 +258,7 @@ export default function ComprehensiveInterview({
     setRecognizedText("")
     stopRecording()
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
-    setShowButtons(false)
     setIsAISpeaking(false)
-
-    preloadNextQuestion(currentQuestionIndex + 1)
 
     if (currentQuestionIndex === questions.length - 1) {
       generateReport()
@@ -418,66 +417,60 @@ Comment: ${item.comment}
         <p className="text-lg mb-4 text-foreground">
           {questions[currentQuestionIndex]}
         </p>
-        {isAISpeaking ? (
-          <div className="flex flex-col items-center justify-center h-32">
-            <VoiceAnimation />
-            <p className="mt-2 text-sm text-muted-foreground">
-              AI is speaking...
-            </p>
-          </div>
-        ) : (
-          showButtons && (
-            <div className="flex items-center justify-center space-x-4">
-              {!isRecording ? (
-                <Button
-                  onClick={startRecording}
-                  variant="secondary"
-                  className="bg-secondary text-secondary-foreground"
-                >
-                  <Mic className="mr-2 h-4 w-4" />
-                  Start Recording
-                </Button>
-              ) : (
-                <Button
-                  onClick={stopRecording}
-                  variant="destructive"
-                  className="bg-destructive text-destructive-foreground"
-                >
-                  <StopCircle className="mr-2 h-4 w-4" />
-                  Stop Recording
-                </Button>
-              )}
-              <Button
-                onClick={submitAnswer}
-                disabled={isRecording || !recognizedText}
-                variant="default"
-                className="bg-primary text-primary-foreground"
-              >
-                <Send className="mr-2 h-4 w-4" />
-                Submit Answer
-              </Button>
-              <Button
-                onClick={skipQuestion}
-                variant="outline"
-                className="bg-muted text-muted-foreground"
-              >
-                <SkipForward className="mr-2 h-4 w-4" />
-                Skip Question
-              </Button>
-            </div>
-          )
-        )}
-        <div className="mt-4">
-          <p className="text-sm font-medium mb-2">Your Answer:</p>
+        <div className="flex flex-col items-center justify-center h-32 mb-4">
+          <VoiceAnimation isActive={isAISpeaking} />
+          <p className="mt-2 text-sm text-muted-foreground">
+            {isAISpeaking ? "AI is speaking..." : "AI voice"}
+          </p>
+        </div>
+        <div className="space-y-4">
           <Textarea
             value={recognizedText}
             onChange={(e) => {
               setRecognizedText(e.target.value)
               setUserAnswer(e.target.value)
             }}
-            className="w-full h-32 p-2 text-muted-foreground bg-muted rounded-md"
-            placeholder="Your answer will appear here. You can also type or edit your answer."
+            placeholder="Your answer will appear here. You can also type or edit your response."
+            className="w-full h-32 p-2 text-foreground bg-background rounded-md resize-y"
           />
+          <div className="flex items-center justify-center space-x-4">
+            {!isRecording ? (
+              <Button
+                onClick={startRecording}
+                variant="secondary"
+                className="bg-secondary text-secondary-foreground"
+              >
+                <Mic className="mr-2 h-4 w-4" />
+                Start Recording
+              </Button>
+            ) : (
+              <Button
+                onClick={stopRecording}
+                variant="destructive"
+                className="bg-destructive text-destructive-foreground"
+              >
+                <StopCircle className="mr-2 h-4 w-4" />
+                Stop Recording
+              </Button>
+            )}
+            <Button
+              onClick={submitAnswer}
+              disabled={!recognizedText.trim()}
+              variant="default"
+              className="bg-primary text-primary-foreground"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              Submit Answer
+            </Button>
+            <Button
+              onClick={skipQuestion}
+              variant="outline"
+              className="bg-muted text-muted-foreground"
+            >
+              <SkipForward className="mr-2 h-4 w-4" />
+              Skip Question
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
