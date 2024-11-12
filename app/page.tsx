@@ -8,6 +8,7 @@ import { StickyScrollReveal } from "@/components/LandingPage/More";
 import Pricing from "@/components/LandingPage/Pricing";
 import GetStartedSection from "@/components/LandingPage/GetStartedSection";
 import Footer from "@/components/LandingPage/Footer";
+import {redirect} from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Wibblit Resume Tweaker",
@@ -20,6 +21,11 @@ export const metadata: Metadata = {
 
 export default async function Home() {
   const session = await auth();
+
+  if (session?.user) {
+    return redirect("/home")
+  }
+
   return (
     <main className="relative flex justify-center items-center flex-col mx-auto">
       <div className="w-full">
