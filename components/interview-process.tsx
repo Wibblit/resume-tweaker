@@ -1,115 +1,108 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import { useDispatch } from "react-redux"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SkipForward, StopCircle, Mic, Send, Download } from "lucide-react"
-import { VoiceAnimation } from "@/components/voice-animation"
+import React, { useEffect, useState, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SkipForward, StopCircle, Mic, Send, Download } from "lucide-react";
+import { VoiceAnimation } from "@/components/voice-animation";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Progress } from "@/components/ui/progress"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { createModel, KaldiRecognizer, Model } from "vosk-browser"
-import * as tts from "@diffusionstudio/vits-web"
-import MicrophoneStream from "microphone-stream"
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { createModel, KaldiRecognizer, Model } from "vosk-browser";
+import * as tts from "@diffusionstudio/vits-web";
+import MicrophoneStream from "microphone-stream";
 
 interface InterviewProcessProps {
-  questions: string[]
-  duration: number
+  questions: string[];
+  duration: number;
+  model: Model;
+  setModel: React.Dispatch<React.SetStateAction<Model | null>>;
 }
 
 interface HistoryItem {
-  question: string
-  answer: string
+  question: string;
+  answer: string;
 }
 
 interface ReportData {
   evaluation: {
-    category: string
-    score: number
-    comment: string
-  }[]
-  overall_score: number
-  final_recommendation: string
-  overall_comment: string
+    category: string;
+    score: number;
+    comment: string;
+  }[];
+  overall_score: number;
+  final_recommendation: string;
+  overall_comment: string;
 }
 
 export default function ComprehensiveInterview({
   questions = [],
-  duration = 60,
+  duration = 10,
+  model,
+  setModel,
 }: InterviewProcessProps) {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [isAISpeaking, setIsAISpeaking] = useState(false)
-  const [userAnswer, setUserAnswer] = useState("")
-  const [timeLeft, setTimeLeft] = useState(duration * 60)
-  const [isRecording, setIsRecording] = useState(false)
-  const [recognizedText, setRecognizedText] = useState("")
-  const [history, setHistory] = useState<HistoryItem[]>([])
-  const [report, setReport] = useState<ReportData | null>(null)
-  const [showReport, setShowReport] = useState(false)
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false)
-  const [model, setModel] = useState<Model | null>(null)
-  const recognizerRef = useRef<KaldiRecognizer | null>(null)
-  const micStreamRef = useRef<any>(null)
-  const dispatch = useDispatch()
-  const { toast } = useToast()
-  const [audioBlobQueue, setAudioBlobQueue] = useState<Blob[]>([])
-  const [isAudioLoaded, setIsAudioLoaded] = useState(false)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [timeLeft, setTimeLeft] = useState(duration * 60);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recognizedText, setRecognizedText] = useState("");
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [report, setReport] = useState<ReportData | null>(null);
+  const [showReport, setShowReport] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const recognizerRef = useRef<KaldiRecognizer | null>(null);
+  const micStreamRef = useRef<any>(null);
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+  const [audioBlobQueue, setAudioBlobQueue] = useState<Blob[]>([]);
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0))
-    }, 1000)
+      setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   const queueAudioForQuestion = async (text: string) => {
     try {
       const wav = await tts.predict({
         text,
         voiceId: "en_US-hfc_female-medium",
-      })
-      setAudioBlobQueue((prevQueue) => [...prevQueue, wav])
-      setIsAudioLoaded(true)
+      });
+      setAudioBlobQueue((prevQueue) => [...prevQueue, wav]);
+      setIsAudioLoaded(true);
     } catch (error) {
-      console.error("Error generating TTS:", error)
-      setIsAudioLoaded(false)
+      console.error("Error generating TTS:", error);
+      setIsAudioLoaded(false);
     }
-  }
+  };
 
   useEffect(() => {
     const loadModel = async () => {
-      try {
-        const loadedModel = await createModel(
-          "/models/vosk-model-small-en-us-0.15.tar.gz"
-        )
-        setModel(loadedModel)
-        console.log("Vosk model loaded successfully")
+      // const loadedModel = await createModel(
+      //   "/models/vosk-model-small-en-us-0.15.tar.gz"
+      // )
+      // setModel(loadedModel)
+      // console.log("Vosk model loaded successfully")
 
-        if (questions.length > 0) {
-          await queueAudioForQuestion(questions[0])
-        }
-      } catch (error) {
-        console.error("Error loading Vosk model:", error)
-        toast({
-          title: "Error",
-          description:
-            "Failed to load speech recognition model. Please try again.",
-          variant: "destructive",
-        })
+      if (questions.length > 0) {
+        await queueAudioForQuestion(questions[0]);
       }
-    }
-    loadModel()
-  }, [questions, toast])
+    };
+    loadModel();
+  }, [questions, toast]);
 
   useEffect(() => {
     if (
@@ -118,155 +111,156 @@ export default function ComprehensiveInterview({
       !isAISpeaking &&
       isAudioLoaded
     ) {
-      speakQuestion(questions[currentQuestionIndex])
+      speakQuestion(questions[currentQuestionIndex]);
     }
-  }, [currentQuestionIndex, questions, isAudioLoaded])
+  }, [currentQuestionIndex, questions, isAudioLoaded]);
 
   const speakQuestion = async (text: string) => {
     if (isAISpeaking) {
-      return
+      return;
     }
 
-    setIsAISpeaking(true)
+    setIsAISpeaking(true);
 
     try {
       if (audioBlobQueue.length === 0) {
-        console.error("No audio available in queue")
-        setIsAISpeaking(false)
-        return
+        console.error("No audio available in queue");
+        setIsAISpeaking(false);
+        return;
       }
 
-      const wav = audioBlobQueue[0]
-      setAudioBlobQueue((prevQueue) => prevQueue.slice(1))
+      const wav = audioBlobQueue[0];
+      setAudioBlobQueue((prevQueue) => prevQueue.slice(1));
 
-      const audio = new Audio(URL.createObjectURL(wav))
-      console.log("Created audio URL")
+      const audio = new Audio(URL.createObjectURL(wav));
+      console.log("Created audio URL");
 
       audio.onended = () => {
-        setIsAISpeaking(false)
-        URL.revokeObjectURL(audio.src)
-      }
+        setIsAISpeaking(false);
+        URL.revokeObjectURL(audio.src);
+      };
 
       audio.onerror = (event) => {
-        console.error("Audio playback error:", event)
-        setIsAISpeaking(false)
-        URL.revokeObjectURL(audio.src)
-      }
+        console.error("Audio playback error:", event);
+        setIsAISpeaking(false);
+        URL.revokeObjectURL(audio.src);
+      };
 
-      await audio.play()
+      await audio.play();
       if (currentQuestionIndex < questions.length - 1) {
-        queueAudioForQuestion(questions[currentQuestionIndex + 1])
+        queueAudioForQuestion(questions[currentQuestionIndex + 1]);
       }
     } catch (error) {
-      console.error("Speech synthesis error:", error)
-      setIsAISpeaking(false)
+      console.error("Speech synthesis error:", error);
+      setIsAISpeaking(false);
     }
-  }
+  };
 
   const startRecording = async () => {
     if (!model) {
-      console.error("Vosk model not loaded")
-      return
+      console.error("Vosk model not loaded");
+      return;
     }
 
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: false,
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
         },
-      })
+      });
 
       micStreamRef.current = new MicrophoneStream({
         objectMode: true,
         bufferSize: 1024,
-      })
-      micStreamRef.current.setStream(mediaStream)
+      });
+      micStreamRef.current.setStream(mediaStream);
 
-      const recognizer = new model.KaldiRecognizer(48000)
-      recognizer.setWords(true)
-
+      const recognizer = new model.KaldiRecognizer(48000);
+      recognizer.setWords(true);
+      
       recognizer.on("result", (message: any) => {
-        const result = message.result
-        setRecognizedText((prev) => prev + " " + result.text)
-        setUserAnswer((prev) => prev + " " + result.text)
-      })
+        const result = message.result;
+        setRecognizedText((prev) => prev + " " + result.text);
+        setUserAnswer((prev) => prev + " " + result.text);
+      });
 
-      recognizerRef.current = recognizer
+      recognizerRef.current = recognizer;
 
       micStreamRef.current.on("data", (chunk: any) => {
-        recognizer.acceptWaveform(chunk)
-      })
+        recognizer.acceptWaveform(chunk);
+      });
 
-      setIsRecording(true)
+      setIsRecording(true);
     } catch (error) {
-      console.error("Error starting recording:", error)
+      console.error("Error starting recording:", error);
       toast({
         title: "Error",
         description:
           "Failed to start recording. Please check your microphone and try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const stopRecording = () => {
     if (micStreamRef.current) {
-      micStreamRef.current.stop()
-      micStreamRef.current = null
+      micStreamRef.current.stop();
+      micStreamRef.current = null;
     }
     if (recognizerRef.current) {
-      recognizerRef.current.remove()
-      recognizerRef.current = null
+      recognizerRef.current.remove();
+      recognizerRef.current = null;
     }
-    setIsRecording(false)
-  }
+    setIsRecording(false);
+  };
 
   const submitAnswer = () => {
     const newHistoryItem: HistoryItem = {
       question: questions[currentQuestionIndex],
       answer: recognizedText,
-    }
-    setHistory((prevHistory) => [...prevHistory, newHistoryItem])
-    console.log("Entered submit ans func")
+    };
+    setHistory((prevHistory) => [...prevHistory, newHistoryItem]);
+    console.log("Entered submit ans func");
     dispatch({
       type: "STORE_ANSWER",
       payload: {
         questionIndex: currentQuestionIndex,
         answer: recognizedText,
       },
-    })
+    });
 
-    setUserAnswer("")
-    setRecognizedText("")
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
-    setIsAISpeaking(false)
+    setUserAnswer("");
+    setRecognizedText("");
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    setIsAISpeaking(false);
 
     if (currentQuestionIndex === questions.length - 1) {
-      generateReport()
+      generateReport();
     }
-  }
+  };
 
   const skipQuestion = () => {
     const newHistoryItem: HistoryItem = {
       question: questions[currentQuestionIndex],
       answer: "Skipped",
-    }
-    setHistory((prevHistory) => [...prevHistory, newHistoryItem])
+    };
+    setHistory((prevHistory) => [...prevHistory, newHistoryItem]);
 
-    setUserAnswer("")
-    setRecognizedText("")
-    stopRecording()
-    setCurrentQuestionIndex((prevIndex) => prevIndex + 1)
-    setIsAISpeaking(false)
+    setUserAnswer("");
+    setRecognizedText("");
+    stopRecording();
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    setIsAISpeaking(false);
 
     if (currentQuestionIndex === questions.length - 1) {
-      generateReport()
+      generateReport();
     }
-  }
+  };
 
   const generateReport = async () => {
-    setIsGeneratingReport(true)
+    setIsGeneratingReport(true);
     try {
       const finalHistory = [
         ...history,
@@ -274,7 +268,7 @@ export default function ComprehensiveInterview({
           question: questions[currentQuestionIndex],
           answer: recognizedText || "Skipped",
         },
-      ]
+      ];
 
       const response = await fetch("/api/generate-report", {
         method: "POST",
@@ -282,36 +276,36 @@ export default function ComprehensiveInterview({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ history: finalHistory }),
-      })
+      });
 
       if (response.status === 429) {
         toast({
           title: "Whoa there! You've hit the rate limit.",
           description: "Please slow down and try again in a few minutes.",
           variant: "destructive",
-        })
-        return
+        });
+        return;
       }
 
       if (!response.ok) {
-        throw new Error("Failed to generate report")
+        throw new Error("Failed to generate report");
       }
 
-      const { report } = await response.json()
-      const parsedResult = JSON.parse(report)
-      console.log(parsedResult, "report ")
-      setReport(parsedResult)
-      setShowReport(true)
+      const { report } = await response.json();
+      const parsedResult = JSON.parse(report);
+      console.log(parsedResult, "report ");
+      setReport(parsedResult);
+      setShowReport(true);
     } catch (error) {
-      console.error("Error generating report:", error)
-      setReport(null)
+      console.error("Error generating report:", error);
+      setReport(null);
     } finally {
-      setIsGeneratingReport(false)
+      setIsGeneratingReport(false);
     }
-  }
+  };
 
   const downloadReport = () => {
-    if (!report) return
+    if (!report) return;
 
     const reportText = `
 Interview Report
@@ -332,18 +326,18 @@ Comment: ${item.comment}
 `
   )
   .join("\n")}
-`
+`;
 
-    const blob = new Blob([reportText], { type: "text/plain" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "interview-report.txt"
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-  }
+    const blob = new Blob([reportText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "interview-report.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   if (currentQuestionIndex >= questions.length) {
     return (
@@ -399,7 +393,7 @@ Comment: ${item.comment}
           </Dialog>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -427,8 +421,8 @@ Comment: ${item.comment}
           <Textarea
             value={recognizedText}
             onChange={(e) => {
-              setRecognizedText(e.target.value)
-              setUserAnswer(e.target.value)
+              setRecognizedText(e.target.value);
+              setUserAnswer(e.target.value);
             }}
             placeholder="Your answer will appear here. You can also type or edit your response."
             className="w-full h-32 p-2 text-foreground bg-background rounded-md resize-y"
@@ -474,5 +468,5 @@ Comment: ${item.comment}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
