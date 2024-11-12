@@ -44,6 +44,8 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@tabler/icons-react": "^3.19.0",
     "@tailwindcss/typography": "^0.5.15",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-tflite": "^0.0.1-alpha.10",
     "@tiptap/extension-color": "^2.7.4",
     "@tiptap/extension-highlight": "^2.7.4",
     "@tiptap/extension-image": "^2.7.4",
