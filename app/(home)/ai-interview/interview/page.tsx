@@ -41,11 +41,21 @@ export default function InterviewPage() {
   useEffect(() => {
     async function interviewSetup() {
       try {
-        const loadedModel = await createModel(
-          "/models/vosk-model-small-en-us-0.15.tar.gz"
-        );
-  
-        setModel(loadedModel);
+        try {
+          const loadedModel = await createModel(
+            "/models/vosk-model-small-en-us-0.15.tar.gz"
+          );
+          setModel(loadedModel);
+          console.log("Vosk model loaded successfully");
+        } catch (error) {
+          console.error("Error loading Vosk model:", error);
+          return toast({
+            title: "Error",
+            description:
+              "Failed to load speech recognition model. Please try again.",
+            variant: "destructive",
+          });
+        }
 
         await tts.download("en_US-hfc_female-medium", (progress) => {
           console.log(
@@ -138,8 +148,16 @@ export default function InterviewPage() {
         AI Interview
       </h1>
       {interviewData.interviewType === "adaptive" ? (
-        <AdaptiveInterview formData={interviewData} />
-      ) : model ? (
+        model?.ready ? (
+          <AdaptiveInterview
+            formData={interviewData}
+            model={model}
+            setModel={setModel}
+          />
+        ) : (
+          <div>Loading...</div>
+        )
+      ) : model?.ready ? (
         <ComprehensiveInterview
           questions={comprehensiveQuestions}
           duration={interviewData.duration}

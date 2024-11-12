@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SkipForward, StopCircle, Mic, Send } from "lucide-react";
@@ -9,7 +9,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
-import { createModel, Model, KaldiRecognizer } from "vosk-browser";
+import { createModel, KaldiRecognizer, Model } from "vosk-browser";
+import * as tts from "@diffusionstudio/vits-web";
+import MicrophoneStream from "microphone-stream";
 
 interface InterviewData {
   job: string;
@@ -18,96 +20,28 @@ interface InterviewData {
   jd: string;
 }
 
-interface RecognizerMessage {
-  result?: { text: string };
-  partial?: string;
-}
-
 export default function AdaptiveInterview({
   formData,
 }: {
   formData: InterviewData;
+  model: Model;
+  setModel: React.Dispatch<React.SetStateAction<Model | null>>;
 }) {
   const [currentQuestion, setCurrentQuestion] = useState("");
   const [isAISpeaking, setIsAISpeaking] = useState(false);
   const [userAnswer, setUserAnswer] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const [showButtons, setShowButtons] = useState(true);
   const [recognizedText, setRecognizedText] = useState("");
-  const [history, setHistory] = useState<{ role: string; content: string }[]>([]);
+  const [history, setHistory] = useState<{ role: string; content: string }[]>(
+    []
+  );
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
-  const [recognizer, setRecognizer] = useState<KaldiRecognizer | null>(null);
   const [model, setModel] = useState<Model | null>(null);
+  const recognizerRef = useRef<KaldiRecognizer | null>(null);
+  const micStreamRef = useRef<any>(null);
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
+  const [fetchingQuetion, setFetchingQuestion] = useState(false);
   const { toast } = useToast();
-
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const speakingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const processorRef = useRef<AudioWorkletNode | null>(null);
-
-  useEffect(() => {
-    async function loadVosk() {
-      try {
-        const loadedModel = await createModel("/models/vosk-model-small-en-us-0.15");
-        setModel(loadedModel);
-        const loadedRecognizer = new loadedModel.KaldiRecognizer(16000);
-        setRecognizer(loadedRecognizer);
-
-        //@ts-ignore
-        loadedRecognizer.on("result", (message: RecognizerMessage) => {
-          if (message.result) {
-            const result = message.result.text;
-            if (result) {
-              setRecognizedText((prev) => prev + " " + result);
-              setUserAnswer((prev) => prev + " " + result);
-            }
-          }
-        });
-
-        //@ts-ignore
-        loadedRecognizer.on("partialresult", (message: RecognizerMessage) => {
-          if (message.partial) {
-            setRecognizedText((prev) => prev + " " + message.partial);
-          }
-        });
-      } catch (error) {
-        console.error("Error loading Vosk model:", error);
-      }
-    }
-    loadVosk();
-
-    return () => {
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
-      }
-      if (processorRef.current) {
-        processorRef.current.disconnect();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const getVoices = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      if (availableVoices.length) {
-        setVoices(availableVoices);
-      }
-    };
-
-    getVoices();
-    window.speechSynthesis.onvoiceschanged = getVoices;
-
-    return () => {
-      if (utteranceRef.current) {
-        window.speechSynthesis.cancel();
-      }
-      if (speakingTimeoutRef.current) {
-        clearTimeout(speakingTimeoutRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (!currentQuestion && !isInterviewComplete) {
@@ -116,13 +50,14 @@ export default function AdaptiveInterview({
   }, [currentQuestion, isInterviewComplete]);
 
   useEffect(() => {
-    if (currentQuestion && !isAISpeaking) {
+    if (currentQuestion && !isAISpeaking && isAudioLoaded) {
       speakQuestion(currentQuestion);
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, isAudioLoaded]);
 
   const fetchNextQuestion = async () => {
     try {
+      setFetchingQuestion(true);
       const response = await fetch("/api/interview", {
         method: "POST",
         headers: {
@@ -154,123 +89,111 @@ export default function AdaptiveInterview({
         setIsInterviewComplete(true);
       } else {
         setCurrentQuestion(question);
+        setFetchingQuestion(false);
+
         setHistory((prevHistory) => [
           ...prevHistory,
           { role: "assistant", content: question },
         ]);
+        speakQuestion(question)
       }
     } catch (error) {
       console.error("Error fetching question:", error);
     }
   };
 
-  const speakQuestion = (text: string) => {
-    if ("speechSynthesis" in window) {
-      if (isAISpeaking) {
-        window.speechSynthesis.cancel();
-      }
-      if (speakingTimeoutRef.current) {
-        clearTimeout(speakingTimeoutRef.current);
-      }
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utteranceRef.current = utterance;
+  const speakQuestion = async (text: string) => {
+    if (isAISpeaking) {
+      return;
+    }
 
-      const preferredVoice =
-        voices.find(
-          (voice) =>
-            voice.name.includes("Google") && voice.lang.startsWith("en")
-        ) || voices[0];
+    setIsAISpeaking(true);
 
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
-      }
-      utterance.rate = 1;
-      utterance.pitch = 1;
+    try { 
 
-      setIsAISpeaking(true);
-      setShowButtons(false);
+      const wav = await tts.predict({
+        text,
+        voiceId: "en_US-hfc_female-medium",
+      });
 
-      utterance.onstart = () => {
-        console.log("AI is speaking");
-      };
+      const audio = new Audio(URL.createObjectURL(wav));
+      console.log("Created audio URL");
 
-      utterance.onend = () => {
+      audio.onended = () => {
         setIsAISpeaking(false);
-        setShowButtons(true);
-        if (speakingTimeoutRef.current) {
-          clearTimeout(speakingTimeoutRef.current);
-        }
+        URL.revokeObjectURL(audio.src);
       };
 
-      utterance.onerror = (event) => {
-        console.error("Speech synthesis error:", event.error);
+      audio.onerror = (event) => {
+        console.error("Audio playback error:", event);
         setIsAISpeaking(false);
-        setShowButtons(true);
-        if (speakingTimeoutRef.current) {
-          clearTimeout(speakingTimeoutRef.current);
-        }
+        URL.revokeObjectURL(audio.src);
       };
 
-      window.speechSynthesis.speak(utterance);
-
-      speakingTimeoutRef.current = setTimeout(() => {
-        if (isAISpeaking) {
-          setIsAISpeaking(false);
-          setShowButtons(true);
-        }
-      }, text.length * 50 + 3000);
-    } else {
-      console.error("Speech synthesis not supported");
+      await audio.play();
+    } catch (error) {
+      console.error("Speech synthesis error:", error);
       setIsAISpeaking(false);
-      setShowButtons(true);
     }
   };
 
   const startRecording = async () => {
-    if (!recognizer || !model) {
-      console.error("Vosk model or recognizer not initialized");
+    if (!model) {
+      console.error("Vosk model not loaded");
       return;
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream;
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+        },
+      });
 
-      audioContextRef.current = new AudioContext();
-      const source = audioContextRef.current.createMediaStreamSource(stream);
+      micStreamRef.current = new MicrophoneStream({
+        objectMode: true,
+        bufferSize: 1024,
+      });
+      micStreamRef.current.setStream(mediaStream);
 
-      await audioContextRef.current.audioWorklet.addModule("/audio-processor.js");
-      processorRef.current = new AudioWorkletNode(audioContextRef.current, "audio-processor");
+      const recognizer = new model.KaldiRecognizer(48000);
+      recognizer.setWords(true);
 
-      source.connect(processorRef.current);
-      processorRef.current.connect(audioContextRef.current.destination);
+      recognizer.on("result", (message: any) => {
+        const result = message.result;
+        setRecognizedText((prev) => prev + " " + result.text);
+        setUserAnswer((prev) => prev + " " + result.text);
+      });
 
-      processorRef.current.port.onmessage = (event) => {
-        const { audioData } = event.data;
-        if (recognizer && audioData) {
-          recognizer.acceptWaveform(audioData);
-        }
-      };
+      recognizerRef.current = recognizer;
+
+      micStreamRef.current.on("data", (chunk: any) => {
+        recognizer.acceptWaveform(chunk);
+      });
 
       setIsRecording(true);
     } catch (error) {
       console.error("Error starting recording:", error);
+      toast({
+        title: "Error",
+        description:
+          "Failed to start recording. Please check your microphone and try again.",
+        variant: "destructive",
+      });
     }
   };
 
   const stopRecording = () => {
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
-      mediaStreamRef.current = null;
+    if (micStreamRef.current) {
+      micStreamRef.current.stop();
+      micStreamRef.current = null;
     }
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-    if (processorRef.current) {
-      processorRef.current.disconnect();
-      processorRef.current = null;
+    if (recognizerRef.current) {
+      recognizerRef.current.remove();
+      recognizerRef.current = null;
     }
     setIsRecording(false);
   };
@@ -287,7 +210,6 @@ export default function AdaptiveInterview({
     setUserAnswer("");
     setRecognizedText("");
     setCurrentQuestion("");
-    setShowButtons(false);
     setIsAISpeaking(false);
 
     await fetchNextQuestion();
@@ -300,7 +222,6 @@ export default function AdaptiveInterview({
     setRecognizedText("");
     stopRecording();
     setCurrentQuestion("");
-    setShowButtons(false);
     setIsAISpeaking(false);
 
     await fetchNextQuestion();
@@ -322,72 +243,71 @@ export default function AdaptiveInterview({
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[300px] mb-4">
-          <ReactMarkdown className="text-lg mb-4 text-foreground">
-            {currentQuestion}
-          </ReactMarkdown>
-        </ScrollArea>
-        {isAISpeaking ? (
-          <div className="flex flex-col items-center justify-center h-32">
-            <VoiceAnimation />
-            <p className="mt-2 text-sm text-muted-foreground">
-              AI is speaking...
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-4">
-              {!isRecording ? (
-                <Button
-                  onClick={startRecording}
-                  variant="secondary"
-                  className="bg-secondary text-secondary-foreground"
-                >
-                  <Mic className="mr-2 h-4 w-4" />
-                  Start Recording
-                </Button>
-              ) : (
-                <Button
-                  onClick={stopRecording}
-                  variant="destructive"
-                  className="bg-destructive text-destructive-foreground"
-                >
-                  <StopCircle className="mr-2 h-4 w-4" />
-                  Stop Recording
-                </Button>
-              )}
-              <Button
-                onClick={submitAnswer}
-                disabled={isRecording || !recognizedText.trim()}
-                variant="default"
-                className="bg-primary text-primary-foreground"
-              >
-                <Send className="mr-2 h-4 w-4" />
-                Submit Answer
-              </Button>
-              <Button
-                onClick={skipQuestion}
-                variant="outline"
-                className="bg-muted text-muted-foreground"
-              >
-                <SkipForward className="mr-2 h-4 w-4" />
-                Skip Question
-              </Button>
+          {fetchingQuetion ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
             </div>
-            {recognizedText && (
-              <div className="mt-4">
-                <p className="text-sm font-medium mb-2">Recognized Text:</p>
-                <Textarea
-                  value={recognizedText}
-                  onChange={(e) => {
-                    setRecognizedText(e.target.value);
-                    setUserAnswer(e.target.value);
-                  }}
-                  className="w-full h-32 p-2 text-muted-foreground bg-muted rounded-md"
-                />
-              </div>
+          ) : (
+            <ReactMarkdown className="text-lg mb-4 text-foreground">
+              {currentQuestion}
+            </ReactMarkdown>
+          )}
+        </ScrollArea>
+        <div className="flex flex-col items-center justify-center h-32 mb-4">
+          <VoiceAnimation isActive={isAISpeaking} />
+          <p className="mt-2 text-sm text-muted-foreground">
+            {isAISpeaking ? "AI is speaking..." : "AI voice"}
+          </p>
+        </div>
+        <div className="space-y-4">
+          <Textarea
+            value={recognizedText}
+            onChange={(e) => {
+              setRecognizedText(e.target.value);
+              setUserAnswer(e.target.value);
+            }}
+            placeholder="Your answer will appear here. You can also type or edit your response."
+            className="w-full h-32 p-2 text-foreground bg-background rounded-md resize-y"
+          />
+          <div className="flex items-center justify-center space-x-4">
+            {!isRecording ? (
+              <Button
+                onClick={startRecording}
+                variant="secondary"
+                className="bg-secondary text-secondary-foreground"
+              >
+                <Mic className="mr-2 h-4 w-4" />
+                Start Recording
+              </Button>
+            ) : (
+              <Button
+                onClick={stopRecording}
+                variant="destructive"
+                className="bg-destructive text-destructive-foreground"
+              >
+                <StopCircle className="mr-2 h-4 w-4" />
+                Stop Recording
+              </Button>
             )}
+            <Button
+              onClick={submitAnswer}
+              disabled={isRecording || !recognizedText.trim()}
+              variant="default"
+              className="bg-primary text-primary-foreground"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              Submit Answer
+            </Button>
+            <Button
+              onClick={skipQuestion}
+              variant="outline"
+              className="bg-muted text-muted-foreground"
+            >
+              <SkipForward className="mr-2 h-4 w-4" />
+              Skip Question
+            </Button>
           </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );
