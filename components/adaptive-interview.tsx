@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
 import { createModel, KaldiRecognizer, Model } from "vosk-browser";
-import * as tts from "@diffusionstudio/vits-web";
+import * as tts from "@/lib/diffusionstudio/vits-web/dist/vits-web";
 import MicrophoneStream from "microphone-stream";
 
 interface InterviewData {
@@ -114,7 +114,7 @@ export default function AdaptiveInterview({
 
       const wav = await tts.predict({
         text,
-        voiceId: "en_US-hfc_female-medium",
+        voiceId: "en_US-hfc_male-medium",
       });
 
       const audio = new Audio(URL.createObjectURL(wav));

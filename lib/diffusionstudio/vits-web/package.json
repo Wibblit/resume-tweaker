@@ -1,0 +1,61 @@
+{
+  "name": "@diffusionstudio/vits-web",
+  "private": false,
+  "version": "1.0.3",
+  "description": "Web api for using VITS based models in the browser!",
+  "type": "module",
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "module": "./dist/vits-web.js",
+  "types": "./dist/index.d.ts",
+  "author": "mail@konstantinpaulus.de",
+  "exports": {
+    ".": {
+      "import": "./dist/vits-web.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:diffusionstudio/vits-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/diffusionstudio/vits-web/issues"
+  },
+  "homepage": "https://huggingface.co/spaces/diffusionstudio/vits-web",
+  "license": "MIT",
+  "keywords": [
+    "vits",
+    "webassembly",
+    "emscripten",
+    "audio",
+    "browser",
+    "tts",
+    "text-to-speech",
+    "speech synthesis",
+    "web ai",
+    "webnn"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "rm -r -f ./dist && tsc && vite build",
+    "preview": "vite preview",
+    "format": "npx @biomejs/biome format --write ./src",
+    "test": "npx playwright test --project=chromium"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "@playwright/test": "^1.35.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1",
+    "vite-plugin-dts": "^3.9.1"
+  },
+  "dependencies": {
+    "onnxruntime-web": "1.18.0"
+  }
+}

@@ -5,7 +5,7 @@ import AdaptiveInterview from "@/components/adaptive-interview";
 import ComprehensiveInterview from "@/components/interview-process";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import * as tts from "@diffusionstudio/vits-web";
+import * as tts from "@/lib/diffusionstudio/vits-web/dist/vits-web";
 import { createModel, Model } from "vosk-browser";
 
 interface InterviewData {
@@ -57,14 +57,6 @@ export default function InterviewPage() {
           });
         }
 
-        await tts.download("en_US-hfc_female-medium", (progress) => {
-          console.log(
-            `Downloading ${progress.url} - ${Math.round(
-              (progress.loaded * 100) / progress.total
-            )}%`
-          );
-        });
-
         setInterviewData({
           job: searchParams.get("job") || "",
           position: searchParams.get("position") || "",
@@ -87,9 +79,7 @@ export default function InterviewPage() {
     return () => {
       (async () => {
         try {
-          await tts.flush();
           await model?.terminate();
-          console.log("tts flushed");
         } catch (error) {
           console.error("Error flushing TTS resources:", error);
         }

@@ -18,8 +18,8 @@ import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { createModel, KaldiRecognizer, Model } from "vosk-browser";
-import * as tts from "@diffusionstudio/vits-web";
-import MicrophoneStream from "microphone-stream";
+import * as tts from "@/lib/diffusionstudio/vits-web/dist/vits-web";
+import MicrophoneStream from "microphone-stream";      
 
 interface InterviewProcessProps {
   questions: string[];
@@ -79,8 +79,11 @@ export default function ComprehensiveInterview({
     try {
       const wav = await tts.predict({
         text,
-        voiceId: "en_US-hfc_female-medium",
+        voiceId: "en_US-hfc_male-medium",
+      }, () => {
+        console.log("progress")
       });
+   
       setAudioBlobQueue((prevQueue) => [...prevQueue, wav]);
       setIsAudioLoaded(true);
     } catch (error) {
@@ -91,12 +94,6 @@ export default function ComprehensiveInterview({
 
   useEffect(() => {
     const loadModel = async () => {
-      // const loadedModel = await createModel(
-      //   "/models/vosk-model-small-en-us-0.15.tar.gz"
-      // )
-      // setModel(loadedModel)
-      // console.log("Vosk model loaded successfully")
-
       if (questions.length > 0) {
         await queueAudioForQuestion(questions[0]);
       }
