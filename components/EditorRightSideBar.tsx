@@ -122,6 +122,15 @@ const covertemplate = [
   { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
 ];
 
+function createAbbreviation(word: string): string {
+  // If the word has more than 5 characters, return the first 5 + '.'
+  if (word.length > 5) {
+    return word.slice(0, 5) + "."; // Example: "hobbies" -> "hobbi."
+  }
+  // If it's 5 characters or less, return as is
+  return word;
+}
+
 const abbrv: Record<SectionName, string> = {
   summary: "summary",
   experience: "exp.",
@@ -429,10 +438,10 @@ export default function EditorRightSideBar({
                                     >
                                       <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
                                       <span className="truncate text-xs md:text-sm">
-                                        {abbrv[sectionName]
+                                        {createAbbreviation(sectionName)
                                           .charAt(0)
                                           .toUpperCase() +
-                                          abbrv[sectionName].slice(1)}
+                                          createAbbreviation(sectionName).slice(1)}
                                       </span>
                                     </div>
                                   )}
@@ -472,7 +481,7 @@ export default function EditorRightSideBar({
                           >
                             <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
                             <span className="truncate text-xs md:text-sm">
-                              {abbrv[section]}
+                              {createAbbreviation(section)}
                             </span>
                           </div>
                         )}

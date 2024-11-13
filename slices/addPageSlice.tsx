@@ -131,6 +131,7 @@ export const pageSlice = createSlice({
           const { column1 = [], column2 = [] } = action.payload.pageSectionOrders[idx];
           const cols = [...column1, ...column2];
           cols.forEach((sec) => {
+            //@ts-ignore
             const content = resumeData[sec] || {}; // Fallback to empty object if undefined
             page.content = { ...page.content, [sec]: content };
           });

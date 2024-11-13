@@ -29,7 +29,8 @@ export type SectionName =
   | "references"
   | "volunteer"
   | "publications"
-  | "awards";
+  | "awards"
+  | string;
   
 export type ResumeStyles = Template & {
   font: string;
@@ -44,6 +45,7 @@ export type ResumeStyles = Template & {
     sections: [{ column1: SectionName[]; column2: SectionName[] }];
     column3: SectionName[];
   };
+  sections: string[];
 };
 
 export interface CoverLetterState {

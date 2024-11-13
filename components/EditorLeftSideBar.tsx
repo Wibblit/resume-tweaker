@@ -266,7 +266,6 @@
 //   }
 // };
 
-
 //   const updateEntry = (
 //     section: keyof ResumeData,
 //     id: string,
@@ -908,6 +907,8 @@ export default function LeftSideBar({
   const [newSectionName, setNewSectionName] = useState("");
   const [renameSectionId, setRenameSectionId] = useState<string | null>(null);
   const [newSectionTitle, setNewSectionTitle] = useState("");
+  const sections = useAppSelector((state) => state.rightsidebar?.sections);
+  const [isValid, setisValid] = useState<boolean>(true);
 
   const defaultSections: ResumeSection[] = [
     {
@@ -1483,6 +1484,12 @@ export default function LeftSideBar({
     dispatch(UpdateLeftBarData(profileData));
   };
 
+  const handleNewSectionName = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    if (sections.includes(ev.target.value)) setisValid(false);
+    else setisValid(true);
+    setNewSectionName(ev.target.value);
+  };
+
   const handleReset = () => {
     console.log("Clear all data");
     dispatch(Reset());
@@ -1657,10 +1664,16 @@ export default function LeftSideBar({
                       <Input
                         id="new-section-name"
                         value={newSectionName}
-                        onChange={(e) => setNewSectionName(e.target.value)}
+                        onChange={handleNewSectionName}
                         placeholder="Enter section name"
                       />
-                      <Button onClick={handleAddSection} className="w-full">
+                      {!isValid && <span>This section is already used.</span>}
+                      <Button
+                        onClick={isValid ? () => handleAddSection() : undefined}
+                        className={`w-full ${
+                          !isValid ? "cursor-not-allowed" : ""
+                        }`}
+                      >
                         Create Section
                       </Button>
                     </div>

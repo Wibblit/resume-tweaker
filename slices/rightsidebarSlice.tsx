@@ -3,6 +3,11 @@ import { ResumeStyles, SectionName } from "@/types/types";
 import { addPage, deletePage } from "./addPageSlice";
 import { Defaults } from "@/data/ResumeDefaults";
 import { CDefaults } from "@/data/CoverDefaults";
+import {
+  AddCustomSection,
+  RenameCustomSection,
+  DeleteCustomSection,
+} from "./leftsidebarSlice";
 
 // Define the initial state using that type
 const initialState: ResumeStyles = {
@@ -34,6 +39,21 @@ const initialState: ResumeStyles = {
     ],
     column3: ["languages", "awards", "publications", "references", "volunteer"],
   },
+  sections: [
+    "basics",
+    "profiles",
+    "summary",
+    "experience",
+    "education",
+    "projects",
+    "skills",
+    "certifications",
+    "languages",
+    "awards",
+    "publications",
+    "references",
+    "volunteer",
+  ],
 };
 
 const MM_TO_PX = 3.78;
@@ -53,8 +73,66 @@ const rightsidebarSlice = createSlice({
     UpdateId(state, action) {
       state.id = action.payload;
     },
+    NewSection(state, action) {
+      console.log(state.sectionOrder);
+      state.sectionOrder?.column3.push(action.payload);
+      state.sections.push(action.payload);
+    },
+    CustomSectionRename(state, action) {
+      const { oldName, newName } = action.payload;
+      console.log(oldName, newName);
+      const replacer = (arr: string[]): string[] => {
+        const newArray = arr.map((item) => (item === oldName ? newName : item));
+        return newArray;
+      };
+
+      if (state.sections.includes(oldName))
+        state.sections = replacer(state.sections);
+
+      console.log(state.sections);
+
+      if (state.sectionOrder.column3.includes(oldName))
+        state.sectionOrder.column3 = replacer(state.sectionOrder.column3);
+      else {
+        for (let i = 0; i < state.sectionOrder.sections.length; i++) {
+          const { column1, column2 } = state.sectionOrder.sections[i];
+          if (column1.includes(oldName)) {
+            state.sectionOrder.sections[i].column1 = replacer(column1);
+            break;
+          } else if (column2.includes(oldName)) {
+            state.sectionOrder.sections[i].column2 = replacer(column2);
+            break;
+          }
+        }
+      }
+    },
+
+    CustomSectionDelete(state, action) {
+      const replacer = (arr: string[]): string[] => {
+        const newarr = arr.filter((item) => item !== action.payload);
+        return newarr;
+      };
+
+      if (state.sections.includes(action.payload))
+        state.sections = replacer(state.sections);
+      if (state.sectionOrder.column3.includes(action.payload))
+        state.sectionOrder.column3 = replacer(state.sectionOrder.column3);
+      else {
+        for (let i = 0; i < state.sectionOrder.sections.length; i++) {
+          const { column1, column2 } = state.sectionOrder.sections[i];
+          if (column1.includes(action.payload)) {
+            state.sectionOrder.sections[i].column1 = replacer(column1);
+            break;
+          } else if (column2.includes(action.payload)) {
+            state.sectionOrder.sections[i].column2 = replacer(column2);
+            break;
+          }
+        }
+      }
+    },
+
     ResetStyle(state, action) {
-      console.log(state.id)
+      console.log(state.id);
       if (action.payload === "Resume") {
         state.baseColor = Defaults[state.id - 1].baseColor;
         state.font = Defaults[state.id - 1].font;
@@ -216,6 +294,16 @@ const rightsidebarSlice = createSlice({
           ...state.sectionOrder.sections[action.payload - 1].column2
         );
         state.sectionOrder.sections.splice(action.payload - 1, 1);
+      }),
+      builder.addCase(AddCustomSection, (state, action) => {
+        // Call the NewSection reducer logic with the payload from AddCustomSection
+        rightsidebarSlice.caseReducers.NewSection(state, action);
+      }),
+      builder.addCase(RenameCustomSection, (state, action) => {
+        rightsidebarSlice.caseReducers.CustomSectionRename(state, action);
+      }),
+      builder.addCase(DeleteCustomSection, (state, action) => {
+        rightsidebarSlice.caseReducers.CustomSectionDelete(state, action);
       });
   },
 });
