@@ -19,8 +19,8 @@ interface SectionProps {
 
 interface LeftSidePanelProps<T> {
   sections: SectionProps[];
-  activeSection: keyof T | "";
-  setActiveSection: React.Dispatch<React.SetStateAction<keyof T | "">>;
+  activeSection: keyof T | string;
+  setActiveSection: React.Dispatch<React.SetStateAction<keyof T | string>>;
   renderSheetContent: (section: keyof T) => JSX.Element;
   isPanelOpen: boolean;
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;

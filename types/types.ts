@@ -194,7 +194,7 @@ export type CoverLetterData = {
 };
 
 export type ResumeSection = {
-  id: keyof ResumeData;
+  id: keyof ResumeData | string;
   icon: React.ReactNode;
   title: string;
   fields: string[];

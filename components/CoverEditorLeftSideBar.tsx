@@ -839,6 +839,7 @@ export default function CoverLeftSideBar({
         <LeftSidePanel<CoverLetterData>
           sections={coverLetterSections}
           activeSection={activeSection}
+          //@ts-ignore
           setActiveSection={setActiveSection}
           renderSheetContent={renderSheetContent}
           isPanelOpen={isPanelOpen}

@@ -248,6 +248,7 @@ export default function Editor() {
         <div>
           <LeftSideBar
             activeSection={activeSection}
+            //@ts-ignore
             setActiveSection={setActiveSection}
             isPanelOpen={isPanelOpen}
             setIsPanelOpen={setIsPanelOpen}
