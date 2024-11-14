@@ -62,6 +62,7 @@ export async function duplicateResume(resumeId: string) {
       JSON.stringify(originalResume.volunteer)
     );
     const parsedStyles = JSON.parse(JSON.stringify(originalResume.styles));
+    const parsedCustom = JSON.parse(JSON.stringify(originalResume.custom));
 
     const duplicatedResume = await prisma.resume.create({
       data: {
@@ -80,6 +81,7 @@ export async function duplicateResume(resumeId: string) {
         publications: parsedPublications,
         certifications: parsedCertifications,
         references: parsedReferences,
+        custom : parsedCustom,
         styles: parsedStyles,
       },
     });

@@ -165,6 +165,17 @@ export interface Reference {
   email: string;
 }
 
+export interface Custom {
+  id: string;
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  url: URL;
+  summary: string;
+}
+
 export interface ResumeData {
   basics?: Basics[];
   summary?: Summary[];
@@ -180,6 +191,43 @@ export interface ResumeData {
   certifications?: Certification[];
   references?: Reference[];
 }
+
+export interface ResumeDataTemp {
+  basics?: Basics[];
+  summary?: Summary[];
+  profiles?: Profile[];
+  skills?: SkillCategory[];
+  projects?: Project[];
+  education?: Education[];
+  experience?: Experience[];
+  languages?: Language[];
+  volunteer?: Volunteer[];
+  awards?: Award[];
+  publications?: Publication[];
+  certifications?: Certification[];
+  references?: Reference[];
+
+  // Update the index signature to match possible types
+  [key: string]:
+    | Custom
+    | Basics[]
+    | Summary[]
+    | Profile[]
+    | SkillCategory[]
+    | Project[]
+    | Education[]
+    | Experience[]
+    | Language[]
+    | Volunteer[]
+    | Award[]
+    | Publication[]
+    | Certification[]
+    | Reference[]
+    | undefined;
+}
+
+
+
 
 export type CoverLetterData = {
   salutation: string;

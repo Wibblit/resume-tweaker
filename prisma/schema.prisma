@@ -89,6 +89,7 @@ model Resume {
   publications   Json   @default("[]")  
   certifications Json   @default("[]")
   references     Json   @default("[]")
+  custom         Json   @default("{}")
   styles         Json   @default("{}")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

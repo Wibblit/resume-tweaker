@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { ResumeData } from "@/types/types";
+import { ResumeData, ResumeDataTemp, Custom } from "@/types/types";
 import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { Github, Linkedin, Globe } from "lucide-react";
 import { useEffect } from "react";
@@ -516,7 +516,88 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         );
 
       default:
-        return null;
+         if (
+           !content ||
+           !Array.isArray(content[sectionName]) ||
+           //@ts-ignore
+           !content[sectionName]?.length
+         )
+           return null;
+        return (
+          <div className="mb-6">
+            <h2 style={styles.sectionTitle}>{sectionName}</h2>
+            {content[sectionName] &&
+              Array.isArray(content[sectionName]) &&
+              //@ts-ignore
+              content[sectionName]?.map((sec: Custom, index: number) => (
+                <div key={index} className="mb-4">
+                  <div className="flex flex-col justify-between">
+                    {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                    <div className="flex items-center justify-between">
+                      {/* Left Section: Name, Location, Link */}
+                      <div className="flex items-center gap-2">
+                        {/* Name */}
+                        {sec.name && (
+                          <h3 style={styles.subtitle}>{sec.name}</h3>
+                        )}
+
+                        {/* Location */}
+                        {sec.location && (
+                          <p style={styles.subtitle} className="">
+                            , {sec.location}
+                          </p>
+                        )}
+
+                        {/* URL Link */}
+                        {sec.url && (
+                          <a
+                            href={sec.url.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.link}
+                            className="flex items-center mx-2"
+                          >
+                            <p style={styles.normal}>
+                              {sec.url.label && <span className="mx-1">|</span>}
+                              {sec.url.label}
+                            </p>
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Right Section: Dates */}
+                      <div>
+                        {/* Start Date and End Date */}
+                        {sec.startDate && (
+                          <h3 style={styles.subtitle}>
+                            {DateConverter(sec.startDate)}
+                            {sec.endDate && ` - ${DateConverter(sec.endDate)}`}
+                          </h3>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Description: Placed below the main row */}
+                    {sec.description && (
+                      <p style={styles.normal} className="mt-1">
+                        {sec.description}
+                      </p>
+                    )}
+
+                    {/* Summary: Placed below the description */}
+                    {sec.summary && (
+                      <div className="mt-2">
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={sec.summary}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        );
     }
   };
 

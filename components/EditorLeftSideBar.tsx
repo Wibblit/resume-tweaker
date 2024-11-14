@@ -909,6 +909,7 @@ export default function LeftSideBar({
   const [newSectionTitle, setNewSectionTitle] = useState("");
   const sections = useAppSelector((state) => state.rightsidebar?.sections);
   const [isValid, setisValid] = useState<boolean>(true);
+  const [isRenameValid, setisRenameValid] = useState<boolean>(true);
 
   const defaultSections: ResumeSection[] = [
     {
@@ -1485,10 +1486,17 @@ export default function LeftSideBar({
   };
 
   const handleNewSectionName = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    if (sections.includes(ev.target.value)) setisValid(false);
+    if (sections.includes(ev.target.value.toLowerCase())) setisValid(false);
     else setisValid(true);
     setNewSectionName(ev.target.value);
   };
+
+  const handleNewSectionRename = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    if(sections.includes(ev.target.value.toLowerCase())) setisRenameValid(false)
+    else setisRenameValid(true)
+    setNewSectionTitle(ev.target.value)
+    
+  }
 
   const handleReset = () => {
     console.log("Clear all data");
@@ -1616,23 +1624,37 @@ export default function LeftSideBar({
                   </Sheet>
                 ))}
                 {renameSectionId && (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex-col items-center justify-center space-x-2">
                     <Input
                       value={newSectionTitle}
-                      onChange={(e) => setNewSectionTitle(e.target.value)}
+                      onChange={handleNewSectionRename}
                       placeholder="New section name"
                     />
-                    <Button
-                      onClick={() => handleRenameSection(renameSectionId)}
-                    >
-                      Rename
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setRenameSectionId(null)}
-                    >
-                      Cancel
-                    </Button>
+                    {!isRenameValid && (
+                      <span className="text-red-500 text-sm w-full">
+                        This section already exists.
+                      </span>
+                    )}
+                    <div className="flex items-center justify-between mt-2">
+                      <Button
+                        onClick={
+                          isRenameValid
+                            ? () => handleRenameSection(renameSectionId)
+                            : undefined
+                        }
+                        className={`${
+                          !isRenameValid ? "cursor-not-allowed opacity-50" : ""
+                        }`}
+                      >
+                        Rename
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setRenameSectionId(null)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 )}
                 <Sheet
@@ -1667,11 +1689,15 @@ export default function LeftSideBar({
                         onChange={handleNewSectionName}
                         placeholder="Enter section name"
                       />
-                      {!isValid && <span>This section is already used.</span>}
+                      {!isValid && (
+                        <span className="text-red-500 text-sm w-full text-center">
+                          This section already exists.
+                        </span>
+                      )}
                       <Button
                         onClick={isValid ? () => handleAddSection() : undefined}
                         className={`w-full ${
-                          !isValid ? "cursor-not-allowed" : ""
+                          !isValid ? "cursor-not-allowed opacity-50" : ""
                         }`}
                       >
                         Create Section

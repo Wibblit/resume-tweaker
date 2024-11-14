@@ -279,14 +279,14 @@ const leftsidebarSlice = createSlice({
       return { ...initialState };
     },
     AddCustomSection(state, action: PayloadAction<string>) {
-      const sectionName = action.payload;
+      const sectionName = action.payload.toLowerCase();
       return {
         ...state,
         [sectionName]: [],
       };
     },
     DeleteCustomSection(state, action: PayloadAction<string>) {
-      const sectionName = action.payload;
+      const sectionName = action.payload.toLowerCase();
       console.log(sectionName)
       //@ts-ignore
       const { [sectionName]: deletedSection, ...restState } = state;
@@ -297,12 +297,12 @@ const leftsidebarSlice = createSlice({
       action: PayloadAction<{ oldName: string; newName: string }>
     ) {
       const { oldName, newName } = action.payload;
-      if (oldName in state && !(newName in state)) {
+      if (oldName.toLowerCase() in state && !(newName.toLowerCase() in state)) {
         //@ts-ignore
-        const { [oldName]: oldSection, ...restState } = state;
+        const { [oldName.toLowerCase(0)]: oldSection, ...restState } = state;
         return {
           ...restState,
-          [newName]: oldSection,
+          [newName.toLowerCase()]: oldSection,
         } as ResumeData;
       }
       return state;

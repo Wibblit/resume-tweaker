@@ -23,6 +23,7 @@ import {
   updateSectionOrder,
   UpdateSectionOrderLayout,
   UpdateSeparator,
+  UpdateSections
 } from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
@@ -71,6 +72,27 @@ export default function Editor() {
         console.log(resumeData);
         const { id, styles, resumeName, userId, ...leftSidebBarContent } =
           resumeData;
+        const updatedLeftsidebardata = { ...leftSidebBarContent };
+        if (
+          //@ts-ignore
+          updatedLeftsidebardata.custom &&
+          //@ts-ignore
+          typeof updatedLeftsidebardata.custom === "object"
+        ) {
+          //@ts-ignore
+          Object.keys(updatedLeftsidebardata.custom).forEach((key) => {
+            //@ts-ignore
+            if (!updatedLeftsidebardata[key]) {
+              //@ts-ignore
+              updatedLeftsidebardata[key] = updatedLeftsidebardata.custom[key];
+            }
+          });
+          //@ts-ignore
+          delete updatedLeftsidebardata.custom;
+        }
+
+        console.log("Updated Left Sidebar Data:", updatedLeftsidebardata);
+
         dispatch(
           setCurrentResume({
             currResumeId: resumeData.id,
@@ -84,7 +106,8 @@ export default function Editor() {
         }
 
         if (leftSidebBarContent.basics?.length !== 0) {
-          dispatch(UpdateLeftBarData(leftSidebBarContent));
+          console.log(leftSidebBarContent);
+          dispatch(UpdateLeftBarData(updatedLeftsidebardata));
         } else {
           dispatch(UpdateLeftBarData(initialState));
         }
@@ -112,23 +135,12 @@ export default function Editor() {
         if (styles.sectionOrder) {
           dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
         }
+        if (styles.sections) {
+          dispatch(UpdateSections(styles.sections))
+        }
         if (styles.baseColor) {
           dispatch(UpdateBaseColor(styles.baseColor));
         }
-
-        // if (resumeData) {
-
-        //   dispatch(UpdateLeftBarData(leftSidebBarContent));
-        //   dispatch(UpdateFont(styles.font));
-        //   dispatch(UpdateFontSize(styles.fontSize));
-        //   dispatch(UpdateLineHeight(styles.lineHeight));
-        //   dispatch(UpdateMargin(styles.margin));
-        //   dispatch(UpdateIcons(styles.icons));
-        //   dispatch(UpdateSeparator(styles.separator));
-        //   dispatch(UpdatePaperFormat(styles.paperFormat));
-        //   dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
-        //   dispatch(UpdateBaseColor(styles.baseColor));
-        // }
       } catch (error) {
         console.error("Error fetching resume data:", error);
       } finally {
@@ -193,6 +205,7 @@ export default function Editor() {
         });
         return;
       }
+      console.log("Reusme Update suceess")
       toast({
         title: "Success",
         description: "The resume has been saved successfully.",

@@ -479,7 +479,86 @@ sectionTitle: {
         );
 
       default:
-        return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
+        return (
+          <div className="mb-6">
+            <h2>{sectionName}</h2>
+            {
+              //@ts-ignore
+              content[sectionName] &&
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex flex-col justify-between">
+                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                      <div className="flex items-center justify-between">
+                        {/* Left Section: Name, Location, Link */}
+                        <div className="flex items-center gap-2">
+                          {/* Name */}
+                          {sec.name && <h3>{sec.name}</h3>}
+
+                          {/* Location */}
+                          {sec.location && <p className="">, {sec.location}</p>}
+
+                          {/* URL Link */}
+                          {sec.url && (
+                            <a
+                              href={sec.url.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center mx-2"
+                            >
+                              <p>
+                                {sec.url.label && (
+                                  <span className="mx-1">|</span>
+                                )}
+                                {sec.url.label}
+                              </p>
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Right Section: Dates */}
+                        <div>
+                          {/* Start Date and End Date */}
+                          {sec.startDate && (
+                            <h3>
+                              {DateConverter(sec.startDate)}
+                              {sec.endDate &&
+                                ` - ${DateConverter(sec.endDate)}`}
+                            </h3>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-2">
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            }
+          </div>
+        );
     }
   };
 

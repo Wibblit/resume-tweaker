@@ -420,7 +420,7 @@ export default function EditorRightSideBar({
                             className="bg-muted p-2 rounded-md min-h-[100px]"
                           >
                             <h4 className="text-xs font-medium mb-1">
-                              {columnId === "column1" ? "Sidebar" : "Main"}
+                              {columnId === "column1" ? "Column 1" : "Column 2"}
                             </h4>
                             {section[columnId] &&
                               section[columnId].map((sectionName, index) => (
@@ -463,7 +463,7 @@ export default function EditorRightSideBar({
                     className="bg-muted p-2 rounded-md  mt-4"
                   >
                     <h3 className="text-sm font-semibold mb-2">
-                      Unused Sections
+                      Unused
                     </h3>
 
                     {sectionOrder?.column3?.map((section, index) => (

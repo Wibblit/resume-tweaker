@@ -75,14 +75,17 @@ const rightsidebarSlice = createSlice({
     },
     NewSection(state, action) {
       console.log(state.sectionOrder);
-      state.sectionOrder?.column3.push(action.payload);
+      state.sectionOrder?.column3.push(action.payload.toLowerCase());
       state.sections.push(action.payload);
+    },
+    UpdateSections(state, action) {
+      state.sections = action.payload
     },
     CustomSectionRename(state, action) {
       const { oldName, newName } = action.payload;
       console.log(oldName, newName);
       const replacer = (arr: string[]): string[] => {
-        const newArray = arr.map((item) => (item === oldName ? newName : item));
+        const newArray = arr.map((item) => (item === oldName ? newName.toLowerCase() : item));
         return newArray;
       };
 
@@ -326,6 +329,7 @@ export const {
   UpdateSectionOrderLayout,
   addSection,
   removeSection,
+  UpdateSections
 } = rightsidebarSlice.actions;
 
 // Export the reducer
