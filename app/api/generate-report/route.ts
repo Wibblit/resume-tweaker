@@ -9,12 +9,25 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: Request) {
   try {
-    const { history } = await request.json();
-    console.log("history: ", history)
+    const { questions, base64Audio, timeSpent } = await request.json();
+
+    console.log("Questions", questions, "Time spent: ", timeSpent, "Audio length:", base64Audio.length);
+
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-    const prompt = JSON.stringify(history) + " " + reportGenerationPrompt;
-    const result = await model.generateContent(prompt);
+    // Generate content using the audio and the prompt
+    const result = await model.generateContent([
+      {
+        inlineData: {
+          mimeType: "audio/webm",
+          data: base64Audio
+        }
+      },
+      { 
+        text: `${JSON.stringify(questions)}\nTime spent: ${timeSpent}\n${reportGenerationPrompt}`
+      },
+    ]);
+
     const response = await result.response;
     const text = response.text();
     const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
@@ -27,7 +40,7 @@ export async function POST(request: Request) {
       error
     );
     return NextResponse.json(
-      { error: "Failed to generate report", details: (error as Error).message },
+      { error: "Failed to generate report", details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

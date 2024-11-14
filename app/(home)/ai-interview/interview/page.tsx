@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import AdaptiveInterview from "@/components/adaptive-interview";
-import ComprehensiveInterview from "@/components/interview-process";
+import ComprehensiveInterview from "@/components/Interview/comprehensiveInterview";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import * as tts from "@/lib/diffusionstudio/vits-web/dist/vits-web";
 import { createModel, Model } from "vosk-browser";
 
 interface InterviewData {
@@ -35,28 +34,11 @@ export default function InterviewPage() {
     duration: 0,
   });
 
-  //change this to true after uncommnent
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function interviewSetup() {
       try {
-        try {
-          const loadedModel = await createModel(
-            "/models/vosk-model-small-en-us-0.15.tar.gz"
-          );
-          setModel(loadedModel);
-          console.log("Vosk model loaded successfully");
-        } catch (error) {
-          console.error("Error loading Vosk model:", error);
-          return toast({
-            title: "Error",
-            description:
-              "Failed to load speech recognition model. Please try again.",
-            variant: "destructive",
-          });
-        }
-
         setInterviewData({
           job: searchParams.get("job") || "",
           position: searchParams.get("position") || "",
@@ -73,18 +55,7 @@ export default function InterviewPage() {
         console.error("Error during interview setup:", error);
       }
     }
-
     interviewSetup();
-
-    return () => {
-      (async () => {
-        try {
-          await model?.terminate();
-        } catch (error) {
-          console.error("Error flushing TTS resources:", error);
-        }
-      })();
-    };
   }, [searchParams]);
 
   useEffect(() => {
@@ -138,24 +109,12 @@ export default function InterviewPage() {
         AI Interview
       </h1>
       {interviewData.interviewType === "adaptive" ? (
-        model?.ready ? (
-          <AdaptiveInterview
-            formData={interviewData}
-            model={model}
-            setModel={setModel}
-          />
-        ) : (
-          <div>Loading...</div>
-        )
-      ) : model?.ready ? (
+        <AdaptiveInterview />
+      ) : (
         <ComprehensiveInterview
           questions={comprehensiveQuestions}
           duration={interviewData.duration}
-          model={model!}
-          setModel={setModel}
         />
-      ) : (
-        <div>Loding...</div>
       )}
     </main>
   );

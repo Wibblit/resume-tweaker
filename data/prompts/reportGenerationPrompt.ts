@@ -1,4 +1,4 @@
-export const reportGenerationPrompt = `Based on the above question-answer pairs, evaluate the candidate's performance using the specific categories listed below. For each category, provide a score out of 10 and a brief comment explaining why that score was given. Ensure that your feedback is based solely on the content of the responses provided.
+export const reportGenerationPrompt = `Based on the above questions and attached users audio response of those, evaluate the candidate's performance using the specific categories listed below. For each category, provide a score out of 10 and a brief comment explaining why that score was given. Ensure that your feedback is based solely on the content of the responses provided.
 
 Categories to Evaluate:
 
