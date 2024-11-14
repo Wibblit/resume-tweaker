@@ -1,5 +1,3 @@
 export default function AdaptiveInterview() {
-  <div>
-    adaptive interview
-  </div>
+  return <div>adaptive interview</div>;
 }
