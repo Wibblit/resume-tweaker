@@ -72,10 +72,8 @@ export function CreateNewDialog({
                 currResumeName: response?.resume?.resumeName as string,
               })
             );
-            setOpen(false);
 
             router.push("/editor");
-            setLoading(false);
           } else {
             toast({
               title: "Error",
@@ -103,10 +101,7 @@ export function CreateNewDialog({
                 currCoverName: response?.cover?.coverName as string,
               })
             );
-            setOpen(false);
-
             router.push("/covereditor");
-            setLoading(false);
           } else {
             toast({
               title: "Error",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useAppDispatch } from "@/hooks/hooks";
-import { UpdateId } from "@/slices/rightsidebarSlice";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
