@@ -1,55 +1,75 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SkipForward, Mic, StopCircle } from 'lucide-react'
-import { ScrollArea } from "@/components/ui/scroll-area"
-import ReactMarkdown from "react-markdown"
-import { useToast } from "@/hooks/use-toast"
-import VideoRecorder from "./videoRecorder"
-import AudioRecorder from "./audioRecorder"
-import InterviewResults from "./interviewResults"
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SkipForward, Mic, StopCircle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ReactMarkdown from "react-markdown";
+import { useToast } from "@/hooks/use-toast";
+import VideoRecorder from "./videoRecorder";
+import AudioRecorder from "./audioRecorder";
+import InterviewResults from "./interviewResults";
 
 interface InterviewData {
-  job: string
-  position: string
-  companyName: string
-  jd: string
+  job: string;
+  position: string;
+  companyName: string;
+  jd: string;
 }
 
 interface HistoryItem {
-  role: string
-  content: string
+  role: string;
+  content: string;
 }
 
-export default function AdaptiveInterview({ formData }: { formData: InterviewData }) {
-  const [currentQuestion, setCurrentQuestion] = useState("")
-  const [isRecording, setIsRecording] = useState(false)
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
-  const [history, setHistory] = useState<HistoryItem[]>([])
-  const [isInterviewComplete, setIsInterviewComplete] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [report, setReport] = useState(null)
-  const [timeSpent, setTimeSpent] = useState(0)
-  const { toast } = useToast()
+export default function AdaptiveInterview({
+  formData,
+}: {
+  formData: InterviewData;
+}) {
+  const [currentQuestion, setCurrentQuestion] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [isInterviewComplete, setIsInterviewComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [report, setReport] = useState(null);
+  const [timeSpent, setTimeSpent] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!currentQuestion && !isInterviewComplete) {
-      fetchNextQuestion()
+      fetchNextQuestion();
     }
-  }, [currentQuestion, isInterviewComplete])
+  }, [currentQuestion, isInterviewComplete]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeSpent((prevTime) => prevTime + 1)
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
+      setTimeSpent((prevTime) => prevTime + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleInterviewComplete = async () => {
+    const response = await fetch("/api/generate-adaptive-report", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        history,
+      }),
+    });
+    if (!response.ok) {
+      console.log("Error generating the report")
+    }
+    const data = await response.json();
+    console.log("Report data received:", data);
+    setReport(JSON.parse(data.report))
+  };
 
   const fetchNextQuestion = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const response = await fetch("/api/adaptive-interview", {
         method: "POST",
         headers: {
@@ -58,46 +78,43 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
         body: JSON.stringify({
           formData,
           history,
-          timeSpent,
+          audioBlob,
         }),
-      })
+      });
 
       if (response.status === 429) {
         toast({
           title: "Whoa there! You've hit the rate limit.",
           description: "Please slow down and try again in a few minutes.",
           variant: "destructive",
-        })
-        return
+        });
+        return;
       }
 
       if (!response.ok) {
-        throw new Error("Failed to fetch question")
+        throw new Error("Failed to fetch question");
       }
 
-      const data = await response.json()
-
-      if (data.isComplete) {
-        setIsInterviewComplete(true)
-        setReport(JSON.parse(data.report))
-      } else {
-        setCurrentQuestion(data.question)
-        setHistory((prevHistory) => [
-          ...prevHistory,
-          { role: "assistant", content: data.question },
-        ])
+      const data = await response.json();
+      if (data.question.includes("concluded")) {
+        setIsInterviewComplete(true);
+        await handleInterviewComplete();
       }
+
+      setAudioBlob(null);
+      setCurrentQuestion(data.question);
+      setHistory(data.history);
     } catch (error) {
-      console.error("Error fetching question:", error)
+      console.error("Error fetching question:", error);
       toast({
         title: "Error",
         description: "Failed to fetch the next question. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const submitAnswer = async () => {
     if (!audioBlob) {
@@ -105,60 +122,36 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
         title: "No Recording",
         description: "Please record an answer before submitting.",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     try {
-      const base64Audio = await blobToBase64(audioBlob)
-      const newHistory = [...history, { role: "user", content: base64Audio }]
-      setHistory(newHistory)
-
-      setAudioBlob(null)
-      setCurrentQuestion("")
-
-      await fetchNextQuestion()
+      setCurrentQuestion("");
+      await fetchNextQuestion();
     } catch (error) {
-      console.error("Error converting audio to base64:", error)
+      console.error("Error converting audio to base64:", error);
       toast({
         title: "Error",
         description: "Failed to process audio. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const skipQuestion = async () => {
-    const newHistory = [...history, { role: "user", content: "Skipped" }]
-    setHistory(newHistory)
-    setAudioBlob(null)
-    setIsRecording(false)
-    setCurrentQuestion("")
+    setIsRecording(false);
+    setCurrentQuestion("");
 
-    await fetchNextQuestion()
-  }
+    await fetchNextQuestion();
+  };
 
   const toggleRecording = () => {
-    setIsRecording(!isRecording)
-  }
-
-  const blobToBase64 = (blob: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        if (typeof reader.result === 'string') {
-          resolve(reader.result.split(',')[1])
-        } else {
-          reject(new Error('Failed to convert blob to base64'))
-        }
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    })
-  }
+    setIsRecording(!isRecording);
+  };
 
   if (isInterviewComplete && report) {
-    return <InterviewResults data={report} />
+    return <InterviewResults data={report} />;
   }
 
   return (
@@ -227,5 +220,5 @@ export default function AdaptiveInterview({ formData }: { formData: InterviewDat
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
