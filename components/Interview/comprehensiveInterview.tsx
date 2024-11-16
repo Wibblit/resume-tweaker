@@ -10,7 +10,7 @@ import AudioRecorder from "./audioRecorder";
 import { Pause, Play } from "lucide-react";
 import InterviewResults from "./interviewResults";
 
-interface VideoInterviewProps {
+interface ComprehensiveInterviewProps {
   questions: string[];
   duration: number;
 }
@@ -18,7 +18,7 @@ interface VideoInterviewProps {
 export default function ComprehensiveInterview({
   questions = [],
   duration = 5,
-}: VideoInterviewProps) {
+}: ComprehensiveInterviewProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [isRecording, setIsRecording] = useState(false);

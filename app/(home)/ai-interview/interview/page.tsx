@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AdaptiveInterview from "@/components/adaptive-interview";
+import AdaptiveInterview from "@/components/Interview/adaptive-interview";
 import ComprehensiveInterview from "@/components/Interview/comprehensiveInterview";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -109,7 +109,7 @@ export default function InterviewPage() {
         AI Interview
       </h1>
       {interviewData.interviewType === "adaptive" ? (
-        <AdaptiveInterview />
+        <AdaptiveInterview formData={interviewData} />
       ) : (
         <ComprehensiveInterview
           questions={comprehensiveQuestions}

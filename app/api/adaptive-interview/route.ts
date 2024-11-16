@@ -6,7 +6,6 @@ import { rateLimiter } from "@/lib/rateLimiter";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
-
   const session = await auth();
   
   let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   const { job, position, companyName, jd } = formData;
 
-  console.log("Apun yaha paunchgaya bhai!!");
+  console.log("Processing adaptive interview request");
 
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
@@ -43,7 +42,7 @@ export async function POST(req: NextRequest) {
   // Convert history to the correct format, changing 'assistant' role to 'model'
   const formattedHistory = history.map((item: any) => ({
     role: item.role === 'assistant' ? 'model' : item.role,
-    parts: [{ text: item.content }],
+    parts: [{ text: item.role === 'user' ? 'Audio response provided' : item.content }],
   }));
 
   // Remove the last user message from the history
@@ -59,9 +58,9 @@ export async function POST(req: NextRequest) {
   let result;
   if (history.length > 0) {
     // If there's a history, send the last user message
-    const lastUserMessage = history.filter((item:any) => item.role === "user").pop();
+    const lastUserMessage = history.filter((item: any) => item.role === "user").pop();
     if (lastUserMessage) {
-      result = await chat.sendMessage(lastUserMessage.content);
+      result = await chat.sendMessage(`Audio: ${lastUserMessage.content}`);
     } else {
       // If there's no user message in history, send a default message
       result = await chat.sendMessage("Please provide the first interview question.");
