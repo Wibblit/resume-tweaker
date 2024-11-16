@@ -27,3 +27,26 @@ export default function ThemeAwareLogo({ className }: {className? : string}) {
     />
   );
 }
+
+export const ThemeAwareWibblitLogo = ({ className }: { className?: string }) => {
+  const { theme, systemTheme } = useTheme();
+  const [logoSrc, setLogoSrc] = useState("/wibblit_light.svg");
+
+  useEffect(() => {
+    const currentTheme = theme === "system" ? systemTheme : theme;
+    setLogoSrc(currentTheme === "dark" ? "/wibblit_dark.svg" : "/wibblit_light.svg");
+  }, [theme, systemTheme]);
+
+  return (
+    <Image
+      src={logoSrc}
+      alt="Resume Tweaker Logo"
+      width={16}
+      height={16}
+      className={`lg:w-6 lg:h-6 xl:w-7 xl:h-7 ${
+        className ? className : "w-5 h-5 "
+      }`}
+      priority={true}
+    />
+  );
+}

@@ -1,237 +1,159 @@
 import Link from "next/link";
-import { Twitter, Linkedin, Github } from "lucide-react";
-import ThemeAwareLogo from "../ThemeAwareLogo";
 import { SocialIcon } from "react-social-icons";
+import { Separator } from "@/components/ui/separator";
+import ThemeAwareLogo from "../ThemeAwareLogo";
+import { ThemeAwareWibblitLogo } from "../ThemeAwareLogo";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-32">
-      <div className=" mx-auto max-w-7xl px-4 sm:px-6 md:px-12 lg:px-14  flex justify-between">
-        <div className="flex flex-col gap-12 md:flex-row md:justify-between w-full">
-          <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <div className="flex items-center mb-4 gap-2">
-              <ThemeAwareLogo />
-              <span className="sm:block md:text-xl text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
-                <span className="text-zinc-500 dark:text-zinc-400">resume</span>
-                <span className="font-bold">tweaker</span>
-              </span>
+    <footer className="bg-background text-foreground border-t">
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+          {/* Company Information */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <a href="https://wibblit.com/">
+                <ThemeAwareWibblitLogo />
+              </a>
+              <a href="https://resumetweaker.wibblit.com/">
+                <ThemeAwareLogo />
+              </a>
             </div>
-            <p className="text-sm text-foreground">
-              Copyright © {currentYear} Wibblit INC
+            <p className="text-sm text-muted-foreground">
+              Empowering Your Career with AI-Driven Tools
             </p>
-            <p className="text-sm text-foreground">All rights reserved</p>
+            <Link href="/about" className="text-sm font-medium hover:underline">
+              About Us
+            </Link>
           </div>
-          <div className="flex gap-x-8 text-foreground">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Company</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/pricing" className="hover:text-gray-300">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="hover:text-gray-300">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-gray-300">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/privacy" className="hover:text-gray-300">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="hover:text-gray-300">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/refund" className="hover:text-gray-300">
-                    Refund Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Social</h3>
-              <ul className="space-y-2">
-                <li>
-                  <SocialIcon
-                    bgColor="#ffffff00"
-                    style={{ width: "38px", height: "28px" }}
-                    network="x"
-                  />
-                  Twitter
-                </li>
-                <li>
-                  <SocialIcon
-                    bgColor="#ffffff00"
-                    style={{ width: "38px", height: "28px" }}
-                    network="linkedin"
-                  />
-                  Linkedin
-                </li>
-                <li>
-                  <SocialIcon
-                    bgColor="#ffffff00"
-                    style={{ width: "38px", height: "28px" }}
-                    network="github"
-                  />
-                  Github
-                </li>
-              </ul>
-            </div>
+
+          {/* Features */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Features</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/home" className="text-sm hover:underline">
+                  Resume Builder
+                </Link>
+              </li>
+              <li>
+                <Link href="/home" className="text-sm hover:underline">
+                  Cover Letter Builder
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-review" className="text-sm hover:underline">
+                  AI Review
+                </Link>
+              </li>
+              <li>
+                <Link href="/ai-interview" className="text-sm hover:underline">
+                  AI Interview
+                </Link>
+              </li>
+            </ul>
           </div>
+
+          {/* Pricing */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Pricing</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/pricing" className="text-sm hover:underline">
+                  Pricing
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Support and Resources */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Support & Resources</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/faq" className="text-sm hover:underline">
+                  FAQs
+                </Link>
+              </li>
+              <li>
+                <Link href="/tutorials" className="text-sm hover:underline">
+                  Tutorials
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-sm hover:underline">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="mailto:support@wibblit.com"
+                  className="text-sm hover:underline"
+                >
+                  Contact Support
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="text-sm hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms-of-service"
+                  className="text-sm hover:underline"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <Separator className="my-8" />
+
+        {/* Social Links and Copyright */}
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="flex space-x-4">
+            <SocialIcon
+              url="https://x.com/wibblitofficial"
+              network="x"
+              bgColor="transparent"
+              fgColor="currentColor"
+              style={{ height: 30, width: 30 }}
+            />
+            <SocialIcon
+              url="https://www.linkedin.com/in/wibblit-wibblit-00b204328"
+              network="linkedin"
+              bgColor="transparent"
+              fgColor="currentColor"
+              style={{ height: 30, width: 30 }}
+            />
+            <SocialIcon
+              url="https://www.facebook.com/Wibblit"
+              network="facebook"
+              bgColor="transparent"
+              fgColor="currentColor"
+              style={{ height: 30, width: 30 }}
+            />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            &copy; {currentYear} Wibblit. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
   );
 }
-
-// "use client";
-
-// import Link from "next/link";
-// import {
-//   Twitter,
-//   Linkedin,
-//   Github,
-//   ChevronDown,
-//   Sun,
-//   Moon,
-// } from "lucide-react";
-// import ThemeAwareLogo from "../ThemeAwareLogo";
-// import { Button } from "@/components/ui/button";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import { useTheme } from "next-themes";
-
-// export default function Footer() {
-//   const { theme, setTheme } = useTheme();
-//   const currentYear = new Date().getFullYear();
-
-//   return (
-//     <footer className="border-t border-zinc-200 dark:border-zinc-800 py-6">
-//       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-//         {/* First Row */}
-//         <div className="flex flex-col sm:flex-row items-center justify-between pb-2  ">
-//           <div className="flex items-center gap-4">
-//             <ThemeAwareLogo />
-//             <span className="text-sm text-zinc-500 dark:text-zinc-400">
-//               <span className="text-zinc-500 dark:text-zinc-400">resume</span>
-//               <span className="font-semibold">tweaker</span>
-//             </span>
-//             <span className="text-xs text-zinc-500 dark:text-zinc-400">
-//               © {currentYear}
-//             </span>
-//           </div>
-
-//           <div className="flex items-center gap-4 mt-4 sm:mt-0">
-//             <div className="flex items-center gap-2">
-//               <ThemeAwareLogo className="w-4 h-4" />
-//               <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-//                 Wibblit
-//               </span>
-//             </div>
-//             <Button
-//               variant="ghost"
-//               size="icon"
-//               className="h-8 w-8"
-//               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-//             >
-//               <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-//               <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-//               <span className="sr-only">Toggle theme</span>
-//             </Button>
-//           </div>
-//         </div>
-
-//         {/* Second Row */}
-//         <div className="flex flex-col sm:flex-row items-center justify-between pt-2">
-//           <div className="flex items-center gap-4 mt-4 sm:mt-0">
-//             <Link
-//               href="https://twitter.com"
-//               className="text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-//             >
-//               <Twitter className="h-4 w-4" />
-//               <span className="sr-only">Twitter</span>
-//             </Link>
-//             <Link
-//               href="https://linkedin.com"
-//               className="text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-//             >
-//               <Linkedin className="h-4 w-4" />
-//               <span className="sr-only">LinkedIn</span>
-//             </Link>
-//             <Link
-//               href="https://github.com"
-//               className="text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
-//             >
-//               <Github className="h-4 w-4" />
-//               <span className="sr-only">GitHub</span>
-//             </Link>
-//           </div>
-
-//           <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-//             <Link
-//               href="/pricing"
-//               className="hover:text-zinc-900 dark:hover:text-zinc-100"
-//             >
-//               Pricing
-//             </Link>
-//             <Link
-//               href="/blogs"
-//               className="hover:text-zinc-900 dark:hover:text-zinc-100"
-//             >
-//               Blog
-//             </Link>
-//             <Link
-//               href="/contact"
-//               className="hover:text-zinc-900 dark:hover:text-zinc-100"
-//             >
-//               Contact
-//             </Link>
-
-//             <DropdownMenu>
-//               <DropdownMenuTrigger asChild>
-//                 <Button
-//                   variant="ghost"
-//                   className="h-auto p-0 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"
-//                 >
-//                   Legal
-//                   <ChevronDown className="ml-1 h-3 w-3" />
-//                 </Button>
-//               </DropdownMenuTrigger>
-//               <DropdownMenuContent align="start" className="w-48">
-//                 <DropdownMenuItem asChild>
-//                   <Link href="/privacy">Privacy Policy</Link>
-//                 </DropdownMenuItem>
-//                 <DropdownMenuItem asChild>
-//                   <Link href="/terms">Terms of Service</Link>
-//                 </DropdownMenuItem>
-//                 <DropdownMenuItem asChild>
-//                   <Link href="/refund">Refund Policy</Link>
-//                 </DropdownMenuItem>
-//               </DropdownMenuContent>
-//             </DropdownMenu>
-//           </nav>
-//         </div>
-//       </div>
-//     </footer>
-//   );
-// }
