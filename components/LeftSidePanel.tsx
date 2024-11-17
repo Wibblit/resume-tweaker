@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
+import { CustomSection } from "./CustomSection";
 
 interface SectionProps {
   id: string;
@@ -24,6 +25,19 @@ interface LeftSidePanelProps<T> {
   renderSheetContent: (section: keyof T) => JSX.Element;
   isPanelOpen: boolean;
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  renameSectionId: string | null;
+  newSectionTitle: string;
+  handleNewSectionRename: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  isRenameValid: boolean;
+  setRenameSectionId: React.Dispatch<React.SetStateAction<string | null>>;
+  isAddSectionSheetOpen: boolean;
+  setIsAddSectionSheetOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isCollapsed: boolean;
+  newSectionName: string;
+  handleNewSectionName: (ev: React.ChangeEvent<HTMLInputElement>) => void;
+  handleAddSection: () => void;
+  isValid: boolean;
+  handleRenameSection: (sectionId: string) => void;
 }
 
 export default function LeftSidePanel<T>({
@@ -33,6 +47,19 @@ export default function LeftSidePanel<T>({
   renderSheetContent,
   isPanelOpen,
   setIsPanelOpen,
+  renameSectionId,
+  newSectionTitle,
+  handleNewSectionRename,
+  isRenameValid,
+  setRenameSectionId,
+  isAddSectionSheetOpen,
+  setIsAddSectionSheetOpen,
+  isCollapsed,
+  newSectionName,
+  handleNewSectionName,
+  handleAddSection,
+  isValid,
+  handleRenameSection,
 }: LeftSidePanelProps<T>) {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
@@ -59,7 +86,22 @@ export default function LeftSidePanel<T>({
           transition={{ duration: 0.3 }}
           className="bg-background border-r border-border shadow-lg h-auto rounded-r-lg z-50"
         >
-          <div className="w-[60px]">
+          <div className="w-[200px]">
+            <CustomSection
+              handleAddSection={handleAddSection}
+              handleNewSectionName={handleNewSectionName}
+              handleNewSectionRename={handleNewSectionRename}
+              handleRenameSection={handleRenameSection}
+              isAddSectionSheetOpen={isAddSectionSheetOpen}
+              isCollapsed={isCollapsed}
+              isRenameValid={isRenameValid}
+              isValid={isValid}
+              newSectionName={newSectionName}
+              newSectionTitle={newSectionTitle}
+              renameSectionId={renameSectionId}
+              setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
+              setRenameSectionId={setRenameSectionId}
+            />
             <div className="py-4 space-y-4">
               {sections.map((section) => (
                 <div key={section.id} className="px-2">

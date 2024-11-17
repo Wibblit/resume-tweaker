@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Pause, Play } from 'lucide-react';
+import { Pause, Play } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import { useToast } from "@/hooks/use-toast";
 
@@ -31,14 +31,8 @@ type ChatHistory = {
 export default function AdaptiveInterview({
   interviewData,
 }: AdaptiveInterviewProps) {
-  const {
-    job,
-    position,
-    companyName,
-    jd,
-    duration,
-    numberOfQuestions,
-  } = interviewData;
+  const { job, position, companyName, jd, duration, numberOfQuestions } =
+    interviewData;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [isRecording, setIsRecording] = useState(false);
@@ -105,12 +99,13 @@ export default function AdaptiveInterview({
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Please record your audio response or skip this question to proceed to the next one."
+        description:
+          "Please record your audio response or skip this question to proceed to the next one.",
       });
       return;
     }
 
-    setIsLoading(true);
+    if (currentQuestionIndex !== numberOfQuestions - 1) setIsLoading(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
 
@@ -138,8 +133,10 @@ export default function AdaptiveInterview({
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setAudioBlob(null);
 
-      if (currentQuestionIndex + 1 >= numberOfQuestions - 1) {
+      if (currentQuestionIndex >= numberOfQuestions - 1) {
+        console.log(chatHistory);
         handleInterviewComplete();
+        return;
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
@@ -164,6 +161,7 @@ export default function AdaptiveInterview({
   };
 
   const handleSkipQuestion = async () => {
+    console.log(currentQuestionIndex, numberOfQuestions);
     dispatch({
       type: "STORE_ANSWER",
       payload: {
@@ -171,6 +169,11 @@ export default function AdaptiveInterview({
         answer: "Skipped",
       },
     });
+
+    if (currentQuestionIndex >= numberOfQuestions - 1) {
+      console.log("Completed by skip");
+      handleInterviewComplete();
+    }
 
     setIsLoading(true);
     try {
@@ -197,10 +200,6 @@ export default function AdaptiveInterview({
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setAudioBlob(null);
-
-      if (currentQuestionIndex + 1 >= numberOfQuestions - 1) {
-        handleInterviewComplete();
-      }
     } catch (error) {
       console.error("Error getting the next question:", error);
     } finally {
@@ -241,7 +240,7 @@ export default function AdaptiveInterview({
       const data = await response.json();
       console.log("Report data received:", data);
 
-      setReport(data.report);
+      setReport(JSON.parse(data.report));
       setShowReport(true);
     } catch (error) {
       console.error("Error generating report:", error);
@@ -288,7 +287,9 @@ export default function AdaptiveInterview({
                 ) : (
                   <>
                     <Play className="mr-2 h-4 w-4" />
-                    {currentQuestionIndex === 0 ? "Start Recording" : "Resume Recording"}
+                    {currentQuestionIndex === 0
+                      ? "Start Recording"
+                      : "Resume Recording"}
                   </>
                 )}
               </Button>
@@ -300,7 +301,10 @@ export default function AdaptiveInterview({
           <div className="w-full items-center text-center justify-center my-4">
             <div className="size-12 rounded-full border-t-2 border-primary ml-[calc(50%-24px)] border-b-2 animate-spin"></div>
             <div className="mt-2">
-              Hold tight! {isInterviewComplete ? "Crafting your interview insights..." : "Preparing the next question..."}
+              Hold tight!{" "}
+              {isInterviewComplete
+                ? "Crafting your interview insights..."
+                : "Preparing the next question..."}
             </div>
           </div>
         )}

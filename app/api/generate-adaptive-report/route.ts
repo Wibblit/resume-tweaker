@@ -5,31 +5,35 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { reportGenerationPrompt } from "@/data/prompts/reportGenerationPrompt";
 
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(request: Request) {
-    try {
-      const { chatHistory, timeSpent } = await request.json();
-  
-  
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+  try {
+    const { chatHistory, timeSpent } = await request.json();
 
-      const result = await model.generateContent(`${chatHistory} \n ${reportGenerationPrompt}`);
-      const response = await result.response;
-      const text = response.text();
-      const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
-      console.log("Gemini response for report generation:", text);
-  
-      return NextResponse.json({ report: cleanedText });
-    } catch (error) {
-      console.error(
-        "Error processing Gemini API response for report generation:",
-        error
-      );
-      return NextResponse.json(
-        { error: "Failed to generate report", details: error instanceof Error ? error.message : String(error) },
-        { status: 500 }
-      );
-    }
+    console.log(JSON.stringify(chatHistory, null, 2));
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+    const result = await model.generateContent(
+      `${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt}`
+    );
+    const response = await result.response;
+    const text = response.text();
+    const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
+    console.log("Gemini response for report generation:", text);
+
+    return NextResponse.json({ report: cleanedText });
+  } catch (error) {
+    console.error(
+      "Error processing Gemini API response for report generation:",
+      error
+    );
+    return NextResponse.json(
+      {
+        error: "Failed to generate report",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 }
+    );
   }
+}
