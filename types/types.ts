@@ -274,3 +274,19 @@ export type RecentCoverLetter = {
   userId: string;
   coverName: string;
 };
+
+export type ResumesProps =
+  | {
+      id: string;
+      userId: string;
+      resumeName: string;
+    }[]
+  | [];
+
+export type LetterProps =
+  | {
+      id: string;
+      userId: string;
+      coverName: string;
+    }[]
+  | [];

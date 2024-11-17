@@ -15,13 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { renameCoverLetter } from "@/actions/renameCoverLetter";
-
-export type RecentCoverLetter = {
-  id: string;
-  userId: string;
-  coverName: string;
-};
-
+import { LetterProps } from "@/types/types";
 export function RenameDialog({
   children,
   coverId,
@@ -32,7 +26,7 @@ export function RenameDialog({
   coverId: string;
   coverName: string;
   setRecentCoverLetters: React.Dispatch<
-    React.SetStateAction<RecentCoverLetter[] | undefined>
+    React.SetStateAction<LetterProps>
   >;
 }) {
   const [open, setOpen] = useState(false);

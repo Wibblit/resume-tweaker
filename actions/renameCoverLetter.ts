@@ -4,6 +4,7 @@ import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function renameCoverLetter(name: string, coverId: string) {
   try {
@@ -34,7 +35,7 @@ export async function renameCoverLetter(name: string, coverId: string) {
         "Resume not found or you're not authorized to update this resume."
       );
     }
-
+   revalidatePath("/home", "page");
     return { message: "Cover letter renamed successfully", updatedCoverLetter };
   } catch (error) {
     console.error("Error renaming cover letter:", error);

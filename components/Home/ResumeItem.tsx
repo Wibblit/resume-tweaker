@@ -22,7 +22,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { deleteResume } from "@/actions/deleteResume";
 import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameResumeDialog";
-import { RecentResume } from "@/types/types";
+import { ResumesProps } from "@/types/types";
 import { duplicateResume } from "@/actions/duplicateResume";
 
 export default function ResumeItem({
@@ -35,7 +35,7 @@ export default function ResumeItem({
     userId: string;
   };
   setRecentResumes: React.Dispatch<
-    React.SetStateAction<RecentResume[] | undefined>
+    React.SetStateAction<ResumesProps>
   >;
 }) {
   const isPhone = useMediaQuery({ maxWidth: 767 });

@@ -11,50 +11,24 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
 import { useToast } from "@/hooks/use-toast";
-
-interface RecentResume {
-  id: string;
-  userId: string;
-  resumeName: string;
-}
+import { ResumesProps } from "@/types/types";
 
 export default function ResumeContent({
   searchQuery,
+  resumes
 }: {
-  searchQuery: string;
+    searchQuery: string;
+  resumes : ResumesProps
 }) {
-  const [recentResumes, setRecentResumes] = useState<RecentResume[]>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [recentResumes, setRecentResumes] = useState<ResumesProps>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { toast } = useToast()
 
   useEffect(() => {
-    async function getRecentResumes() {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<{
-          recentResumes: RecentResume[];
-          message: string;
-        }>("/api/get-recent-resumes/");
-        if (response.status === 429) {
-          toast({
-            title: "Whoa there! You've hit the rate limit.",
-            description: "Please slow down and try again in a few minutes.",
-            variant: "destructive",
-          });
-          return;
-        }
-        console.log(response, "recent resumes");
-        setRecentResumes(response.data.recentResumes);
-      } catch (error) {
-        console.error("Error fetching recent resumes:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    getRecentResumes();
-  }, []);
+    setRecentResumes(resumes)
+  }, [])
 
   const resumeTemplates = [
     { id: 1, name: "Classic Charm", img: "/templates/template1.avif" },
@@ -85,7 +59,7 @@ export default function ResumeContent({
           ) : (
             <>
               {recentResumes?.map((resume) => (
-                <ResumeItem  setRecentResumes={setRecentResumes} key={resume.id} resume={resume} />
+                <ResumeItem  setRecentResumes={setRecentResumes!} key={resume.id} resume={resume} />
               ))}
               <CreateNewResumeButton />
             </>

@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function createCover(coverName: string) {
   try {
@@ -33,7 +34,7 @@ export async function createCover(coverName: string) {
     });
 
     console.log(cover);
-
+   revalidatePath("/home", "page");
     return {
       success: true,
       message: "Resume created successfully",

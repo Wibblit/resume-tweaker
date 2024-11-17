@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function renameResume(name: string, resumeId: string) {
     try {
@@ -31,7 +32,7 @@ export async function renameResume(name: string, resumeId: string) {
         if (updatedResume.count === 0) {
             throw new Error("Resume not found or you're not authorized to update this resume.");
         }
-
+   revalidatePath("/home", "page");
         return { message: "Resume renamed successfully", updatedResume };
     } catch (error) {
         console.error("Error renaming resume:", error);

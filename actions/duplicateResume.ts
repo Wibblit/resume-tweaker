@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function duplicateResume(resumeId: string) {
   try {
@@ -85,7 +86,7 @@ export async function duplicateResume(resumeId: string) {
         styles: parsedStyles,
       },
     });
-
+   revalidatePath("/home", "page");
     return { message: "Resume duplicated successfully", duplicatedResume };
   } catch (error) {
     console.error("Error duplicating resume:", error);

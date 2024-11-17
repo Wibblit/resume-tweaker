@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function deleteResume(resumeId: string) {
     console.log("reached delete")
@@ -24,6 +25,7 @@ export async function deleteResume(resumeId: string) {
         userId: session?.user?.id,
       },
     });
+       revalidatePath("/home", "page");
     return { success: true, message: "Successfully deleted the resume" }
   } catch (error) {
       console.error("Error deleting resume:", error);

@@ -22,7 +22,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { deleteCoverLetter } from "@/actions/deleteCoverLetter";
 import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameCoverLetterDialog";
-import { RecentCoverLetter } from "@/types/types";
+import { LetterProps } from "@/types/types";
 import { duplicateCoverLetter } from "@/actions/duplicateCoverLetter";
 
 export default function LetterItem({
@@ -35,7 +35,7 @@ export default function LetterItem({
     userId: string;
   };
   setRecentCoverLetters: React.Dispatch<
-    React.SetStateAction<RecentCoverLetter[] | undefined>
+    React.SetStateAction<LetterProps>
   >;
 }) {
   const isPhone = useMediaQuery({ maxWidth: 767 });

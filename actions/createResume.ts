@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function createResume(resumeName: string) {
   try {
@@ -33,6 +34,8 @@ export async function createResume(resumeName: string) {
         resumeName: resumeName,
       },
     });
+
+    revalidatePath('/home', "page")
 
     return {
       success: true,

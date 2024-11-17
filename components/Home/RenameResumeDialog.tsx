@@ -15,12 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { renameResume } from "@/actions/renameResume";
-
-export type RecentResume = {
-  id: string;
-  userId: string;
-  resumeName: string;
-}
+import { ResumesProps } from "@/types/types";
 
 export function RenameDialog({
   children,
@@ -31,7 +26,7 @@ export function RenameDialog({
   children: React.ReactNode;
   resumeId: string;
   resumeName: string;
-  setRecentResumes: React.Dispatch<React.SetStateAction<RecentResume[] | undefined>>;
+  setRecentResumes: React.Dispatch<React.SetStateAction<ResumesProps>>;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(resumeName);

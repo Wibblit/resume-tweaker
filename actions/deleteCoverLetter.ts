@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export async function deleteCoverLetter(coverId: string) {
   console.log("reached delete");
@@ -24,6 +25,7 @@ export async function deleteCoverLetter(coverId: string) {
         userId: session?.user?.id,
       },
     });
+       revalidatePath("/home", "page");
     return { success: true, message: "Successfully deleted the cover letter" };
   } catch (error) {
     console.error("Error deleting cover letter:", error);

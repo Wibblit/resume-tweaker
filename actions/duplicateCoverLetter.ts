@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
 
 export async function duplicateCoverLetter(coverId: string) {
   const session = await auth();
@@ -57,7 +58,7 @@ export async function duplicateCoverLetter(coverId: string) {
         styles: parsedStyles,
       },
     });
-
+   revalidatePath("/home", "page");
     return { message: "Cover Letter duplicated successfully", duplicatedCoverLetter };
   } catch (error) {
     console.error("Error duplicating cover letter:", error);

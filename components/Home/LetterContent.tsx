@@ -12,56 +12,32 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
 import { useToast } from "@/hooks/use-toast";
+import { LetterProps } from "@/types/types";
 
 const COVER = "Cover Letter";
-
-interface RecentCoverLetter {
-  id: string;
-  userId: string;
-  coverName: string;
-}
-
 export default function LetterContent({
   searchQuery,
+  letters,
 }: {
   searchQuery: string;
+  letters: LetterProps;
 }) {
-  const [recentCoverLetters, setRecentCoverLetters] =
-    useState<RecentCoverLetter[]>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [recentCoverLetters, setRecentCoverLetters] = useState<LetterProps>();
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   useEffect(() => {
-    async function getRecentCoverLetters() {
-      try {
-        setIsLoading(true);
-        const response = await axios.get<{
-          recentCoverLetters: RecentCoverLetter[];
-          message: string;
-        }>("/api/get-recent-cover-letter/");
-        if (response.status === 429) {
-          toast({
-            title: "Whoa there! You've hit the rate limit.",
-            description: "Please slow down and try again in a few minutes.",
-            variant: "destructive",
-          });
-          return;
-        }
-        console.log(response, "recent cover letters");
-        setRecentCoverLetters(response.data.recentCoverLetters);
-      } catch (error) {
-        console.error("Error fetching recent cover letters:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    getRecentCoverLetters();
+    setRecentCoverLetters(letters);
   }, []);
 
   const letterTemplates = [
-    { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.avif" },
+    {
+      id: 1,
+      name: "Classic Professional",
+      image: "/templates/ctemplate1.avif",
+    },
     { id: 2, name: "Modern Header", image: "/templates/ctemplate2.avif" },
     { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.avif" },
     { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.avif" },
@@ -89,7 +65,11 @@ export default function LetterContent({
             <>
               {recentCoverLetters?.map((letter) => (
                 <LetterItem
-                  setRecentCoverLetters={setRecentCoverLetters}
+                  setRecentCoverLetters={
+                    setRecentCoverLetters! as React.Dispatch<
+                      React.SetStateAction<LetterProps>
+                    >
+                  }
                   key={letter.id}
                   letter={letter}
                 />

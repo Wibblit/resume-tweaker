@@ -12,11 +12,21 @@ import ResumeContent from "./ResumeContent";
 import LetterContent from "./LetterContent";
 import { CreateNewResumeButtonTop } from "./CreateNewButtonTop";
 import { CreateNewCoverLetterButtonTop } from "./CreateNewButtonTop";
+import { ResumesProps } from "@/types/types";
+import { LetterProps } from "@/types/types";
 
 const RESUME = "resume";
 const COVER = "cover";
 
-export default function Home() {
+
+interface Homeprops {
+  resumes : ResumesProps
+  letters: LetterProps
+}
+
+
+
+export default function Home({ resumes, letters }: Homeprops) {
   const [searchQuery, setSearchQuery] = useState("");
   const [tab, setTab] = useState(RESUME);
 
@@ -67,10 +77,10 @@ export default function Home() {
               />
             </div>
             <TabsContent value="resumes" className="mt-4">
-              <ResumeContent searchQuery={searchQuery} />
+              <ResumeContent resumes={resumes} searchQuery={searchQuery} />
             </TabsContent>
             <TabsContent value="letters" className="mt-4">
-              <LetterContent searchQuery={searchQuery} />
+              <LetterContent letters={ letters} searchQuery={searchQuery} />
             </TabsContent>
           </Tabs>
         </ScrollArea>
