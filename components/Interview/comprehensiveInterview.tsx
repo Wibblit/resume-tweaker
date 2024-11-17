@@ -86,6 +86,7 @@ export default function ComprehensiveInterview({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          history,
           questions,
           base64Audio,
           timeSpent: duration * 60 - timeLeft,

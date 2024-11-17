@@ -109,7 +109,7 @@ export default function InterviewPage() {
         AI Interview
       </h1>
       {interviewData.interviewType === "adaptive" ? (
-        <AdaptiveInterview formData={interviewData} />
+        <AdaptiveInterview interviewData={interviewData} />
       ) : (
         <ComprehensiveInterview
           questions={comprehensiveQuestions}

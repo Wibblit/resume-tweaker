@@ -21,7 +21,7 @@ export async function POST(request: Request) {
         inlineData: {
           mimeType: "audio/webm",
           data: base64Audio
-        }
+        } 
       },
       { 
         text: `${JSON.stringify(questions)}\nTime spent: ${timeSpent}\n${reportGenerationPrompt}`
