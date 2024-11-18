@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { GradientText } from "@/components/gradient-text";
-import { FeatureCard } from "@/components/featured-card";
+import { ReviewTypeCard } from "@/components/ReviewPaage/ReviewTypeCard";
+import { ProcessStep } from "@/components/ReviewPaage/ProcessStep";
 import {
   Brain,
   Workflow,
@@ -52,24 +53,27 @@ const dummyData = {
     "An exceptional candidate who demonstrates strong technical skills and professional qualities.",
 };
 
-const features = [
+const processSteps = [
   {
     title: "Setup Your Interview",
     description:
       "Customize your interview by selecting job role, position, and duration. Upload your resume and JD for personalized questions.",
     icon: <FileSpreadsheet className="w-6 h-6" />,
+    video: "https://your-cdn.com/upload-demo.mp4",
   },
   {
     title: "Take the Interview",
     description:
       "Answer questions in a realistic video environment. Control your pace with options to start, pause, and skip questions.",
     icon: <Video className="w-6 h-6" />,
+    video: "https://your-cdn.com/upload-demo.mp4",
   },
   {
     title: "Get Detailed Analysis",
     description:
       "Receive comprehensive feedback with scores across multiple categories and actionable improvement suggestions.",
     icon: <LineChart className="w-6 h-6" />,
+    video: "https://your-cdn.com/upload-demo.mp4",
   },
 ];
 
@@ -104,7 +108,7 @@ function App() {
             size="lg"
             variant="outline"
             onClick={() => {
-              const featuresSection = document.getElementById("features");
+              const featuresSection = document.getElementById("interview-styles");
               featuresSection?.scrollIntoView({ behavior: "smooth" });
             }}
           >
@@ -123,30 +127,47 @@ function App() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="container mx-auto max-w-7xl px-4 py-20">
+      <section
+        id="interview-styles"
+        className="container mx-auto max-w-7xl px-4 py-20"
+      >
         <h2 className="text-3xl font-bold text-center mb-12">
           <GradientText>Choose Your Interview Style</GradientText>
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <FeatureCard
+          <ReviewTypeCard
             icon={<Brain className="w-6 h-6" />}
             title="Comprehensive Interview"
             description="Pre-generated questions covering all aspects of your role. Perfect for thorough preparation and consistent evaluation."
+            features={[
+              "Covers Key Competency Areas",
+              "Standardized Evaluation Criteria",
+              "Detailed Feedback on Every Question",
+              "Ideal for Structured Interview Preparation",
+            ]}
           />
-          <FeatureCard
+          <ReviewTypeCard
             icon={<Workflow className="w-6 h-6" />}
             title="Adaptive Interview"
             description="Dynamic questions that adjust based on your responses. Experience a more realistic and challenging interview flow."
+            features={[
+              "Questions Tailored to Your Responses",
+              "Real-Time Adaptation",
+              "Simulates Real-World Interview Dynamics",
+              "Challenging and Engaging Practice",
+            ]}
+            isPro
           />
         </div>
 
+        {/* Process Steps */}
         <h2 className="text-3xl font-bold text-center mb-12">
           <GradientText>How It Works</GradientText>
         </h2>
-        <div className="max-w-7xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-content-center mx-auto">
-          {features.map((feature, index) => (
-            <Feature key={feature.title} {...feature} index={index} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {processSteps.map((step, index) => (
+            <ProcessStep key={index} {...step} index={index} />
           ))}
         </div>
       </section>
