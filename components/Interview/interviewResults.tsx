@@ -1,28 +1,51 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Label as RechartsLabel, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { TrendingUp } from 'lucide-react'
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Label as RechartsLabel,
+  PolarRadiusAxis,
+  RadialBar,
+  RadialBarChart,
+} from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { TrendingUp } from "lucide-react";
 
 interface EvaluationCriteria {
-  category: string
-  score: number
-  comment: string
+  category: string;
+  score: number;
+  comment: string;
 }
 
 interface InterviewReport {
-  evaluation: EvaluationCriteria[]
-  overall_score: number
-  final_recommendation: string
-  overall_comment: string
+  evaluation: EvaluationCriteria[];
+  overall_score: number;
+  final_recommendation: string;
+  overall_comment: string;
 }
 
 interface InterviewResultsProps {
-  data: InterviewReport
+  data: InterviewReport;
+  isStatic?: boolean;
 }
 
 const chartConfig: ChartConfig = {
@@ -46,13 +69,13 @@ const chartConfig: ChartConfig = {
     label: "Professionalism",
     color: "hsl(var(--chart-5))",
   },
-}
+};
 
-export default function InterviewResults({ data }: InterviewResultsProps) {
+export default function InterviewResults({ data, isStatic }: InterviewResultsProps) {
   const chartData = data.evaluation.map((item) => ({
     name: item.category,
     score: item.score,
-  }))
+  }));
 
   return (
     <div className="space-y-8">
@@ -95,7 +118,7 @@ export default function InterviewResults({ data }: InterviewResultsProps) {
                             Overall Score
                           </tspan>
                         </text>
-                      )
+                      );
                     }
                   }}
                 />
@@ -127,52 +150,56 @@ export default function InterviewResults({ data }: InterviewResultsProps) {
         </CardFooter>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>AI Interview Review Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {data.evaluation.map((item) => (
-              <Accordion type="single" collapsible key={item.category}>
-                <AccordionItem value={item.category}>
-                  <AccordionTrigger>
-                    <div className="flex items-center justify-between w-full">
-                      <span className="capitalize">
-                        {item.category}
-                      </span>
-                      <div className="flex items-center gap-2 mr-2">
-                        <Progress
-                          value={item.score * 10}
-                          className="w-24"
-                        />
-                        <span className="text-sm font-medium">
-                          {item.score}/10
-                        </span>
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-sm text-muted-foreground">
-                      {item.comment}
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {!isStatic && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>AI Interview Review Results</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {data.evaluation.map((item) => (
+                  <Accordion type="single" collapsible key={item.category}>
+                    <AccordionItem value={item.category}>
+                      <AccordionTrigger>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="capitalize">{item.category}</span>
+                          <div className="flex items-center gap-2 mr-2">
+                            <Progress
+                              value={item.score * 10}
+                              className="w-24"
+                            />
+                            <span className="text-sm font-medium">
+                              {item.score}/10
+                            </span>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <p className="text-sm text-muted-foreground">
+                          {item.comment}
+                        </p>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Final Decision</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-lg font-medium">{data.final_recommendation}</p>
-          <p className="mt-2 text-sm text-muted-foreground">{data.overall_comment}</p>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Final Decision</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg font-medium">{data.final_recommendation}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {data.overall_comment}
+              </p>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
-  )
+  );
 }
