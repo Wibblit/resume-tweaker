@@ -72,7 +72,6 @@ import {
   RenameCustomSection,
 } from "@/slices/leftsidebarSlice";
 import Base64Image from "./base64toPhoto";
-import { Trash } from "lucide-react";
 import { CustomSection } from "./CustomSection";
 
 interface LeftSideBarProps {
@@ -484,7 +483,7 @@ export default function LeftSideBar({
                 <div className="flex-col items-center justify-center">
                   {resumeData?.basics && resumeData?.basics[0]?.picture && (
                     <div className="relative flex items-center justify-center">
-                      <Trash
+                      <Trash2
                         onClick={DeleteProfilePicture}
                         className="absolute right-0 -top-2 w-4 h-4 my-3 text-red-500 cursor-pointer"
                       />
@@ -743,6 +742,10 @@ export default function LeftSideBar({
           renameSectionId={renameSectionId}
           setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
           setRenameSectionId={setRenameSectionId}
+          defaultSections={defaultSections}
+          handleDeleteSection={handleDeleteSection}
+          resumeSections={resumeSections}
+          setNewSectionTitle={setNewSectionTitle}
         />
       ) : (
         <div
@@ -771,66 +774,6 @@ export default function LeftSideBar({
             </div>
             <ScrollArea className="flex-grow">
               <div className="p-4 space-y-4">
-                {resumeSections.map((section) => (
-                  <Sheet key={section.id}>
-                    <SheetTrigger asChild>
-                      <div className="flex items-center">
-                        <Button
-                          variant={
-                            activeSection === section.id ? "default" : "ghost"
-                          }
-                          className={`w-full justify-start ${
-                            isCollapsed ? "px-2" : ""
-                          }`}
-                          onClick={() => setActiveSection(section.id)}
-                        >
-                          {section.icon}
-                          {!isCollapsed && (
-                            <span className="ml-2">{section.title}</span>
-                          )}
-                        </Button>
-                        {!isCollapsed &&
-                          !defaultSections.some((s) => s.id === section.id) && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setRenameSectionId(section.id);
-                                  setNewSectionTitle(section.title);
-                                }}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteSection(section.id);
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                      </div>
-                    </SheetTrigger>
-                    <SheetContent
-                      side="left"
-                      className="w-[400px] sm:w-[540px]"
-                    >
-                      <SheetHeader>
-                        <SheetTitle>Edit {section.title}</SheetTitle>
-                        <SheetDescription>
-                          Modify or add new entries to this section.
-                        </SheetDescription>
-                      </SheetHeader>
-                      {renderSheetContent(section.id)}
-                    </SheetContent>
-                  </Sheet>
-                ))}
                 <CustomSection
                   handleAddSection={handleAddSection}
                   handleNewSectionName={handleNewSectionName}
@@ -845,6 +788,14 @@ export default function LeftSideBar({
                   renameSectionId={renameSectionId}
                   setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
                   setRenameSectionId={setRenameSectionId}
+                  activeSection={activeSection}
+                  defaultSections={defaultSections}
+                  handleDeleteSection={handleDeleteSection}
+                  resumeSections={resumeSections}
+                  setActiveSection={setActiveSection}
+                  setNewSectionTitle={setNewSectionTitle}
+                    renderSheetContent={renderSheetContent}
+                    type="medium"
                 />
               </div>
             </ScrollArea>

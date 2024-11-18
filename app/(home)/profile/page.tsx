@@ -390,7 +390,7 @@ const DeleteProfilePicture = () => {
                 <div className="flex-col items-center justify-center">
                   {profileData?.basics && profileData?.basics[0]?.picture && (
                           <div className="inline-block relative my-2">
-                            <Trash onClick={DeleteProfilePicture} className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer" />
+                            <Trash2 onClick={DeleteProfilePicture} className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer" />
                       <Base64Image
                         base64String={profileData?.basics[0]?.picture}
                         width={150}

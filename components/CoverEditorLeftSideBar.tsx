@@ -841,6 +841,7 @@ export default function CoverLeftSideBar({
           activeSection={activeSection}
           //@ts-ignore
           setActiveSection={setActiveSection}
+          //@ts-ignore
           renderSheetContent={renderSheetContent}
           isPanelOpen={isPanelOpen}
           setIsPanelOpen={setIsPanelOpen}
