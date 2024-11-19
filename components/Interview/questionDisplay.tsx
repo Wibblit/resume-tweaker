@@ -21,7 +21,7 @@ export default function QuestionDisplay({ question, onNextQuestion }: QuestionDi
       const timer = setTimeout(() => {
         setDisplayedQuestion(prev => prev + question[charIndex])
         setCharIndex(prev => prev + 1)
-      }, 50) 
+      }, 15) 
       return () => clearTimeout(timer)
     }
   }, [charIndex, question])

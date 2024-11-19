@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     numberOfQuestions,
     currentQuestionIndex,
     isSkipped,
+    resumeText,
     chatHistory,
   } = await req.json();
 
@@ -46,7 +47,8 @@ export async function POST(req: NextRequest) {
     position,
     companyName,
     jd,
-    numberOfQuestions
+    numberOfQuestions,
+    resumeText,
   );
 
   try {

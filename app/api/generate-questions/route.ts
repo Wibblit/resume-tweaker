@@ -6,27 +6,25 @@ import { auth } from "@/auth";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
-
   const session = await auth();
-  const { job, position, companyName, jd, numberOfQuestions } =
+  const { job, position, companyName, jd, numberOfQuestions, resumeText } =
     await req.json();
   let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
 
   try {
-
     if (rateLimiter(session?.user?.id, ip)) {
       return NextResponse.json(
         { message: "Rate limit exceeded." },
         { status: 429 }
       );
-    } 
+    }
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Generate ${numberOfQuestions} interview questions for a ${position} ${job} position at ${companyName}. 
-    ${
-      jd ? `Consider this job description: ${jd}` : ""
+    ${jd ? `Consider this job description: ${jd}` : ""} ${
+      resumeText ? `and resume ${resumeText}` : ""
     } "Provide the questions as a JSON array of strings."
     Ensure the questions are challenging and relevant to the position.`;
 

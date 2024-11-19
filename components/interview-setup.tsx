@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, ChangeEvent, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, ChangeEvent, FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setQuestions, setFormData } from "@/slices/interviewSlice";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, HelpCircle, Loader2 } from "lucide-react";
+import { Upload, HelpCircle, Loader2 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Tooltip,
@@ -19,7 +19,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-
+import { createWorker } from 'tesseract.js';
+import { Progress } from "@/components/ui/progress";
+import pdfToImages from "@/lib/pdfToImages";
+import Tesseract from "tesseract.js";
 
 interface FormData {
   job: string;
@@ -35,6 +38,7 @@ interface FormData {
 export default function InterviewSetup() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const [formData, setLocalFormData] = useState<FormData>({
     job: "",
     position: "",
@@ -45,7 +49,31 @@ export default function InterviewSetup() {
     interviewer: "",
     interviewType: "comprehensive",
   });
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
+  const [resumeText, setResumeText] = useState("");
+  const workerRef = useRef<Tesseract.Worker | null>(null);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function initWorker() {
+      workerRef.current = await createWorker({
+        logger: (message) => {
+          if ("progress" in message) {
+            setOcrProgress(message.progress);
+            console.log(message.progress === 1 ? "Done" : message.status);
+          }
+        },
+      });
+    }
+    initWorker();
+    return () => {
+      workerRef.current?.terminate();
+      workerRef.current = null;
+    };
+  }, []);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,20 +82,48 @@ export default function InterviewSetup() {
     setLocalFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const { toast } = useToast()
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setLocalFormData((prev) => ({ ...prev, resume: e.target.files![0] }));
+      const uploadedFile = e.target.files[0];
+      setLocalFormData((prev) => ({ ...prev, resume: uploadedFile }));
+
+      setIsOcrInProgress(true);
+      setOcrProgress(0);
+
+      const worker = workerRef.current;
+      await worker?.load();
+      await worker?.loadLanguage("eng");
+      await worker?.initialize("eng");
+      await worker?.setParameters({
+        tessjs_create_hocr: "1",
+        tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
+      });
+
+      let ocrText = "";
+
+      if (uploadedFile.type === "application/pdf") {
+        const pdfUrl = URL.createObjectURL(uploadedFile);
+        const imageUrls = await pdfToImages(pdfUrl);
+        for (let i = 0; i < imageUrls.length; i++) {
+          const response = await worker?.recognize(imageUrls[i]);
+          ocrText += " " + response?.data.text;
+        }
+      } else {
+        const response = await worker?.recognize(uploadedFile);
+        ocrText = response?.data.text || "";
+      }
+
+      setResumeText(ocrText);
+      setIsOcrInProgress(false);
+      setOcrProgress(1);
     }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true)
-    const numberOfQuestions = Math.floor(formData.duration / 2); // Assuming 2 minutes per question
+    setLoading(true);
+    const numberOfQuestions = Math.floor(formData.duration / 2);
     try {
-      
       const queryParams = new URLSearchParams({
         job: formData.job,
         position: formData.position,
@@ -76,19 +132,19 @@ export default function InterviewSetup() {
         numberOfQuestions: numberOfQuestions.toString(),
         interviewType: formData.interviewType,
         duration: formData.duration.toString(),
+        resumeText: resumeText,
       }).toString();
       dispatch(setFormData(formData));
       router.push(`/ai-interview/interview?${queryParams}`);
-      setLoading(false)
-
     } catch (error) {
       console.error("Error generating questions:", error);
       toast({
         description: "Unable to join the interview. Please try again.",
         title: "error",
-        variant : "destructive"
+        variant: "destructive",
       });
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -155,6 +211,7 @@ export default function InterviewSetup() {
                 onClick={() => document.getElementById("resume")?.click()}
                 variant="secondary"
                 className="w-full bg-secondary text-secondary-foreground"
+                disabled={isOcrInProgress}
               >
                 <Upload className="mr-2 h-4 w-4" /> Upload Resume
               </Button>
@@ -162,6 +219,15 @@ export default function InterviewSetup() {
                 {formData.resume ? formData.resume.name : "No file chosen"}
               </span>
             </div>
+            {isOcrInProgress && (
+              <div className="mt-4">
+                <Label>Extracting data from resume...</Label>
+                <Progress value={ocrProgress * 100} className="mt-2" />
+                <p className="text-sm text-muted-foreground mt-1">
+                  {(ocrProgress * 100).toFixed(0)}% complete
+                </p>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="jd" className="text-foreground">
@@ -244,6 +310,7 @@ export default function InterviewSetup() {
           <Button
             type="submit"
             className="w-full bg-primary text-primary-foreground"
+            disabled={loading || isOcrInProgress}
           >
             {loading ? (
               <div className="flex">

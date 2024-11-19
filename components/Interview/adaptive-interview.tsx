@@ -20,6 +20,7 @@ interface AdaptiveInterviewProps {
     numberOfQuestions: number;
     interviewType: string;
     duration: number;
+    resumeText: string;
   };
 }
 
@@ -31,7 +32,7 @@ type ChatHistory = {
 export default function AdaptiveInterview({
   interviewData,
 }: AdaptiveInterviewProps) {
-  const { job, position, companyName, jd, duration, numberOfQuestions } =
+  const { job, position, companyName, jd, duration, numberOfQuestions, resumeText } =
     interviewData;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
@@ -76,6 +77,7 @@ export default function AdaptiveInterview({
             job,
             numberOfQuestions,
             currentQuestionIndex: 0,
+            resumeText,
             chatHistory: [],
           }),
         });
