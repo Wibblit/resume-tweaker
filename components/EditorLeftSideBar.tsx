@@ -72,7 +72,7 @@ import {
   RenameCustomSection,
 } from "@/slices/leftsidebarSlice";
 import Base64Image from "./base64toPhoto";
-import { CustomSection } from "./CustomSection";
+import { Trash } from "lucide-react";
 
 interface LeftSideBarProps {
   activeSection: keyof ResumeData | string;
@@ -483,7 +483,7 @@ export default function LeftSideBar({
                 <div className="flex-col items-center justify-center">
                   {resumeData?.basics && resumeData?.basics[0]?.picture && (
                     <div className="relative flex items-center justify-center">
-                      <Trash2
+                      <Trash
                         onClick={DeleteProfilePicture}
                         className="absolute right-0 -top-2 w-4 h-4 my-3 text-red-500 cursor-pointer"
                       />
@@ -729,23 +729,6 @@ export default function LeftSideBar({
           renderSheetContent={renderSheetContent}
           isPanelOpen={isPanelOpen}
           setIsPanelOpen={setIsPanelOpen}
-          handleAddSection={handleAddSection}
-          handleNewSectionName={handleNewSectionName}
-          handleNewSectionRename={handleNewSectionRename}
-          handleRenameSection={handleRenameSection}
-          isAddSectionSheetOpen={isAddSectionSheetOpen}
-          isCollapsed={isCollapsed}
-          isRenameValid={isRenameValid}
-          isValid={isValid}
-          newSectionName={newSectionName}
-          newSectionTitle={newSectionTitle}
-          renameSectionId={renameSectionId}
-          setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
-          setRenameSectionId={setRenameSectionId}
-          defaultSections={defaultSections}
-          handleDeleteSection={handleDeleteSection}
-          resumeSections={resumeSections}
-          setNewSectionTitle={setNewSectionTitle}
         />
       ) : (
         <div
@@ -774,29 +757,148 @@ export default function LeftSideBar({
             </div>
             <ScrollArea className="flex-grow">
               <div className="p-4 space-y-4">
-                <CustomSection
-                  handleAddSection={handleAddSection}
-                  handleNewSectionName={handleNewSectionName}
-                  handleNewSectionRename={handleNewSectionRename}
-                  handleRenameSection={handleRenameSection}
-                  isAddSectionSheetOpen={isAddSectionSheetOpen}
-                  isCollapsed={isCollapsed}
-                  isRenameValid={isRenameValid}
-                  isValid={isValid}
-                  newSectionName={newSectionName}
-                  newSectionTitle={newSectionTitle}
-                  renameSectionId={renameSectionId}
-                  setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
-                  setRenameSectionId={setRenameSectionId}
-                  activeSection={activeSection}
-                  defaultSections={defaultSections}
-                  handleDeleteSection={handleDeleteSection}
-                  resumeSections={resumeSections}
-                  setActiveSection={setActiveSection}
-                  setNewSectionTitle={setNewSectionTitle}
-                    renderSheetContent={renderSheetContent}
-                    type="medium"
-                />
+                {resumeSections.map((section) => (
+                  <Sheet key={section.id}>
+                    <SheetTrigger asChild>
+                      <div className="flex items-center">
+                        <Button
+                          variant={
+                            activeSection === section.id ? "default" : "ghost"
+                          }
+                          className={`w-full justify-start ${
+                            isCollapsed ? "px-2" : ""
+                          }`}
+                          onClick={() => setActiveSection(section.id)}
+                        >
+                          {section.icon}
+                          {!isCollapsed && (
+                            <span className="ml-2">{section.title}</span>
+                          )}
+                        </Button>
+                        {!isCollapsed &&
+                          !defaultSections.some((s) => s.id === section.id) && (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setRenameSectionId(section.id);
+                                  setNewSectionTitle(section.title);
+                                }}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteSection(section.id);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                      </div>
+                    </SheetTrigger>
+                    <SheetContent
+                      side="left"
+                      className="w-[400px] sm:w-[540px]"
+                    >
+                      <SheetHeader>
+                        <SheetTitle>Edit {section.title}</SheetTitle>
+                        <SheetDescription>
+                          Modify or add new entries to this section.
+                        </SheetDescription>
+                      </SheetHeader>
+                      {renderSheetContent(section.id)}
+                    </SheetContent>
+                  </Sheet>
+                ))}
+                {renameSectionId && (
+                  <div className="flex-col items-center justify-center space-x-2">
+                    <Input
+                      value={newSectionTitle}
+                      onChange={handleNewSectionRename}
+                      placeholder="New section name"
+                    />
+                    {!isRenameValid && (
+                      <span className="text-red-500 text-sm w-full">
+                        This section already exists.
+                      </span>
+                    )}
+                    <div className="flex items-center justify-between mt-2">
+                      <Button
+                        onClick={
+                          isRenameValid
+                            ? () => handleRenameSection(renameSectionId)
+                            : undefined
+                        }
+                        className={`${
+                          !isRenameValid ? "cursor-not-allowed opacity-50" : ""
+                        }`}
+                      >
+                        Rename
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setRenameSectionId(null)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                <Sheet
+                  open={isAddSectionSheetOpen}
+                  onOpenChange={setIsAddSectionSheetOpen}
+                >
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start ${
+                        isCollapsed ? "px-2" : ""
+                      }`}
+                    >
+                      <Plus className="w-4 h-4" />
+                      {!isCollapsed && (
+                        <span className="ml-2">Add Section</span>
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+                    <SheetHeader>
+                      <SheetTitle>Add New Section</SheetTitle>
+                      <SheetDescription>
+                        Create a custom section for your resume.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="space-y-4 mt-4">
+                      <Label htmlFor="new-section-name">Section Name</Label>
+                      <Input
+                        id="new-section-name"
+                        value={newSectionName}
+                        onChange={handleNewSectionName}
+                        placeholder="Enter section name"
+                      />
+                      {!isValid && (
+                        <span className="text-red-500 text-sm w-full text-center">
+                          This section already exists.
+                        </span>
+                      )}
+                      <Button
+                        onClick={isValid ? () => handleAddSection() : undefined}
+                        className={`w-full ${
+                          !isValid ? "cursor-not-allowed opacity-50" : ""
+                        }`}
+                      >
+                        Create Section
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </ScrollArea>
             <div
