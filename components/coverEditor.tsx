@@ -28,7 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<
-    keyof CoverLetterState | ""
+    keyof CoverLetterState | string
   >("salutation");
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);

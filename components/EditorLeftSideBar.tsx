@@ -729,6 +729,23 @@ export default function LeftSideBar({
           renderSheetContent={renderSheetContent}
           isPanelOpen={isPanelOpen}
           setIsPanelOpen={setIsPanelOpen}
+          defaultSections={defaultSections}
+          handleDeleteSection={handleDeleteSection}
+          isCollapsed={isCollapsed}
+          setNewSectionTitle={setNewSectionTitle}
+          setRenameSectionId={setRenameSectionId}
+          handleNewSectionRename={handleNewSectionRename}
+          newSectionTitle={newSectionTitle}
+          renameSectionId={renameSectionId}
+          isRenameValid={isRenameValid}
+          handleRenameSection={handleRenameSection}
+          handleAddSection={handleAddSection}
+          handleNewSectionName={handleNewSectionName}
+          isAddSectionSheetOpen={isAddSectionSheetOpen}
+          isValid={isValid}
+          newSectionName={newSectionName}
+          setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
+          type="resume"
         />
       ) : (
         <div
@@ -777,7 +794,7 @@ export default function LeftSideBar({
                         </Button>
                         {!isCollapsed &&
                           !defaultSections.some((s) => s.id === section.id) && (
-                            <>
+                            <React.Fragment>
                               <Button
                                 variant="ghost"
                                 size="icon"
@@ -799,7 +816,7 @@ export default function LeftSideBar({
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
-                            </>
+                            </React.Fragment>
                           )}
                       </div>
                     </SheetTrigger>
@@ -817,40 +834,60 @@ export default function LeftSideBar({
                     </SheetContent>
                   </Sheet>
                 ))}
-                {renameSectionId && (
-                  <div className="flex-col items-center justify-center space-x-2">
-                    <Input
-                      value={newSectionTitle}
-                      onChange={handleNewSectionRename}
-                      placeholder="New section name"
-                    />
-                    {!isRenameValid && (
-                      <span className="text-red-500 text-sm w-full">
-                        This section already exists.
-                      </span>
-                    )}
-                    <div className="flex items-center justify-between mt-2">
-                      <Button
-                        onClick={
-                          isRenameValid
-                            ? () => handleRenameSection(renameSectionId)
-                            : undefined
-                        }
-                        className={`${
-                          !isRenameValid ? "cursor-not-allowed opacity-50" : ""
-                        }`}
-                      >
-                        Rename
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => setRenameSectionId(null)}
-                      >
-                        Cancel
-                      </Button>
+                <Sheet
+                  open={renameSectionId !== null}
+                  onOpenChange={(open) => !open && setRenameSectionId(null)}
+                >
+                  <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+                    <SheetHeader>
+                      <SheetTitle>Rename Section</SheetTitle>
+                      <SheetDescription>
+                        Rename your existing section to a new title.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="space-y-4 mt-4">
+                      <Label htmlFor="rename-section-name">
+                        New Section Name
+                      </Label>
+                      <Input
+                        id="rename-section-name"
+                        value={newSectionTitle}
+                        onChange={handleNewSectionRename}
+                        placeholder="Enter new section name"
+                      />
+                      {!isRenameValid && (
+                        <span className="text-red-500 text-sm w-full text-center">
+                          This section already exists.
+                        </span>
+                      )}
+                      <div className="flex items-center justify-between mt-2">
+                        <Button
+                          onClick={
+                              isRenameValid
+                                //@ts-ignore
+                              ? () => handleRenameSection(renameSectionId)
+                              : undefined
+                          }
+                          className={`w-full ${
+                            !isRenameValid
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                        >
+                          Rename Section
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setRenameSectionId(null)}
+                          className="w-full mt-2"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  </SheetContent>
+                </Sheet>
+
                 <Sheet
                   open={isAddSectionSheetOpen}
                   onOpenChange={setIsAddSectionSheetOpen}

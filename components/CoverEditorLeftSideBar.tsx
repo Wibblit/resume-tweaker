@@ -34,9 +34,9 @@ import LeftSidePanel from "./LeftSidePanel";
 import { CoverLetterData } from "@/types/types";
 
 interface CoverLeftSideBarProps {
-  activeSection: keyof CoverLetterData | "";
+  activeSection: keyof CoverLetterData | string;
   setActiveSection: React.Dispatch<
-    React.SetStateAction<keyof CoverLetterData | "">
+    React.SetStateAction<keyof CoverLetterData | string>
   >;
   isPanelOpen: boolean;
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -229,11 +229,11 @@ export default function CoverLeftSideBar({
         <LeftSidePanel<CoverLetterData>
           sections={coverLetterSections}
           activeSection={activeSection}
-          //@ts-ignore
           setActiveSection={setActiveSection}
           renderSheetContent={renderSheetContent}
           isPanelOpen={isPanelOpen}
           setIsPanelOpen={setIsPanelOpen}
+          type="cover"
         />
       ) : (
         <div
