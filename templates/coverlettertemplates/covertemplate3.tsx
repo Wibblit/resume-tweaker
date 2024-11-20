@@ -5,6 +5,7 @@ import { CoverLetterState } from "@/types/types";
 import { useAppDispatch } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { PAGE_FORMATS } from "@/components/coverPage";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -15,11 +16,6 @@ interface CoverLetterTemplateProps {
   margin: number;
   pageFormat: "a4" | "letter";
 }
-
-const PAGE_FORMATS = {
-  a4: { width: 210, height: 297 },
-  letter: { width: 216, height: 279 },
-};
 
 const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
   content,
@@ -43,8 +39,8 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
       padding: `${margin}mm`,
       position: "relative",
       backgroundColor: "#fff",
-      height: `${pageDimensions.height}mm`, // Set height based on page format
-      width: `${pageDimensions.width}mm`, // Set width based on page format
+      height: `${pageDimensions?.height}mm`, // Set height based on page format
+      width: `${pageDimensions?.width}mm`, // Set width based on page format
       boxSizing: "border-box", // Ensure padding is included in total height
     },
     section: {

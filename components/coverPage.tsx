@@ -33,7 +33,7 @@ interface Page {
   content: CoverLetterState;
 }
 
-const PAGE_FORMATS = {
+export const PAGE_FORMATS = {
   a4: { width: 210, height: 297 },
   letter: { width: 216, height: 279 },
 };
