@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -11,14 +11,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   FileText,
   MessageSquare,
@@ -33,7 +25,6 @@ import {
 } from "lucide-react";
 import { Session } from "next-auth";
 import { SignOutButton } from "./SignOutButton";
-import { useState } from "react";
 
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
@@ -42,7 +33,6 @@ const sidebarItems = [
     name: "AI Interview",
     icon: MessageSquare,
     href: "/ai-interview",
-    beta: true,
   },
   { name: "Profile", icon: User, href: "/profile" },
 ];
@@ -54,24 +44,14 @@ interface SideBarProps {
 
 export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { setTheme, theme } = useTheme();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const credits = {
     used: 750,
     total: 1000,
   };
 
-  const handleAIInterviewClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsModalOpen(true);
-  };
 
-  const handleContinue = () => {
-    setIsModalOpen(false);
-    router.push("/ai-interview");
-  };
 
   return (
     <div className="flex h-full flex-col">
@@ -95,23 +75,11 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
                   key={item.name}
                   variant={pathname === item.href ? "secondary" : "ghost"}
                   className="w-full justify-start"
-                  onClick={(e) => {
-                    if (item.beta) {
-                      handleAIInterviewClick(e);
-                    } else {
-                      setIsSidebarOpen && setIsSidebarOpen(false);
-                    }
-                  }}
                   asChild
                 >
                   <Link href={item.href}>
                     <item.icon className="mr-2 h-4 w-4" />
                     {item.name}
-                    {item.beta && (
-                      <span className="ml-auto rounded-full bg-black px-2 py-1 text-xs font-medium text-white dark:bg-white dark:text-black">
-                        Beta
-                      </span>
-                    )}
                   </Link>
                 </Button>
               ))}
@@ -163,45 +131,6 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
           />
         </div>
       </div>
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[600px] w-[90vw] p-6">
-          <DialogHeader className="relative mb-4">
-            <DialogTitle className="text-center text-2xl font-bold">
-              AI Interview (Beta)
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="text-center space-y-4">
-            <p className="text-lg font-semibold">
-              Welcome to the AI Interview (Beta)
-            </p>
-            <p>
-              Optimized for <strong>Google Chrome</strong>
-            </p>
-            <Chrome className="mx-auto h-12 w-12 text-black dark:text-white" />
-            <p>
-              Experience a <strong>realistic, dynamic interview</strong>{" "}
-              tailored to your specific job role. Our{" "}
-              <strong>advanced AI</strong> generates questions in real-time and
-              adapts based on your responses, helping you{" "}
-              <strong>practice and improve</strong> with each interaction.
-            </p>
-            <p>
-              For the <strong>best experience</strong>, we recommend using{" "}
-              <strong>Google Chrome</strong>. We're actively working to expand
-              support to other browsers soon.
-            </p>
-            <p className="font-semibold">
-              Start preparing now and get one step closer to acing your
-              interviews!
-            </p>
-          </DialogDescription>
-          <DialogFooter className="flex justify-center">
-            <Button onClick={handleContinue} className="w-full sm:w-auto">
-              Continue to AI Interview
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

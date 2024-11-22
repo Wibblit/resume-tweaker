@@ -11,12 +11,24 @@ interface AudioRecorderProps {
 export default function AudioRecorder({ isRecording, setIsRecording, setAudioBlob }: AudioRecorderProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const dataArrayRef = useRef<Uint8Array | null>(null)
 
   useEffect(() => {
     const startRecording = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         mediaRecorderRef.current = new MediaRecorder(stream)
+        
+        audioContextRef.current = new AudioContext()
+        analyserRef.current = audioContextRef.current.createAnalyser()
+        const source = audioContextRef.current.createMediaStreamSource(stream)
+        source.connect(analyserRef.current)
+        
+        analyserRef.current.fftSize = 256
+        const bufferLength = analyserRef.current.frequencyBinCount
+        dataArrayRef.current = new Uint8Array(bufferLength)
         
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
@@ -57,5 +69,5 @@ export default function AudioRecorder({ isRecording, setIsRecording, setAudioBlo
     }
   }, [isRecording, setIsRecording, setAudioBlob])
 
-  return null // This component doesn't render anything visible
+  return null
 }

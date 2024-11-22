@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Pause, Play } from "lucide-react";
+import { Pause, Play, SkipForward } from "lucide-react";
 import InterviewResults from "./interviewResults";
+import AudioVisualization from "./audioVisualization";
 
 interface ComprehensiveInterviewProps {
   questions: string[];
@@ -103,7 +104,7 @@ export default function ComprehensiveInterview({
       console.log("Report data received:", data);
       setIsLoading(false);
 
-      setReport(JSON.parse(data.report)); // Update: Parse the report data
+      setReport(JSON.parse(data.report));
 
       setShowReport(true);
     } catch (error) {
@@ -127,12 +128,12 @@ export default function ComprehensiveInterview({
   };
 
   return (
-    <Card className="max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>
-          Comprahensive Interview - Question {currentQuestionIndex + 1}
+    <Card className="max-w-4xl mx-auto bg-background shadow-lg">
+      <CardHeader className="border-b">
+        <CardTitle className="text-2xl font-bold">
+          Comprehensive Interview - Question {currentQuestionIndex + 1}
         </CardTitle>
-        <div className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm">
+        <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
           Time: {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
           {String(timeLeft % 60).padStart(2, "0")}
         </div>
@@ -150,6 +151,7 @@ export default function ComprehensiveInterview({
               setIsRecording={setIsRecording}
               setAudioBlob={setAudioBlob}
             />
+            <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
               <Button
                 onClick={() => setIsRecording(!isRecording)}
@@ -164,7 +166,11 @@ export default function ComprehensiveInterview({
                 ) : (
                   <>
                     <Play className="mr-2 h-4 w-4" />
-                   {currentQuestionIndex === 0 ? <span>Start Recording</span> : <span>Resume Recording</span>} 
+                    {currentQuestionIndex === 0 ? (
+                      <span>Start Recording</span>
+                    ) : (
+                      <span>Resume Recording</span>
+                    )}
                   </>
                 )}
               </Button>
@@ -172,20 +178,25 @@ export default function ComprehensiveInterview({
             </div>
           </>
         )}
+        {isLoading && (
+          <div className="w-full items-center text-center justify-center my-4">
+            <div className="size-12 rounded-full border-t-2 border-primary ml-[calc(50%-24px)] border-b-2 animate-spin"></div>
+            <div className="mt-2">
+              Hold tight! Crafting your interview insights...
+            </div>
+          </div>
+        )}
+        {showReport && report && <InterviewResults data={report} />}
       </CardContent>
       {isLoading && (
-        <div className="w-full items-center text-center justify-center my-4">
-          <div
-            className="size-12 rounded-full border-t-2 border-primary ml-[calc(50%-24px)]
- border-b-2 animate-spin"
-          ></div>
-          <div className="mt-2">Hold tight! Crafting your interview insights...</div>
+        <div className="w-full items-center text-center justify-center my-8">
+          <div className="size-16 rounded-full border-t-4 border-primary ml-[calc(50%-32px)] border-b-4 animate-spin"></div>
+          <div className="mt-4 text-lg font-medium">
+            Hold tight! Crafting your interview insights...
+          </div>
         </div>
       )}
-      {showReport &&
-        report && ( // Update: Check for report data
-          <InterviewResults data={report} /> // Update: Render InterviewResults component
-        )}
+      {showReport && report && <InterviewResults data={report} />}
     </Card>
   );
 }

@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, HelpCircle, Loader2 } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Upload, HelpCircle, Loader2, Briefcase, Building, User, FileText, Clock, UserCheck } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Tooltip,
@@ -149,180 +149,202 @@ export default function InterviewSetup() {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto bg-card text-card-foreground">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">Interview Setup</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="job" className="text-foreground">
-              Job
-            </Label>
-            <Input
-              id="job"
-              name="job"
-              placeholder="e.g. Software Engineer"
-              onChange={handleInputChange}
-              required
-              className="bg-background text-foreground"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="position" className="text-foreground">
-              Position
-            </Label>
-            <Input
-              id="position"
-              name="position"
-              placeholder="e.g. Senior"
-              onChange={handleInputChange}
-              required
-              className="bg-background text-foreground"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="companyName" className="text-foreground">
-              Company Name
-            </Label>
-            <Input
-              id="companyName"
-              name="companyName"
-              placeholder="e.g. Tech Corp"
-              onChange={handleInputChange}
-              required
-              className="bg-background text-foreground"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="resume" className="text-foreground">
-              Upload Resume
-            </Label>
-            <div className="flex items-center space-x-2">
-              <Input
-                id="resume"
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-                accept=".pdf,.doc,.docx"
+    <div className="container mx-auto px-4 py-8">
+      <Card className="max-w-4xl mx-auto bg-card">
+        <CardHeader className="text-center">
+          <CardTitle className="text-3xl font-bold">Interview Setup</CardTitle>
+          <CardDescription>Prepare for your AI-powered interview experience</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="job" className="text-foreground flex items-center">
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Job
+                </Label>
+                <Input
+                  id="job"
+                  name="job"
+                  placeholder="e.g. Software Engineer"
+                  onChange={handleInputChange}
+                  required
+                  className="bg-background text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="position" className="text-foreground flex items-center">
+                  <User className="w-4 h-4 mr-2" />
+                  Position
+                </Label>
+                <Input
+                  id="position"
+                  name="position"
+                  placeholder="e.g. Senior"
+                  onChange={handleInputChange}
+                  required
+                  className="bg-background text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="companyName" className="text-foreground flex items-center">
+                  <Building className="w-4 h-4 mr-2" />
+                  Company Name
+                </Label>
+                <Input
+                  id="companyName"
+                  name="companyName"
+                  placeholder="e.g. Tech Corp"
+                  onChange={handleInputChange}
+                  required
+                  className="bg-background text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="interviewer" className="text-foreground flex items-center">
+                  <UserCheck className="w-4 h-4 mr-2" />
+                  Interviewer
+                </Label>
+                <Input
+                  id="interviewer"
+                  name="interviewer"
+                  placeholder="e.g. HR, Senior Developer"
+                  onChange={handleInputChange}
+                  required
+                  className="bg-background text-foreground"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="resume" className="text-foreground flex items-center">
+                <FileText className="w-4 h-4 mr-2" />
+                Upload Resume
+              </Label>
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="resume"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx"
+                />
+                <Button
+                  type="button"
+                  onClick={() => document.getElementById("resume")?.click()}
+                  variant="secondary"
+                  className="w-full bg-secondary text-secondary-foreground"
+                  disabled={isOcrInProgress}
+                >
+                  <Upload className="mr-2 h-4 w-4" /> Upload Resume
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                  {formData.resume ? formData.resume.name : "No file chosen"}
+                </span>
+              </div>
+              {isOcrInProgress && (
+                <div className="mt-4">
+                  <Label>Extracting data from resume...</Label>
+                  <Progress value={ocrProgress * 100} className="mt-2" />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {(ocrProgress * 100).toFixed(0)}% complete
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="jd" className="text-foreground flex items-center">
+                <FileText className="w-4 h-4 mr-2" />
+                Job Description (Optional)
+              </Label>
+              <Textarea
+                id="jd"
+                name="jd"
+                placeholder="Paste job description here..."
+                onChange={handleInputChange}
+                className="bg-background text-foreground"
               />
-              <Button
-                type="button"
-                onClick={() => document.getElementById("resume")?.click()}
-                variant="secondary"
-                className="w-full bg-secondary text-secondary-foreground"
-                disabled={isOcrInProgress}
-              >
-                <Upload className="mr-2 h-4 w-4" /> Upload Resume
-              </Button>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="duration" className="text-foreground flex items-center">
+                <Clock className="w-4 h-4 mr-2" />
+                Duration (max 20 mins)
+              </Label>
+              <Slider
+                id="duration"
+                min={5}
+                max={20}
+                step={1}
+                value={[formData.duration]}
+                onValueChange={(value) =>
+                  setLocalFormData((prev) => ({ ...prev, duration: value[0] }))
+                }
+                className="bg-secondary"
+              />
               <span className="text-sm text-muted-foreground">
-                {formData.resume ? formData.resume.name : "No file chosen"}
+                {formData.duration} minutes
               </span>
             </div>
-            {isOcrInProgress && (
-              <div className="mt-4">
-                <Label>Extracting data from resume...</Label>
-                <Progress value={ocrProgress * 100} className="mt-2" />
-                <p className="text-sm text-muted-foreground mt-1">
-                  {(ocrProgress * 100).toFixed(0)}% complete
-                </p>
+            
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Label className="text-foreground flex items-center">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  Interview Type
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Comprehensive: A set of predefined questions.</p>
+                      <p>Adaptive: Questions adjust based on your answers.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="jd" className="text-foreground">
-              Job Description (Optional)
-            </Label>
-            <Textarea
-              id="jd"
-              name="jd"
-              placeholder="Paste job description here..."
-              onChange={handleInputChange}
-              className="bg-background text-foreground"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="duration" className="text-foreground">
-              Duration (max 20 mins)
-            </Label>
-            <Slider
-              id="duration"
-              min={5}
-              max={20}
-              step={1}
-              value={[formData.duration]}
-              onValueChange={(value) =>
-                setLocalFormData((prev) => ({ ...prev, duration: value[0] }))
-              }
-              className="bg-secondary"
-            />
-            <span className="text-sm text-muted-foreground">
-              {formData.duration} minutes
-            </span>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="interviewer" className="text-foreground">
-              Interviewer 
-            </Label>
-            <Input
-              id="interviewer"
-              name="interviewer"
-              placeholder="e.g. HR, Senior Developer"
-              onChange={handleInputChange}
-              required
-              className="bg-background text-foreground"
-            />
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Label className="text-foreground">Interview Type</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Comprehensive: A set of predefined questions.</p>
-                    <p>Adaptive: Questions adjust based on your answers.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <RadioGroup
+                defaultValue={formData.interviewType}
+                onValueChange={(value) =>
+                  setLocalFormData((prev) => ({
+                    ...prev,
+                    interviewType: value as "comprehensive" | "adaptive",
+                  }))
+                }
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="comprehensive" id="comprehensive" />
+                  <Label htmlFor="comprehensive">Comprehensive Interview</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="adaptive" id="adaptive" />
+                  <Label htmlFor="adaptive">Adaptive Flow Interview</Label>
+                </div>
+              </RadioGroup>
             </div>
-            <RadioGroup
-              defaultValue={formData.interviewType}
-              onValueChange={(value) =>
-                setLocalFormData((prev) => ({
-                  ...prev,
-                  interviewType: value as "comprehensive" | "adaptive",
-                }))
-              }
+            
+            <Button
+              type="submit"
+              className="w-full bg-primary text-primary-foreground"
+              disabled={loading || isOcrInProgress}
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="comprehensive" id="comprehensive" />
-                <Label htmlFor="comprehensive">Comprehensive Interview</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="adaptive" id="adaptive" />
-                <Label htmlFor="adaptive">Adaptive Flow Interview</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          <Button
-            type="submit"
-            className="w-full bg-primary text-primary-foreground"
-            disabled={loading || isOcrInProgress}
-          >
-            {loading ? (
-              <div className="flex">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Starting Interview
-              </div>
-            ) : (
-              "Start Interview"
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Starting Interview
+                </div>
+              ) : (
+                "Start Interview"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
+

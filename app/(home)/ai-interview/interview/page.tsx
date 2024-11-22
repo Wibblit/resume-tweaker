@@ -6,7 +6,6 @@ import AdaptiveInterview from "@/components/Interview/adaptive-interview"
 import ComprehensiveInterview from "@/components/Interview/comprehensiveInterview"
 import { useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { createModel, Model } from "vosk-browser"
 
 interface InterviewData {
   job: string
@@ -24,7 +23,6 @@ export default function InterviewPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [comprehensiveQuestions, setComprehensiveQuestion] = useState<string[]>([])
-  const [model, setModel] = useState<Model | null>(null)
   const [interviewData, setInterviewData] = useState<InterviewData>({
     job: "",
     position: "",
