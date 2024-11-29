@@ -1,4 +1,4 @@
-import InterviewSetup from "@/components/interview-setup";
+import InterviewSetup from "@/components/Interview/interview-setup";
 
 export default function Home() {
   return <InterviewSetup />;

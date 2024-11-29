@@ -311,7 +311,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Breadcrumbs } from "@/components/BlogBreadCrumbs";
+import { Breadcrumbs } from "@/components/blogs/BlogBreadCrumbs";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { Session } from "next-auth";

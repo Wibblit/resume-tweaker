@@ -2,7 +2,48 @@ import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimiter } from "./lib/rateLimiter";
 
+const allowedOrigins = [
+  "http://localhost:3000", // Add your allowed domains here
+  "https://resumetweaker.wibblit.com",
+];
+
 export default auth(async function middleware(req: NextRequest) {
+  const origin = req.headers.get("origin");
+
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    if (origin && allowedOrigins.includes(origin)) {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": origin,
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Credentials": "true",
+        },
+      });
+    }
+
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      },
+    });
+  }
+
+  // Handle regular requests with CORS headers
+  if (origin && allowedOrigins.includes(origin)) {
+    const response = NextResponse.next();
+    response.headers.set("Access-Control-Allow-Origin", origin);
+    response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    return response;
+  }
+
   let session;
 
   try {

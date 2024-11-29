@@ -23,6 +23,7 @@ import { createWorker } from 'tesseract.js';
 import { Progress } from "@/components/ui/progress";
 import pdfToImages from "@/lib/pdfToImages";
 import Tesseract from "tesseract.js";
+import * as tts from '@diffusionstudio/vits-web';
 
 interface FormData {
   job: string;
@@ -54,6 +55,8 @@ export default function InterviewSetup() {
   const workerRef = useRef<Tesseract.Worker | null>(null);
   const [ocrProgress, setOcrProgress] = useState(0);
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+  const [ttsModelDownloaded, setTtsModelDownloaded] = useState(false);
+  const [ttsDownloadProgress, setTtsDownloadProgress] = useState(0);
 
   const { toast } = useToast();
 
@@ -69,11 +72,39 @@ export default function InterviewSetup() {
       });
     }
     initWorker();
+
+    async function checkStoredModels() {
+      const storedModels = await tts.stored();
+      if (storedModels.includes('en_US-hfc_female-medium')) {
+        console.log('Already have the model')
+        setTtsModelDownloaded(true);
+      } else {
+        downloadTtsModel();
+      }
+    }
+    checkStoredModels();
+
     return () => {
       workerRef.current?.terminate();
       workerRef.current = null;
     };
   }, []);
+
+  async function downloadTtsModel() {
+    try {
+      await tts.download('en_US-hfc_female-medium', (progress) => {
+        setTtsDownloadProgress(Math.round(progress.loaded * 100 / progress.total));
+      });
+      setTtsModelDownloaded(true);
+    } catch (error) {
+      console.error('Error downloading TTS model:', error);
+      toast({
+        description: "Failed to download the text-to-speech model. Some features may not work properly.",
+        title: "Warning",
+        variant: "destructive",
+      });
+    }
+  }
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -156,6 +187,15 @@ export default function InterviewSetup() {
           <CardDescription>Prepare for your AI-powered interview experience</CardDescription>
         </CardHeader>
         <CardContent>
+          {!ttsModelDownloaded && (
+            <div className="mb-6">
+              <Label>Downloading Text-to-Speech Model</Label>
+              <Progress value={ttsDownloadProgress} className="mt-2" />
+              <p className="text-sm text-muted-foreground mt-1">
+                {ttsDownloadProgress}% complete
+              </p>
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -330,7 +370,7 @@ export default function InterviewSetup() {
             <Button
               type="submit"
               className="w-full bg-primary text-primary-foreground"
-              disabled={loading || isOcrInProgress}
+              disabled={loading || isOcrInProgress || !ttsModelDownloaded}
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -347,4 +387,3 @@ export default function InterviewSetup() {
     </div>
   );
 }
-

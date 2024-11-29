@@ -1,4 +1,4 @@
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { KaldiRecognizer } from "vosk-browser";
 import MicrophoneStream from "microphone-stream";
 import { useCallback, useEffect, useState } from "react";
