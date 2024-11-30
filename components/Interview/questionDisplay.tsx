@@ -1,29 +1,32 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import * as tts from "@diffusionstudio/vits-web";
 import { Button } from "@/components/ui/button";
-import { Loader2, Volume2 } from "lucide-react";
+import { AudioLines, Loader2, Volume2 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface QuestionDisplayProps {
   question: string;
   onNextQuestion: () => void;
+  audioUrl: string | undefined;
 }
 
 export default function QuestionDisplay({
   question,
   onNextQuestion,
+  audioUrl,
 }: QuestionDisplayProps) {
   const [displayedQuestion, setDisplayedQuestion] = useState("");
   const [charIndex, setCharIndex] = useState(0);
-  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   useEffect(() => {
     setCharIndex(0);
     setDisplayedQuestion("");
-    generateSpeech();
-  }, [question]);
+    if (audioUrl) {
+      playAudio();
+    }
+  }, [question, audioUrl]);
 
   useEffect(() => {
     if (charIndex < question?.length) {
@@ -35,28 +38,23 @@ export default function QuestionDisplay({
     }
   }, [charIndex, question]);
 
-  const generateSpeech = async () => {
-    setIsGeneratingAudio(true);
-    try {
-      const wav = await tts.predict({
-        text: question,
-        voiceId: "en_US-hfc_female-medium",
-      });
-      const audioUrl = URL.createObjectURL(wav);
+  const playAudio = async () => {
+    if (audioUrl) {
+      setIsPlayingAudio(true);
       const audio = new Audio(audioUrl);
-      setIsGeneratingAudio(false);
-      audio.play();
-    } catch (error) {
-      console.error("Error generating speech:", error);
-    } finally {
-      setIsGeneratingAudio(false);
+      audio.onended = () => setIsPlayingAudio(false);
+      try {
+        await audio.play(); // Ensure async playback
+      } catch (err) {
+        console.error("Audio playback failed:", err);
+        setIsPlayingAudio(false);
+      }
     }
   };
 
-
   return (
     <div className="mb-4 space-y-4">
-      {isGeneratingAudio ? (
+      {!audioUrl ? (
         <div className="space-y-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-full" />
@@ -67,6 +65,23 @@ export default function QuestionDisplay({
       )}
 
       <div className="flex items-center space-x-4">
+        {audioUrl && (
+          <Button
+            onClick={playAudio}
+            variant="outline"
+            size="sm"
+            disabled={isPlayingAudio}
+          >
+            {isPlayingAudio ? (
+              <AudioLines className="w-4 h-4" />
+            ) : (
+              <Volume2 className="h-4 w-4" />
+            )}
+            <span className="ml-2">
+              {isPlayingAudio ? "Playing..." : "Play Audio"}
+            </span>
+          </Button>
+        )}
         {charIndex === question?.length && (
           <Button
             onClick={onNextQuestion}
@@ -81,3 +96,4 @@ export default function QuestionDisplay({
     </div>
   );
 }
+

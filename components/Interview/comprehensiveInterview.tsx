@@ -10,6 +10,7 @@ import AudioRecorder from "./audioRecorder";
 import { Pause, Play, SkipForward } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
+import * as tts from "@diffusionstudio/vits-web";
 
 interface ComprehensiveInterviewProps {
   questions: string[];
@@ -28,6 +29,7 @@ export default function ComprehensiveInterview({
   const [report, setReport] = useState(null);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -46,9 +48,38 @@ export default function ComprehensiveInterview({
     return () => clearInterval(timer);
   }, [isInterviewComplete]);
 
+  useEffect(() => {
+    generateAudioQueue();
+  }, []);
+
+  const generateAudioQueue = async () => {
+    const startIndex = currentQuestionIndex;
+    const endIndex = Math.min(startIndex + 3, questions.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+      if (!audioQueue[i]) {
+        try {
+          const wav = await tts.predict({
+            text: questions[i],
+            voiceId: "en_US-hfc_female-medium",
+          });
+          const audioUrl = URL.createObjectURL(wav);
+          setAudioQueue((prevQueue) => {
+            const newQueue = [...prevQueue];
+            newQueue[i] = audioUrl;
+            return newQueue;
+          });
+        } catch (error) {
+          console.error(`Error generating audio for question ${i}:`, error);
+        }
+      }
+    }
+  };
+
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      generateAudioQueue();
     } else {
       handleInterviewComplete();
     }
@@ -129,7 +160,7 @@ export default function ComprehensiveInterview({
 
   return (
     <Card className="max-w-4xl mx-auto bg-background shadow-lg">
-      <CardHeader className="border-b">
+      <CardHeader>
         <CardTitle className="text-2xl font-bold">
           Comprehensive Interview - Question {currentQuestionIndex + 1}
         </CardTitle>
@@ -145,6 +176,7 @@ export default function ComprehensiveInterview({
             <QuestionDisplay
               question={questions[currentQuestionIndex]}
               onNextQuestion={handleNextQuestion}
+              audioUrl={audioQueue[currentQuestionIndex]}
             />
             <AudioRecorder
               isRecording={isRecording}
@@ -188,15 +220,7 @@ export default function ComprehensiveInterview({
         )}
         {showReport && report && <InterviewResults data={report} />}
       </CardContent>
-      {isLoading && (
-        <div className="w-full items-center text-center justify-center my-8">
-          <div className="size-16 rounded-full border-t-4 border-primary ml-[calc(50%-32px)] border-b-4 animate-spin"></div>
-          <div className="mt-4 text-lg font-medium">
-            Hold tight! Crafting your interview insights...
-          </div>
-        </div>
-      )}
-      {showReport && report && <InterviewResults data={report} />}
     </Card>
   );
 }
+
