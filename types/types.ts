@@ -267,12 +267,14 @@ export type RecentResume = {
   id: string;
   userId: string;
   resumeName: string;
+  updatedOn: Date;
 };
 
 export type RecentCoverLetter = {
   id: string;
   userId: string;
   coverName: string;
+  updatedOn: Date;
 };
 
 export type ResumesProps =

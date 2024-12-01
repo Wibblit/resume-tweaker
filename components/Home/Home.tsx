@@ -20,8 +20,8 @@ const COVER = "cover";
 
 
 interface Homeprops {
-  resumes : ResumesProps
-  letters: LetterProps
+  resumes : ResumesProps | []
+  letters: LetterProps  | []
 }
 
 

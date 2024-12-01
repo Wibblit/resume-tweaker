@@ -245,6 +245,8 @@ export default function AIReview() {
         const response = await axios.get<{
           recentResumes: UserResume[];
           message: string;
+          title: string;
+          success: boolean;
         }>("/api/get-recent-resumes/");
         if (response.status === 429) {
           toast({
@@ -253,6 +255,14 @@ export default function AIReview() {
             variant: "destructive",
           });
           return;
+        }
+        
+        if(!response.data.success){
+          toast({
+            title: response.data.title,
+            description: response.data.message,
+            variant: "destructive",
+          });
         }
         console.log(response, "user resumes");
         setUserResumes(response.data.recentResumes);
