@@ -11,6 +11,7 @@ import { Pause, Play, SkipForward } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
+import { NoAudioAlert } from "./NoAudioAlert";
 
 interface ComprehensiveInterviewProps {
   questions: string[];
@@ -22,6 +23,7 @@ export default function ComprehensiveInterview({
   duration = 5,
 }: ComprehensiveInterviewProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [showNoAudioAlert, setShowNoAudioAlert] = useState(false);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -104,6 +106,7 @@ export default function ComprehensiveInterview({
       await generateReport(audioBlob);
     } else {
       console.error("No audio blob available at the end of the interview");
+      setShowNoAudioAlert(true);
     }
   };
 
@@ -220,6 +223,10 @@ export default function ComprehensiveInterview({
         )}
         {showReport && report && <InterviewResults data={report} />}
       </CardContent>
+      <NoAudioAlert 
+        isOpen={showNoAudioAlert} 
+        onClose={() => setShowNoAudioAlert(false)} 
+      />
     </Card>
   );
 }

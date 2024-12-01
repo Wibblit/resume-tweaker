@@ -11,7 +11,7 @@ interface VideoRecorderProps {
 export default function VideoRecorder({ isInterviewComplete }: VideoRecorderProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  const [isCameraOn, setIsCameraOn] = useState(false)
+  const [isCameraOn, setIsCameraOn] = useState(true)
 
   useEffect(() => {
     if (!isInterviewComplete && isCameraOn) {

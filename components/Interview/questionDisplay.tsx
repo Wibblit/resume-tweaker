@@ -31,6 +31,7 @@ export default function QuestionDisplay({
   useEffect(() => {
     if (charIndex < question?.length) {
       const timer = setTimeout(() => {
+        console.log("hit")
         setDisplayedQuestion((prev) => prev + question[charIndex]);
         setCharIndex((prev) => prev + 1);
       }, 15);

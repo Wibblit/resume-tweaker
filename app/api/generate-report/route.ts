@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     console.log("Questions", questions, "Time spent: ", timeSpent, "Audio length:", base64Audio.length);
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Generate content using the audio and the prompt
     const result = await model.generateContent([
