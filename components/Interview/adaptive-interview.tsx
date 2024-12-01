@@ -9,6 +9,9 @@ import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
 import { Pause, Play } from "lucide-react";
 import InterviewResults from "./interviewResults";
+import AudioVisualization from "./audioVisualization";
+import * as tts from "@diffusionstudio/vits-web";
+import { NoAudioAlert } from "./NoAudioAlert";
 import { useToast } from "@/hooks/use-toast";
 
 interface AdaptiveInterviewProps {
@@ -23,7 +26,6 @@ interface AdaptiveInterviewProps {
     resumeText: string;
   };
 }
-
 
 type ChatHistory = {
   role: "user" | "model";
@@ -45,6 +47,8 @@ export default function AdaptiveInterview({
   const [report, setReport] = useState(null);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [audioQueue, setAudioQueue] = useState<string[]>([]);
+  const [showNoAudioAlert, setShowNoAudioAlert] = useState(false);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
@@ -65,37 +69,49 @@ export default function AdaptiveInterview({
   }, [isInterviewComplete]);
 
   useEffect(() => {
-    async function fetchFirstQuestion() {
-      setIsLoading(true);
-      try {
-        const result = await fetch("/api/adaptive-interview", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jd,
-            companyName,
-            position,
-            job,
-            numberOfQuestions,
-            currentQuestionIndex: 0,
-            resumeText,
-            chatHistory: [],
-          }),
-        });
-        if (!result.ok) {
-          throw new Error("Failed to get the first question");
-        }
-        const data = await result.json();
-        setChatHistory(data.chatHistory);
-        setQuestions([data.question]);
-      } catch (error) {
-        console.error("Error getting the first question:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
     fetchFirstQuestion();
   }, []);
+
+  const fetchFirstQuestion = async () => {
+    try {
+      const result = await fetch("/api/adaptive-interview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jd,
+          companyName,
+          position,
+          job,
+          numberOfQuestions,
+          currentQuestionIndex: 0,
+          resumeText,
+          chatHistory: [],
+        }),
+      });
+      if (!result.ok) {
+        throw new Error("Failed to get the first question");
+      }
+      const data = await result.json();
+      setChatHistory(data.chatHistory);
+      setQuestions([data.question]);
+      generateAudio(data.question);
+    } catch (error) {
+      console.error("Error getting the first question:", error);
+    }
+  };
+
+  const generateAudio = async (question: string) => {
+    try {
+      const wav = await tts.predict({
+        text: question,
+        voiceId: "en_US-hfc_female-medium",
+      });
+      const audioUrl = URL.createObjectURL(wav);
+      setAudioQueue((prevQueue) => [...prevQueue, audioUrl]);
+    } catch (error) {
+      console.error(`Error generating audio for question:`, error);
+    }
+  };
 
   const handleNextQuestion = async () => {
     if (!audioBlob) {
@@ -108,7 +124,6 @@ export default function AdaptiveInterview({
       return;
     }
 
-    if (currentQuestionIndex !== numberOfQuestions - 1) setIsLoading(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
 
@@ -135,17 +150,14 @@ export default function AdaptiveInterview({
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setAudioBlob(null);
+      generateAudio(data.question);
 
       if (currentQuestionIndex >= numberOfQuestions - 1) {
-        console.log(chatHistory);
         handleInterviewComplete();
-        return;
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   };
 
   const blobToBase64 = (blob: Blob): Promise<string> => {
@@ -164,7 +176,6 @@ export default function AdaptiveInterview({
   };
 
   const handleSkipQuestion = async () => {
-    console.log(currentQuestionIndex, numberOfQuestions);
     dispatch({
       type: "STORE_ANSWER",
       payload: {
@@ -173,12 +184,6 @@ export default function AdaptiveInterview({
       },
     });
 
-    if (currentQuestionIndex >= numberOfQuestions - 1) {
-      console.log("Completed by skip");
-      handleInterviewComplete();
-    }
-
-    setIsLoading(true);
     try {
       const result = await fetch("/api/adaptive-interview", {
         method: "POST",
@@ -203,21 +208,25 @@ export default function AdaptiveInterview({
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setAudioBlob(null);
+      generateAudio(data.question);
+
+      if (currentQuestionIndex >= numberOfQuestions - 1) {
+        handleInterviewComplete();
+      }
     } catch (error) {
       console.error("Error getting the next question:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleInterviewComplete = async () => {
     setIsRecording(false);
     setIsInterviewComplete(true);
-    if (chatHistory) {
+    if (audioBlob) {
       console.log("Interview complete, preparing to send audio blob");
       await generateReport();
     } else {
       console.error("No audio blob available at the end of the interview");
+      setShowNoAudioAlert(true);
     }
   };
 
@@ -253,12 +262,12 @@ export default function AdaptiveInterview({
   };
 
   return (
-    <Card className="max-w-4xl mx-auto">
+    <Card className="max-w-4xl mx-auto bg-background shadow-lg">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="text-2xl font-bold">
           Adaptive Interview - Question {currentQuestionIndex + 1}
         </CardTitle>
-        <div className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm">
+        <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
           Time: {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
           {String(timeLeft % 60).padStart(2, "0")}
         </div>
@@ -270,12 +279,14 @@ export default function AdaptiveInterview({
             <QuestionDisplay
               question={questions[currentQuestionIndex]}
               onNextQuestion={handleNextQuestion}
+              audioUrl={audioQueue[currentQuestionIndex]}
             />
             <AudioRecorder
               isRecording={isRecording}
               setIsRecording={setIsRecording}
               setAudioBlob={setAudioBlob}
             />
+            <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
               <Button
                 onClick={() => setIsRecording(!isRecording)}
@@ -290,9 +301,11 @@ export default function AdaptiveInterview({
                 ) : (
                   <>
                     <Play className="mr-2 h-4 w-4" />
-                    {currentQuestionIndex === 0
-                      ? "Start Recording"
-                      : "Resume Recording"}
+                    {currentQuestionIndex === 0 ? (
+                      <span>Start Recording</span>
+                    ) : (
+                      <span>Resume Recording</span>
+                    )}
                   </>
                 )}
               </Button>
@@ -304,15 +317,17 @@ export default function AdaptiveInterview({
           <div className="w-full items-center text-center justify-center my-4">
             <div className="size-12 rounded-full border-t-2 border-primary ml-[calc(50%-24px)] border-b-2 animate-spin"></div>
             <div className="mt-2">
-              Hold tight!{" "}
-              {isInterviewComplete
-                ? "Crafting your interview insights..."
-                : "Preparing the next question..."}
+              Hold tight! Crafting your interview insights...
             </div>
           </div>
         )}
         {showReport && report && <InterviewResults data={report} />}
       </CardContent>
+      <NoAudioAlert 
+        isOpen={showNoAudioAlert} 
+        onClose={() => setShowNoAudioAlert(false)} 
+      />
     </Card>
   );
 }
+
