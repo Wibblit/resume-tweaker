@@ -91,6 +91,8 @@ model Resume {
   references     Json   @default("[]")
   custom         Json   @default("{}")
   styles         Json   @default("{}")
+  createdOn  DateTime @default(now()) // Automatically set when a record is created
+  updatedOn  DateTime @updatedAt      // Automatically updated whenever the record is updated
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -113,6 +115,8 @@ model Coverletter {
   closing           String @default("")
   signOff           String @default("")
   styles            Json   @default("{}")
+  createdOn  DateTime @default(now()) // Automatically set when a record is created
+  updatedOn  DateTime @updatedAt      // Automatically updated whenever the record is updated
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

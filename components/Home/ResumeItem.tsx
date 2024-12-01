@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameResumeDialog";
 import { ResumesProps } from "@/types/types";
 import { duplicateResume } from "@/actions/duplicateResume";
+import { formatDistanceToNow } from "date-fns";
 
 export default function ResumeItem({
   resume,
@@ -33,10 +34,9 @@ export default function ResumeItem({
     id: string;
     resumeName: string;
     userId: string;
+    updatedOn: Date;
   };
-  setRecentResumes: React.Dispatch<
-    React.SetStateAction<ResumesProps>
-  >;
+  setRecentResumes: React.Dispatch<React.SetStateAction<ResumesProps>>;
 }) {
   const isPhone = useMediaQuery({ maxWidth: 767 });
   const router = useRouter();
@@ -56,14 +56,14 @@ export default function ResumeItem({
   const handleDuplicate = async () => {
     try {
       const response = await duplicateResume(resume.id);
-       if (response.status === 429) {
-         toast({
-           title: "Whoa there! You've hit the rate limit.",
-           description: "Please slow down and try again in a few minutes.",
-           variant: "destructive",
-         });
-         return;
-       }
+      if (response.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
       setRecentResumes((prev) => {
         if (!prev || !response.duplicatedResume) return prev;
         return [
@@ -71,6 +71,7 @@ export default function ResumeItem({
             id: response.duplicatedResume.id,
             userId: response.duplicatedResume.userId,
             resumeName: response.duplicatedResume.resumeName,
+            updatedOn: response.duplicatedResume.updatedOn,
           },
           ...prev,
         ];
@@ -155,8 +156,22 @@ export default function ResumeItem({
           variant="outline"
           className="h-auto flex-col items-start p-4 w-full"
         >
-          <FileText className="h-6 w-6 mb-2" />
-          <span>{resume.resumeName}</span>
+          <div className="flex-col items-start justify-start w-full">
+            <div className="flex w-full items-center justify-between">
+              <FileText className="h-5 w-5 mr-3 text-primary" />
+              <span className="text-xs text-muted-foreground ml-2">
+                Edited{" "}
+                {formatDistanceToNow(new Date(resume.updatedOn.toISOString()), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div className="w-full items-start justify-start flex">
+              <p className="text-sm pt-2 font-medium text-left">
+                {resume.resumeName}
+              </p>
+            </div>
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -193,10 +208,24 @@ export default function ResumeItem({
         <Button
           variant="outline"
           onClick={handleOpen}
-          className="h-auto flex-col items-start p-4 w-full hover:bg-secondary"
+          className="h-auto w-full p-4 hover:bg-secondary transition-colors"
         >
-          <FileText className="h-6 w-6 mb-2" />
-          <span>{resume.resumeName}</span>
+          <div className="flex-col items-start justify-start w-full">
+            <div className="flex w-full items-center justify-between">
+              <FileText className="h-5 w-5 mr-3 text-primary" />
+              <span className="text-xs text-muted-foreground ml-2">
+                Edited{" "}
+                {formatDistanceToNow(new Date(resume.updatedOn.toISOString()), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div className="w-full items-start justify-start flex">
+              <p className="text-sm pt-2 font-medium text-left">
+                {resume.resumeName}
+              </p>
+            </div>
+          </div>
         </Button>
       </ContextMenuTrigger>
       <ContextMenuContent>{menuItems}</ContextMenuContent>

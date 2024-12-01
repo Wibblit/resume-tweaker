@@ -279,7 +279,8 @@ export type ResumesProps =
   | {
       id: string;
       userId: string;
-      resumeName: string;
+    resumeName: string;
+      updatedOn : Date
     }[]
   | [];
 
@@ -287,6 +288,7 @@ export type LetterProps =
   | {
       id: string;
       userId: string;
-      coverName: string;
+    coverName: string;
+      updatedOn : Date
     }[]
   | [];

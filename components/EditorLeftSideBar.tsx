@@ -645,19 +645,24 @@ export default function LeftSideBar({
   };
 
   const renderSheetContent = (section: keyof ResumeData | string) => {
+    if (section === "createdOn" || section === "updatedOn")
+      return <React.Fragment></React.Fragment>;
+    console.log(section);
     const sectionEntries =
       (resumeData[section as keyof ResumeData] as any[]) || [];
+
+    console.log(sectionEntries);
 
     return (
       <div className="flex flex-col h-full">
         <ScrollArea className="flex-grow pr-4 my-8">
-          {sectionEntries.map((entry, index) =>
-            renderEntryFields(section, entry, index)
-          )}
           {sectionEntries.length === 0 && (
             <p className="text-center text-muted-foreground">
               No entries yet. Add some!
             </p>
+          )}
+          {sectionEntries.map((entry, index) =>
+            renderEntryFields(section, entry, index)
           )}
         </ScrollArea>
         {section !== "basics" && section !== "summary" && (
@@ -863,9 +868,9 @@ export default function LeftSideBar({
                       <div className="flex items-center justify-between mt-2">
                         <Button
                           onClick={
-                              isRenameValid
-                                //@ts-ignore
-                              ? () => handleRenameSection(renameSectionId)
+                            isRenameValid
+                              ? //@ts-ignore
+                                () => handleRenameSection(renameSectionId)
                               : undefined
                           }
                           className={`w-full ${

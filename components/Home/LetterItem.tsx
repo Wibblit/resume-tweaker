@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameCoverLetterDialog";
 import { LetterProps } from "@/types/types";
 import { duplicateCoverLetter } from "@/actions/duplicateCoverLetter";
+import { formatDistanceToNow } from "date-fns";
 
 export default function LetterItem({
   letter,
@@ -33,6 +34,7 @@ export default function LetterItem({
     id: string;
     coverName: string;
     userId: string;
+    updatedOn : Date
   };
   setRecentCoverLetters: React.Dispatch<
     React.SetStateAction<LetterProps>
@@ -71,6 +73,7 @@ export default function LetterItem({
            id: response.duplicatedCoverLetter.id,
            userId: response.duplicatedCoverLetter.userId,
            coverName: response.duplicatedCoverLetter.coverName,
+           updatedOn : response.duplicatedCoverLetter.updatedOn
          },
          ...prev,
        ];
@@ -155,8 +158,22 @@ export default function LetterItem({
           variant="outline"
           className="h-auto flex-col items-start p-4 w-full"
         >
-          <FileText className="h-6 w-6 mb-2" />
-          <span>{letter.coverName}</span>
+          <div className="flex-col items-start justify-start w-full">
+            <div className="flex w-full items-center justify-between">
+              <FileText className="h-5 w-5 mr-3 text-primary" />
+              <span className="text-xs text-muted-foreground ml-2">
+                Edited{" "}
+                {formatDistanceToNow(new Date(letter.updatedOn.toISOString()), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div className="w-full items-start justify-start flex">
+              <p className="text-sm pt-2 font-medium text-left">
+                {letter.coverName}
+              </p>
+            </div>
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -195,8 +212,22 @@ export default function LetterItem({
           onClick={handleOpen}
           className="h-auto flex-col items-start p-4 w-full hover:bg-secondary"
         >
-          <FileText className="h-6 w-6 mb-2" />
-          <span>{letter.coverName}</span>
+          <div className="flex-col items-start justify-start w-full">
+            <div className="flex w-full items-center justify-between">
+              <FileText className="h-5 w-5 mr-3 text-primary" />
+              <span className="text-xs text-muted-foreground ml-2">
+                Edited{" "}
+                {formatDistanceToNow(new Date(letter.updatedOn.toISOString()), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div className="w-full items-start justify-start flex">
+              <p className="text-sm pt-2 font-medium text-left">
+                {letter.coverName}
+              </p>
+            </div>
+          </div>
         </Button>
       </ContextMenuTrigger>
       <ContextMenuContent>{menuItems}</ContextMenuContent>

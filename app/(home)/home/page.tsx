@@ -40,6 +40,7 @@ const getResumes = cache(async () => {
       id: true,
       userId: true,
       resumeName: true,
+      updatedOn : true
     },
   });
   await prisma.$disconnect();
@@ -62,6 +63,7 @@ const getLetters = cache(async () => {
       id: true,
       userId: true,
       coverName: true,
+      updatedOn: true
     },
   });
   await prisma.$disconnect();
