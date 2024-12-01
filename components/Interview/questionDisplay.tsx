@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { AudioLines, Loader2, Volume2 } from 'lucide-react';
+import { AudioLines, Volume2 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { TypeAnimation } from 'react-type-animation';
 
 interface QuestionDisplayProps {
   question: string;
@@ -16,28 +17,15 @@ export default function QuestionDisplay({
   onNextQuestion,
   audioUrl,
 }: QuestionDisplayProps) {
-  const [displayedQuestion, setDisplayedQuestion] = useState("");
-  const [charIndex, setCharIndex] = useState(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
 
   useEffect(() => {
-    setCharIndex(0);
-    setDisplayedQuestion("");
+    setIsTypingComplete(false);
     if (audioUrl) {
       playAudio();
     }
   }, [question, audioUrl]);
-
-  useEffect(() => {
-    if (charIndex < question?.length) {
-      const timer = setTimeout(() => {
-        console.log("hit")
-        setDisplayedQuestion((prev) => prev + question[charIndex]);
-        setCharIndex((prev) => prev + 1);
-      }, 15);
-      return () => clearTimeout(timer);
-    }
-  }, [charIndex, question]);
 
   const playAudio = async () => {
     if (audioUrl) {
@@ -45,13 +33,17 @@ export default function QuestionDisplay({
       const audio = new Audio(audioUrl);
       audio.onended = () => setIsPlayingAudio(false);
       try {
-        await audio.play(); // Ensure async playback
+        // Use a timeout or defer to offload the playback
+        setTimeout(async () => {
+          await audio.play();
+        }, 0);
       } catch (err) {
         console.error("Audio playback failed:", err);
         setIsPlayingAudio(false);
       }
     }
   };
+  
 
   return (
     <div className="mb-4 space-y-4">
@@ -62,7 +54,19 @@ export default function QuestionDisplay({
           <Skeleton className="h-4 w-[75%]" />
         </div>
       ) : (
-        <p className="text-lg mb-2">{displayedQuestion}</p>
+        <p className="text-lg mb-2 min-h-[3rem]">
+          <TypeAnimation
+            key={question}
+            sequence={[
+              question,
+              () => setIsTypingComplete(true)
+            ]}
+              wrapper="p"
+              omitDeletionAnimation={true}
+            cursor={true}
+            speed={50}
+          />
+        </p>
       )}
 
       <div className="flex items-center space-x-4">
@@ -83,7 +87,7 @@ export default function QuestionDisplay({
             </span>
           </Button>
         )}
-        {charIndex === question?.length && (
+        {isTypingComplete && (
           <Button
             onClick={onNextQuestion}
             variant="link"

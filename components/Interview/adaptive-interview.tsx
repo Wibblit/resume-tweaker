@@ -24,6 +24,7 @@ interface AdaptiveInterviewProps {
   };
 }
 
+
 type ChatHistory = {
   role: "user" | "model";
   parts: { text: string }[];

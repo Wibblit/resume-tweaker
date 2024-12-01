@@ -7,7 +7,7 @@ import { reportGenerationPrompt } from "@/data/prompts/reportGenerationPrompt";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-export async function POST(request: Request) {
+export async function POST(request: Request) {  
   try {
     const { questions, base64Audio, timeSpent } = await request.json();
 
