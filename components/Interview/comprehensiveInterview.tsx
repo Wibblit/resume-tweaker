@@ -33,6 +33,8 @@ export default function ComprehensiveInterview({
   const [isLoading, setIsLoading] = useState(false);
   const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const dispatch = useDispatch();
+  const currentAudioUrl = audioQueue[currentQuestionIndex] || "";
+  const currQuestion = questions[currentQuestionIndex] || "";
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -177,9 +179,9 @@ export default function ComprehensiveInterview({
         {!isInterviewComplete && (
           <>
             <QuestionDisplay
-              question={questions[currentQuestionIndex]}
+              question={currQuestion}
               onNextQuestion={handleNextQuestion}
-              audioUrl={audioQueue[currentQuestionIndex]}
+              audioUrl={currentAudioUrl}
             />
             <AudioRecorder
               isRecording={isRecording}
@@ -223,11 +225,10 @@ export default function ComprehensiveInterview({
         )}
         {showReport && report && <InterviewResults data={report} />}
       </CardContent>
-      <NoAudioAlert 
-        isOpen={showNoAudioAlert} 
-        onClose={() => setShowNoAudioAlert(false)} 
+      <NoAudioAlert
+        isOpen={showNoAudioAlert}
+        onClose={() => setShowNoAudioAlert(false)}
       />
     </Card>
   );
 }
-

@@ -27,22 +27,18 @@ export default function QuestionDisplay({
     }
   }, [question, audioUrl]);
 
-  const playAudio = async () => {
-    if (audioUrl) {
+  const playAudio = () => {
+    if (audioUrl && !isPlayingAudio) {
       setIsPlayingAudio(true);
       const audio = new Audio(audioUrl);
       audio.onended = () => setIsPlayingAudio(false);
-      try {
-        // Use a timeout or defer to offload the playback
-        setTimeout(async () => {
-          await audio.play();
-        }, 0);
-      } catch (err) {
+      audio.play().catch((err) => {
         console.error("Audio playback failed:", err);
         setIsPlayingAudio(false);
-      }
+      });
     }
   };
+  
   
 
   return (
@@ -56,7 +52,7 @@ export default function QuestionDisplay({
       ) : (
         <p className="text-lg mb-2 min-h-[3rem]">
           <TypeAnimation
-            key={question}
+            key={`${question}-${audioUrl}`} 
             sequence={[
               question,
               () => setIsTypingComplete(true)
