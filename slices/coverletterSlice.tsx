@@ -4,6 +4,7 @@ import { CoverLetterState } from "@/types/types";
 const initialState: CoverLetterState = {
   salutation: "", // Initialize salutation as empty
   date: "", // Initialize date as empty
+  senderInfo : "",
   recipientInfo: "", // Initialize recipient information as empty
   subject: "", // Initialize subject as empty
   opening: "", // Initialize opening section as empty

@@ -79,6 +79,13 @@ export default function CoverLeftSideBar({
         "Include the current date in a standard format, e.g., 'July 10, 2023'",
     },
     {
+      id: "senderInfo",
+      icon: <Mail className="w-4 h-4" />,
+      title: "Sender Information",
+      helperText:
+        "Add the sender's name, title, company, and address if available",
+    },
+    {
       id: "recipientInfo",
       icon: <Mail className="w-4 h-4" />,
       title: "Recipient Information",

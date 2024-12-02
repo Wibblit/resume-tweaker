@@ -105,6 +105,7 @@ model Coverletter {
   coverName         String
   salutation        String @default("")
   date              String @default("")
+  senderInfo        String @default("")
   recipientInfo     String @default("")
   subject           String @default("")
   opening           String @default("")

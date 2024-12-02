@@ -51,6 +51,7 @@ export type ResumeStyles = Template & {
 export interface CoverLetterState {
   salutation: string; // Plain text input for greeting
   date: string; // Date input
+  senderInfo: string;
   recipientInfo: string; // Plain text input for recipient details
   subject: string; // Plain text input for subject line
   opening: string; // Rich text input for opening paragraph
@@ -232,6 +233,7 @@ export interface ResumeDataTemp {
 export type CoverLetterData = {
   salutation: string;
   date: string;
+  senderInfo: string;
   recipientInfo: string;
   subject: string;
   opening: string;

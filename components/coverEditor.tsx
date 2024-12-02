@@ -102,6 +102,7 @@ export default function CoverEditor() {
           userId,
           salutation,
           date,
+          senderInfo,
           recipientInfo,
           subject,
           opening,
@@ -123,6 +124,7 @@ export default function CoverEditor() {
           updateCoverLetter({
             salutation,
             date,
+            senderInfo,
             recipientInfo,
             subject,
             opening,

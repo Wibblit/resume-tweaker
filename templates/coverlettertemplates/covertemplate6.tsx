@@ -50,7 +50,7 @@ export default function Component({
       fontWeight: "bold",
       textAlign: "center", // Center the subject text
       marginBottom: "1em", // Add some space below the subject
-      color : baseColor
+      color: baseColor,
     },
   };
 
@@ -79,7 +79,6 @@ export default function Component({
       </div>
       <div style={styles.header}>
         <p>{content.date}</p>
-        <p>{content.senderInfo}</p>
         <p>{content.recipientInfo}</p>
       </div>
 

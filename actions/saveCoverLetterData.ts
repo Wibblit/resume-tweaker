@@ -41,6 +41,7 @@ export async function savecoverData(
         keyAchievements: coverData.keyAchievements,
         opening: coverData.opening,
         professionalSummary: coverData.professionalSummary,
+        senderInfo : coverData.senderInfo ,
         recipientInfo: coverData.recipientInfo,
         signOff: coverData.signOff,
         subject: coverData.subject,

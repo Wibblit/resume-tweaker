@@ -53,6 +53,7 @@ export async function duplicateCoverLetter(coverId: string) {
         professionalSummary: originalCoverLetter.professionalSummary,
         recipientInfo: originalCoverLetter.recipientInfo,
         salutation: originalCoverLetter.salutation,
+        senderInfo : originalCoverLetter.senderInfo,
         signOff: originalCoverLetter.signOff,
         subject: originalCoverLetter.subject,
         styles: parsedStyles,
