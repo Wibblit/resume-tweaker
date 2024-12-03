@@ -124,16 +124,15 @@ export async function POST(req: NextRequest) {
   const session = await auth();
 
   // Get user IP
-  let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
-  ip = ip === "::1" ? "127.0.0.1" : ip;
+  // let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
+  // ip = ip === "::1" ? "127.0.0.1" : ip;
 
-  // Rate limiting check
-  if (!session?.user?.id || (await rateLimiter(session.user.id, ip))) {
-    return NextResponse.json(
-      { message: "Rate limit exceeded." },
-      { status: 429 }
-    );
-  }
+  // if (!session?.user?.id || rateLimiter(session.user.id, ip)) {
+  //   return NextResponse.json(
+  //     { message: "Rate limit exceeded." },
+  //     { status: 429 }
+  //   );
+  // }
 
   try {
     const {
