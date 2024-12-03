@@ -17,6 +17,7 @@ export default function QuestionDisplay({
   onNextQuestion,
   audioUrl,
 }: QuestionDisplayProps) {
+
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
 
@@ -58,7 +59,6 @@ export default function QuestionDisplay({
               () => setIsTypingComplete(true)
             ]}
               wrapper="p"
-              omitDeletionAnimation={true}
             cursor={true}
             speed={50}
           />
