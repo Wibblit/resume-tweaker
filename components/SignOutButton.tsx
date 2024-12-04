@@ -45,7 +45,7 @@ export function SignOutButton() {
 
     try {
       const response = await signOut({ redirect: false });
-      router.push("/");
+      router.replace("/");
     } catch (error) {
       toast({
         variant: "destructive",

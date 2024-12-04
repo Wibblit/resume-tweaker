@@ -41,12 +41,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/login",
   },
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      console.log("/home revalidated on signIn")
-      revalidatePath("/");
-      return true;
-    }
-  }
+  // callbacks: {
+  //   async signIn({ user, account, profile }) {
+  //     console.log("/ revalidated on signIn")
+  //     revalidatePath("/");
+  //     return true;
+  //   }
+  // }
 });
 

@@ -39,8 +39,6 @@ export default function QuestionDisplay({
       });
     }
   };
-  
-  
 
   return (
     <div className="mb-4 space-y-4">

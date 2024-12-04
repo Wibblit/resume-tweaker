@@ -185,6 +185,8 @@ export default function AdaptiveInterview({
       },
     });
 
+    
+
     try {
       const result = await fetch("/api/adaptive-interview", {
         method: "POST",
