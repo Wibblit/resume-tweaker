@@ -135,17 +135,11 @@ export async function POST(req: NextRequest) {
       isSkipped,
       resumeText,
       chatHistory,
+      totalDuration,
+      timeLeft,
+      interviewerPosition,
     } = await req.json();
-    console.log( jd,
-      companyName,
-      position,
-      job,
-      base64Audio,
-      numberOfQuestions,
-      currentQuestionIndex,
-      isSkipped,
-      resumeText,
-      chatHistory)
+    console.log("totalduration, timeleft, interviewerPosition", totalDuration, timeLeft, interviewerPosition)
 
     // Adaptive prompt generation
     const prompt = adaptiveInitialPrompt(
@@ -155,7 +149,8 @@ export async function POST(req: NextRequest) {
       resumeText,
       jd,
       numberOfQuestions,
-      chatHistory
+      chatHistory,
+      totalDuration,
     );
 
     // Get generative model

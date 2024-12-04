@@ -19,7 +19,9 @@ export const adaptiveInitialPrompt = (
   resumeText: string,
   jd: string,
   numberOfQuestions: number,
-  chatHistory: any
+  chatHistory: any,
+  totalDuration: string,
+  
 ) => {
   return `You are an AI interviewer conducting an adaptive interview for a ${position} ${job} position at ${companyName}. Consider the candidate's resume: "${resumeText}". The interview consists of ${numberOfQuestions} questions. ${
     jd ? `Here is the job description: "${jd}".` : ""

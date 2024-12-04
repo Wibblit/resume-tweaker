@@ -7,10 +7,12 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  const { job, position, companyName, jd, numberOfQuestions, resumeText } =
+  const { job, position, companyName, jd, numberOfQuestions, resumeText, totalDuration, interviewerPosition } =
     await req.json();
   let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
+
+  console.log("Interviewer Position and totalduration: ", interviewerPosition, totalDuration)
 
   try {
     if (rateLimiter(session?.user?.id, ip)) {

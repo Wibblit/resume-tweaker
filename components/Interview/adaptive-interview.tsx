@@ -26,6 +26,7 @@ interface AdaptiveInterviewProps {
     interviewType: string;
     duration: number;
     resumeText: string;
+    interviewerPosition: string;
   };
 }
 
@@ -45,6 +46,7 @@ export default function AdaptiveInterview({
     duration,
     numberOfQuestions,
     resumeText,
+    interviewerPosition,
   } = interviewData;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
@@ -106,7 +108,10 @@ export default function AdaptiveInterview({
           numberOfQuestions,
           currentQuestionIndex: 0,
           resumeText,
+          totalDuration: duration,
           chatHistory: [],
+          timeLeft: timeLeft/60,
+          interviewerPosition,
         }),
       });
       if (!result.ok) {
@@ -161,7 +166,10 @@ export default function AdaptiveInterview({
           numberOfQuestions,
           resumeText,
           currentQuestionIndex: currentQuestionIndex + 1,
+          totalDuration: duration,
           chatHistory,
+          timeLeft: timeLeft/60,
+          interviewerPosition,
         }),
       });
       if (!result.ok) {
@@ -223,6 +231,9 @@ export default function AdaptiveInterview({
           resumeText,
           currentQuestionIndex: currentQuestionIndex + 1,
           chatHistory,
+          totalDuration: duration,
+          timeLeft: timeLeft/60,
+          interviewerPosition,
         }),
       });
       if (!result.ok) {

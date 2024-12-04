@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, ChangeEvent, FormEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { setQuestions, setFormData } from "@/slices/interviewSlice";
+import { setFormData } from "@/slices/interviewSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,14 +32,13 @@ interface FormData {
   resume: File | null;
   jd: string;
   duration: number;
-  interviewer: string;
+  interviewerPosition: string;
   interviewType: "comprehensive" | "adaptive";
 }
 
 export default function InterviewSetup() {
   const router = useRouter();
   const dispatch = useDispatch();
-  const searchParams = useSearchParams();
   const [formData, setLocalFormData] = useState<FormData>({
     job: "",
     position: "",
@@ -47,7 +46,7 @@ export default function InterviewSetup() {
     resume: null,
     jd: "",
     duration: 10,
-    interviewer: "",
+    interviewerPosition: "",
     interviewType: "comprehensive",
   });
   const [loading, setLoading] = useState<boolean>(false);
@@ -153,7 +152,7 @@ export default function InterviewSetup() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    const numberOfQuestions = Math.floor(formData.duration / 2);
+    const numberOfQuestions = Math.ceil(formData.duration / 2);
     try {
       const queryParams = new URLSearchParams({
         job: formData.job,
@@ -164,6 +163,7 @@ export default function InterviewSetup() {
         interviewType: formData.interviewType,
         duration: formData.duration.toString(),
         resumeText: resumeText,
+        interviewerPosition: formData.interviewerPosition,
       }).toString();
       dispatch(setFormData(formData));
       router.push(`/ai-interview/interview?${queryParams}`);
@@ -241,13 +241,13 @@ export default function InterviewSetup() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="interviewer" className="text-foreground flex items-center">
+                <Label htmlFor="interviewerPosition" className="text-foreground flex items-center">
                   <UserCheck className="w-4 h-4 mr-2" />
                   Interviewer
                 </Label>
                 <Input
-                  id="interviewer"
-                  name="interviewer"
+                  id="interviewerPosition"
+                  name="interviewerPosition"
                   placeholder="e.g. HR, Senior Developer"
                   onChange={handleInputChange}
                   required
@@ -331,7 +331,6 @@ export default function InterviewSetup() {
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Label className="text-foreground flex items-center">
-                  <HelpCircle className="w-4 h-4 mr-2" />
                   Interview Type
                 </Label>
                 <TooltipProvider>
