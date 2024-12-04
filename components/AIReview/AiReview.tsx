@@ -261,7 +261,7 @@ export default function AIReview() {
           toast({
             title: response.data.title,
             description: response.data.message,
-            variant: "destructive",
+            variant: response.data.success ? "default" : "destructive",
           });
         }
         console.log(response, "user resumes");

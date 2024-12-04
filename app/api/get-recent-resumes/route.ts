@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
         recentResumes: [],
         message: "User not authenticated.",
         title: "Error",
-        success : true
+        success : false
       });
     }
   } catch (error) {
@@ -50,5 +50,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     recentResumes: result,
     message: "Recent resumes fetched successfully",
+    title : "Success",
+    success : true
   });
 }
