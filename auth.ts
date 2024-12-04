@@ -5,6 +5,7 @@ import Apple from "next-auth/providers/apple";
 import LinkedIn from "next-auth/providers/linkedin";
 import { prisma } from "./prisma";
 import type { Provider } from "next-auth/providers";
+import { revalidatePath } from "next/cache";
 
 const providers: Provider[] = [
   Google({
@@ -40,5 +41,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/login",
   },
+  callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log("/home revalidated on signIn")
+      revalidatePath("/home", "layout");
+      return true;
+    }
+  }
 });
 
