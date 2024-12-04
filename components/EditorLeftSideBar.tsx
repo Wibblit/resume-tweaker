@@ -724,6 +724,8 @@ export default function LeftSideBar({
     }
   };
 
+  console.log(resumeSections)
+
   return (
     <>
       {isPhoneView ? (
@@ -779,66 +781,72 @@ export default function LeftSideBar({
             </div>
             <ScrollArea className="flex-grow">
               <div className="p-4 space-y-4">
-                {resumeSections.map((section) => (
-                  <Sheet key={section.id}>
-                    <SheetTrigger asChild>
-                      <div className="flex items-center">
-                        <Button
-                          variant={
-                            activeSection === section.id ? "default" : "ghost"
-                          }
-                          className={`w-full justify-start ${
-                            isCollapsed ? "px-2" : ""
-                          }`}
-                          onClick={() => setActiveSection(section.id)}
-                        >
-                          {section.icon}
-                          {!isCollapsed && (
-                            <span className="ml-2">{section.title}</span>
-                          )}
-                        </Button>
-                        {!isCollapsed &&
-                          !defaultSections.some((s) => s.id === section.id) && (
-                            <React.Fragment>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setRenameSectionId(section.id);
-                                  setNewSectionTitle(section.title);
-                                }}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteSection(section.id);
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </React.Fragment>
-                          )}
-                      </div>
-                    </SheetTrigger>
-                    <SheetContent
-                      side="left"
-                      className="w-[400px] sm:w-[540px]"
-                    >
-                      <SheetHeader>
-                        <SheetTitle>Edit {section.title}</SheetTitle>
-                        <SheetDescription>
-                          Modify or add new entries to this section.
-                        </SheetDescription>
-                      </SheetHeader>
-                      {renderSheetContent(section.id)}
-                    </SheetContent>
-                  </Sheet>
-                ))}
+                {resumeSections.map((section) => {
+                  if (section.title !== "UpdatedOn" && section.title !== "CreatedOn") {
+                    return <Sheet key={section.id}>
+                      <SheetTrigger asChild>
+                        <div className="flex items-center">
+                          <Button
+                            variant={
+                              activeSection === section.id ? "default" : "ghost"
+                            }
+                            className={`w-full justify-start ${
+                              isCollapsed ? "px-2" : ""
+                            }`}
+                            onClick={() => setActiveSection(section.id)}
+                          >
+                            {section.icon}
+                            {!isCollapsed && (
+                              <span className="ml-2">{section.title}</span>
+                            )}
+                          </Button>
+                          {!isCollapsed &&
+                            !defaultSections.some(
+                              (s) => s.id === section.id
+                            ) && (
+                              <React.Fragment>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setRenameSectionId(section.id);
+                                    setNewSectionTitle(section.title);
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteSection(section.id);
+                                  }}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </React.Fragment>
+                            )}
+                        </div>
+                      </SheetTrigger>
+                      <SheetContent
+                        side="left"
+                        className="w-[400px] sm:w-[540px]"
+                      >
+                        <SheetHeader>
+                          <SheetTitle>Edit {section.title}</SheetTitle>
+                          <SheetDescription>
+                            Modify or add new entries to this section.
+                          </SheetDescription>
+                        </SheetHeader>
+                        {renderSheetContent(section.id)}
+                      </SheetContent>
+                    </Sheet>;
+                  } else {
+                    return <React.Fragment></React.Fragment>
+                  }
+                })}
                 <Sheet
                   open={renameSectionId !== null}
                   onOpenChange={(open) => !open && setRenameSectionId(null)}

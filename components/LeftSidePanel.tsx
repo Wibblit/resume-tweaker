@@ -433,48 +433,57 @@ export default function LeftSidePanel<T>({
 
   const renderSectionButtons = () => (
     <div className="py-4 space-y-2">
-      {sections.map((section) => (
-        <div
-          key={section.id}
-          className="px-2 flex items-center justify-between"
-        >
-          <Button
-            variant={activeSection === section.id ? "default" : "ghost"}
-            className="w-full justify-start text-left"
-            onClick={() => handleSectionClick(section.id)}
-            title={section.title}
-          >
-            {section.icon}
-            <span className="ml-2 truncate max-w-[120px]">{section.title}</span>
-          </Button>
-          {type === "resume" &&
-            !defaultSections!.some((s) => s.id === section.id) && (
-              <div className="flex">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRenameSectionId!(section.id);
-                    setNewSectionTitle!(section.title);
-                  }}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteSection!(section.id);
-                  }}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-        </div>
-      ))}
+      {sections.map((section) => {
+        if (section.title !== "UpdatedOn" && section.title !== "CreatedOn") {
+          return (
+            <div
+              key={section.id}
+              className="px-2 flex items-center justify-between"
+            >
+              <Button
+                variant={activeSection === section.id ? "default" : "ghost"}
+                className="w-full justify-start text-left"
+                onClick={() => handleSectionClick(section.id)}
+                title={section.title}
+              >
+                {section.icon}
+                <span className="ml-2 truncate max-w-[120px]">
+                  {section.title}
+                </span>
+              </Button>
+              {type === "resume" &&
+                !defaultSections!.some((s) => s.id === section.id) && (
+                  <div className="flex">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRenameSectionId!(section.id);
+                        setNewSectionTitle!(section.title);
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSection!(section.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+            </div>
+          );
+        } else {
+          return <React.Fragment></React.Fragment>
+        }
+        
+      })}
     </div>
   );
 
@@ -532,13 +541,13 @@ export default function LeftSidePanel<T>({
   );
 
   return (
-    <div className="relative h-screen pt-[60px]">
+    <div className="relative h-screen pt-[56px]">
       <div className="absolute h-screen flex items-center justify-center">
         <motion.div
           initial={{ x: -240 }}
           animate={{ x: isPanelOpen ? 0 : -240 }}
           transition={{ duration: 0.3 }}
-          className="bg-background border-r border-border shadow-lg h-[calc(100vh-90px)] rounded-r-lg z-50 mb-[30px]"
+          className="bg-background border-r border-border shadow-lg h-screen rounded-r-lg z-50"
         >
           <ScrollArea className="h-full">
             <div className="w-[240px]">
