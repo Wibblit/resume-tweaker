@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Pause, Play, SkipForward } from "lucide-react";
+import { LogOut, Pause, Play, SkipForward } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
 import { NoAudioAlert } from "./NoAudioAlert";
+import { useRouter } from "next/navigation";
+import { ConfirmQuitModal } from "./ConfirmQuiteModal";
 
 interface ComprehensiveInterviewProps {
   questions: string[];
@@ -33,8 +35,12 @@ export default function ComprehensiveInterview({
   const [isLoading, setIsLoading] = useState(false);
   const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const dispatch = useDispatch();
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const currentAudioUrl = audioQueue[currentQuestionIndex] || "";
   const currQuestion = questions[currentQuestionIndex] || "";
+  const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,6 +61,15 @@ export default function ComprehensiveInterview({
   useEffect(() => {
     generateAudioQueue();
   }, []);
+
+  const handleQuitInterview = () => {
+    setIsQuitModalOpen(true);
+  };
+
+  const handleConfirmQuit = () => {
+    router.replace("/ai-interview");
+  };
+
 
   const generateAudioQueue = async () => {
     const startIndex = currentQuestionIndex;
@@ -97,6 +112,8 @@ export default function ComprehensiveInterview({
         answer: "Skipped",
       },
     });
+    mediaRecorderRef.current?.stop();
+    if (isPlayingAudio) setIsPlayingAudio(false);
     handleNextQuestion();
   };
 
@@ -166,8 +183,16 @@ export default function ComprehensiveInterview({
   return (
     <Card className="max-w-4xl mx-auto bg-background shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">
-          Comprehensive Interview - Question {currentQuestionIndex + 1}
+        <CardTitle className="text-2xl font-bold flex justify-between items-center pb-4">
+          <span>Comprehensive Interview - Question {currentQuestionIndex + 1}</span>
+          <Button
+            onClick={handleQuitInterview}
+            variant="outline"
+              className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Quit Interview
+          </Button>
         </CardTitle>
         <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
           Time: {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
@@ -182,11 +207,14 @@ export default function ComprehensiveInterview({
               question={currQuestion}
               onNextQuestion={handleNextQuestion}
               audioUrl={currentAudioUrl}
+              isPlayingAudio={isPlayingAudio}
+              setIsPlayingAudio={setIsPlayingAudio}
             />
             <AudioRecorder
               isRecording={isRecording}
               setIsRecording={setIsRecording}
               setAudioBlob={setAudioBlob}
+              mediaRecorderRef={mediaRecorderRef}
             />
             <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
@@ -224,6 +252,11 @@ export default function ComprehensiveInterview({
           </div>
         )}
         {showReport && report && <InterviewResults data={report} />}
+        <ConfirmQuitModal
+          isOpen={isQuitModalOpen}
+          onClose={() => setIsQuitModalOpen(false)}
+          onConfirm={handleConfirmQuit}
+        />
       </CardContent>
       <NoAudioAlert
         isOpen={showNoAudioAlert}

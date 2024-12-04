@@ -6,10 +6,10 @@ interface AudioRecorderProps {
   isRecording: boolean
   setIsRecording: (isRecording: boolean) => void
   setAudioBlob: (blob: Blob) => void
+  mediaRecorderRef: React.MutableRefObject<MediaRecorder | null>
 }
 
-export default function AudioRecorder({ isRecording, setIsRecording, setAudioBlob }: AudioRecorderProps) {
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+export default function AudioRecorder({ isRecording, setIsRecording, setAudioBlob, mediaRecorderRef }: AudioRecorderProps) {
   const chunksRef = useRef<Blob[]>([])
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)

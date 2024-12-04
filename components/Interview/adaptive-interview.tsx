@@ -1,18 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Pause, Play } from "lucide-react";
+import { LogOut, Pause, Play } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
 import { NoAudioAlert } from "./NoAudioAlert";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { ConfirmQuitModal } from "./ConfirmQuiteModal";
 
 interface AdaptiveInterviewProps {
   interviewData: {
@@ -35,8 +37,15 @@ type ChatHistory = {
 export default function AdaptiveInterview({
   interviewData,
 }: AdaptiveInterviewProps) {
-  const { job, position, companyName, jd, duration, numberOfQuestions, resumeText } =
-    interviewData;
+  const {
+    job,
+    position,
+    companyName,
+    jd,
+    duration,
+    numberOfQuestions,
+    resumeText,
+  } = interviewData;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState(duration * 60);
   const [isRecording, setIsRecording] = useState(false);
@@ -49,6 +58,10 @@ export default function AdaptiveInterview({
   const [isLoading, setIsLoading] = useState(false);
   const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const [showNoAudioAlert, setShowNoAudioAlert] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
+  const router = useRouter();
   const dispatch = useDispatch();
   const { toast } = useToast();
 
@@ -71,6 +84,14 @@ export default function AdaptiveInterview({
   useEffect(() => {
     fetchFirstQuestion();
   }, []);
+
+  const handleQuitInterview = () => {
+    setIsQuitModalOpen(true);
+  };
+
+  const handleConfirmQuit = () => {
+    router.replace("/ai-interview");
+  };
 
   const fetchFirstQuestion = async () => {
     try {
@@ -158,7 +179,7 @@ export default function AdaptiveInterview({
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
-    } 
+    }
   };
 
   const blobToBase64 = (blob: Blob): Promise<string> => {
@@ -185,7 +206,8 @@ export default function AdaptiveInterview({
       },
     });
 
-    
+    mediaRecorderRef.current?.stop();
+    setIsPlayingAudio(false);
 
     try {
       const result = await fetch("/api/adaptive-interview", {
@@ -267,10 +289,18 @@ export default function AdaptiveInterview({
   return (
     <Card className="max-w-4xl mx-auto bg-background shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">
-          Adaptive Interview - Question {currentQuestionIndex + 1}
+        <CardTitle className="text-2xl font-bold flex justify-between items-center pb-4">
+          <span>Adaptive Interview - Question {currentQuestionIndex + 1}</span>
+          <Button
+            onClick={handleQuitInterview}
+            variant="outline"
+              className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Quit Interview
+          </Button>
         </CardTitle>
-        <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
+        <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium mt-4">
           Time: {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
           {String(timeLeft % 60).padStart(2, "0")}
         </div>
@@ -283,11 +313,14 @@ export default function AdaptiveInterview({
               question={questions[currentQuestionIndex]}
               onNextQuestion={handleNextQuestion}
               audioUrl={audioQueue[currentQuestionIndex]}
+              isPlayingAudio={isPlayingAudio}
+              setIsPlayingAudio={setIsPlayingAudio}
             />
             <AudioRecorder
               isRecording={isRecording}
               setIsRecording={setIsRecording}
               setAudioBlob={setAudioBlob}
+              mediaRecorderRef={mediaRecorderRef}
             />
             <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
@@ -325,12 +358,16 @@ export default function AdaptiveInterview({
           </div>
         )}
         {showReport && report && <InterviewResults data={report} />}
+        <ConfirmQuitModal
+          isOpen={isQuitModalOpen}
+          onClose={() => setIsQuitModalOpen(false)}
+          onConfirm={handleConfirmQuit}
+        />
       </CardContent>
-      <NoAudioAlert 
-        isOpen={showNoAudioAlert} 
-        onClose={() => setShowNoAudioAlert(false)} 
+      <NoAudioAlert
+        isOpen={showNoAudioAlert}
+        onClose={() => setShowNoAudioAlert(false)}
       />
     </Card>
   );
 }
-

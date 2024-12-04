@@ -1,43 +1,70 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { AudioLines, Volume2 } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
-import { TypeAnimation } from 'react-type-animation';
+import { TypeAnimation } from "react-type-animation";
 
 interface QuestionDisplayProps {
   question: string;
   onNextQuestion: () => void;
   audioUrl: string | undefined;
+  isPlayingAudio: boolean;
+  setIsPlayingAudio: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function QuestionDisplay({
   question,
   onNextQuestion,
   audioUrl,
+  isPlayingAudio,
+  setIsPlayingAudio,
 }: QuestionDisplayProps) {
-
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     setIsTypingComplete(false);
     if (audioUrl) {
-      playAudio();
+      audioRef.current = new Audio(audioUrl);
+      playAudio()
+      audioRef.current.onended = () => {
+        setIsPlayingAudio(false);
+      };
     }
-  }, [question, audioUrl]);
+    // Clean up the audio when the component unmounts or question changes
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlayingAudio(false);
+      }
+    };
+  }, [question, audioUrl, setIsPlayingAudio]);
 
   const playAudio = () => {
-    if (audioUrl && !isPlayingAudio) {
-      setIsPlayingAudio(true);
-      const audio = new Audio(audioUrl);
-      audio.onended = () => setIsPlayingAudio(false);
-      audio.play().catch((err) => {
-        console.error("Audio playback failed:", err);
-        setIsPlayingAudio(false);
-      });
+    if (audioRef.current && !isPlayingAudio) {
+      audioRef.current.play()
+        .then(() => setIsPlayingAudio(true))
+        .catch((err) => {
+          console.error("Audio playback failed:", err);
+          setIsPlayingAudio(false);
+        });
     }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlayingAudio(false);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    stopAudio();
+    onNextQuestion();
   };
 
   return (
@@ -51,12 +78,9 @@ export default function QuestionDisplay({
       ) : (
         <p className="text-lg mb-2 min-h-[3rem]">
           <TypeAnimation
-            key={`${question}-${audioUrl}`} 
-            sequence={[
-              question,
-              () => setIsTypingComplete(true)
-            ]}
-              wrapper="p"
+            key={`${question}-${audioUrl}`}
+            sequence={[question, () => setIsTypingComplete(true)]}
+            wrapper="p"
             cursor={true}
             speed={50}
           />
@@ -83,7 +107,7 @@ export default function QuestionDisplay({
         )}
         {isTypingComplete && (
           <Button
-            onClick={onNextQuestion}
+            onClick={handleNextQuestion}
             variant="link"
             size="sm"
             className="text-blue-500 hover:underline text-lg"
