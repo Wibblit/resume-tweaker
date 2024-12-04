@@ -44,7 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account, profile }) {
       console.log("/home revalidated on signIn")
-      revalidatePath("/", "layout");
+      revalidatePath("/");
       return true;
     }
   }
