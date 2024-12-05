@@ -7,6 +7,7 @@ import store from "@/store";
 import { Toaster } from "@/components/ui/toaster";
 import { Roboto_Flex as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { SessionProvider } from "next-auth/react";
 
 // const LTWave = localFont({
 //   src: "./fonts/LTWave-Regular.ttf",
@@ -40,7 +41,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Provider store={store}>{children}</Provider>
+          <SessionProvider>
+            <Provider store={store}>{children}</Provider>
+          </SessionProvider>
         </ThemeProvider>
         <Toaster />
         <script
