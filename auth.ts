@@ -41,12 +41,51 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/login",
   },
-  // callbacks: {
-  //   async signIn({ user, account, profile }) {
-  //     console.log("/ revalidated on signIn")
-  //     revalidatePath("/");
-  //     return true;
-  //   }
-  // }
-});
+  callbacks: {
+    async session({ session, user }) {
+      session.user = user;
+      return session;
+    },
+    async signIn({ user, account, profile }) {
+      return true;
+    },
+    async authorized({ auth, request: { nextUrl } }) {
+      console.log("nextUrl from authorized callback", nextUrl)
+      const isLoggedIn = !!auth?.user;
+      const protectedRoutes = [
+        "/home",
+        "/ai-interview",
+        "/ai-review",
+        "/profile",
+        "/editor",
+      ];
+      const isProtectedRoute = protectedRoutes.some((route) =>
+        nextUrl.pathname.startsWith(route)
+      );
 
+      if (isProtectedRoute) {
+        if (isLoggedIn) return true; // Allow access if logged in
+        return false; // Redirect unauthenticated users to the login page
+      }
+
+      // Redirect logged-in users away from public routes (e.g., /login) to /home
+      if (isLoggedIn) {
+        return Response.redirect(new URL("/home", nextUrl));
+      }
+
+      return true; // Allow access to non-protected routes
+    },
+  },
+  trustHost: true,
+  cookies: {
+    pkceCodeVerifier: {
+      name: "next-auth.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+      },
+    },
+  },
+});
