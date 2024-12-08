@@ -150,6 +150,8 @@ export default function InterviewSetup() {
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+
+    console.log("Revied")
     e.preventDefault();
     setLoading(true);
     const numberOfQuestions = Math.ceil(formData.duration / 2);

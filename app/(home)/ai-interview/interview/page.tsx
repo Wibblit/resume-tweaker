@@ -6,6 +6,8 @@ import AdaptiveInterview from "@/components/Interview/adaptive-interview";
 import ComprehensiveInterview from "@/components/Interview/comprehensiveInterview";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import AIInterviewSkeleton from "../loading";
 
 interface InterviewData {
   job: string;
@@ -144,7 +146,9 @@ export default function InterviewPage() {
   }, [interviewData, toast]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+     <AIInterviewSkeleton interviewType="interview" />
+    );
   }
 
   return (
