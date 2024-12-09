@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { LogOut, Pause, Play } from "lucide-react";
+import { Loader2, LogOut, Pause, Play } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
@@ -63,6 +63,7 @@ export default function AdaptiveInterview({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
+  const [skipQuestionLoading, setSkipQuestionLoding] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -110,7 +111,7 @@ export default function AdaptiveInterview({
           resumeText,
           totalDuration: duration,
           chatHistory: [],
-          timeLeft: timeLeft/60,
+          timeLeft: timeLeft / 60,
           interviewerPosition,
         }),
       });
@@ -168,7 +169,7 @@ export default function AdaptiveInterview({
           currentQuestionIndex: currentQuestionIndex + 1,
           totalDuration: duration,
           chatHistory,
-          timeLeft: timeLeft/60,
+          timeLeft: timeLeft / 60,
           interviewerPosition,
         }),
       });
@@ -206,6 +207,7 @@ export default function AdaptiveInterview({
   };
 
   const handleSkipQuestion = async () => {
+    setSkipQuestionLoding(true);
     dispatch({
       type: "STORE_ANSWER",
       payload: {
@@ -232,7 +234,7 @@ export default function AdaptiveInterview({
           currentQuestionIndex: currentQuestionIndex + 1,
           chatHistory,
           totalDuration: duration,
-          timeLeft: timeLeft/60,
+          timeLeft: timeLeft / 60,
           interviewerPosition,
         }),
       });
@@ -245,19 +247,20 @@ export default function AdaptiveInterview({
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setAudioBlob(null);
       generateAudio(data.question);
-
+      setSkipQuestionLoding(false);
       if (currentQuestionIndex >= numberOfQuestions - 1) {
         handleInterviewComplete();
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
+      setSkipQuestionLoding(false);
     }
   };
 
   const handleInterviewComplete = async () => {
     setIsRecording(false);
     setIsInterviewComplete(true);
-    if (audioBlob) {
+    if (audioBlob || currentQuestionIndex === numberOfQuestions - 1) {
       console.log("Interview complete, preparing to send audio blob");
       await generateReport();
     } else {
@@ -305,7 +308,7 @@ export default function AdaptiveInterview({
           <Button
             onClick={handleQuitInterview}
             variant="outline"
-              className="flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             <LogOut className="h-4 w-4" />
             Quit Interview
@@ -356,7 +359,16 @@ export default function AdaptiveInterview({
                   </>
                 )}
               </Button>
-              <Button onClick={handleSkipQuestion}>Skip Question</Button>
+              <Button onClick={handleSkipQuestion}>
+                {skipQuestionLoading ? (
+                  <div className="flex">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Skipping Question...
+                  </div>
+                ) : (
+                  <span>Skip Question</span>
+                )}
+              </Button>
             </div>
           </>
         )}

@@ -6,7 +6,7 @@ import { UpdateProfileData } from "@/slices/profileSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { updateProfiles } from "@/actions/updateProfile";
-import { CreditCard, Loader, Save, Plus, Trash2 } from "lucide-react";
+import { CreditCard, Loader, Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "@/components/TextEditor";
@@ -591,6 +591,7 @@ const DeleteProfilePicture = () => {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Credits</CardTitle>
+          <CardDescription>Your current credit balance and level</CardDescription>
         </CardHeader>
         <CardContent>
           <Progress
@@ -616,7 +617,7 @@ const DeleteProfilePicture = () => {
 
       <div className="flex justify-between items-center mb-4">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-wrap gap-4 justify-between items-center">
             <TabsList>
               <TabsTrigger value="personal">Personal</TabsTrigger>
               <TabsTrigger value="professional">Professional</TabsTrigger>
@@ -625,10 +626,10 @@ const DeleteProfilePicture = () => {
             <Button
               onClick={handleSaveChanges}
               disabled={!isChanged || isSaving}
-              className="ml-4 bg-primary text-primary-foreground hover:bg-primary/90 py-1"
+              className="bg-primary w-full md:w-auto text-primary-foreground hover:bg-primary/90 py-1"
             >
               {isSaving ? (
-                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
