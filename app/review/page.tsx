@@ -55,7 +55,7 @@ const processSteps = [
     title: "Upload Your Resume",
     description: "Select from your saved resumes or upload a new one. Supports PDF and Word formats.",
     icon: <Upload className="w-6 h-6" />,
-    video: "https://your-cdn.com/upload-demo.mp4",
+    video: "/videos/review-video-1.mp4",
   },
   {
     title: "AI Processing",
@@ -67,7 +67,7 @@ const processSteps = [
     title: "Detailed Results",
     description: "Get comprehensive feedback with actionable improvements and scoring.",
     icon: <LineChart className="w-6 h-6" />,
-    video: "https://your-cdn.com/results-demo.mp4",
+    video: "/videos/review-video-2.mp4",
   },
 ];
 
