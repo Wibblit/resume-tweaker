@@ -201,7 +201,7 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
         </form>
         {suggestion && (
           <div className="mt-4 space-y-2">
-            <Textarea value={suggestion} readOnly className="min-h-[100px]" />
+            <Textarea value={suggestion} readOnly className="min-h-[100px] whitespace-pre-wrap" />
             <section className="flex items-center w-full justify-between mt-4">
               <Button onClick={handleApply}>Apply Suggestion</Button>
               <Button
@@ -256,7 +256,8 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
           section,
         }
       );
-      editor.commands.setContent(response.data.content);
+      editor.commands.setContent("");
+      editor.commands.insertContent(response.data.content);
       setisEnhanceLoading(false);
     } catch (error) {
       setisEnhanceLoading(false);

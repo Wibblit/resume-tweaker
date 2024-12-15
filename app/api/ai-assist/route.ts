@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
         : getAISuggestionPrompt(prompt, section);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
     const result = await model.generateContent(detailedPrompt);
+    console.log("result: ", result);
     const response = await result.response;
     const text = response.text();
     return NextResponse.json({ content: text });
