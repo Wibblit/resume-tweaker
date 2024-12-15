@@ -24,11 +24,21 @@ export async function POST(req: NextRequest) {
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `Generate ${numberOfQuestions} interview questions for a ${position} ${job} position at ${companyName}. 
-    ${jd ? `Consider this job description: ${jd}` : ""} ${
-      resumeText ? `and resume ${resumeText}` : ""
-    } "Provide the questions as a JSON array of strings."
-    Ensure the questions are challenging and relevant to the position.`;
+    const prompt = `You are an AI interviewer conducting a structured interview for a ${position} ${job} position at ${companyName}. You are acting in the capacity of a ${interviewerPosition} and are tasked with evaluating the candidate’s qualifications, skills, and suitability for the role.
+      Generate ${numberOfQuestions} interview questions for this position. 
+      ${jd ? `Base the questions on this job description: ${jd}.` : ""} ${resumeText ? `Also consider the candidate's resume: ${resumeText}.` : ""
+      }
+      Design the questions to:
+      - Assess whether the number of questions (${numberOfQuestions}) and the total time allotted (${totalDuration}) are sufficient for a natural progression:
+        - If sufficient, maintain a natural flow by starting with introductory or general questions, transitioning to technical or role-specific topics, and concluding with reflective or situational questions.
+        - If the time or number of questions is limited, focus directly on key responsibilities and skills from the job description. Combine related topics naturally into fewer questions to maximize depth and coverage without sacrificing clarity or relevance. Adjust the complexity of questions based on the expected response time to fit within the total time.
+      - Ensure each question is insightful, relevant, and reflective of the perspective of a ${interviewerPosition}.
+      - Cover the full scope of the job description, including critical skills, responsibilities, and qualifications.
+      - Use diverse question types, such as technical, behavioral, situational, and opinion-based questions, while ensuring they are challenging and appropriate for the role.
+
+      Provide the questions as a JSON array of strings, ensuring the sequence is logical and makes efficient use of the available questions and time.
+
+      Do not include any additional text outside the JSON array.`;
 
     const result = await model.generateContent(prompt);
     const response = result.response;

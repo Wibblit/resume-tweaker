@@ -150,7 +150,10 @@ export async function POST(req: NextRequest) {
       jd,
       numberOfQuestions,
       chatHistory,
+      timeLeft,
       totalDuration,
+      currentQuestionIndex,
+      interviewerPosition,
     );
 
     // Get generative model
