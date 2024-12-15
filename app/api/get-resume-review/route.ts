@@ -13,8 +13,8 @@ export async function POST(request: NextRequest, response: NextResponse) {
   const { resumeId, jd, resumeOption, resumeText } = await request.json();
   const prompt = jd ? jdTailoredPrompt : genericPrompt;
   const session = await auth();
-   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
-   ip = ip === "::1" ? "127.0.0.1" : ip; 
+  let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
+  ip = ip === "::1" ? "127.0.0.1" : ip;
   let result = null;
   try {
     if (rateLimiter(session?.user?.id, ip)) {
@@ -22,17 +22,30 @@ export async function POST(request: NextRequest, response: NextResponse) {
         { message: "Rate limit exceeded." },
         { status: 429 }
       );
-    } 
-    result = resumeOption === "upload" ? resumeText : await prisma.resume.findUnique({
-      where: {
-        id: resumeId,
-        userId: session?.user?.id,
-      },
-    });
+    }
+    result =
+      resumeOption === "upload"
+        ? resumeText
+        : await prisma.resume.findUnique({
+            where: {
+              id: resumeId,
+              userId: session?.user?.id,
+            },
+          });
     if (result) {
       if (resumeOption !== "upload") {
         const { id, userId, resumeName, ...resumeDetails } = result;
-        result = JSON.stringify(resumeDetails);
+        result = resumeDetails;
+        result = {
+          ...result,
+          basics: result.basics.map((basic: any, index: number) =>
+            index === 0 ? { ...basic, picture: null } : basic
+          ),
+          styles: null,
+          createdOn: null,
+          updatedOn: null,
+        };
+        result = JSON.stringify(result) + JSON.stringify(result);
       }
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       console.log("resume: ", result);
@@ -44,6 +57,17 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
       console.log("Gemini review : " + cleanedText);
       const resumeReview = JSON.parse(cleanedText);
+
+      console.log(
+        "Input Word count",
+        detailedPrompt.split(" ").length,
+        "character count",
+        detailedPrompt.length
+      );
+
+      console.log("Input Counts ", await model.countTokens(detailedPrompt));
+      console.log("OutputCounts ", await model.countTokens(text));
+
       return NextResponse.json({
         resumeReview,
         message: "Review generated successfully.",
@@ -58,8 +82,7 @@ export async function POST(request: NextRequest, response: NextResponse) {
       },
       { status: 500 }
     );
-  }
-  finally {
-    await prisma.$disconnect()
+  } finally {
+    await prisma.$disconnect();
   }
 }

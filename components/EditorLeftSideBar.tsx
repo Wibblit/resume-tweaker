@@ -780,7 +780,7 @@ export default function LeftSideBar({
               </Button>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-2">
                 {resumeSections.map((section) => {
                   if (section.title !== "UpdatedOn" && section.title !== "CreatedOn") {
                     return <Sheet key={section.id}>
