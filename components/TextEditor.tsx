@@ -66,6 +66,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Sparkles, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Loader } from "lucide-react";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -145,7 +146,7 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
   const [suggestion, setSuggestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,11 +174,11 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
     setPrompt("");
   };
 
-  return (  
+  return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="px-2">
-          <Sparkles className="h-4 w-4" />
+          <Sparkles className="h-3 w-3 opacity-80" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
@@ -189,13 +190,31 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
             onChange={(e) => setPrompt(e.target.value)}
           />
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Generating..." : "Generate"}
+            {isLoading ? (
+              <p className="flex items-center justify-center gap-1">
+                Generating <Loader />
+              </p>
+            ) : (
+              "Generate"
+            )}
           </Button>
         </form>
         {suggestion && (
           <div className="mt-4 space-y-2">
             <Textarea value={suggestion} readOnly className="min-h-[100px]" />
-            <Button onClick={handleApply}>Apply Suggestion</Button>
+            <section className="flex items-center w-full justify-between mt-4">
+              <Button onClick={handleApply}>Apply Suggestion</Button>
+              <Button
+                onClick={() => {
+                  setIsOpen(false);
+                  setSuggestion("");
+                  setPrompt("");
+                }}
+                className="bg-destructive text-destructive-foreground"
+              >
+                Cancel
+              </Button>
+            </section>
           </div>
         )}
       </PopoverContent>
@@ -204,6 +223,8 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
 }
 
 const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
+  const [isEnhanceLoading, setisEnhanceLoading] = useState<boolean>(false);
+
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes("link").href;
     const url = window.prompt("URL", previousUrl);
@@ -221,11 +242,12 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
   }, [editor]);
 
   const handleEnhanceText = async () => {
-    const content = editor.getHTML().replace(/<[^>]*>?/gm, '');
+    const content = editor.getHTML().replace(/<[^>]*>?/gm, "");
     if (!content.trim()) {
-      return alert("Please add some text to enhance.");
+      return;
     }
     try {
+      setisEnhanceLoading(true);
       const response = await axios.post<{ content: string }>(
         "/api/ai-assist/",
         {
@@ -235,9 +257,12 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
         }
       );
       editor.commands.setContent(response.data.content);
+      setisEnhanceLoading(false);
     } catch (error) {
+      setisEnhanceLoading(false);
       console.error("Error enhancing text:", error);
-      alert("Failed to enhance text. Please try again.");
+    } finally {
+      setisEnhanceLoading(false);
     }
   };
 
@@ -490,7 +515,6 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
             className="px-2"
             onClick={() => editor.chain().focus().redo().run()}
           >
-            
             <ArrowClockwise className="h-4 w-4" />
           </Button>
         </Tooltip>
@@ -504,14 +528,30 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              size="sm"
-              variant="outline"
-              className="px-2"
-              onClick={handleEnhanceText}
-            >
-              <Wand2 className="h-4 w-4" />
-            </Button>
+            <div className="relative">
+              {isEnhanceLoading && (
+                <Loader className="w-3 h-3 absolute -right-1 -top-1" />
+              )}
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={
+                  !editor
+                    .getHTML()
+                    .replace(/<[^>]*>?/gm, "")
+                    .trim() || isEnhanceLoading
+                }
+                className={`px-2 ${
+                  !editor
+                    .getHTML()
+                    .replace(/<[^>]*>?/gm, "")
+                    .trim() && "opacity-50 cursor-not-allowed"
+                } ${isEnhanceLoading && "opacity-50"}`}
+                onClick={handleEnhanceText}
+              >
+                <Wand2 className="h-3 w-3" />
+              </Button>
+            </div>
           </TooltipTrigger>
           <TooltipContent>
             <p>Enhance text with AI</p>
@@ -625,50 +665,26 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
       );
     }
 
-
-    // return (
-    //   <div className="custom-editor dark:text-white dark:bg-black" ref={ref}>
-    //     {!hideToolbar && <Toolbar editor={editor} section={section} />}
-    //     <EditorContent
-    //       editor={editor}
-    //       className={cn(
-    //         "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
-    //         hideToolbar && "pt-2",
-    //         className
-    //       )}
-    //       style={{
-    //         fontWeight: "normal",
-    //         color: "black", // Default text color for light mode
-    //         background: "transparent",
-    //       }}
-    //       {...props}
-    //     />
-    //     // Add these styles to your global CSS or a relevant stylesheet
-    //   </div>
-    // );
-return (
-  <div className="custom-editor" ref={ref}>
-    {!hideToolbar && <Toolbar editor={editor} section={section} />}
-    <EditorContent
-      editor={editor}
-      className={cn(
-        "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
-        hideToolbar && "pt-2",
-        className,
-        // Conditionally add classes for light and dark mode text colors
-        "text-black dark:text-white"
-      )}
-      style={{
-        fontWeight: "normal",
-        background: "transparent", // Transparent background for both modes
-      }}
-      {...props}
-    />
-  </div>
-);
-
-
-
+    return (
+      <div className="custom-editor" ref={ref}>
+        {!hideToolbar && <Toolbar editor={editor} section={section} />}
+        <EditorContent
+          editor={editor}
+          className={cn(
+            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+            hideToolbar && "pt-2",
+            className,
+            // Conditionally add classes for light and dark mode text colors
+            "text-black dark:text-white"
+          )}
+          style={{
+            fontWeight: "normal",
+            background: "transparent", // Transparent background for both modes
+          }}
+          {...props}
+        />
+      </div>
+    );
   }
 );
 
@@ -683,5 +699,11 @@ export default function Component({
   content: string;
   onContentChange: (content: string) => void;
 }) {
-  return <RichInput section={section} content={content} onContentChange={onContentChange} />;
+  return (
+    <RichInput
+      section={section}
+      content={content}
+      onContentChange={onContentChange}
+    />
+  );
 }
