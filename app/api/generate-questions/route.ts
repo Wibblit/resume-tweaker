@@ -38,7 +38,14 @@ export async function POST(req: NextRequest) {
       const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
       const questions = JSON.parse(cleanedText);
 
-      console.log(questions);
+      //test counts
+      // console.log(questions);
+      console.log("Gemini response for question generation:", response);
+      console.log("Q Input WC", prompt.split(" ").length);
+      console.log("Q Input CC", prompt.length);
+      console.log("Q Input tokens", await model.countTokens(prompt));
+      console.log("Q Output tokens", await model.countTokens(text));
+
       return NextResponse.json({ questions });
     } catch (error) {
       const questions: any[] = [];

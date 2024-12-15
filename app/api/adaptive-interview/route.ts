@@ -184,7 +184,7 @@ export async function POST(req: NextRequest) {
 
     // Extract the last generated question
     const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
-
+    console.log("Gemini respoonse for adaptive:", result)
     return NextResponse.json({
       question: lastMessage,
       chatHistory: chat,
