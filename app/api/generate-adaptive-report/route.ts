@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const response = await result.response;
     const text = response.text();
     const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
-    console.log("Gemini response for report generation:", text);
+    console.log("Gemini response for report generation:", response);
 
     return NextResponse.json({ report: cleanedText });
   } catch (error) {

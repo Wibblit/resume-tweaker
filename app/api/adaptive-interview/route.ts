@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
 
     // Get generative model
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
+    // console.log("Before Chat History: ", JSON.stringify(chatHistory,null,2));
     // Generate content using the model
     let result;
     if (base64Audio) {
@@ -181,16 +181,17 @@ export async function POST(req: NextRequest) {
         : "") + prompt)
     }
 
-    console.log("GEMINI RESPONSE FOR ADAPTIVE", result.response.text())
+    // console.log("GEMINI RESPONSE FOR ADAPTIVE", result.response.text())
 
     const chat = JSON.parse(result.response.text().replace(/```json\s*|\s*```/g, "").trim()); // Ensure response is valid JSON
 
     // Extract the last generated question
     const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
-    console.log("Gemini respoonse for adaptive:", result)
+    console.log("Gemini response for adaptive:", result)
+    console.log("After Chat History: ", JSON.stringify([...chatHistory,...chat],null,2));
     return NextResponse.json({
       question: lastMessage,
-      chatHistory: chat,
+      chatHistory: [...chatHistory,...chat]
     });
   } catch (error) {
     console.error("Error processing interview route:", error);
