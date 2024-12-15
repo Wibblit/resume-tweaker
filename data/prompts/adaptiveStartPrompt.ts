@@ -57,11 +57,11 @@ The conversation so far is as follows:
 ${JSON.stringify(chatHistory, null, 2)}
 
 Generate the next question:
-- Adapt the question based on the candidate’s previous responses. 
+- Adapt the question based on the candidate's previous responses. 
 - Take into account:
   - The question number versus the total questions (${currentQuestionIndex + 1}/${numberOfQuestions}) to pace the interview appropriately.
   - The time remaining versus the total time (${timeLeft}/${totalDuration}). If time is running short, prioritize concise questions; if there is ample time, ask questions requiring more detailed responses.
-- Frame questions with the interviewer’s role as a ${interviewerPosition} in mind to ensure relevance and specificity.
+- Frame questions with the interviewer's role as a ${interviewerPosition} in mind to ensure relevance and specificity.
 - If the candidate demonstrates ample understanding of a topic, naturally transition the focus to another relevant topic or competency from the job description.
 - If weaknesses or gaps are identified, ask follow-up questions to assess their understanding or explore related topics.
 - If the user hints at or explicitly mentions ending the interview, confirm their intent by asking: "Would you like to end the interview?" 
