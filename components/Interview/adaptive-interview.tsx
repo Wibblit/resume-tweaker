@@ -131,7 +131,7 @@ export default function AdaptiveInterview({
     try {
       const wav = await tts.predict({
         text: question,
-        voiceId: "en_US-hfc_female-medium",
+        voiceId: "en_US-hfc_male-medium",
       });
       const audioUrl = URL.createObjectURL(wav);
       setAudioQueue((prevQueue) => [...prevQueue, audioUrl]);

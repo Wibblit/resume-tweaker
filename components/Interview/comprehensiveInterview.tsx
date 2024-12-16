@@ -80,7 +80,7 @@ export default function ComprehensiveInterview({
         try {
           const wav = await tts.predict({
             text: questions[i],
-            voiceId: "en_US-hfc_female-medium",
+            voiceId: "en_US-hfc_male-medium",
           });
           const audioUrl = URL.createObjectURL(wav);
           setAudioQueue((prevQueue) => {
