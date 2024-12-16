@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const { chatHistory, timeSpent } = await request.json();
 
     console.log(JSON.stringify(chatHistory, null, 2));
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent(
       `${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt}`
