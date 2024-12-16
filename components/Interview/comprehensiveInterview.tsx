@@ -47,7 +47,7 @@ export default function ComprehensiveInterview({
       setTimeLeft((prevTime) => {
         if (prevTime <= 1 || isInterviewComplete) {
           clearInterval(timer);
-          if (!isInterviewComplete) {
+          if (isInterviewComplete) {
             handleInterviewComplete();
           }
           return 0;

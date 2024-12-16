@@ -73,7 +73,7 @@ export default function AdaptiveInterview({
       setTimeLeft((prevTime) => {
         if (prevTime <= 1 || isInterviewComplete) {
           clearInterval(timer);
-          if (!isInterviewComplete) {
+          if (isInterviewComplete) {
             handleInterviewComplete();
           }
           return 0;
@@ -260,7 +260,7 @@ export default function AdaptiveInterview({
   const handleInterviewComplete = async () => {
     setIsRecording(false);
     setIsInterviewComplete(true);
-    if (audioBlob || currentQuestionIndex === numberOfQuestions - 1) {
+    if (audioBlob || currentQuestionIndex >= numberOfQuestions - 1) {
       console.log("Interview complete, preparing to send audio blob");
       await generateReport();
     } else {
