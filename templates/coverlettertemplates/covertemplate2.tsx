@@ -50,7 +50,7 @@ export default function CoverTemplate3({
           overflow-wrap: break-word;
         }
           p{
-          color: black;
+          // color: black;
           font-size: ${fontSize}px;
           line-height: ${1.5 * fontSize}px;
           }

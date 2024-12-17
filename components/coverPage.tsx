@@ -94,7 +94,7 @@ const CoverLetterPage: React.FC<CoverLetterPageProps> = ({
     <div
       id={`page-${page.id}`}
       data-page={pageNumber}
-      className="relative bg-white text-foreground shadow-2xl mb-8"
+      className="relative bg-white text-primary shadow-2xl mb-8"
       style={{
         fontFamily,
         width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,

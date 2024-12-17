@@ -84,7 +84,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
             font-family: inherit;
           }
           .cover-letter p {
-            color: black;
+            // color: black;
             font-size: ${1.3 * fontSize}px;
             line-height: ${1.6 * fontSize}px;
             white-space: pre-wrap; 

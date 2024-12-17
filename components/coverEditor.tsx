@@ -191,7 +191,7 @@ export default function CoverEditor() {
   }, [CoverLetterData, ResumeAppearance, currCoverId]);
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-background">
       <div className="flex flex-grow overflow-hidden">
         <div className="relative">
           <CoverLeftSideBar

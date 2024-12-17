@@ -62,7 +62,7 @@ export default function Component({
             font-family: inherit;
           }
           .cover-letter p {
-            color: black;
+            // color: black;
             font-size: ${fontSize}px;
             line-height: ${lineHeight};
             white-space: pre-wrap; 

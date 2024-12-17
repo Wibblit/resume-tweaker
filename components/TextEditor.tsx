@@ -66,7 +66,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Sparkles, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -192,7 +192,8 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <p className="flex items-center justify-center gap-1">
-                Generating <Loader />
+                <Loader2 className="animate-spin" />
+                Generating...
               </p>
             ) : (
               "Generate"
@@ -201,7 +202,11 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
         </form>
         {suggestion && (
           <div className="mt-4 space-y-2">
-            <Textarea value={suggestion} readOnly className="min-h-[100px] whitespace-pre-wrap" />
+            <Textarea
+              value={suggestion}
+              readOnly
+              className="min-h-[100px] whitespace-pre-wrap"
+            />
             <section className="flex items-center w-full justify-between mt-4">
               <Button onClick={handleApply}>Apply Suggestion</Button>
               <Button
@@ -531,7 +536,7 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
           <TooltipTrigger asChild>
             <div className="relative">
               {isEnhanceLoading && (
-                <Loader className="w-3 h-3 absolute -right-1 -top-1" />
+                <Loader2 className="w-3 h-3 absolute animate-spin -right-1 -top-1" />
               )}
               <Button
                 size="sm"
@@ -672,11 +677,11 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
         <EditorContent
           editor={editor}
           className={cn(
-            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+            "grid min-h-[160px] text-primary w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
             hideToolbar && "pt-2",
             className,
             // Conditionally add classes for light and dark mode text colors
-            "text-black dark:text-white"
+            "text-primary"
           )}
           style={{
             fontWeight: "normal",

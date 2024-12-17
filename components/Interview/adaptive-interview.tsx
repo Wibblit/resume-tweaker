@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Loader2, LogOut, Pause, Play } from "lucide-react";
+import { Loader2, LogOut, Pause, Play } from 'lucide-react';
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
@@ -60,6 +60,7 @@ export default function AdaptiveInterview({
   const [isLoading, setIsLoading] = useState(false);
   const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const [showNoAudioAlert, setShowNoAudioAlert] = useState(false);
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
@@ -70,19 +71,25 @@ export default function AdaptiveInterview({
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1 || isInterviewComplete) {
-          clearInterval(timer);
-          if (isInterviewComplete) {
-            handleInterviewComplete();
+      if (!isTimerPaused) {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            if (currentQuestionIndex >= numberOfQuestions - 1) {
+              // Don't clear the interval for the last question
+              return prevTime;
+            }
+            clearInterval(timer);
+            if (isInterviewComplete) {
+              handleInterviewComplete();
+            }
+            return 0;
           }
-          return 0;
-        }
-        return prevTime - 1;
-      });
+          return prevTime - 1;
+        });
+      }
     }, 1000);
     return () => clearInterval(timer);
-  }, [isInterviewComplete]);
+  }, [isInterviewComplete, isTimerPaused, currentQuestionIndex, numberOfQuestions]);
 
   useEffect(() => {
     fetchFirstQuestion();
@@ -97,6 +104,7 @@ export default function AdaptiveInterview({
   };
 
   const fetchFirstQuestion = async () => {
+    setIsTimerPaused(true);
     try {
       const result = await fetch("/api/adaptive-interview", {
         method: "POST",
@@ -124,10 +132,13 @@ export default function AdaptiveInterview({
       generateAudio(data.question);
     } catch (error) {
       console.error("Error getting the first question:", error);
+    } finally {
+      setIsTimerPaused(false);
     }
   };
 
   const generateAudio = async (question: string) => {
+    setIsTimerPaused(true);
     try {
       const wav = await tts.predict({
         text: question,
@@ -137,6 +148,8 @@ export default function AdaptiveInterview({
       setAudioQueue((prevQueue) => [...prevQueue, audioUrl]);
     } catch (error) {
       console.error(`Error generating audio for question:`, error);
+    } finally {
+      setIsTimerPaused(false);
     }
   };
 
@@ -151,6 +164,7 @@ export default function AdaptiveInterview({
       return;
     }
 
+    setIsTimerPaused(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
 
@@ -185,9 +199,12 @@ export default function AdaptiveInterview({
 
       if (currentQuestionIndex >= numberOfQuestions - 1) {
         handleInterviewComplete();
+      } else {
+        setIsTimerPaused(false);
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
+      setIsTimerPaused(false);
     }
   };
 
@@ -208,6 +225,7 @@ export default function AdaptiveInterview({
 
   const handleSkipQuestion = async () => {
     setSkipQuestionLoding(true);
+    setIsTimerPaused(true);
     dispatch({
       type: "STORE_ANSWER",
       payload: {
@@ -250,16 +268,20 @@ export default function AdaptiveInterview({
       setSkipQuestionLoding(false);
       if (currentQuestionIndex >= numberOfQuestions - 1) {
         handleInterviewComplete();
+      } else {
+        setIsTimerPaused(false);
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
       setSkipQuestionLoding(false);
+      setIsTimerPaused(false);
     }
   };
 
   const handleInterviewComplete = async () => {
     setIsRecording(false);
     setIsInterviewComplete(true);
+    setIsTimerPaused(true);
     if (audioBlob || currentQuestionIndex >= numberOfQuestions - 1) {
       console.log("Interview complete, preparing to send audio blob");
       await generateReport();
@@ -394,3 +416,4 @@ export default function AdaptiveInterview({
     </Card>
   );
 }
+
