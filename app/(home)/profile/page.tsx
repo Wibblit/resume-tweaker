@@ -6,7 +6,13 @@ import { UpdateProfileData } from "@/slices/profileSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -24,7 +30,7 @@ import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "@/components/TextEditor";
 import { CustomDatePicker } from "@/components/DatePicker";
 import Base64Image from "@/components/base64toPhoto";
-import { Trash } from "lucide-react";
+import { ErrorToastHandler } from "@/components/ErrorToastHandler";
 import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
@@ -38,7 +44,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [urlErrors, setUrlErrors] = useState<{ [key: string]: string }>({});
 
-  const { toast } = useToast()
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,15 +53,16 @@ export default function ProfilePage() {
           fetch("/api/get-profile"),
           // fetch("/api/get-credits"),
         ]);
-        if (profileResponse.status === 429) {
+        console.log("Profile response: ", profileResponse);
+        const profileData = await profileResponse.json();
+        if (!profileResponse.ok) {
           toast({
-            title: "Whoa there! You've hit the rate limit.",
-            description: "Please slow down and try again in a few minutes.",
+            title: `Error ${profileResponse.status}`,
+            description: profileData.message,
             variant: "destructive",
           });
           return;
         }
-        const profileData = await profileResponse.json();
         // const creditsData = await creditsResponse.json();
 
         console.log(profileData.profileData);
@@ -174,29 +181,26 @@ export default function ProfilePage() {
     dispatch(UpdateProfileData(updatedProfileData));
   };
 
+  const DeleteProfilePicture = () => {
+    // Clone `basics[0]` to make it mutable
+    const updatedProfileData = {
+      ...profileData,
+      basics:
+        profileData.basics && profileData.basics.length
+          ? [
+              { ...profileData.basics[0], picture: "" }, // Update the picture property
+              ...profileData.basics.slice(1), // Keep the rest of the basics intact
+            ]
+          : [], // Fallback to an empty array if `basics` is undefined or empty
+    };
 
-const DeleteProfilePicture = () => {
-  // Clone `basics[0]` to make it mutable
-  const updatedProfileData = {
-    ...profileData,
-    basics:
-      profileData.basics && profileData.basics.length
-        ? [
-            { ...profileData.basics[0], picture: "" }, // Update the picture property
-            ...profileData.basics.slice(1), // Keep the rest of the basics intact
-          ]
-        : [], // Fallback to an empty array if `basics` is undefined or empty
+    console.log(updatedProfileData);
+
+    // Dispatch the updated resume data only if basics exist
+    if (updatedProfileData.basics.length > 0) {
+      dispatch(UpdateProfileData(updatedProfileData));
+    }
   };
-
-  console.log(updatedProfileData);
-
-  // Dispatch the updated resume data only if basics exist
-  if (updatedProfileData.basics.length > 0) {
-    dispatch(UpdateProfileData(updatedProfileData));
-  }
-};
-
-
 
   const deleteEntry = (section: keyof ResumeData, id: string) => {
     const updatedProfileData = { ...profileData };
@@ -275,15 +279,15 @@ const DeleteProfilePicture = () => {
     setIsSaving(true);
     try {
       //@ts-ignore
-      const result = await updateProfiles(profileData);
-       if (result.status === 429) {
-         toast({
-           title: "Whoa there! You've hit the rate limit.",
-           description: "Please slow down and try again in a few minutes.",
-           variant: "destructive",
-         });
-         return;
-       }
+      const result = await updteProfiles(profileData);
+      if (result.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
       if (result.success) {
         setInitialData(profileData);
         setIsChanged(false);
@@ -291,22 +295,22 @@ const DeleteProfilePicture = () => {
         toast({
           title: "Success",
           description: "Profile has been saved successfully.",
-        })
+        });
       } else {
         console.error(result.message);
         toast({
           title: "Error",
           description: "Failed to save profile.",
-          variant : "destructive"
+          variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error saving profile:", error);
-       toast({
-         title: "Error",
-         description: "Failed to save profile.",
-         variant: "destructive",
-       });
+      toast({
+        title: "Error",
+        description: "Failed to save profile.",
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -389,8 +393,11 @@ const DeleteProfilePicture = () => {
               ) : field === "picture" ? (
                 <div className="flex-col items-center justify-center">
                   {profileData?.basics && profileData?.basics[0]?.picture && (
-                          <div className="inline-block relative my-2">
-                            <Trash2 onClick={DeleteProfilePicture} className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer" />
+                    <div className="inline-block relative my-2">
+                      <Trash2
+                        onClick={DeleteProfilePicture}
+                        className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer"
+                      />
                       <Base64Image
                         base64String={profileData?.basics[0]?.picture}
                         width={150}
@@ -591,7 +598,9 @@ const DeleteProfilePicture = () => {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Credits</CardTitle>
-          <CardDescription>Your current credit balance and level</CardDescription>
+          <CardDescription>
+            Your current credit balance and level
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Progress

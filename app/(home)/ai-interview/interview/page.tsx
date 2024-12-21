@@ -26,7 +26,7 @@ export default function InterviewPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [comprehensiveQuestions, setComprehensiveQuestion] = useState<string[]>(
-    []
+    [],
   );
   const [interviewData, setInterviewData] = useState<InterviewData>({
     job: "",
@@ -60,7 +60,7 @@ export default function InterviewPage() {
       e.preventDefault();
       if (
         confirm(
-          "Are you sure you want to leave? This will delete all ongoing interview details."
+          "Are you sure you want to leave? This will delete all ongoing interview details.",
         )
       ) {
         router.back();
@@ -86,7 +86,7 @@ export default function InterviewPage() {
           jd: searchParams.get("jd") || "",
           numberOfQuestions: parseInt(
             searchParams.get("numberOfQuestions") || "0",
-            10
+            10,
           ),
           interviewType: searchParams.get("interviewType") || "",
           duration: parseInt(searchParams.get("duration") || "0", 10),
@@ -146,9 +146,7 @@ export default function InterviewPage() {
   }, [interviewData, toast]);
 
   if (isLoading) {
-    return (
-     <AIInterviewSkeleton interviewType="interview" />
-    );
+    return <AIInterviewSkeleton interviewType="interview" />;
   }
 
   return (
