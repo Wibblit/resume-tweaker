@@ -9,39 +9,28 @@ import {
   getAISuggestionPrompt,
   getAIEnhancementPrompt,
 } from "@/data/prompts/textEditorPrompt";
+import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
+import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-export async function POST(request: NextRequest) {
+export const POST = asyncHandler(async (request: NextRequest) => {
   const session = await auth();
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
-  ip = ip === "::1" ? "127.0.0.1" : ip;  
-  try {
-    if (rateLimiter(session?.user?.id, ip)) {
-      return NextResponse.json(
-        { message: "Rate limit exceeded." },
-        { status: 429 }
-      );
-    } 
-    const { prompt, content, action, section } = await request.json();
-    const detailedPrompt =
-      action === "enhance"
-        ? getAIEnhancementPrompt(content, section)
-        : getAISuggestionPrompt(prompt, section);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(detailedPrompt);
-    console.log("result: ", result);
-    const response = await result.response;
-    const text = response.text();
-    return NextResponse.json({ content: text });
-  } catch (error) {
-    console.error(
-      "Error processing Gemini API response for report generation:",
-      error
-    );
-    return NextResponse.json(
-      { error: "Failed to generate text", details: (error as Error).message },
-      { status: 500 }
-    );
-  }
-}
+  ip = ip === "::1" ? "127.0.0.1" : ip;
+
+  if (!session || !session.user?.id) throw ApiError.userNotAuthenticated;
+
+  if (rateLimiter(session?.user?.id, ip)) throw ApiError.rateLimitExceeded;
+  const { prompt, content, action, section } = await request.json();
+  const detailedPrompt =
+    action === "enhance"
+      ? getAIEnhancementPrompt(content, section)
+      : getAISuggestionPrompt(prompt, section);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const result = await model.generateContent(detailedPrompt);
+  console.log("result: ", result);
+  const response = result.response;
+  const text = response.text();
+  return NextResponse.json({ content: text });
+});

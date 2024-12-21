@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { globalErrorHandler } from "./errorHandler";
 import { prisma } from "@/prisma";
 
-type HandlerParams = { params?: Record<string, string> };
-type HandlerFunc = (req: NextRequest, context: HandlerParams) => Promise<NextResponse>;
+type HandlerFunc = (req: NextRequest, context: any) => Promise<NextResponse | Response>;
 
 export const asyncHandler = (func: HandlerFunc) => {
-  return async (req: NextRequest, context: HandlerParams): Promise<NextResponse> => {
+  return async (req: NextRequest, context: any): Promise<NextResponse | Response> => {
     try {
       return await func(req, context);
     } catch (error: any) {

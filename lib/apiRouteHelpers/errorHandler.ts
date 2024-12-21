@@ -24,7 +24,7 @@ export class ApiError extends Error {
 }
 
 // Global error handler
-export const globalErrorHandler = (error: unknown): NextResponse => {
+export const globalErrorHandler = (error: unknown): NextResponse | Response => {
   console.error("API Error:", error);
 
   if (error instanceof ApiError) {
