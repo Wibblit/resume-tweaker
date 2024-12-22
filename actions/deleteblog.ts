@@ -1,33 +1,19 @@
 "use server";
 import { auth } from "@/auth";
-import { rateLimiter } from "@/lib/rateLimiter";
-import { headers } from "next/headers";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 import { prisma } from "@/prisma";
 
-export async function deleteBlog(slug: string) {
-  console.log("reached delete");
+export const deleteBlog = asyncHandler(async (slug: string) => {
   const session = await auth();
-  let ip = headers().get("x-forwarded-for") || "127.0.0.1";
-  ip = ip === "::1" ? "127.0.0.1" : ip;
-  console.log(ip, "ip address");
-  const ratelimit = rateLimiter(session?.user?.id, ip);
-
-  console.log(ratelimit);
-  if (ratelimit) {
-    console.log("rate limit exceeded");
-    return { message: "Rate limit exceeded.", status: 429 };
-  }
-  try {
-    await prisma.blog.deleteMany({
-      where: {
-        slug: slug,
-      },
-    });
-    return { success: true, message: "Successfully deleted the resume" };
-  } catch (error) {
-    console.error("Error deleting resume:", error);
-    throw new Error("Error deleting the resume");
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+  if (!slug) throw ActionsError.badRequest;
+  if (session.user.email !== process.env.ADMIN_EMAIL)
+    throw ActionsError.unauthorizedAction;
+  await prisma.blog.deleteMany({
+    where: {
+      slug: slug,
+    },
+  });
+  return { success: true, message: "Successfully deleted the resume" };
+});

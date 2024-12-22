@@ -1,25 +1,16 @@
 "use server";
 import { auth } from "@/auth";
-import { rateLimiter } from "@/lib/rateLimiter";
-import { headers } from "next/headers";
-
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 
-export async function renameCoverLetter(name: string, coverId: string) {
-  try {
-    // Retrieve the authenticated user session
+export const renameCoverLetter = asyncHandler(
+  async (name: string, coverId: string) => {
     const session = await auth();
-     let ip = headers().get("x-forwarded-for") || "127.0.0.1";
-     ip = ip === "::1" ? "127.0.0.1" : ip;
-     console.log(ip, "ip address");
-     const ratelimit = rateLimiter(session?.user?.id, ip);
+    if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+    if (!name || !coverId) throw ActionsError.badRequest;
 
-     console.log(ratelimit);
-     if (ratelimit) {
-       console.log("rate limit exceeded");
-       return { message: "Rate limit exceeded.", status: 429 };
-     }
     const updatedCoverLetter = await prisma.coverletter.updateMany({
       where: {
         id: coverId,
@@ -30,17 +21,12 @@ export async function renameCoverLetter(name: string, coverId: string) {
       },
     });
 
-    if (updatedCoverLetter.count === 0) {
-      throw new Error(
-        "Resume not found or you're not authorized to update this resume."
+    if (updatedCoverLetter.count === 0)
+      throw ActionsError.custom(
+        "Resume not found or you're not authorized to update this resume.",
+        404,
       );
-    }
-   revalidatePath("/home", "page");
+    revalidatePath("/home", "page");
     return { message: "Cover letter renamed successfully", updatedCoverLetter };
-  } catch (error) {
-    console.error("Error renaming cover letter:", error);
-    throw new Error("Failed to rename cover letter. Please try again later.");
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  },
+);

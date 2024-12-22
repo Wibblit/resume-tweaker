@@ -61,16 +61,16 @@ export function CreateNewDialog({
             });
             return;
           }
-          if (response && response.success) { 
+          if (response && response.success) {
             localStorage.setItem(
               "currResumeId",
-              response?.resume?.id as string
+              response?.resume?.id as string,
             );
             dispatch(
               setCurrentResume({
                 currResumeId: response?.resume?.id as string,
                 currResumeName: response?.resume?.resumeName as string,
-              })
+              }),
             );
 
             router.push("/editor");
@@ -99,7 +99,7 @@ export function CreateNewDialog({
               setCurrentCover({
                 currCoverId: response?.cover?.id as string,
                 currCoverName: response?.cover?.coverName as string,
-              })
+              }),
             );
             router.push("/covereditor");
           } else {

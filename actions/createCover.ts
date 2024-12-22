@@ -4,55 +4,26 @@ import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 
-export async function createCover(coverName: string) {
-  try {
-    const session = await auth();
-    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
-    ip = ip === "::1" ? "127.0.0.1" : ip;
-    console.log(ip, "ip address");
-    const ratelimit = rateLimiter(session?.user?.id, ip);
-    console.log(ratelimit);
-    if (ratelimit) {
-      console.log("rate limit exceeded");
-      return { message: "Rate limit exceeded.", status: 429 };
-    }
-    console.log("Hello", coverName);
+export const createCover = asyncHandler(async (coverName: string) => {
+  const session = await auth();
 
-    if (!session || !session.user || !session.user.id) {
-      return {
-        success: false,
-        message: "User is not authenticated",
-      };
-    }
+  if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+  if (!coverName) throw ActionsError.badRequest;
 
-    const cover = await prisma.coverletter.create({
-      data: {
-        userId: session.user.id.toString(),
-        coverName: coverName.toString(),
-      },
-    });
+  const cover = await prisma.coverletter.create({
+    data: {
+      userId: session.user.id.toString(),
+      coverName: coverName.toString(),
+    },
+  });
 
-    console.log(cover);
-   revalidatePath("/home", "page");
-    return {
-      success: true,
-      message: "Resume created successfully",
-      cover,
-    };
-  } catch (error) {
-    let errorMessage = "An unknown error occurred";
-    throw error;
-    // if (error instanceof Error) {
-    //   errorMessage = error.message;
-    // }
-
-    // return {
-    //   success: false,
-    //   message: "Failed to create resume",
-    //   error: errorMessage,
-    // };
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  revalidatePath("/home", "page");
+  return {
+    success: true,
+    message: "Resume created successfully",
+    cover,
+  };
+});

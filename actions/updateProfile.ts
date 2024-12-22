@@ -1,113 +1,100 @@
 "use server";
 
 import { auth } from "@/auth";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 import { prisma } from "@/prisma";
-import { rateLimiter } from "@/lib/rateLimiter";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
-export async function updateProfiles(profileData: {
-  basics?: {
-    name: string;
-    email: string;
-    phone: string;
-    location: string;
-    headLine: string;
-    picture: string;
-    website: string;
-  }[];
-  summary?: { content: string }[];
-  profiles?: { url: { href: string; label: string } }[];
-  skills?: [
-    {
-      id: string;
-      categories: {
+export const updateProfiles = asyncHandler(
+  async (profileData: {
+    basics?: {
+      name: string;
+      email: string;
+      phone: string;
+      location: string;
+      headLine: string;
+      picture: string;
+      website: string;
+    }[];
+    summary?: { content: string }[];
+    profiles?: { url: { href: string; label: string } }[];
+    skills?: [
+      {
         id: string;
+        categories: {
+          id: string;
+          name: string;
+          skills: { name: string; level: string }[];
+        };
+      },
+    ];
+    projects?: [
+      {
         name: string;
-        skills: { name: string; level: string }[];
-      };
-    },
-  ];
-  projects?: [
-    {
-      name: string;
-      summary: string;
-      startDate: string;
-      endDate: string;
-      url: { href: string; label: string };
-      keywords: string[];
-    },
-  ];
-  education?: [
-    {
-      institution: string;
-      degree: string;
-      field: string;
-      specialization: string;
-      startDate: string;
-      endDate: string;
-      score: string;
-    },
-  ];
-  experience?: [
-    {
-      organization: string;
-      role: string;
-      startDate: string;
-      endDate: string;
-      location: string;
-      summary: string;
-    },
-  ];
-  languages?: [{ name: string; level: string }];
-  volunteer?: [
-    {
-      organization: string;
-      role: string;
-      startDate: string;
-      endDate: string;
-      location: string;
-    },
-  ];
-  awards?: [{ title: string; awarder: string; date: string; summary: string }];
-  publications?: [
-    {
-      name: string;
-      publisher: string;
-      publishedIn: string;
-      url: { href: string; label: string };
-      date: string;
-    },
-  ];
-  certifications?: [
-    {
-      name: string;
-      issuer: string;
-      date: string;
-      url: { href: string; label: string };
-    },
-  ];
-  references?: [{ name: string; phone: string; email: string }];
-}) {
-  console.log("yop", profileData);
-  try {
+        summary: string;
+        startDate: string;
+        endDate: string;
+        url: { href: string; label: string };
+        keywords: string[];
+      },
+    ];
+    education?: [
+      {
+        institution: string;
+        degree: string;
+        field: string;
+        specialization: string;
+        startDate: string;
+        endDate: string;
+        score: string;
+      },
+    ];
+    experience?: [
+      {
+        organization: string;
+        role: string;
+        startDate: string;
+        endDate: string;
+        location: string;
+        summary: string;
+      },
+    ];
+    languages?: [{ name: string; level: string }];
+    volunteer?: [
+      {
+        organization: string;
+        role: string;
+        startDate: string;
+        endDate: string;
+        location: string;
+      },
+    ];
+    awards?: [
+      { title: string; awarder: string; date: string; summary: string },
+    ];
+    publications?: [
+      {
+        name: string;
+        publisher: string;
+        publishedIn: string;
+        url: { href: string; label: string };
+        date: string;
+      },
+    ];
+    certifications?: [
+      {
+        name: string;
+        issuer: string;
+        date: string;
+        url: { href: string; label: string };
+      },
+    ];
+    references?: [{ name: string; phone: string; email: string }];
+  }) => {
     const session = await auth();
-    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
-    ip = ip === "::1" ? "127.0.0.1" : ip;
-    console.log(ip, "ip address");
-    const ratelimit = rateLimiter(session?.user?.id, ip);
-
-    console.log(ratelimit);
-    if (ratelimit) {
-      console.log("rate limit exceeded");
-      return { message: "Rate limit exceeded.", status: 429 };
-    }
-    if (!session || !session.user || !session.user.id) {
-      return {
-        success: false,
-        message: "User is not authenticated",
-      };
-    }
+    if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+    if (!profileData) throw ActionsError.badRequest;
 
     const userId = session.user.id;
 
@@ -162,8 +149,6 @@ export async function updateProfiles(profileData: {
         },
       });
     }
-
-    console.log("Profile updated/created:", profile);
     revalidatePath("/profile", "page");
     return {
       success: true,
@@ -172,14 +157,5 @@ export async function updateProfiles(profileData: {
         : "Profile created successfully",
       profile,
     };
-  } catch (error) {
-    console.error("Error updating/creating profile:", error);
-    return {
-      success: false,
-      message: "Failed to update/create profile",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  },
+);

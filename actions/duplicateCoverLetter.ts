@@ -1,70 +1,56 @@
 "use server";
 import { auth } from "@/auth";
-import { rateLimiter } from "@/lib/rateLimiter";
-import { headers } from "next/headers";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 
-export async function duplicateCoverLetter(coverId: string) {
+export const duplicateCoverLetter = asyncHandler(async (coverId: string) => {
   const session = await auth();
 
-  try {
+  if (!session || !session?.user || !session?.user?.id)
+    ActionsError.userNotAuthenticated;
+  if (!coverId) ActionsError.badRequest;
 
-    let ip = headers().get("x-forwarded-for") || "127.0.0.1";
-    ip = ip === "::1" ? "127.0.0.1" : ip;
-    console.log(ip, "ip address");
-    const ratelimit = rateLimiter(session?.user?.id, ip);
+  const originalCoverLetter = await prisma.coverletter.findFirst({
+    where: {
+      id: coverId,
+      userId: session?.user?.id,
+    },
+  });
 
-    console.log(ratelimit);
-    if (ratelimit) {
-      console.log("rate limit exceeded");
-      return { message: "Rate limit exceeded.", status: 429 };
-    }
+  if (!originalCoverLetter)
+    throw ActionsError.custom(
+      "Cover letter not found or you're not authorized to duplicate this cover letter.",
+      404,
+    );
 
-    if (!session || !session.user?.id) {
-      throw new Error("Unauthorized");
-    }
+  const parsedStyles = JSON.parse(JSON.stringify(originalCoverLetter.styles));
 
-    const originalCoverLetter = await prisma.coverletter.findFirst({
-      where: {
-        id: coverId,
-        userId: session.user.id,
-      },
-    });
+  const duplicatedCoverLetter = await prisma.coverletter.create({
+    data: {
+      userId: originalCoverLetter.userId,
+      coverName: `${originalCoverLetter.coverName} (Copy)`,
+      closing: originalCoverLetter.closing,
+      culturalFit: originalCoverLetter.culturalFit,
+      date: originalCoverLetter.date,
+      interestInPosition: originalCoverLetter.interestInPosition,
+      keyAchievements: originalCoverLetter.keyAchievements,
+      opening: originalCoverLetter.opening,
+      professionalSummary: originalCoverLetter.professionalSummary,
+      recipientInfo: originalCoverLetter.recipientInfo,
+      salutation: originalCoverLetter.salutation,
+      senderInfo: originalCoverLetter.senderInfo,
+      signOff: originalCoverLetter.signOff,
+      subject: originalCoverLetter.subject,
+      styles: parsedStyles,
+    },
+  });
 
-    if (!originalCoverLetter) {
-      throw new Error(
-        "Cover letter not found or you're not authorized to duplicate this cover letter."
-      );
-    }
+  revalidatePath("/home", "page");
 
-    const parsedStyles = JSON.parse(JSON.stringify(originalCoverLetter.styles));
-
-    const duplicatedCoverLetter = await prisma.coverletter.create({
-      data: {
-        userId: originalCoverLetter.userId,
-        coverName: `${originalCoverLetter.coverName} (Copy)`,
-        closing: originalCoverLetter.closing,
-        culturalFit: originalCoverLetter.culturalFit,
-        date: originalCoverLetter.date,
-        interestInPosition: originalCoverLetter.interestInPosition,
-        keyAchievements: originalCoverLetter.keyAchievements,
-        opening: originalCoverLetter.opening,
-        professionalSummary: originalCoverLetter.professionalSummary,
-        recipientInfo: originalCoverLetter.recipientInfo,
-        salutation: originalCoverLetter.salutation,
-        senderInfo : originalCoverLetter.senderInfo,
-        signOff: originalCoverLetter.signOff,
-        subject: originalCoverLetter.subject,
-        styles: parsedStyles,
-      },
-    });
-   revalidatePath("/home", "page");
-    return { message: "Cover Letter duplicated successfully", duplicatedCoverLetter };
-  } catch (error) {
-    console.error("Error duplicating cover letter:", error);
-    throw new Error("Failed to duplicate cover letter. Please try again later.");
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  return {
+    message: "Cover Letter duplicated successfully",
+    duplicatedCoverLetter,
+  };
+});

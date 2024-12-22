@@ -1,7 +1,5 @@
 "use server";
 import { auth } from "@/auth";
-import { rateLimiter } from "@/lib/rateLimiter";
-import { headers } from "next/headers";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
 import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
@@ -26,6 +24,4 @@ export const createResume = asyncHandler(async (resumeName: string) => {
     message: "Resume created successfully",
     resume,
   };
-
-  await prisma.$disconnect();
 });
