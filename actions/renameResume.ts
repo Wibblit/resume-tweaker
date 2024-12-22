@@ -27,6 +27,11 @@ export const renameResume = asyncHandler(
         404,
       );
     revalidatePath("/home", "page");
-    return { message: "Resume renamed successfully", updatedResume };
+    return {
+      success: true,
+      message: "Resume renamed successfully",
+      updatedResume,
+      status: 200,
+    };
   },
 );

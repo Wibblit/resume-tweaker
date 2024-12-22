@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,13 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { renameResume } from "@/actions/renameResume";
 import { ResumesProps } from "@/types/types";
+import { Loader2 } from "lucide-react";
 
 export function RenameDialog({
   children,
   resumeId,
   resumeName,
-  setRecentResumes
+  setRecentResumes,
 }: {
   children: React.ReactNode;
   resumeId: string;
@@ -42,39 +43,27 @@ export function RenameDialog({
   const handleRename = async () => {
     if (name.trim() && name !== resumeName) {
       setLoading(true);
-      try {
-        const response = await renameResume(name, resumeId);
-         if (response.status === 429) {
-           toast({
-             title: "Whoa there! You've hit the rate limit.",
-             description: "Please slow down and try again in a few minutes.",
-             variant: "destructive",
-           });
-           return;
-         }
-        setOpen(false);
-        setRecentResumes((prev) => 
-          prev?.map((resume) => 
-            resume.id === resumeId 
-              ? { ...resume, resumeName: name } 
-              : resume
-          )
+      const response = await renameResume(name, resumeId);
+      setOpen(false);
+      if (response.success) {
+        setRecentResumes((prev) =>
+          prev?.map((resume) =>
+            resume.id === resumeId ? { ...resume, resumeName: name } : resume,
+          ),
         );
         toast({
           title: "Success",
           description: response.message,
           variant: "default",
         });
-      } catch (error) {
-        console.error("An error occurred:", error);
+      } else {
         toast({
           title: "Error",
-          description: "An unexpected error occurred",
+          description: response.message,
           variant: "destructive",
         });
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     } else if (name === resumeName) {
       setOpen(false);
     }
@@ -109,7 +98,14 @@ export function RenameDialog({
             onClick={handleRename}
             disabled={!name.trim() || name === resumeName || loading}
           >
-            {loading ? "Renaming..." : "Rename"}
+            {loading ? (
+              <span className="flex gap-2">
+                <Loader2 className="animate-spin" />
+                Renaming...
+              </span>
+            ) : (
+              "Rename"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
