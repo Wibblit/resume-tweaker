@@ -37,27 +37,13 @@ export default function Error({
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [orbs, setOrbs] = useState<Orb[]>([]);
-  const searchParams = useSearchParams();
   useEffect(() => {
     setMounted(true);
     setOrbs(Array.from({ length: 5 }, generateOrb));
     console.error("Error details:", error);
   }, [error]);
 
-  const errorContent = {
-    429: {
-      title: "429",
-      message: "Whoa there! You've hit the rate limit.",
-      description: "Please slow down and try again in a few minutes.",
-    },
-    500: {
-      title: "500",
-      message: "Oops! Something went wrong on our end.",
-      description: "We're working on fixing this. Please try again later.",
-    },
-  };
-
-  const content = parseInt(searchParams.get("status") ?? '500') == 429 ? errorContent[429] : errorContent[500];
+  const content = 500;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
