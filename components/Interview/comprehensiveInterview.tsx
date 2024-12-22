@@ -70,6 +70,7 @@ export default function ComprehensiveInterview({
     router.replace("/ai-interview");
   };
 
+    const [isoLoader, setIsoLoader] = useState<boolean>(false);
 
   const generateAudioQueue = async () => {
     const startIndex = currentQuestionIndex;
@@ -209,6 +210,7 @@ export default function ComprehensiveInterview({
               audioUrl={currentAudioUrl}
               isPlayingAudio={isPlayingAudio}
               setIsPlayingAudio={setIsPlayingAudio}
+              setIsoLoader={setIsoLoader}
             />
             <AudioRecorder
               isRecording={isRecording}

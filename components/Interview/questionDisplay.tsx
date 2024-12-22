@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { AudioLines, Volume2 } from 'lucide-react';
+import { AudioLines, Loader2, Volume2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypeAnimation } from "react-type-animation";
 
@@ -12,6 +12,8 @@ interface QuestionDisplayProps {
   audioUrl: string | undefined;
   isPlayingAudio: boolean;
   setIsPlayingAudio: React.Dispatch<React.SetStateAction<boolean>>;
+  skipQuestionLoading?: boolean;
+  setIsoLoader : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function QuestionDisplay({
@@ -20,15 +22,18 @@ export default function QuestionDisplay({
   audioUrl,
   isPlayingAudio,
   setIsPlayingAudio,
+  skipQuestionLoading,
+  setIsoLoader,
 }: QuestionDisplayProps) {
   const [isTypingComplete, setIsTypingComplete] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isNextLoading, setIsNextLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setIsTypingComplete(false);
     if (audioUrl) {
       audioRef.current = new Audio(audioUrl);
-      playAudio()
+      playAudio();
       audioRef.current.onended = () => {
         setIsPlayingAudio(false);
       };
@@ -45,7 +50,8 @@ export default function QuestionDisplay({
 
   const playAudio = () => {
     if (audioRef.current && !isPlayingAudio) {
-      audioRef.current.play()
+      audioRef.current
+        .play()
         .then(() => setIsPlayingAudio(true))
         .catch((err) => {
           console.error("Audio playback failed:", err);
@@ -61,11 +67,16 @@ export default function QuestionDisplay({
       setIsPlayingAudio(false);
     }
   };
-
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
+    setIsNextLoading(true);
+    setIsoLoader(true);
     stopAudio();
-    onNextQuestion();
+    await onNextQuestion();
+    setIsoLoader(false);
+    setIsNextLoading(false);
   };
+
+  isNextLoading && console.log("Ho bahai");
 
   return (
     <div className="mb-4 space-y-4">
@@ -108,10 +119,16 @@ export default function QuestionDisplay({
         {isTypingComplete && (
           <Button
             onClick={handleNextQuestion}
+            disabled={skipQuestionLoading || isNextLoading}
             variant="link"
             size="sm"
-            className="text-blue-500 hover:underline text-lg"
+            className={`text-blue-500 flex items-center justify-center  hover:underline text-lg ${
+              skipQuestionLoading || isNextLoading
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }`}
           >
+            {isNextLoading && <Loader2 className="animate-spin mr-1" />}
             Next Question
           </Button>
         )}
@@ -119,4 +136,3 @@ export default function QuestionDisplay({
     </div>
   );
 }
-

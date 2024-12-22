@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
 import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Loader2, LogOut, Pause, Play } from 'lucide-react';
+import { Loader2, LogOut, Pause, Play } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
@@ -65,6 +65,9 @@ export default function AdaptiveInterview({
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
   const [skipQuestionLoading, setSkipQuestionLoding] = useState(false);
+
+  const [isoLoader, setIsoLoader] = useState<boolean>(false);
+
   const router = useRouter();
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -89,7 +92,12 @@ export default function AdaptiveInterview({
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [isInterviewComplete, isTimerPaused, currentQuestionIndex, numberOfQuestions]);
+  }, [
+    isInterviewComplete,
+    isTimerPaused,
+    currentQuestionIndex,
+    numberOfQuestions,
+  ]);
 
   useEffect(() => {
     fetchFirstQuestion();
@@ -204,6 +212,12 @@ export default function AdaptiveInterview({
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Unable to load the next question. Please try again.",
+      });
+      return;
       setIsTimerPaused(false);
     }
   };
@@ -257,6 +271,11 @@ export default function AdaptiveInterview({
         }),
       });
       if (!result.ok) {
+        toast({
+          title: "error",
+          description: "Failed to skip. Please try again.",
+          variant: "destructive",
+        });
         throw new Error("Failed to get the next question");
       }
       const data = await result.json();
@@ -346,11 +365,13 @@ export default function AdaptiveInterview({
         {!isInterviewComplete && (
           <>
             <QuestionDisplay
+              skipQuestionLoading={skipQuestionLoading}
               question={questions[currentQuestionIndex]}
               onNextQuestion={handleNextQuestion}
               audioUrl={audioQueue[currentQuestionIndex]}
               isPlayingAudio={isPlayingAudio}
               setIsPlayingAudio={setIsPlayingAudio}
+              setIsoLoader={setIsoLoader}
             />
             <AudioRecorder
               isRecording={isRecording}
@@ -363,6 +384,9 @@ export default function AdaptiveInterview({
               <Button
                 onClick={() => setIsRecording(!isRecording)}
                 variant={isRecording ? "destructive" : "default"}
+                disabled={
+                  skipQuestionLoading || !audioQueue[currentQuestionIndex] || isoLoader
+                }
                 className="flex items-center"
               >
                 {isRecording ? (
@@ -381,9 +405,23 @@ export default function AdaptiveInterview({
                   </>
                 )}
               </Button>
-              <Button onClick={handleSkipQuestion}>
+              <Button
+                onClick={handleSkipQuestion}
+                disabled={
+                  skipQuestionLoading ||
+                  !audioQueue[currentQuestionIndex] ||
+                  isoLoader
+                }
+                className={`${
+                  skipQuestionLoading ||
+                  !audioQueue[currentQuestionIndex] ||
+                  isoLoader
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
+              >
                 {skipQuestionLoading ? (
-                  <div className="flex">
+                  <div className="flex items-center justify-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Skipping Question...
                   </div>
@@ -416,4 +454,3 @@ export default function AdaptiveInterview({
     </Card>
   );
 }
-
