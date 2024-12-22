@@ -17,11 +17,7 @@ export const asyncHandler =
 
       // Fallback for unexpected errors
       console.error("Unexpected Error:", error);
-      return {
-        success: false,
-        message: "An unexpected error occurred.",
-        status: 500,
-      };
+      throw new Error("An unexpected error occured");
     } finally {
       await prisma.$disconnect();
     }

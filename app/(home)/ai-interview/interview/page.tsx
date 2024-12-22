@@ -105,39 +105,33 @@ export default function InterviewPage() {
       if (interviewData.interviewType !== "adaptive" && interviewData.job) {
         console.log("interviewer position:", interviewData.interviewerPosition);
         setIsLoading(true);
-        try {
-          const response = await fetch("/api/generate-questions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              job: interviewData.job,
-              position: interviewData.position,
-              companyName: interviewData.companyName,
-              jd: interviewData.jd,
-              numberOfQuestions: interviewData.numberOfQuestions,
-              resumeText: interviewData.resumeText,
-              totalDuration: interviewData.duration,
-              interviewerPosition: interviewData.interviewerPosition,
-            }),
-          });
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch questions");
-          }
-          const data = await response.json();
-          setComprehensiveQuestion(data.questions || []);
-        } catch (error) {
-          console.error("Error generating questions:", error);
+        const response = await fetch("/api/generate-questions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            job: interviewData.job,
+            position: interviewData.position,
+            companyName: interviewData.companyName,
+            jd: interviewData.jd,
+            numberOfQuestions: interviewData.numberOfQuestions,
+            resumeText: interviewData.resumeText,
+            totalDuration: interviewData.duration,
+            interviewerPosition: interviewData.interviewerPosition,
+          }),
+        });
+        if (!response.ok) {
           toast({
             title: "Error generating the questions",
             description: "Unable to join the interview. Please try again.",
             variant: "destructive",
           });
-        } finally {
-          setIsLoading(false);
         }
+        const data = await response.json();
+        setComprehensiveQuestion(data.questions || []);
+        setIsLoading(false);
       } else {
         setIsLoading(false);
       }

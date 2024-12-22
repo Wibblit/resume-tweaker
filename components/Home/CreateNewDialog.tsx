@@ -61,7 +61,7 @@ export function CreateNewDialog({
             });
             return;
           }
-          if (response && response.success) {
+          if (response && response.success) { 
             localStorage.setItem(
               "currResumeId",
               response?.resume?.id as string

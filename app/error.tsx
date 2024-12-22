@@ -43,7 +43,7 @@ export default function Error({
     console.error("Error details:", error);
   }, [error]);
 
-  const content = 500;
+  const status = 500;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col overflow-hidden">
@@ -51,13 +51,15 @@ export default function Error({
       <main className="flex-grow flex items-center justify-center p-4 relative z-10">
         <div className="text-center">
           <h1 className="text-9xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r dark:from-zinc-500 dark:to-zinc-500 from-zinc-900 to-zinc-900 animate-pulse">
-            {content.title}
+            Oops!
           </h1>
           <p className="text-2xl mb-8 animate-fade-in-up dark:text-zinc-400 text-zinc-900">
-            {content.message}
+            Looks like something went wrong.
           </p>
           <p className="text-lg mb-8 max-w-md mx-auto dark:text-zinc-400 text-zinc-900">
-            {content.description}
+            {" "}
+            Don’t worry, it’s not you—it’s us. We’re working hard to fix it. Try
+            refreshing the page or check back later. Thanks for your patience!
           </p>
           <div className="space-x-4">
             <Button

@@ -131,10 +131,14 @@ export default function AdaptiveInterview({
           interviewerPosition,
         }),
       });
-      if (!result.ok) {
-        throw new Error("Failed to get the first question");
-      }
       const data = await result.json();
+      if (!result.ok) {
+        toast({
+          title: `Error ${result.status}`,
+          description: data.message,
+          variant: "destructive",
+        });
+      }
       setChatHistory(data.chatHistory);
       setQuestions([data.question]);
       generateAudio(data.question);
@@ -195,10 +199,14 @@ export default function AdaptiveInterview({
           interviewerPosition,
         }),
       });
-      if (!result.ok) {
-        throw new Error("Failed to get the next question");
-      }
       const data = await result.json();
+      if (!result.ok) {
+        toast({
+          title: `Error ${result.status}`,
+          description: data.message,
+          variant: "destructive",
+        });
+      }
       setChatHistory(data.chatHistory);
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
@@ -270,15 +278,14 @@ export default function AdaptiveInterview({
           interviewerPosition,
         }),
       });
+      const data = await result.json();
       if (!result.ok) {
         toast({
-          title: "error",
-          description: "Failed to skip. Please try again.",
+          title: `Error ${result.status}`,
+          description: data.message,
           variant: "destructive",
         });
-        throw new Error("Failed to get the next question");
       }
-      const data = await result.json();
       setChatHistory(data.chatHistory);
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
@@ -325,11 +332,15 @@ export default function AdaptiveInterview({
 
       console.log("Request sent, status:", response.status);
 
+      const data = await response.json();
       if (!response.ok) {
-        throw new Error(`Failed to generate report: ${response.statusText}`);
+        toast({
+          title: `Error ${response.status}`,
+          description: data.message,
+          variant: "destructive",
+        });
       }
 
-      const data = await response.json();
       console.log("Report data received:", data);
 
       setReport(JSON.parse(data.report));
@@ -385,7 +396,9 @@ export default function AdaptiveInterview({
                 onClick={() => setIsRecording(!isRecording)}
                 variant={isRecording ? "destructive" : "default"}
                 disabled={
-                  skipQuestionLoading || !audioQueue[currentQuestionIndex] || isoLoader
+                  skipQuestionLoading ||
+                  !audioQueue[currentQuestionIndex] ||
+                  isoLoader
                 }
                 className="flex items-center"
               >

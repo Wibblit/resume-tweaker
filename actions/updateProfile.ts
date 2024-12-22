@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export async function updateProfiles(profileData: {
   basics?: {
@@ -25,7 +26,7 @@ export async function updateProfiles(profileData: {
         name: string;
         skills: { name: string; level: string }[];
       };
-    }
+    },
   ];
   projects?: [
     {
@@ -35,7 +36,7 @@ export async function updateProfiles(profileData: {
       endDate: string;
       url: { href: string; label: string };
       keywords: string[];
-    }
+    },
   ];
   education?: [
     {
@@ -46,7 +47,7 @@ export async function updateProfiles(profileData: {
       startDate: string;
       endDate: string;
       score: string;
-    }
+    },
   ];
   experience?: [
     {
@@ -56,7 +57,7 @@ export async function updateProfiles(profileData: {
       endDate: string;
       location: string;
       summary: string;
-    }
+    },
   ];
   languages?: [{ name: string; level: string }];
   volunteer?: [
@@ -66,7 +67,7 @@ export async function updateProfiles(profileData: {
       startDate: string;
       endDate: string;
       location: string;
-    }
+    },
   ];
   awards?: [{ title: string; awarder: string; date: string; summary: string }];
   publications?: [
@@ -76,7 +77,7 @@ export async function updateProfiles(profileData: {
       publishedIn: string;
       url: { href: string; label: string };
       date: string;
-    }
+    },
   ];
   certifications?: [
     {
@@ -84,7 +85,7 @@ export async function updateProfiles(profileData: {
       issuer: string;
       date: string;
       url: { href: string; label: string };
-    }
+    },
   ];
   references?: [{ name: string; phone: string; email: string }];
 }) {
@@ -118,7 +119,7 @@ export async function updateProfiles(profileData: {
       Object.entries(profileData).map(([key, value]) => [
         key,
         JSON.stringify(value),
-      ])
+      ]),
     );
 
     if (profile) {
@@ -163,7 +164,7 @@ export async function updateProfiles(profileData: {
     }
 
     console.log("Profile updated/created:", profile);
-
+    revalidatePath("/profile", "page");
     return {
       success: true,
       message: profile

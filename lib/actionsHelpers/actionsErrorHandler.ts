@@ -10,8 +10,10 @@ export class ActionsError extends Error {
   static rateLimitExceeded = new ActionsError("Rate limit exceeded.", 429);
   static userNotAuthenticated = new ActionsError(
     "User is not authenticated.",
-    401
+    401,
   );
-  static badRequest = new ActionsError("Invalid request data.", 400);
-  static unexpectedError = new ActionsError("An unexpected error occurred.", 500);
+  static resourceNotFound = new ActionsError("Resource not found.", 404);
+  static unauthorizedAction = new ActionsError("Unauthorized action.", 403);
+  static validationError = new ActionsError("Data validation failed.", 422);
+  static badRequest = new ActionsError("Invalid actions arguments", 400);
 }

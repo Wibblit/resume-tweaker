@@ -151,16 +151,20 @@ function RadialChart({
   );
 }
 
-export default function AIReview() {
+export default function AIReview({
+  recentResumes,
+}: {
+  recentResumes: UserResume[];
+}) {
   const [reviewType, setReviewType] = useState("generic");
   const [resumeOption, setResumeOption] = useState<"select" | "upload">(
-    "select"
+    "select",
   );
   const [selectedResume, setSelectedResume] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult | null>(
-    null
+    null,
   );
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [userResumes, setUserResumes] = useState<UserResume[]>();
@@ -239,50 +243,11 @@ export default function AIReview() {
       };
 
   useEffect(() => {
-    async function getUserResumes() {
-      try {
-        setresuLoading(true);
-        const response = await axios.get<{
-          recentResumes: UserResume[];
-          message: string;
-          title: string;
-          success: boolean;
-        }>("/api/get-recent-resumes/");
-        if (response.status === 429) {
-          toast({
-            title: "Whoa there! You've hit the rate limit.",
-            description: "Please slow down and try again in a few minutes.",
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        if(!response.data.success){
-          toast({
-            title: response.data.title,
-            description: response.data.message,
-            variant: response.data.success ? "default" : "destructive",
-          });
-        }
-        console.log(response, "user resumes");
-        setUserResumes(response.data.recentResumes);
-        response.data.recentResumes.length === 0 && setFuncDisabler(true)
-        setresuLoading(false);
-      } catch (error) {
-        console.error("Error fetching user resumes:", error);
-        toast({
-          title: "Error",
-          description: "Unable to fetch your resume. Please reload the page.",
-          variant: "destructive",
-        });
-        setresuLoading(false);
-      }
-    }
-    getUserResumes();
+    setUserResumes(recentResumes);
   }, []);
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const uploadedFile = event.target.files?.[0];
     if (!uploadedFile) return;
@@ -320,7 +285,6 @@ export default function AIReview() {
   };
 
   const handleResumeSelect = (value: string) => {
-    
     if (!resuLoading || funcdisabler) {
       console.log("Now you called master!!");
       setSelectedResume(value);
@@ -341,14 +305,13 @@ export default function AIReview() {
         jd: jd,
         reviewType: reviewType,
       });
-      if (response.status === 429) {
-          toast({
-            title: "Whoa there! You've hit the rate limit.",
-            description: "Please slow down and try again in a few minutes.",
-            variant: "destructive",
-          })
-          return;
-        }
+      if (!response.ok) {
+        toast({
+          title: `Error ${response.status}`,
+          description: response.data.message,
+          variant: "destructive",
+        });
+      }
       setJd("");
       setAiSuggestions(response.data.resumeReview);
     } catch (error) {
@@ -409,10 +372,11 @@ export default function AIReview() {
                       >
                         <Loader2 className="mr-4 h-4 w-4 animate-spin" />
                       </SelectItem>
-                    ) :
-                      userResumes?.length === 0 ? <SelectItem value="noresumes">
+                    ) : userResumes?.length === 0 ? (
+                      <SelectItem value="noresumes">
                         No resumes found
-                      </SelectItem> : (
+                      </SelectItem>
+                    ) : (
                       userResumes?.map((resume) => (
                         <SelectItem key={resume.id} value={resume.id}>
                           {resume.resumeName}
@@ -567,7 +531,7 @@ export default function AIReview() {
                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
-                        )
+                        ),
                       )}
                     </div>
                   </CardContent>

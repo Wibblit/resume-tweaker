@@ -294,7 +294,6 @@
 //   );
 // }
 
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -342,7 +341,7 @@ interface Blog {
 
 export default function BlogPost({ session, slug }: BlogPostProps) {
   const router = useRouter();
-  const { toast} = useToast()
+  const { toast } = useToast();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [sparkCount, setSparkCount] = useState<number>(0);
   const [hasSparked, setHasSparked] = useState<boolean>(false);
@@ -362,16 +361,20 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
           });
           return;
         }
-        if (!response.ok) {
-          throw new Error("Failed to fetch blog");
-        }
         const data = await response.json();
+        if (!response.ok) {
+          toast({
+            title: `Error ${response.status}`,
+            description: data.message,
+            variant: "destructive",
+          });
+        }
         setBlog(data);
         setSparkCount(data.spark);
         setViews(data.views);
 
         const sparkedBlogs = JSON.parse(
-          localStorage.getItem("sparkedBlogs") || "[]"
+          localStorage.getItem("sparkedBlogs") || "[]",
         );
         setHasSparked(sparkedBlogs.includes(data.id));
       } catch (error) {
@@ -421,7 +424,7 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
         });
         if (response.ok) {
           const sparkedBlogs = JSON.parse(
-            localStorage.getItem("sparkedBlogs") || "[]"
+            localStorage.getItem("sparkedBlogs") || "[]",
           );
           sparkedBlogs.push(blog.id);
           localStorage.setItem("sparkedBlogs", JSON.stringify(sparkedBlogs));
@@ -440,14 +443,14 @@ export default function BlogPost({ session, slug }: BlogPostProps) {
     if (confirm("Are you sure you want to delete this blog post?")) {
       try {
         const result = await deleteBlog(blog?.slug || "");
-         if (result.status === 429) {
-           toast({
-             title: "Whoa there! You've hit the rate limit.",
-             description: "Please slow down and try again in a few minutes.",
-             variant: "destructive",
-           });
-           return;
-         }
+        if (result.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         if (result.success) {
           router.push("/blogs");
         } else {
