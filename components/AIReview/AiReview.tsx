@@ -305,7 +305,7 @@ export default function AIReview({
         jd: jd,
         reviewType: reviewType,
       });
-      if (!response.ok) {
+      if (!response.data.resumeReview) {
         toast({
           title: `Error ${response.status}`,
           description: response.data.message,
