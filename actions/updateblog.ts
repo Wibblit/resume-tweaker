@@ -57,6 +57,7 @@ export const updateBlogPost = asyncHandler(
       success: true,
       message: "Blog post updated successfully",
       blogPost: updatedBlogPost,
+      status: 200,
     };
   },
 );

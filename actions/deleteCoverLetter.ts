@@ -17,5 +17,9 @@ export const deleteCoverLetter = asyncHandler(async (coverId: string) => {
     },
   });
   revalidatePath("/home", "page");
-  return { success: true, message: "Successfully deleted the cover letter" };
+  return {
+    success: true,
+    message: "Successfully deleted the cover letter",
+    status: 200,
+  };
 });

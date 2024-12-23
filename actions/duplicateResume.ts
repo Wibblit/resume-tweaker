@@ -70,5 +70,10 @@ export const duplicateResume = asyncHandler(async (resumeId: string) => {
     },
   });
   revalidatePath("/home", "page");
-  return { message: "Resume duplicated successfully", duplicatedResume };
+  return {
+    success: true,
+    status: 200,
+    message: "Resume duplicated successfully",
+    duplicatedResume,
+  };
 });

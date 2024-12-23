@@ -48,22 +48,14 @@ export default function ResumeItem({
       setCurrentResume({
         currResumeId: resume.id,
         currResumeName: resume.resumeName,
-      })
+      }),
     );
     router.push(`/editor`);
   };
 
   const handleDuplicate = async () => {
-    try {
-      const response = await duplicateResume(resume.id);
-      if (response.status === 429) {
-        toast({
-          title: "Whoa there! You've hit the rate limit.",
-          description: "Please slow down and try again in a few minutes.",
-          variant: "destructive",
-        });
-        return;
-      }
+    const response = await duplicateResume(resume.id);
+    if (response && response.success) {
       setRecentResumes((prev) => {
         if (!prev || !response.duplicatedResume) return prev;
         return [
@@ -81,41 +73,29 @@ export default function ResumeItem({
         title: "Success",
         description: response.message,
       });
-    } catch (error) {
-      console.error("Failed to duplicate resume:", error);
+    } else {
       toast({
-        title: "Success",
-        description: "Failed to duplicate the resume :(",
+        title: `Error ${response.status}`,
+        description: response.message,
+        variant: "destructive",
       });
     }
   };
 
   const handleDelete = async () => {
-    try {
-      const { success, message, status } = await deleteResume(resume.id);
-      if (status === 429) {
-        toast({
-          title: "Whoa there! You've hit the rate limit.",
-          description: "Please slow down and try again in a few minutes.",
-          variant: "destructive",
-        });
-        return;
-      }
-      if (success) {
-        setRecentResumes((prev) =>
-          prev?.filter((item) => item.id !== resume.id)
-        );
-        toast({
-          title: "Success",
-          description: message,
-          variant: "default",
-        });
-      }
-    } catch (error) {
-      console.log(error);
+    const { success, message, status } = await deleteResume(resume.id);
+
+    if (success) {
+      setRecentResumes((prev) => prev?.filter((item) => item.id !== resume.id));
       toast({
-        title: "Error",
-        description: "Failed to delete the resume",
+        title: "Success",
+        description: message,
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: `Error ${status}`,
+        description: message,
         variant: "destructive",
       });
     }

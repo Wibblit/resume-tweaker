@@ -156,6 +156,7 @@ export const updateProfiles = asyncHandler(
         ? "Profile updated successfully"
         : "Profile created successfully",
       profile,
+      status: 200,
     };
   },
 );

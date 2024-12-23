@@ -25,5 +25,6 @@ export const createCover = asyncHandler(async (coverName: string) => {
     success: true,
     message: "Resume created successfully",
     cover,
+    status: 200,
   };
 });

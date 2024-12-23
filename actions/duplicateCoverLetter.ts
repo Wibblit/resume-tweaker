@@ -50,7 +50,9 @@ export const duplicateCoverLetter = asyncHandler(async (coverId: string) => {
   revalidatePath("/home", "page");
 
   return {
+    success: true,
     message: "Cover Letter duplicated successfully",
     duplicatedCoverLetter,
+    status: 200,
   };
 });

@@ -16,5 +16,9 @@ export const deleteResume = asyncHandler(async (resumeId: string) => {
     },
   });
   revalidatePath("/home", "page");
-  return { success: true, message: "Successfully deleted the resume" };
+  return {
+    success: true,
+    message: "Successfully deleted the resume",
+    status: 200,
+  };
 });

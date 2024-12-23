@@ -194,6 +194,7 @@ export const saveResumeData = asyncHandler(
       success: true,
       result,
       message: "Resume updated successfully",
+      status: 200,
     };
   },
 );

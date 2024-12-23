@@ -23,5 +23,6 @@ export const createResume = asyncHandler(async (resumeName: string) => {
     success: true,
     message: "Resume created successfully",
     resume,
+    status: 200,
   };
 });

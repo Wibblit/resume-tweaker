@@ -15,5 +15,9 @@ export const deleteBlog = asyncHandler(async (slug: string) => {
       slug: slug,
     },
   });
-  return { success: true, message: "Successfully deleted the resume" };
+  return {
+    success: true,
+    message: "Successfully deleted the resume",
+    status: 200,
+  };
 });

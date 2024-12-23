@@ -27,6 +27,10 @@ export const renameCoverLetter = asyncHandler(
         404,
       );
     revalidatePath("/home", "page");
-    return { message: "Cover letter renamed successfully", updatedCoverLetter };
+    return {
+      message: "Cover letter renamed successfully",
+      updatedCoverLetter,
+      status: 200,
+    };
   },
 );

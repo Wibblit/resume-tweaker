@@ -45,6 +45,7 @@ export const savecoverData = asyncHandler(
       success: true,
       result: result,
       message: "Cover Letter updated successfully",
+      status: 200,
     };
   },
 );

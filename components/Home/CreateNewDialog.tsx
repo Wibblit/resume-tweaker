@@ -50,74 +50,54 @@ export function CreateNewDialog({
     }
     setLoading(true);
     if (name.trim()) {
-      try {
-        if (type === RESUME) {
-          const response = await createResume(name);
-          if (response.status === 429) {
-            toast({
-              title: "Whoa there! You've hit the rate limit.",
-              description: "Please slow down and try again in a few minutes.",
-              variant: "destructive",
-            });
-            return;
-          }
-          if (response && response.success) {
-            localStorage.setItem(
-              "currResumeId",
-              response?.resume?.id as string,
-            );
-            dispatch(
-              setCurrentResume({
-                currResumeId: response?.resume?.id as string,
-                currResumeName: response?.resume?.resumeName as string,
-              }),
-            );
+      if (type === RESUME) {
+        const response = await createResume(name);
+        if (response && response.success) {
+          localStorage.setItem("currResumeId", response?.resume?.id as string);
+          dispatch(
+            setCurrentResume({
+              currResumeId: response?.resume?.id as string,
+              currResumeName: response?.resume?.resumeName as string,
+            }),
+          );
 
-            router.push("/editor");
-          } else {
-            toast({
-              title: "Error",
-              description: response.message || "Failed to create resume",
-              variant: "destructive",
-            });
-            setLoading(false);
-          }
+          router.push("/editor");
         } else {
-          const response = await createCover(name);
-          if (response.status === 429) {
-            toast({
-              title: "Whoa there! You've hit the rate limit.",
-              description: "Please slow down and try again in a few minutes.",
-              variant: "destructive",
-            });
-            return;
-          }
-
-          if (response && response.success) {
-            localStorage.setItem("currCoverId", response?.cover?.id as string);
-            dispatch(
-              setCurrentCover({
-                currCoverId: response?.cover?.id as string,
-                currCoverName: response?.cover?.coverName as string,
-              }),
-            );
-            router.push("/covereditor");
-          } else {
-            toast({
-              title: "Error",
-              description: response.message || "Failed to create resume",
-              variant: "destructive",
-            });
-            setLoading(false);
-          }
+          toast({
+            title: `Error ${response.status}`,
+            description: response.message || "Failed to create resume",
+            variant: "destructive",
+          });
+          setLoading(false);
         }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred",
-          variant: "destructive",
-        });
-        setLoading(false);
+      } else {
+        const response = await createCover(name);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (response && response.success) {
+          localStorage.setItem("currCoverId", response?.cover?.id as string);
+          dispatch(
+            setCurrentCover({
+              currCoverId: response?.cover?.id as string,
+              currCoverName: response?.cover?.coverName as string,
+            }),
+          );
+          router.push("/covereditor");
+        } else {
+          toast({
+            title: "Error",
+            description: response.message || "Failed to create resume",
+            variant: "destructive",
+          });
+          setLoading(false);
+        }
       }
     }
   };

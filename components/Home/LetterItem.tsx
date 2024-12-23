@@ -34,11 +34,9 @@ export default function LetterItem({
     id: string;
     coverName: string;
     userId: string;
-    updatedOn : Date
+    updatedOn: Date;
   };
-  setRecentCoverLetters: React.Dispatch<
-    React.SetStateAction<LetterProps>
-  >;
+  setRecentCoverLetters: React.Dispatch<React.SetStateAction<LetterProps>>;
 }) {
   const isPhone = useMediaQuery({ maxWidth: 767 });
   const router = useRouter();
@@ -50,74 +48,54 @@ export default function LetterItem({
       setCurrentCover({
         currCoverId: letter.id,
         currCoverName: letter.coverName,
-      })
+      }),
     );
     router.push(`/covereditor`);
   };
 
   const handleDuplicate = async () => {
-    try {
-      const response = await duplicateCoverLetter(letter.id);
-       if (response.status === 429) {
-         toast({
-           title: "Whoa there! You've hit the rate limit.",
-           description: "Please slow down and try again in a few minutes.",
-           variant: "destructive",
-         });
-         return;
-       }
-     setRecentCoverLetters((prev) => {
-       if (!prev || !response.duplicatedCoverLetter) return prev;
-       return [
-         {
-           id: response.duplicatedCoverLetter.id,
-           userId: response.duplicatedCoverLetter.userId,
-           coverName: response.duplicatedCoverLetter.coverName,
-           updatedOn : response.duplicatedCoverLetter.updatedOn
-         },
-         ...prev,
-       ];
-     });
+    const response = await duplicateCoverLetter(letter.id);
+    if (response && response.success) {
+      setRecentCoverLetters((prev) => {
+        if (!prev || !response.duplicatedCoverLetter) return prev;
+        return [
+          {
+            id: response.duplicatedCoverLetter.id,
+            userId: response.duplicatedCoverLetter.userId,
+            coverName: response.duplicatedCoverLetter.coverName,
+            updatedOn: response.duplicatedCoverLetter.updatedOn,
+          },
+          ...prev,
+        ];
+      });
       toast({
         title: "Success",
         description: response.message,
       });
-    } catch (error) {
-      console.error("Failed to duplicate cover letter:", error);
+    } else {
       toast({
-        title: "Error",
-        description: "Failed to duplicate the cover letter :(",
+        title: `Error ${response.status}`,
+        description: response.message,
         variant: "destructive",
       });
     }
   };
 
   const handleDelete = async () => {
-    try {
-      const { success, message, status } = await deleteCoverLetter(letter.id);
-       if (status === 429) {
-         toast({
-           title: "Whoa there! You've hit the rate limit.",
-           description: "Please slow down and try again in a few minutes.",
-           variant: "destructive",
-         });
-         return;
-       }
-      if (success) {
-        setRecentCoverLetters((prev) =>
-          prev?.filter((item) => item.id !== letter.id)
-        );
-        toast({
-          title: "Success",
-          description: message,
-          variant: "default",
-        });
-      }
-    } catch (error) {
-      console.log(error);
+    const { success, message, status } = await deleteCoverLetter(letter.id);
+    if (success) {
+      setRecentCoverLetters((prev) =>
+        prev?.filter((item) => item.id !== letter.id),
+      );
       toast({
-        title: "Error",
-        description: "Failed to delete the cover letter",
+        title: "Success",
+        description: message,
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: `Error ${status}`,
+        description: message,
         variant: "destructive",
       });
     }
