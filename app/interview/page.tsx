@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { GradientText } from "@/components/gradient-text";
-import { ReviewTypeCard } from "@/components/ReviewPaage/ReviewTypeCard";
+import { TypeCard } from "@/components/ReviewPaage/TypeCard";
 import { ProcessStep } from "@/components/ReviewPaage/ProcessStep";
 import {
   Brain,
@@ -16,6 +16,7 @@ import { Feature } from "@/components/LandingPage/FeatureComponent";
 import InterviewResults from "@/components/Interview/interviewResults";
 import Footer from "@/components/LandingPage/Footer";
 import { LandingNav } from "@/components/LandingPage/LandingNav";
+import { useRouter } from "next/navigation";
 
 const dummyData = {
   evaluation: [
@@ -78,6 +79,7 @@ const processSteps = [
 ];
 
 function App() {
+  const router = useRouter();
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -100,6 +102,7 @@ function App() {
           <Button
             size="lg"
             className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary"
+            onClick={() => router.push("/ai-interview")}
           >
             <Video className="w-6 h-6" />
             Start Interview
@@ -137,7 +140,7 @@ function App() {
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <ReviewTypeCard
+          <TypeCard
             icon={<Brain className="w-6 h-6" />}
             title="Comprehensive Interview"
             description="Pre-generated questions covering all aspects of your role. Perfect for thorough preparation and consistent evaluation."
@@ -147,8 +150,11 @@ function App() {
               "Detailed Feedback on Every Question",
               "Ideal for Structured Interview Preparation",
             ]}
+            action={() =>
+              router.push("/ai-interview?interviewStyle=comprehensive")
+            }
           />
-          <ReviewTypeCard
+          <TypeCard
             icon={<Workflow className="w-6 h-6" />}
             title="Adaptive Interview"
             description="Dynamic questions that adjust based on your responses. Experience a more realistic and challenging interview flow."
@@ -158,6 +164,7 @@ function App() {
               "Simulates Real-World Interview Dynamics",
               "Challenging and Engaging Practice",
             ]}
+            action={() => router.push("/ai-interview?interviewStyle=adaptive")}
             isPro
           />
         </div>
@@ -216,6 +223,7 @@ function App() {
         <Button
           size="lg"
           className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary"
+          onClick={() => router.push("/ai-interview")}
         >
           Begin Your Practice Interview
         </Button>

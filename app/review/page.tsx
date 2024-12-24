@@ -14,7 +14,8 @@ import { ProcessStep } from "@/components/ReviewPaage/ProcessStep";
 import ReviewResults from "@/components/ReviewPaage/ReviewResult";
 import Footer from "@/components/LandingPage/Footer";
 import { LandingNav } from "@/components/LandingPage/LandingNav";
-import { ReviewTypeCard } from "@/components/ReviewPaage/ReviewTypeCard";
+import { TypeCard } from "@/components/ReviewPaage/TypeCard";
+import { useRouter } from "next/navigation";
 
 const dummyData = {
   evaluation: [
@@ -76,6 +77,7 @@ const processSteps = [
 ];
 
 function AIReview() {
+  const router = useRouter();
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,6 +100,7 @@ function AIReview() {
         <div className="flex gap-4 justify-center">
           <Button
             size="lg"
+            onClick={() => router.push("/ai-review")}
             className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary"
           >
             <FileText className="w-6 h-6 mr-2" />
@@ -127,7 +130,7 @@ function AIReview() {
         </h2>
 
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <ReviewTypeCard
+          <TypeCard
             icon={<CheckCircle className="w-6 h-6" />}
             title="Generic Review"
             description="Comprehensive analysis of your resume's structure, content, and impact. Perfect for overall resume improvement."
@@ -138,8 +141,9 @@ function AIReview() {
               "Language Enhancement",
               "Basic Improvement Suggestions",
             ]}
+            action={() => router.push("/ai-review?reviewType=generic")}
           />
-          <ReviewTypeCard
+          <TypeCard
             icon={<Sparkles className="w-6 h-6" />}
             title="Tailored Review"
             description="Job-specific analysis comparing your resume against the target role. Upload a job description for customized feedback."
@@ -150,6 +154,7 @@ function AIReview() {
               "Qualification Matching",
               "Targeted Improvement Plan",
             ]}
+            action={() => router.push("/ai-review?reviewType=tailored")}
             isPro
           />
         </div>
@@ -207,6 +212,7 @@ function AIReview() {
         </p>
         <Button
           size="lg"
+          onClick={() => router.push("/ai-review")}
           className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary"
         >
           Start Resume Review

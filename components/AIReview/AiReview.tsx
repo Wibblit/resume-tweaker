@@ -50,6 +50,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "next/navigation";
 
 interface AIReviewCriteria {
   score: number;
@@ -156,7 +157,10 @@ export default function AIReview({
 }: {
   recentResumes: UserResume[];
 }) {
-  const [reviewType, setReviewType] = useState("generic");
+  const searchParams = useSearchParams();
+  const [reviewType, setReviewType] = useState(
+    searchParams.get("reviewType") ?? "generic",
+  );
   const [resumeOption, setResumeOption] = useState<"select" | "upload">(
     "select",
   );

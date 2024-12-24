@@ -7,9 +7,17 @@ interface ReviewTypeCardProps {
   description: string;
   features: string[];
   isPro?: boolean;
+  action: () => void;
 }
 
-export function ReviewTypeCard({ icon, title, description, features, isPro }: ReviewTypeCardProps) {
+export function TypeCard({
+  icon,
+  title,
+  description,
+  features,
+  isPro,
+  action,
+}: ReviewTypeCardProps) {
   return (
     <div className="relative p-6 rounded-xl border bg-card transition-all duration-300 hover:shadow-lg">
       {isPro && (
@@ -17,16 +25,16 @@ export function ReviewTypeCard({ icon, title, description, features, isPro }: Re
           Pro
         </span>
       )}
-      
+
       <div className="mb-4">
         <span className="inline-block p-3 rounded-lg bg-primary/10">
           {icon}
         </span>
       </div>
-      
+
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-muted-foreground mb-6">{description}</p>
-      
+
       <div className="space-y-3 mb-6">
         {features.map((feature) => (
           <div key={feature} className="flex items-center gap-2">
@@ -35,9 +43,14 @@ export function ReviewTypeCard({ icon, title, description, features, isPro }: Re
           </div>
         ))}
       </div>
-      
+
       <Button
-        className={isPro ? "bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary w-full" : "w-full"}
+        className={
+          isPro
+            ? "bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary w-full"
+            : "w-full"
+        }
+        onClick={() => action()}
         variant={isPro ? "default" : "outline"}
       >
         Start {title}

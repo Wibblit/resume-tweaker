@@ -9,8 +9,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Upload, HelpCircle, Loader2, Briefcase, Building, User, FileText, Clock, UserCheck } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  Upload,
+  HelpCircle,
+  Loader2,
+  Briefcase,
+  Building,
+  User,
+  FileText,
+  Clock,
+  UserCheck,
+} from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Tooltip,
@@ -19,11 +35,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { createWorker } from 'tesseract.js';
+import { createWorker } from "tesseract.js";
 import { Progress } from "@/components/ui/progress";
 import pdfToImages from "@/lib/pdfToImages";
 import Tesseract from "tesseract.js";
-import * as tts from '@diffusionstudio/vits-web';
+import { useSearchParams } from "next/navigation";
+import * as tts from "@diffusionstudio/vits-web";
 
 interface FormData {
   job: string;
@@ -39,6 +56,7 @@ interface FormData {
 export default function InterviewSetup() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const [formData, setLocalFormData] = useState<FormData>({
     job: "",
     position: "",
@@ -47,7 +65,9 @@ export default function InterviewSetup() {
     jd: "",
     duration: 10,
     interviewerPosition: "",
-    interviewType: "comprehensive",
+    interviewType:
+      (searchParams.get("interviewStyle") as "comprehensive" | "adaptive") ??
+      "comprehensive",
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [resumeText, setResumeText] = useState("");
@@ -74,8 +94,8 @@ export default function InterviewSetup() {
 
     async function checkStoredModels() {
       const storedModels = await tts.stored();
-      if (storedModels.includes('en_US-hfc_female-medium')) {
-        console.log('Already have the model')
+      if (storedModels.includes("en_US-hfc_female-medium")) {
+        console.log("Already have the model");
         setTtsModelDownloaded(true);
       } else {
         downloadTtsModel();
@@ -91,14 +111,17 @@ export default function InterviewSetup() {
 
   async function downloadTtsModel() {
     try {
-      await tts.download('en_US-hfc_female-medium', (progress) => {
-        setTtsDownloadProgress(Math.round(progress.loaded * 100 / progress.total));
+      await tts.download("en_US-hfc_female-medium", (progress) => {
+        setTtsDownloadProgress(
+          Math.round((progress.loaded * 100) / progress.total),
+        );
       });
       setTtsModelDownloaded(true);
     } catch (error) {
-      console.error('Error downloading TTS model:', error);
+      console.error("Error downloading TTS model:", error);
       toast({
-        description: "Failed to download the text-to-speech model. Some features may not work properly.",
+        description:
+          "Failed to download the text-to-speech model. Some features may not work properly.",
         title: "Warning",
         variant: "destructive",
       });
@@ -106,7 +129,7 @@ export default function InterviewSetup() {
   }
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setLocalFormData((prev) => ({ ...prev, [name]: value }));
@@ -150,8 +173,7 @@ export default function InterviewSetup() {
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-
-    console.log("Revied")
+    console.log("Revied");
     e.preventDefault();
     setLoading(true);
     const numberOfQuestions = Math.ceil(formData.duration / 2);
@@ -186,7 +208,9 @@ export default function InterviewSetup() {
       <Card className="max-w-4xl mx-auto bg-card">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">Interview Setup</CardTitle>
-          <CardDescription>Prepare for your AI-powered interview experience</CardDescription>
+          <CardDescription>
+            Prepare for your AI-powered interview experience
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {!ttsModelDownloaded && (
@@ -201,7 +225,10 @@ export default function InterviewSetup() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="job" className="text-foreground flex items-center">
+                <Label
+                  htmlFor="job"
+                  className="text-foreground flex items-center"
+                >
                   <Briefcase className="w-4 h-4 mr-2" />
                   Job
                 </Label>
@@ -215,7 +242,10 @@ export default function InterviewSetup() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="position" className="text-foreground flex items-center">
+                <Label
+                  htmlFor="position"
+                  className="text-foreground flex items-center"
+                >
                   <User className="w-4 h-4 mr-2" />
                   Position
                 </Label>
@@ -229,7 +259,10 @@ export default function InterviewSetup() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="companyName" className="text-foreground flex items-center">
+                <Label
+                  htmlFor="companyName"
+                  className="text-foreground flex items-center"
+                >
                   <Building className="w-4 h-4 mr-2" />
                   Company Name
                 </Label>
@@ -243,7 +276,10 @@ export default function InterviewSetup() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="interviewerPosition" className="text-foreground flex items-center">
+                <Label
+                  htmlFor="interviewerPosition"
+                  className="text-foreground flex items-center"
+                >
                   <UserCheck className="w-4 h-4 mr-2" />
                   Interviewer
                 </Label>
@@ -257,9 +293,12 @@ export default function InterviewSetup() {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="resume" className="text-foreground flex items-center">
+              <Label
+                htmlFor="resume"
+                className="text-foreground flex items-center"
+              >
                 <FileText className="w-4 h-4 mr-2" />
                 Upload Resume
               </Label>
@@ -294,7 +333,7 @@ export default function InterviewSetup() {
                 </div>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="jd" className="text-foreground flex items-center">
                 <FileText className="w-4 h-4 mr-2" />
@@ -308,9 +347,12 @@ export default function InterviewSetup() {
                 className="bg-background text-foreground"
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="duration" className="text-foreground flex items-center">
+              <Label
+                htmlFor="duration"
+                className="text-foreground flex items-center"
+              >
                 <Clock className="w-4 h-4 mr-2" />
                 Duration (max 20 mins)
               </Label>
@@ -329,7 +371,7 @@ export default function InterviewSetup() {
                 {formData.duration} minutes
               </span>
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Label className="text-foreground flex items-center">
@@ -367,7 +409,7 @@ export default function InterviewSetup() {
                 </div>
               </RadioGroup>
             </div>
-            
+
             <Button
               type="submit"
               className="w-full bg-primary text-primary-foreground"
