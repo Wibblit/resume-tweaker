@@ -59,21 +59,21 @@ const processSteps = [
     description:
       "Customize your interview by selecting job role, position, and duration. Upload your resume and JD for personalized questions.",
     icon: <FileSpreadsheet className="w-6 h-6" />,
-    video: "https://your-cdn.com/upload-demo.mp4",
+    video: "/videos/interview-video-1.mp4",
   },
   {
     title: "Take the Interview",
     description:
       "Answer questions in a realistic video environment. Control your pace with options to start, pause, and skip questions.",
     icon: <Video className="w-6 h-6" />,
-    video: "https://your-cdn.com/upload-demo.mp4",
+    video: "/videos/interview-video-2.mp4",
   },
   {
     title: "Get Detailed Analysis",
     description:
       "Receive comprehensive feedback with scores across multiple categories and actionable improvement suggestions.",
     icon: <LineChart className="w-6 h-6" />,
-    video: "https://your-cdn.com/upload-demo.mp4",
+    video: "/videos/interview-video-3.mp4",
   },
 ];
 
@@ -108,7 +108,8 @@ function App() {
             size="lg"
             variant="outline"
             onClick={() => {
-              const featuresSection = document.getElementById("interview-styles");
+              const featuresSection =
+                document.getElementById("interview-styles");
               featuresSection?.scrollIntoView({ behavior: "smooth" });
             }}
           >

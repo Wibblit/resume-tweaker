@@ -21,12 +21,14 @@ const dummyData = {
     {
       category: "Content Quality",
       score: 8.5,
-      comment: "Strong achievement-focused bullet points with quantifiable results.",
+      comment:
+        "Strong achievement-focused bullet points with quantifiable results.",
     },
     {
       category: "ATS Compatibility",
       score: 9.0,
-      comment: "Excellent use of industry-standard keywords and clear formatting.",
+      comment:
+        "Excellent use of industry-standard keywords and clear formatting.",
     },
     {
       category: "Structure & Format",
@@ -53,19 +55,21 @@ const dummyData = {
 const processSteps = [
   {
     title: "Upload Your Resume",
-    description: "Select from your saved resumes or upload a new one. Supports PDF and Word formats.",
+    description:
+      "Select from your saved resumes or upload a new one. Supports PDF and Word formats.",
     icon: <Upload className="w-6 h-6" />,
     video: "/videos/review-video-1.mp4",
   },
   {
     title: "AI Processing",
-    description: "Our advanced AI analyzes your resume for content, format, and effectiveness.",
+    description:
+      "Our advanced AI analyzes your resume for content, format, and effectiveness.",
     icon: <Cpu className="w-6 h-6" />,
-    video: "https://your-cdn.com/processing-demo.mp4",
   },
   {
     title: "Detailed Results",
-    description: "Get comprehensive feedback with actionable improvements and scoring.",
+    description:
+      "Get comprehensive feedback with actionable improvements and scoring.",
     icon: <LineChart className="w-6 h-6" />,
     video: "/videos/review-video-2.mp4",
   },
@@ -77,7 +81,7 @@ function AIReview() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <LandingNav />
       </div>
-      
+
       {/* Hero Section */}
       <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -88,8 +92,8 @@ function AIReview() {
           </GradientText>
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Get instant, professional feedback on your resume with advanced AI analysis.
-          Perfect your resume for your dream job.
+          Get instant, professional feedback on your resume with advanced AI
+          analysis. Perfect your resume for your dream job.
         </p>
         <div className="flex gap-4 justify-center">
           <Button
@@ -103,7 +107,8 @@ function AIReview() {
             size="lg"
             variant="outline"
             onClick={() => {
-              const reviewTypesSection = document.getElementById("review-types");
+              const reviewTypesSection =
+                document.getElementById("review-types");
               reviewTypesSection?.scrollIntoView({ behavior: "smooth" });
             }}
           >
@@ -113,7 +118,10 @@ function AIReview() {
       </section>
 
       {/* Review Types Section */}
-      <section id="review-types" className="container mx-auto max-w-7xl px-4 py-20">
+      <section
+        id="review-types"
+        className="container mx-auto max-w-7xl px-4 py-20"
+      >
         <h2 className="text-3xl font-bold text-center mb-12">
           <GradientText>Choose Your Review Type</GradientText>
         </h2>
@@ -128,7 +136,7 @@ function AIReview() {
               "Content Quality Analysis",
               "Format Optimization",
               "Language Enhancement",
-              "Basic Improvement Suggestions"
+              "Basic Improvement Suggestions",
             ]}
           />
           <ReviewTypeCard
@@ -140,7 +148,7 @@ function AIReview() {
               "Skills Gap Identification",
               "Job-Specific Recommendations",
               "Qualification Matching",
-              "Targeted Improvement Plan"
+              "Targeted Improvement Plan",
             ]}
             isPro
           />
@@ -172,7 +180,7 @@ function AIReview() {
                 "ATS Compatibility",
                 "Structure & Formatting",
                 "Professional Language",
-                "Achievement Highlights"
+                "Achievement Highlights",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
@@ -194,7 +202,8 @@ function AIReview() {
           <GradientText>Ready to Optimize Your Resume?</GradientText>
         </h2>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Get instant feedback and improve your chances of landing your dream job.
+          Get instant feedback and improve your chances of landing your dream
+          job.
         </p>
         <Button
           size="lg"

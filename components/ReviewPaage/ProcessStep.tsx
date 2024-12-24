@@ -5,7 +5,7 @@ interface ProcessStepProps {
   title: string;
   description: string;
   icon: React.ReactNode;
-  video: string;
+  video?: string;
   index: number;
 }
 
@@ -30,7 +30,7 @@ export function ProcessStep({
         {/* Media Preview */}
         <div className="mt-4">
           <div className="rounded-lg overflow-hidden border border-border/50 shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_2px_8px_-2px_rgba(0,0,0,0.1)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05),0_2px_8px_-2px_rgba(0,0,0,0.3)]">
-            {index === 1 ? (
+            {!video ? (
               <ProcessingAnimation />
             ) : (
               <video
@@ -50,7 +50,7 @@ export function ProcessStep({
         <div
           className={cn(
             "absolute -top-4 -left-4 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold",
-            "bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary text-primary-foreground"
+            "bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary text-primary-foreground",
           )}
         >
           {index + 1}
