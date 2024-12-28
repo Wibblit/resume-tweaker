@@ -124,7 +124,14 @@ function App() {
         <div className="w-full">
           <div className="mt-16 rounded-xl max-w-7xl bg-zinc-900/5 dark:bg-zinc-100/5 p-2 border-2 border-zinc-900/10 dark:border-zinc-100/10">
             <div className="aspect-video rounded-lg bg-zinc-900/10 dark:bg-zinc-100/10 flex items-center justify-center">
-              <p className="text-muted-foreground">Interview Demo Video</p>
+              <iframe
+                className="w-full h-full rounded-lg"
+                src="https://www.youtube.com/embed/algtoUPPyq8?si=Xcgs5g1-FuCtkmKa"
+                title="YouTube video player"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                // referrerPolicy="no-referrer"
+                allowFullScreen
+              ></iframe>
             </div>
           </div>
         </div>
