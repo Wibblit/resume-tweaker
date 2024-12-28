@@ -3,13 +3,13 @@ const nextConfig = {
   reactStrictMode: false, // keeping reactStrictMode off
   experimental: {
     serverActions: {
-      bodySizeLimit: '30mb', // set to 30 MB
+      bodySizeLimit: "30mb", // set to 30 MB
     },
   },
   images: {
     remotePatterns: [
       {
-        hostname: 'images.unsplash.com',
+        hostname: "images.unsplash.com",
       },
     ],
   },
@@ -24,7 +24,7 @@ const nextConfig = {
           },
           {
             key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
+            value: "unsafe-none", // Disable COEP for YouTube compatibility
           },
         ],
       },
