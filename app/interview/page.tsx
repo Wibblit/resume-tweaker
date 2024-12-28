@@ -126,7 +126,7 @@ function App() {
             <div className="aspect-video rounded-lg bg-zinc-900/10 dark:bg-zinc-100/10 flex items-center justify-center">
               <iframe
                 className="w-full h-full rounded-lg"
-                src="https://www.youtube.com/embed/algtoUPPyq8?si=Xcgs5g1-FuCtkmKa"
+                src="https://www.youtube.com/embed/algtoUPPyq8"
                 title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="no-referrer"
