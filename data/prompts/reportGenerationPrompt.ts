@@ -27,7 +27,7 @@ Evaluation Notes:
 
 Scores (Out of 10):
 Each category must receive an integer score between 0 and 10 (where 10 is excellent, 0 is inadequate), with a comment explaining the reasoning.
-
+Make sure the comment addresses the user in first person (ex. "You explain this very well" as opposed to "The candidate explained this very well").
 Overall Score:
 The overall_score must be the average of the five category scores, rounded to two decimal places.
 

@@ -17,6 +17,11 @@ Assess how well the resume incorporates keywords and phrases from the job descri
 Overall Suitability (10 points)
 Evaluate the overall suitability of the candidate for the specific role based on how well the resume addresses the key aspects of the job description.
 
+NOTE: 
+  Make sure to assess different parts of the resume, dont write comments only about one section.
+  Structure the comments by first giving the main comment and then move on to the specific section(s) which the comment is about.
+  Remember to make comparisions on what is present in the JD and whats in the resume while making comments
+
 After evaluating the resume against the job description, provide the results in the following JSON format:
 
 {
