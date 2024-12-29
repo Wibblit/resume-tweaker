@@ -5,16 +5,27 @@ import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
-import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { LogOut, Pause, Play, SkipForward } from "lucide-react";
+import {
+  AudioLines,
+  CircleArrowRight,
+  Loader2,
+  LogOut,
+  Pause,
+  Play,
+  RedoDot,
+  SkipForward,
+  Volume2,
+} from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
 import { NoAudioAlert } from "./NoAudioAlert";
 import { useRouter } from "next/navigation";
 import { ConfirmQuitModal } from "./ConfirmQuiteModal";
-
+import { TypeAnimation } from "react-type-animation";
+import { Skeleton } from "../ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 interface ComprehensiveInterviewProps {
   questions: string[];
   duration: number;
@@ -41,7 +52,7 @@ export default function ComprehensiveInterview({
   const currQuestion = questions[currentQuestionIndex] || "";
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
   const router = useRouter();
-
+  const { toast } = useToast();
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
@@ -70,7 +81,7 @@ export default function ComprehensiveInterview({
     router.replace("/ai-interview");
   };
 
-    const [isoLoader, setIsoLoader] = useState<boolean>(false);
+  const [isoLoader, setIsoLoader] = useState<boolean>(false);
 
   const generateAudioQueue = async () => {
     const startIndex = currentQuestionIndex;
@@ -97,6 +108,15 @@ export default function ComprehensiveInterview({
   };
 
   const handleNextQuestion = () => {
+    if (!audioBlob) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description:
+          "Please record your audio response or skip this question to proceed to the next one.",
+      });
+      return;
+    }
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       generateAudioQueue();
@@ -115,7 +135,12 @@ export default function ComprehensiveInterview({
     });
     mediaRecorderRef.current?.stop();
     if (isPlayingAudio) setIsPlayingAudio(false);
-    handleNextQuestion();
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      generateAudioQueue();
+    } else {
+      handleInterviewComplete();
+    }
   };
 
   const handleInterviewComplete = async () => {
@@ -181,15 +206,68 @@ export default function ComprehensiveInterview({
     });
   };
 
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isNextLoading, setIsNextLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsTypingComplete(false);
+    if (currentAudioUrl) {
+      audioRef.current = new Audio(currentAudioUrl);
+      playAudio();
+      audioRef.current.onended = () => {
+        setIsPlayingAudio(false);
+      };
+    }
+    // Clean up the audio when the component unmounts or question changes
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlayingAudio(false);
+      }
+    };
+  }, [currQuestion, currentAudioUrl, setIsPlayingAudio]);
+
+  const playAudio = () => {
+    if (audioRef.current && !isPlayingAudio) {
+      audioRef.current
+        .play()
+        .then(() => setIsPlayingAudio(true))
+        .catch((err) => {
+          console.error("Audio playback failed:", err);
+          setIsPlayingAudio(false);
+        });
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlayingAudio(false);
+    }
+  };
+  const handleNextQuestions = async () => {
+    setIsNextLoading(true);
+    setIsoLoader(true);
+    stopAudio();
+    await handleNextQuestion();
+    setIsoLoader(false);
+    setIsNextLoading(false);
+  };
+
   return (
     <Card className="max-w-4xl mx-auto bg-background shadow-lg">
       <CardHeader>
         <CardTitle className="text-2xl font-bold flex justify-between items-center pb-4">
-          <span>Comprehensive Interview - Question {currentQuestionIndex + 1}</span>
+          <span>
+            Comprehensive Interview - Question {currentQuestionIndex + 1}
+          </span>
           <Button
             onClick={handleQuitInterview}
             variant="outline"
-              className="flex items-center gap-2"
+            className="flex items-center gap-2"
           >
             <LogOut className="h-4 w-4" />
             Quit Interview
@@ -204,14 +282,55 @@ export default function ComprehensiveInterview({
         <VideoRecorder isInterviewComplete={isInterviewComplete} />
         {!isInterviewComplete && (
           <>
-            <QuestionDisplay
-              question={currQuestion}
-              onNextQuestion={handleNextQuestion}
-              audioUrl={currentAudioUrl}
-              isPlayingAudio={isPlayingAudio}
-              setIsPlayingAudio={setIsPlayingAudio}
-              setIsoLoader={setIsoLoader}
-            />
+            <div className="mb-4 space-y-4">
+              {!currentAudioUrl ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-[75%]" />
+                </div>
+              ) : (
+                <p className="text-lg mb-2 min-h-[3rem]">
+                  <TypeAnimation
+                    key={`${currQuestion}-${currentAudioUrl}`}
+                    sequence={[currQuestion, () => setIsTypingComplete(true)]}
+                    wrapper="p"
+                    cursor={true}
+                    speed={50}
+                  />
+                </p>
+              )}
+
+              <div className="flex items-center space-x-4">
+                {currentAudioUrl && (
+                  <Button
+                    onClick={playAudio}
+                    variant="outline"
+                    size="sm"
+                    disabled={isPlayingAudio}
+                  >
+                    {isPlayingAudio ? (
+                      <AudioLines className="w-4 h-4" />
+                    ) : (
+                      <Volume2 className="h-4 w-4" />
+                    )}
+                    <span className="ml-2">
+                      {isPlayingAudio ? "Playing..." : "Play Audio"}
+                    </span>
+                  </Button>
+                )}
+                {isTypingComplete && (
+                  <Button
+                    variant={"link"}
+                    size={"sm"}
+                    className="flex items-center justify-center text-blue-500  hover:underline text-lg"
+                    onClick={handleSkipQuestion}
+                  >
+                    Skip Question <RedoDot className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
             <AudioRecorder
               isRecording={isRecording}
               setIsRecording={setIsRecording}
@@ -241,7 +360,17 @@ export default function ComprehensiveInterview({
                   </>
                 )}
               </Button>
-              <Button onClick={handleSkipQuestion}>Skip Question</Button>
+              <Button
+                onClick={handleNextQuestions}
+                disabled={isNextLoading}
+                variant="default"
+                className={`flex items-center justify-center  ${
+                  isNextLoading ? "cursor-not-allowed opacity-50" : ""
+                }`}
+              >
+                {isNextLoading && <Loader2 className="animate-spin mr-1" />}
+                Next Question <CircleArrowRight className="w-4 h-4" />
+              </Button>
             </div>
           </>
         )}

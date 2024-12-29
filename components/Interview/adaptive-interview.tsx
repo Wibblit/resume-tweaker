@@ -5,9 +5,15 @@ import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
-import QuestionDisplay from "./questionDisplay";
 import AudioRecorder from "./audioRecorder";
-import { Loader2, LogOut, Pause, Play } from "lucide-react";
+import {
+  AudioLines,
+  Loader2,
+  LogOut,
+  Pause,
+  Play,
+  Volume2,
+} from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
 import * as tts from "@diffusionstudio/vits-web";
@@ -15,6 +21,9 @@ import { NoAudioAlert } from "./NoAudioAlert";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { ConfirmQuitModal } from "./ConfirmQuiteModal";
+import { Skeleton } from "../ui/skeleton";
+import { TypeAnimation } from "react-type-animation";
+import { CircleArrowRight, RedoDot} from 'lucide-react'
 
 interface AdaptiveInterviewProps {
   interviewData: {
@@ -352,6 +361,61 @@ export default function AdaptiveInterview({
     }
   };
 
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isNextLoading, setIsNextLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsTypingComplete(false);
+    if (audioQueue[currentQuestionIndex]) {
+      audioRef.current = new Audio(audioQueue[currentQuestionIndex]);
+      playAudio();
+      audioRef.current.onended = () => {
+        setIsPlayingAudio(false);
+      };
+    }
+    // Clean up the audio when the component unmounts or question changes
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlayingAudio(false);
+      }
+    };
+  }, [
+    questions[currentQuestionIndex],
+    audioQueue[currentQuestionIndex],
+    setIsPlayingAudio,
+  ]);
+
+  const playAudio = () => {
+    if (audioRef.current && !isPlayingAudio) {
+      audioRef.current
+        .play()
+        .then(() => setIsPlayingAudio(true))
+        .catch((err) => {
+          console.error("Audio playback failed:", err);
+          setIsPlayingAudio(false);
+        });
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlayingAudio(false);
+    }
+  };
+  const handleNextQuestions = async () => {
+    setIsNextLoading(true);
+    setIsoLoader(true);
+    stopAudio();
+    await handleNextQuestion();
+    setIsoLoader(false);
+    setIsNextLoading(false);
+  };
+
   return (
     <Card className="max-w-4xl mx-auto bg-background shadow-lg">
       <CardHeader>
@@ -375,15 +439,77 @@ export default function AdaptiveInterview({
         <VideoRecorder isInterviewComplete={isInterviewComplete} />
         {!isInterviewComplete && (
           <>
-            <QuestionDisplay
-              skipQuestionLoading={skipQuestionLoading}
-              question={questions[currentQuestionIndex]}
-              onNextQuestion={handleNextQuestion}
-              audioUrl={audioQueue[currentQuestionIndex]}
-              isPlayingAudio={isPlayingAudio}
-              setIsPlayingAudio={setIsPlayingAudio}
-              setIsoLoader={setIsoLoader}
-            />
+            <div className="mb-4 space-y-4">
+              {!audioQueue[currentQuestionIndex] ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-[75%]" />
+                </div>
+              ) : (
+                <p className="text-lg mb-2 min-h-[3rem]">
+                  <TypeAnimation
+                    key={`${questions[currentQuestionIndex]}-${audioQueue[currentQuestionIndex]}`}
+                    sequence={[
+                      questions[currentQuestionIndex],
+                      () => setIsTypingComplete(true),
+                    ]}
+                    wrapper="p"
+                    cursor={true}
+                    speed={50}
+                  />
+                </p>
+              )}
+
+              <div className="flex items-center space-x-4">
+                {audioQueue[currentQuestionIndex] && (
+                  <Button
+                    onClick={playAudio}
+                    variant="outline"
+                    size="sm"
+                    disabled={isPlayingAudio}
+                  >
+                    {isPlayingAudio ? (
+                      <AudioLines className="w-4 h-4" />
+                    ) : (
+                      <Volume2 className="h-4 w-4" />
+                    )}
+                    <span className="ml-2">
+                      {isPlayingAudio ? "Playing..." : "Play Audio"}
+                    </span>
+                  </Button>
+                )}
+                {isTypingComplete && (
+                  <Button
+                    onClick={handleSkipQuestion}
+                    disabled={
+                      skipQuestionLoading ||
+                      !audioQueue[currentQuestionIndex] ||
+                      isoLoader
+                    }
+                    variant={"link"}
+                    size={"sm"}
+                    className={`text-blue-500 hover:underline flex items-center justify-center ${
+                      skipQuestionLoading ||
+                      !audioQueue[currentQuestionIndex] ||
+                      isoLoader
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
+                  >
+                    {skipQuestionLoading ? (
+                      <>
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                        Skipping Question...
+                      </>
+                    ) : (
+                      "Skip Question"
+                    )}
+                    <RedoDot className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
             <AudioRecorder
               isRecording={isRecording}
               setIsRecording={setIsRecording}
@@ -419,28 +545,25 @@ export default function AdaptiveInterview({
                 )}
               </Button>
               <Button
-                onClick={handleSkipQuestion}
+                onClick={handleNextQuestions}
                 disabled={
                   skipQuestionLoading ||
-                  !audioQueue[currentQuestionIndex] ||
-                  isoLoader
+                  isNextLoading ||
+                  isoLoader ||
+                  !audioQueue[currentQuestionIndex]
                 }
-                className={`${
+                variant="default"
+                className={`flex items-center justify-center ${
                   skipQuestionLoading ||
-                  !audioQueue[currentQuestionIndex] ||
-                  isoLoader
+                  isNextLoading ||
+                  isoLoader ||
+                  !audioQueue[currentQuestionIndex]
                     ? "cursor-not-allowed opacity-50"
                     : ""
                 }`}
               >
-                {skipQuestionLoading ? (
-                  <div className="flex items-center justify-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Skipping Question...
-                  </div>
-                ) : (
-                  <span>Skip Question</span>
-                )}
+                {isNextLoading && <Loader2 className="animate-spin mr-1" />}
+                Next Question <CircleArrowRight className="w-4 h-4" />
               </Button>
             </div>
           </>
