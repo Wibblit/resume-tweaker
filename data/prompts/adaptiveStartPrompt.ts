@@ -18,8 +18,8 @@ export const adaptiveInitialPrompt = (
 - **Candidate's Resume(resumetext):** "${resumeText}"
 - ${jd ? `**Job Description(jd):** "${jd}"` : ""}
 - **Number of Questions:** ${numberOfQuestions}
-- **Current Question Index:** ${currentQuestionIndex + 1}/${numberOfQuestions}
-- **Time Remaining:** ${timeLeft} (Total Duration: ${totalDuration})
+- **Current Question Index:** ${currentQuestionIndex + 1} / ${numberOfQuestions}
+- **Time Remaining:** ${timeLeft} min (Total Duration: ${totalDuration} min) time remining is in minutes, not min.sec
 - **Interviewer Position:** ${interviewerPosition}
 - **users name** : infer from the resume
 
@@ -47,9 +47,9 @@ ${JSON.stringify(chatHistory, null, 2)}
 4. **Next Question Generation:**
    - Consider the following variables when generating the next question:
      - Whether the transcription came out as proper text, "Skipped" or as "Unintelligible audio input"
-     - **Time Remaining (${timeLeft}/${totalDuration}):**
-       - If ${timeLeft} is limited and many (${numberOfQuestions - currentQuestionIndex}) questions remain, prioritize concise questions and move quickly to cover more ground.
-       - If ${timeLeft} is ample and few questions remain, focus on detailed, thoughtful questions that utilize the extra time effectively.
+     - **Time Remaining (${timeLeft} min/${totalDuration} min):**
+       - If ${timeLeft} min is limited and many (${numberOfQuestions - currentQuestionIndex}) questions remain, prioritize concise questions and move quickly to cover more ground.
+       - If ${timeLeft}  min is ample and few questions remain, focus on detailed, thoughtful questions that utilize the extra time effectively.
      - **Number of Questions Left (${currentQuestionIndex + 1}/${numberOfQuestions}):**
        - Ensure questions align with the interview flow and dynamically adapt to the context derived from chatHistory, resumeText, and jd.
      - Whatever the users previous response was acknowledge it in the next question, if the user skips a question then tell them that.
