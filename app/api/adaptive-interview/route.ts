@@ -102,11 +102,12 @@ export const POST = asyncHandler(async (req: NextRequest) => {
 
   // Extract the last generated question
   const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
-  console.log("Gemini response for adaptive:", result);
-  console.log(
-    "After Chat History: ",
-    JSON.stringify([...chatHistory, ...chat], null, 2)
-  );
+  // console.log("Gemini response for adaptive:", result);
+  // console.log(
+  //   "After Chat History: ",
+  //   JSON.stringify([...chatHistory, ...chat], null, 2)
+  // );
+  console.log("Output: ",JSON.stringify(chat, null, 2));
   return NextResponse.json({
     question: lastMessage,
     chatHistory: [...chatHistory, ...chat],
