@@ -273,7 +273,24 @@ export default function ComprehensiveInterview({
             Quit Interview
           </Button>
         </CardTitle>
-        <div className="bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
+        <div
+          className="px-4 py-2 rounded-full text-sm font-medium mt-4 shadow-md"
+          style={{
+            backgroundColor:
+              timeLeft > (duration * 60) / 2
+                ? "white" // or "black" for dark theme
+                : `rgb(
+            ${
+              127 + Math.floor((255 - 127) * (timeLeft / ((duration * 60) / 2)))
+            }, 
+            ${
+              29 + Math.floor((255 - 29) * (timeLeft / ((duration * 60) / 2)))
+            }, 
+            ${29 + Math.floor((255 - 29) * (timeLeft / ((duration * 60) / 2)))}
+          )`,
+            color: timeLeft < duration * 60 * 0.18 ? "white" : "black", // Adjust text color for better contrast
+          }}
+        >
           Time: {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
           {String(timeLeft % 60).padStart(2, "0")}
         </div>
