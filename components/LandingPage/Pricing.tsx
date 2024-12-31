@@ -9,6 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Check, Sparkles, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { pricingPlans } from "@/data/payments";
 
 const features = [
   "AI Resume Editor",
@@ -19,50 +21,9 @@ const features = [
   "Adaptive Interview Practice",
 ];
 
-const pricingPlans = [
-  {
-    name: "Starter",
-    credits: 200,
-    price: 229,
-    originalPrice: 299,
-    gatewayFee: 7.58,
-    tax: 41.22,
-    effectivePrice: 180.2,
-    popular: false,
-  },
-  {
-    name: "Essentail",
-    credits: 400,
-    price: 458,
-    originalPrice: 599,
-    gatewayFee: 12.16,
-    tax: 82.44,
-    effectivePrice: 363.4,
-    popular: true,
-  },
-  {
-    name: "Power",
-    credits: 1000,
-    price: 1145,
-    originalPrice: 1499,
-    gatewayFee: 25.9,
-    tax: 206.1,
-    effectivePrice: 913,
-    popular: false,
-  },
-  {
-    name: "Super saver",
-    credits: 2000,
-    price: 2290,
-    originalPrice: 2999,
-    gatewayFee: 48.8,
-    tax: 412.2,
-    effectivePrice: 1829,
-    popular: false,
-  },
-];
-
 export default function Pricing() {
+  const router = useRouter();
+  
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -136,10 +97,10 @@ export default function Pricing() {
                   </div>
                 </div>
               </CardContent>
-
               <CardFooter>
                 <Button
                   className="w-full"
+                  onClick={() => router.push('/pricing/' + plan.name)}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   Get Started

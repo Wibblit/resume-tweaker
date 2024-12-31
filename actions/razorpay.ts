@@ -4,7 +4,7 @@ import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
 import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 import { createHmac } from "crypto";
 
-export const createOrder = asyncHandler(async ({ tier }: { tier: string }) => {
+export const createOrder = asyncHandler(async ({ tier, paymentMethod }: { tier: string, paymentMethod: "wallet" | "other" }) => {
   if (!tier) throw ActionsError.badRequest;
   const key_id = process.env.RAZORPAY_KEY_ID;
   const key_secret = process.env.RAZORPAY_KEY_SECRET;
@@ -17,10 +17,20 @@ export const createOrder = asyncHandler(async ({ tier }: { tier: string }) => {
     key_secret,
   });
 
-  const orders = await instance.orders.create({
-    amount: 100,
-    currency: "INR",
-  });
+  let orders;
+  if (paymentMethod === "wallet") {
+    orders = await instance.orders.create({
+      amount: 100,
+      currency: "INR",
+      //@ts-ignore
+      method: "wallet",
+    });
+  } else {
+    orders = await instance.orders.create({
+      amount: 100,
+      currency: "INR",
+    });
+  }
 
     console.log("orders", orders)
   if (!orders) throw ActionsError.custom("Unable to create order", 500);
