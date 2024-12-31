@@ -43,10 +43,11 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     interviewerPosition,
   } = await req.json();
   console.log(
-    "totalduration, timeleft, interviewerPosition",
+    "totalduration, timeleft, currentQuestionIndex, isSkipped",
     totalDuration,
     timeLeft,
-    interviewerPosition
+    currentQuestionIndex,
+    isSkipped
   );
 
   // Adaptive prompt generation
@@ -78,16 +79,25 @@ export const POST = asyncHandler(async (req: NextRequest) => {
         },
       },
       {
-        text: prompt,
+        text: `
+        --------------
+        INPUT
+        --------------
+        Input Context: audio provided` + prompt,
       },
     ]);
   } else {
     result = await model.generateContent(
+      `
+      --------------
+      INPUT
+      --------------
+      Input Context:` + 
       (currentQuestionIndex === 0
         ? "Please provide the first question"
         : isSkipped
         ? "User skipped the previous question"
-        : "") + prompt
+        : "Proceed as usual") + prompt
     );
   }
 
@@ -101,13 +111,15 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   ); // Ensure response is valid JSON
 
   // Extract the last generated question
+  // console.log(prompt)
   const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
   // console.log("Gemini response for adaptive:", result);
-  // console.log(
-  //   "After Chat History: ",
-  //   JSON.stringify([...chatHistory, ...chat], null, 2)
-  // );
-  console.log("Output: ",JSON.stringify(chat, null, 2));
+  console.log(
+    "After Chat History: ",
+    JSON.stringify([...chatHistory, ...chat], null, 2)
+  );
+  // console.log("Last message: ", lastMessage)
+  // console.log("Output: ",JSON.stringify(chat, null, 2));
   return NextResponse.json({
     question: lastMessage,
     chatHistory: [...chatHistory, ...chat],
