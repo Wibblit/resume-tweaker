@@ -11,6 +11,7 @@ import {
 import { Check, Sparkles, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { pricingPlans } from "@/data/payments";
+import PaymentOfferings from "@/app/pricing/paymentsofferings";
 
 const features = [
   "AI Resume Editor",
@@ -23,7 +24,7 @@ const features = [
 
 export default function Pricing() {
   const router = useRouter();
-  
+
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -33,7 +34,11 @@ export default function Pricing() {
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Choose the perfect plan for your career growth. All plans include
-            full access to our AI-powered tools and are <span className="text-primary font-semibold">inclusive of all taxes</span>.
+            full access to our AI-powered tools and are{" "}
+            <span className="text-primary font-semibold">
+              inclusive of all taxes
+            </span>
+            .
           </p>
         </div>
 
@@ -100,7 +105,7 @@ export default function Pricing() {
               <CardFooter>
                 <Button
                   className="w-full"
-                  onClick={() => router.push('/pricing/' + plan.name)}
+                  onClick={() => router.push("/pricing/" + plan.name)}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   Get Started
@@ -109,14 +114,8 @@ export default function Pricing() {
             </Card>
           ))}
         </div>
-
-        <div className="mt-16 text-center">
-          <p className="text-muted-foreground">
-            Need a custom plan?{" "}
-            <Button variant="link" className="text-primary">
-              Contact us
-            </Button>
-          </p>
+        <div className="mt-24">
+          <PaymentOfferings />
         </div>
       </div>
     </div>

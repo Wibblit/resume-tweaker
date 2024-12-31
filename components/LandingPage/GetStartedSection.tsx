@@ -17,7 +17,7 @@ export default function GetStartedSection() {
           <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-pretty">
             Get started today with AI Resume Builder to kickstart your career
           </h2>
-          <p className="text-lg mb-8">
+          <p className="text-lg mb-8 text-muted-foreground">
             AI Resume Builder offers cutting-edge AI tools to create
             professional resumes. Join 50,000+ other job seekers to boost your
             career prospects.

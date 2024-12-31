@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BackgroundBeams } from "../ui/background-beams";
 import { Button } from "../ui/button";
-import { ArrowRight, FileText, Star, BarChart, Palette } from "lucide-react";
+import { ArrowRight, FileText, Star, BarChart, Palette, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { SocialIcon } from "react-social-icons";
 import { Suspense } from "react";
@@ -41,7 +41,13 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
+          <div className="inline-flex items-center rounded-full border bg-background/50 px-4 py-1.5 text-sm backdrop-blur">
+            <Sparkles className="mr-2 h-4 w-4 text-primary" />
+            <span className="text-muted-foreground">
+              AI-Powered Resume Builder
+            </span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-[3.3rem] font-bold">
             Elevate Your Career with{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
               AI-Powered Resumes

@@ -25,7 +25,7 @@ import {
 import { useState } from "react";
 import { pricingPlans } from "@/data/payments";
 import Image from "next/image";
-import { useTheme } from "next-themes";
+import Paymentsofferings from "../paymentsofferings";
 
 export default function PricingTierPage() {
   const params = useParams();
@@ -33,9 +33,10 @@ export default function PricingTierPage() {
   const [selectedPayment, setSelectedPayment] = useState<"other" | "wallet">(
     "other"
   );
-  const theme = useTheme();
-  const currTheme = theme.theme === "system" ? theme.resolvedTheme : theme.theme === "dark" ? "dark" : "light";
-  const plan = pricingPlans.find((tier) => tier.name === decodeURIComponent(params.tier as string));
+
+  const plan = pricingPlans.find(
+    (tier) => tier.name === decodeURIComponent(params.tier as string)
+  );
 
   if (!plan) {
     return <div>Plan not found</div>;
@@ -128,7 +129,8 @@ export default function PricingTierPage() {
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
               <CardDescription>
-                {plan.credits} Credits - {decodeURIComponent(params.tier as string)} Plan
+                {plan.credits} Credits -{" "}
+                {decodeURIComponent(params.tier as string)} Plan
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -226,22 +228,7 @@ export default function PricingTierPage() {
           </div>
         </div>
       </div>
-        <div className="w-full flex items-center justify-center flex-wrap gap-6 payment-logos-container mt-6 -mb-6">
-          <Image
-            src={currTheme === "dark" ? "/svgs/payments/razorpay.svg" : "/svgs/payments/razorpay-light.svg"}
-            alt="Razorpay"
-            width={100}
-          height={32}
-            className="payment-logo"
-          />
-          <Image
-            src={ currTheme === "dark" ? "/svgs/payments/paypal-3.svg" : "/svgs/payments/paypal-light.svg"}
-            alt="Paypal"
-            width={100}
-            height={32}
-            className="payment-logo"
-          />
-        </div>
+     <Paymentsofferings />
     </div>
   );
 }
