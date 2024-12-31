@@ -45,8 +45,9 @@ export default async function Home() {
             <FeaturesSection />
           </div>
         </div>
+        <div className="h-60"></div>
         <div id="moreFeatures">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <StickyScrollReveal />
           </div>
         </div>

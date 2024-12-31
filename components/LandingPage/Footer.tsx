@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { SocialIcon } from "react-social-icons";
 import { Separator } from "@/components/ui/separator";
@@ -9,59 +11,60 @@ export default function Footer() {
 
   return (
     <footer className="bg-background text-foreground border-t">
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
           {/* Company Information */}
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <a href="https://wibblit.com/">
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1 space-y-6">
+            <div className="flex items-center gap-4">
+              <a href="https://wibblit.com/" className="shrink-0">
                 <ThemeAwareWibblitLogo />
               </a>
-              <a href="https://resumetweaker.wibblit.com/">
+              <a href="https://resumetweaker.wibblit.com/" className="shrink-0">
                 <ThemeAwareLogo />
               </a>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground max-w-xs">
               Empowering Your Career with AI-Driven Tools
             </p>
-            <Link href="/about" className="text-sm font-medium hover:underline">
+            <Link 
+              href="/about" 
+              className="inline-block text-sm font-medium hover:underline"
+            >
               About Us
             </Link>
           </div>
 
           {/* Features */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Features</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/home" className="text-sm hover:underline">
-                  Resume Builder
-                </Link>
-              </li>
-              <li>
-                <Link href="/home" className="text-sm hover:underline">
-                  Cover Letter Builder
-                </Link>
-              </li>
-              <li>
-                <Link href="/ai-review" className="text-sm hover:underline">
-                  AI Review
-                </Link>
-              </li>
-              <li>
-                <Link href="/ai-interview" className="text-sm hover:underline">
-                  AI Interview
-                </Link>
-              </li>
+          <div className="space-y-4">
+            <h3 className="text-base font-semibold">Features</h3>
+            <ul className="space-y-3">
+              {[
+                { href: "/home", label: "Resume Builder" },
+                { href: "/home", label: "Cover Letter Builder" },
+                { href: "/ai-review", label: "AI Review" },
+                { href: "/ai-interview", label: "AI Interview" }
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link 
+                    href={link.href} 
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Pricing */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Pricing</h3>
-            <ul className="space-y-2">
+          <div className="space-y-4">
+            <h3 className="text-base font-semibold">Pricing</h3>
+            <ul className="space-y-3">
               <li>
-                <Link href="/pricing" className="text-sm hover:underline">
+                <Link 
+                  href="/pricing" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Pricing
                 </Link>
               </li>
@@ -69,55 +72,44 @@ export default function Footer() {
           </div>
 
           {/* Support and Resources */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Support & Resources</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/faq" className="text-sm hover:underline">
-                  FAQs
-                </Link>
-              </li>
-              <li>
-                <Link href="/tutorials" className="text-sm hover:underline">
-                  Tutorials
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-sm hover:underline">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="mailto:support@wibblit.com"
-                  className="text-sm hover:underline"
-                >
-                  Contact Support
-                </a>
-              </li>
+          <div className="space-y-4">
+            <h3 className="text-base font-semibold">Support & Resources</h3>
+            <ul className="space-y-3">
+              {[
+                { href: "/faq", label: "FAQs" },
+                { href: "/tutorials", label: "Tutorials" },
+                { href: "/blog", label: "Blog" },
+                { href: "mailto:support@wibblit.com", label: "Contact Support" }
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link 
+                    href={link.href} 
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Legal */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/privacy-policy"
-                  className="text-sm hover:underline"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/terms-of-service"
-                  className="text-sm hover:underline"
-                >
-                  Terms of Service
-                </Link>
-              </li>
+          <div className="space-y-4">
+            <h3 className="text-base font-semibold">Legal</h3>
+            <ul className="space-y-3">
+              {[
+                { href: "/privacy-policy", label: "Privacy Policy" },
+                { href: "/terms-of-service", label: "Terms of Service" }
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link 
+                    href={link.href} 
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -125,29 +117,23 @@ export default function Footer() {
         <Separator className="my-8" />
 
         {/* Social Links and Copyright */}
-        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <div className="flex space-x-4">
-            <SocialIcon
-              url="https://x.com/wibblitofficial"
-              network="x"
-              bgColor="transparent"
-              fgColor="currentColor"
-              style={{ height: 30, width: 30 }}
-            />
-            <SocialIcon
-              url="https://www.linkedin.com/in/wibblit-wibblit-00b204328"
-              network="linkedin"
-              bgColor="transparent"
-              fgColor="currentColor"
-              style={{ height: 30, width: 30 }}
-            />
-            <SocialIcon
-              url="https://www.facebook.com/Wibblit"
-              network="facebook"
-              bgColor="transparent"
-              fgColor="currentColor"
-              style={{ height: 30, width: 30 }}
-            />
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex gap-4">
+            {[
+              { url: "https://x.com/wibblitofficial", network: "x" },
+              { url: "https://www.linkedin.com/in/wibblit-wibblit-00b204328", network: "linkedin" },
+              { url: "https://www.facebook.com/Wibblit", network: "facebook" }
+            ].map((social) => (
+              <SocialIcon
+                key={social.network}
+                url={social.url}
+                network={social.network}
+                bgColor="transparent"
+                fgColor="currentColor"
+                style={{ height: 30, width: 30 }}
+                className="hover:opacity-80 transition-opacity"
+              />
+            ))}
           </div>
           <p className="text-sm text-muted-foreground">
             &copy; {currentYear} Wibblit. All rights reserved.
