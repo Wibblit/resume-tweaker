@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,143 +8,115 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Check, Sparkles, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { pricingPlans } from "@/data/payments";
+import PaymentOfferings from "@/app/pricing/paymentsofferings";
 
-
-const tiers = [
-  {
-    name: "Hobby",
-    price: "$0",
-    description: "For individuals trying out the product",
-    features: [
-      "Access to all tools for 14 days",
-      "No credit card required",
-      "Community Support",
-      "Access to Aceternity UI",
-    ],
-    cta: "Get Started",
-    highlighted: false,
-  },
-  {
-    name: "Starter",
-    price: "$20",
-    description: "For serious founders",
-    features: [
-      "Everything in Hobby +",
-      "Access to Proactiv AI",
-      "Priority tools access",
-      "Support for Slack and Twitter",
-      "Priority support",
-      "99.67% Uptime SLA",
-      "Access to Aceternity UI Templates",
-    ],
-    cta: "Get Started",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "$30",
-    description: "For small to large businesses",
-    features: [
-      "Everything in Starter +",
-      "Access to our dev team",
-      "Coffee with the CEO",
-      "Access to Aceternity UI",
-      "Request tools",
-      "Advanced analytics",
-      "Customizable dashboards",
-      "24/7 customer support",
-      "Unlimited data storage",
-      "Enhanced security features",
-    ],
-    cta: "Get Started",
-    highlighted: true,
-  },
-  {
-    name: "Premium",
-    price: "Custom",
-    description: "For large scale businesses",
-    features: [
-      "Everything in Pro +",
-      "HIPAA and SOC2 compliance",
-      "Bulk email support",
-      "Customizable dashboards",
-      "24/7 customer support",
-    ],
-    cta: "Book a demo",
-    highlighted: false,
-  },
+const features = [
+  "AI Resume Editor",
+  "AI Cover Letter Editor",
+  "AI Resume Review",
+  "JD-Tailored Review",
+  "Comprehensive AI Interview",
+  "Adaptive Interview Practice",
 ];
 
 export default function Pricing() {
+  const router = useRouter();
+
   return (
-    <div className="md:pt-12 w-full">
-      <div className="w-full text-center">
-        <h2 className="text-3xl font-extrabold sm:text-4xl bg-clip-text text-center text-transparent bg-gradient-to-b from-foreground to-muted-foreground">
-          Simple Pricing
-        </h2>
-        <p className="mt-4 text-xl text-muted-foreground">
-          Choose the perfect plan for your needs. No hidden fees, just straightforward value.
-        </p>
-      </div>
-      <div className="container mx-auto px-4 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-        >
-          {tiers.map((tier, index) => (
-            <motion.div
-              key={tier.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            Simple, Transparent Pricing
+          </h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Choose the perfect plan for your career growth. All plans include
+            full access to our AI-powered tools and are{" "}
+            <span className="text-primary font-semibold">
+              inclusive of all taxes
+            </span>
+            .
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {pricingPlans.map((plan) => (
+            <Card
+              key={plan.name}
+              className={`relative flex flex-col ${
+                plan.popular ? "border-primary shadow-lg scale-105" : ""
+              }`}
             >
-              <Card
-                className={`h-full flex flex-col rounded-none ${
-                  tier.highlighted
-                    ? "bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent"
-                    : "bg-background sm:border-0"
-                } min-h-[600px] sm:min-h-0`}
-              > 
-                <CardHeader>
-                  <CardTitle className="text-2xl font-bold">
-                    {tier.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow">
-                  <div className="text-4xl font-bold mb-2">
-                    {tier.price}
-                    <span className="text-lg font-normal"> / month</span>
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="bg-primary text-primary-foreground text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
+                    <Star className="w-4 h-4" /> Most Popular
+                  </span>
+                </div>
+              )}
+
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>{plan.name}</span>
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </CardTitle>
+              </CardHeader>
+
+              <CardContent className="flex-grow">
+                <div className="mb-6">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold">₹{plan.price}</span>
+                    <span className="text-muted-foreground line-through text-sm">
+                      ₹{plan.originalPrice}
+                    </span>
                   </div>
-                  <p className="text-muted-foreground mb-6">
-                    {tier.description}
-                  </p>
-                  <ul className="space-y-2">
-                    {tier.features.map((feature, index) => (
-                      <li key={index} className="flex items-center">
-                        <Check className="h-5 w-5 text-primary mr-2" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button
-                    className={`w-full ${
-                      tier.highlighted
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : ""
-                    }`}
-                    variant={tier.highlighted ? "default" : "outline"}
-                  >
-                    {tier.cta}
-                  </Button>
-                </CardFooter>
-              </Card>
-            </motion.div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    {plan.credits} Credits
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span className="text-sm">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 pt-6 border-t text-sm text-muted-foreground">
+                  <div className="flex justify-between">
+                    <span>Gateway Fee:</span>
+                    <span>₹{plan.gatewayFee}</span>
+                  </div>
+                  <div className="flex justify-between mt-1">
+                    <span>Tax (18%):</span>
+                    <span>₹{plan.tax}</span>
+                  </div>
+                  <div className="flex justify-between mt-2 font-medium text-foreground">
+                    <span>Effective Price:</span>
+                    <span>₹{plan.effectivePrice}</span>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={() => router.push("/pricing/" + plan.name)}
+                  variant={plan.popular ? "default" : "outline"}
+                >
+                  Get Started
+                </Button>
+              </CardFooter>
+            </Card>
           ))}
-        </motion.div>
+        </div>
+        <div className="mt-24">
+          <PaymentOfferings />
+        </div>
       </div>
     </div>
   );
