@@ -62,7 +62,8 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     timeLeft,
     totalDuration,
     currentQuestionIndex,
-    interviewerPosition
+    interviewerPosition,
+    isSkipped
   );
 
   // Get generative model
@@ -79,25 +80,12 @@ export const POST = asyncHandler(async (req: NextRequest) => {
         },
       },
       {
-        text: `
-        --------------
-        INPUT
-        --------------
-        Input Context: audio provided` + prompt,
+        text: prompt,
       },
     ]);
   } else {
     result = await model.generateContent(
-      `
-      --------------
-      INPUT
-      --------------
-      Input Context:` + 
-      (currentQuestionIndex === 0
-        ? "Please provide the first question"
-        : isSkipped
-        ? "User skipped the previous question"
-        : "Proceed as usual") + prompt
+      prompt
     );
   }
 
@@ -113,7 +101,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   // Extract the last generated question
   // console.log(prompt)
   const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
-  // console.log("Gemini response for adaptive:", result);
+  console.log("Gemini response for adaptive:", result);
   console.log(
     "After Chat History: ",
     JSON.stringify([...chatHistory, ...chat], null, 2)
