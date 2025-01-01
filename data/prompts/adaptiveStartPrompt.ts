@@ -21,7 +21,11 @@ export const adaptiveInitialPrompt = (
   Based on the provided information, you are to generate the next answer-question pair in this chat history.
 
   **Preliminary Context:**
-  - provided_answer_status: ${isSkipped ? "Skipped" : "Audio provided"}
+  - provided_answer_status: ${
+    isSkipped
+      ? "Skipped"
+      : "Audio provided please transcribe the audio if the audio is not transcriable or the audio is not detected and ask user to answer properly"
+  }
   - current_question_number: ${currentQuestionIndex + 1}
 
   1. **Input Type Identification:**
@@ -104,12 +108,18 @@ export const adaptiveInitialPrompt = (
        - **Position:** ${position}, **Job:** ${job} at **Company:** ${companyName}
        - **Interviewer Position:** ${interviewerPosition}
        - ${jd ? `**Job Description (jd):** ${jd}` : "jd: Not Provided"}
-       - ${resumeText ? `**Candidate's Resume:** "${resumeText}` : "resume: Not Provided"}
+       - ${
+         resumeText
+           ? `**Candidate's Resume:** "${resumeText}`
+           : "resume: Not Provided"
+       }
        - **Chat History So Far:** ${JSON.stringify(chatHistory, null, 2)}
        
      - Inputs: {user_input, misuse_flag, jd, resume, position, job, company}
      - time_left = ${timeLeft} min, total_duration = ${totalDuration} min
-     - question_number = ${currentQuestionIndex + 1}, total_questions = ${numberOfQuestions}
+     - question_number = ${
+       currentQuestionIndex + 1
+     }, total_questions = ${numberOfQuestions}
      - Constraints:
        - If time is limited (<40%) and many questions remain (>40%), prioritize concise questions and move quickly.
        - If time is ample (>60%) and few questions remain (<20%), focus on detailed, thoughtful questions.
@@ -170,21 +180,6 @@ export const adaptiveInitialPrompt = (
   `;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // export const adaptiveInitialPrompt = (
 //   job: string,
 //   position: string,
@@ -236,7 +231,6 @@ export const adaptiveInitialPrompt = (
 //       }
 //    }
 //    if a trans_output is set then skip the transcription step, else attend it.
-
 
 // 2. **Audio Transcription:**
 
@@ -366,7 +360,6 @@ export const adaptiveInitialPrompt = (
 
 // - Always follow the outlined steps and algorithms without deviation.
 // - The output format must remain consistent and structured for seamless processing.
-
 
 // ";
 // };

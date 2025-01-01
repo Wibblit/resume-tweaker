@@ -237,10 +237,7 @@ function App() {
         </Button>
       </section>
       <section className="w-full" id="footer">
-        <hr className="border-t" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex justify-center items-center pb-6">
           <Footer />
-        </div>
       </section>
     </div>
   );

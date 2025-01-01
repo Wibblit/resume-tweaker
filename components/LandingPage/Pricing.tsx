@@ -12,6 +12,7 @@ import { Check, Sparkles, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { pricingPlans } from "@/data/payments";
 import PaymentOfferings from "@/app/pricing/paymentsofferings";
+import { useEffect } from "react";
 
 const features = [
   "AI Resume Editor",
