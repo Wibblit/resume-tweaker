@@ -1,73 +1,91 @@
-'use client'
+"use client";
 
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect } from "react";
 
 interface AudioRecorderProps {
-  isRecording: boolean
-  setIsRecording: (isRecording: boolean) => void
-  setAudioBlob: (blob: Blob) => void
-  mediaRecorderRef: React.MutableRefObject<MediaRecorder | null>
+  isRecording: boolean;
+  setIsRecording: (isRecording: boolean) => void;
+  setAudioBlob: (blob: Blob) => void;
+  mediaRecorderRef: React.MutableRefObject<MediaRecorder | null>;
+  audioBlob: Blob | null;
 }
 
-export default function AudioRecorder({ isRecording, setIsRecording, setAudioBlob, mediaRecorderRef }: AudioRecorderProps) {
-  const chunksRef = useRef<Blob[]>([])
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
-  const dataArrayRef = useRef<Uint8Array | null>(null)
+export default function AudioRecorder({
+  isRecording,
+  setIsRecording,
+  setAudioBlob,
+  mediaRecorderRef,
+  audioBlob,
+}: AudioRecorderProps) {
+  const chunksRef = useRef<Blob[]>([]);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const dataArrayRef = useRef<Uint8Array | null>(null);
 
   useEffect(() => {
     const startRecording = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        mediaRecorderRef.current = new MediaRecorder(stream)
-        
-        audioContextRef.current = new AudioContext()
-        analyserRef.current = audioContextRef.current.createAnalyser()
-        const source = audioContextRef.current.createMediaStreamSource(stream)
-        source.connect(analyserRef.current)
-        
-        analyserRef.current.fftSize = 256
-        const bufferLength = analyserRef.current.frequencyBinCount
-        dataArrayRef.current = new Uint8Array(bufferLength)
-        
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        mediaRecorderRef.current = new MediaRecorder(stream);
+
+        audioContextRef.current = new AudioContext();
+        analyserRef.current = audioContextRef.current.createAnalyser();
+        const source = audioContextRef.current.createMediaStreamSource(stream);
+        source.connect(analyserRef.current);
+
+        analyserRef.current.fftSize = 256;
+        const bufferLength = analyserRef.current.frequencyBinCount;
+        dataArrayRef.current = new Uint8Array(bufferLength);
+
         mediaRecorderRef.current.ondataavailable = (event) => {
           if (event.data.size > 0) {
-            chunksRef.current.push(event.data)
+            chunksRef.current.push(event.data);
           }
-        }
+        };
 
         mediaRecorderRef.current.onstop = () => {
-          const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
-          setAudioBlob(blob)
-          chunksRef.current = []
-        }
+          const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+          setAudioBlob(blob);
+        };
 
-        mediaRecorderRef.current.start()
-        setIsRecording(true)
+        mediaRecorderRef.current.start();
+        setIsRecording(true);
       } catch (error) {
-        console.error('Error starting audio recording:', error)
+        console.error("Error starting audio recording:", error);
       }
-    }
+    };
 
     const stopRecording = () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop()
-        setIsRecording(false)
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        if (audioBlob === null) {
+          mediaRecorderRef.current.stop();
+          chunksRef.current = [];
+        }
+        mediaRecorderRef.current.pause();
+        setIsRecording(false);
       }
-    }
+    };
 
     if (isRecording) {
-      startRecording()
+      startRecording();
     } else {
-      stopRecording()
+      stopRecording();
     }
 
     return () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop()
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
+        mediaRecorderRef.current.stop();
       }
-    }
-  }, [isRecording, setIsRecording, setAudioBlob])
+    };
+  }, [isRecording, setIsRecording, setAudioBlob, audioBlob]);
 
-  return null
+  return null;
 }
