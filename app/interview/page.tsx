@@ -23,35 +23,46 @@ const dummyData = {
     {
       category: "Subject Knowledge",
       score: 8.5,
-      comment:
-        "Demonstrated strong technical knowledge and industry awareness.",
+      comment: "Demonstrated strong understanding of core concepts and technologies.",
+      likes: ["knowledgeable", "up-to-date", "comprehensive"],
+      dislikes: ["occasional hesitation", "limited depth", "narrow focus"]
     },
     {
       category: "Communication Skills",
-      score: 9.0,
-      comment:
-        "Excellent verbal communication with clear and concise responses.",
+      score: 7.8,
+      comment: "Articulated ideas clearly, but could improve on technical explanations.",
+      likes: ["articulate", "confident", "engaging"],
+      dislikes: ["technical jargon", "rushed explanations", "interrupted"]
     },
     {
       category: "Problem-Solving Ability",
-      score: 7.5,
-      comment: "Good analytical approach to complex scenarios.",
+      score: 9.0,
+      comment: "Excellent approach to solving complex problems with innovative solutions.",
+      likes: ["analytical", "creative", "efficient"],
+      dislikes: ["overcomplicates", "time management", "assumption-based"]
     },
     {
       category: "Response Structure",
-      score: 8.0,
-      comment: "Well-organized answers following the STAR method.",
+      score: 8.2,
+      comment: "Well-organized responses, but occasionally lacked conciseness.",
+      likes: ["organized", "logical", "comprehensive"],
+      dislikes: ["verbose", "tangential", "repetitive"]
     },
     {
       category: "Professionalism and Attitude",
       score: 9.5,
-      comment: "Highly professional demeanor with positive attitude.",
-    },
+      comment: "Displayed exceptional professionalism and a positive, enthusiastic attitude.",
+      likes: ["enthusiastic", "respectful", "adaptable"],
+      dislikes: ["overeager", "interrupts", "informal"]
+    }
   ],
-  overall_score: 8.5,
-  final_recommendation: "Strongly Recommended for Hire",
-  overall_comment:
-    "An exceptional candidate who demonstrates strong technical skills and professional qualities.",
+  overall_score: 8.6,
+  final_recommendation: "Strongly Recommend for Hire",
+  overall_comment: "The candidate demonstrated exceptional skills across all evaluated areas, particularly excelling in problem-solving and professionalism. Their strong subject knowledge and communication skills make them a valuable asset to any team.",
+  comment_keywords: {
+    positive: ["innovative", "knowledgeable", "professional"],
+    negative: ["verbose", "technical jargon", "occasional hesitation"]
+  }
 };
 
 const processSteps = [

@@ -35,8 +35,8 @@ interface EvaluationCriteria {
   category: string
   score: number
   comment: string
-  PROS: string[]
-  CONS: string[]
+  likes: string[]
+  dislikes: string[]
 }
 
 interface InterviewReport {
@@ -198,8 +198,8 @@ export default function InterviewResults({ data, isStatic }: InterviewResultsPro
                           {item.comment}
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <LikesDislikesBox title="PROs" items={item.PROS} colorClass=" " />
-                          <LikesDislikesBox title="CONs" items={item.CONS} colorClass=" " />
+                          <LikesDislikesBox title="PROs" items={item.likes} colorClass=" " />
+                          <LikesDislikesBox title="CONs" items={item.dislikes} colorClass=" " />
                         </div>
                       </AccordionContent>
                     </AccordionItem>

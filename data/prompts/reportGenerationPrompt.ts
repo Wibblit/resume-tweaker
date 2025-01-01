@@ -1,4 +1,4 @@
-export const reportGenerationPrompt = `Based on the above questions and attached users audio response of those, evaluate the candidate's performance using the specific categories listed below. For each category, provide a score out of 10 and a brief comment explaining why that score was given also provide the pros and cons. Ensure that your feedback is based solely on the content of the responses provided.
+export const reportGenerationPrompt = `Based on the above questions and attached users audio response of those, evaluate the candidate's performance using the specific categories listed below. For each category, provide a score out of 10 and a brief comment explaining why that score was given also provide the likes and dislikes. Ensure that your feedback is based solely on the content of the responses provided.
 
 Categories to Evaluate:
 
@@ -27,36 +27,36 @@ Provide the evaluation results in strict JSON format with no additional text or 
       "category": "Subject Knowledge",
       "score": 0,
       "comment": "",
-      "PROS": ["", "", ""],
-      "CONS": ["", "", ""]
+      "likes": ["", "", ""],
+      "dislikes": ["", "", ""]
     },
     {
       "category": "Communication Skills",
       "score": 0,
       "comment": "",
-      "PROS": ["", "", ""],
-      "CONS": ["", "", ""]
+      "likes": ["", "", ""],
+      "dislikes": ["", "", ""]
     },
     {
       "category": "Problem-Solving Ability",
       "score": 0,
       "comment": "",
-      "PROS": ["", "", ""],
-      "CONS": ["", "", ""]
+      "likes": ["", "", ""],
+      "dislikes": ["", "", ""]
     },
     {
       "category": "Response Structure",
       "score": 0,
       "comment": "",
-      "PROS": ["", "", ""],
-      "CONS": ["", "", ""]
+      "likes": ["", "", ""],
+      "dislikes": ["", "", ""]
     },
     {
       "category": "Professionalism and Attitude",
       "score": 0,
       "comment": "",
-      "PROS": ["", "", ""],
-      "CONS": ["", "", ""]
+      "likes": ["", "", ""],
+      "dislikes": ["", "", ""]
     }
   ],
   "overall_score": 0,
@@ -74,8 +74,8 @@ Scores (Out of 10):
 Each category must receive an integer score between 0 and 10 (where 10 is excellent, 0 is inadequate), with a comment explaining the reasoning.
 Make sure the comment addresses the user in first person (ex. "You explain this very well" as opposed to "The candidate explained this very well").
 
-Pros and Cons:
-Provide a maximum of 4 Pros and Cons, the pros and cons need to be specific like ("You could have explained this topic in detail"). Do not make them vague.
+likes and dislikes:
+Provide a maximum of 4 likes and dislikes, the likes and dislikes need to be specific like ("You could have explained this topic in detail"). Do not make them vague.
 
 Overall Score:
 The overall_score must be the average of the five category scores, rounded to two decimal places.
