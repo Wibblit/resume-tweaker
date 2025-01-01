@@ -209,6 +209,7 @@ export default function AdaptiveInterview({
         }),
       });
       const data = await result.json();
+      setAudioBlob(null);
       if (!result.ok) {
         toast({
           title: `Error ${result.status}`,
@@ -532,6 +533,7 @@ export default function AdaptiveInterview({
               setIsRecording={setIsRecording}
               setAudioBlob={setAudioBlob}
               mediaRecorderRef={mediaRecorderRef}
+              audioBlob={audioBlob}
             />
             <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
