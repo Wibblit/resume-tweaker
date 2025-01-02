@@ -14,7 +14,7 @@ import FAQAccordion from "@/components/faq-accordian";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Wibblit Resume Tweaker",
+  title: "Wibblit ResumeTweaker",
   description:
     "Craft a standout resume with ease using the power of AI. Receive tailored suggestions, optimize your content for specific job roles, and ensure your resume perfectly aligns with job descriptions—designed to accelerate your path to landing your dream job.",
   icons: {
@@ -26,29 +26,28 @@ export default async function Home() {
   const session = await auth();
 
   if (session?.user) {
-    return redirect("/home");
+    // return redirect("/home");
   }
 
   const faqData = [
     {
-      question: "What is Proactic?",
-      answer:
-        "Proactic is a social media marketing automation tool designed to help businesses streamline their social media efforts.",
+      question: "1. What is ResumeTweaker, and how does it work?",
+      answer:"ResumeTweaker is an AI-powered tool designed to help you create, improve, and optimize your resumes and cover letters. Simply upload your existing resume or provide details about your skills and job history, and ResumeTweaker will generate professional, ATS-friendly documents tailored to your desired job. "
     },
     {
-      question: "How does Proactic work?",
+      question: "2. Can ResumeTweaker review my resume for specific job applications?",
       answer:
-        "Proactic helps you manage and automate your social media presence by providing tools for content scheduling, analytics, and engagement tracking across multiple platforms.",
+        "Yes! ResumeTweaker analyzes job descriptions and matches them to your resume, offering tailored suggestions to highlight relevant skills and experience. This ensures your resume aligns with the requirements of the specific job you're applying for.",
     },
     {
-      question: "Which social media platforms does Proactic support?",
+      question: "3. Is ResumeTweaker suitable for all career levels?",
       answer:
-        "Proactic supports major social media platforms including Twitter, Facebook, Instagram, LinkedIn, and Pinterest, allowing you to manage all your social media accounts from one dashboard.",
+        "Absolutely. Whether you're a recent graduate, a mid-level professional, or an experienced executive, ResumeTweaker offers customizable templates and AI-driven insights to meet your unique career needs.",
     },
     {
-      question: "Can I schedule posts in advance with Proactic?",
+      question: "4. How secure is my data with ResumeTweaker?",
       answer:
-        "Yes, you can schedule posts in advance across multiple social media platforms. This allows you to plan and organize your content calendar efficiently while maintaining a consistent posting schedule.",
+        "Your privacy is our priority. All uploaded resumes and data are encrypted and processed securely. We never share your information without your consent and delete your data after processing to ensure confidentiality.",
     },
   ];
 

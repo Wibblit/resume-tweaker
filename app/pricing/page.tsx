@@ -8,24 +8,24 @@ export default async function PricingPage() {
   const session = await auth();
   const faqData = [
     {
-      question: "What is Proactic?",
+      question: "1. How does ResumeTweaker's pricing work?",
       answer:
-        "Proactic is a social media marketing automation tool designed to help businesses streamline their social media efforts.",
+        "Our pricing is transparent and simple. Instead of monthly subscriptions, you purchase credits that can be used for any paid feature, such as resume reviews, AI-enhanced text, and interview prep. You only pay for what you need, giving you complete flexibility.",
     },
     {
-      question: "How does Proactic work?",
+      question: "2. What credit bundles are available?",
       answer:
-        "Proactic helps you manage and automate your social media presence by providing tools for content scheduling, analytics, and engagement tracking across multiple platforms.",
+        "You can choose from four credit bundles: 200, 500, 1000, and 2000 credits. This variety ensures you can find a bundle that fits your needs and budget.",
     },
     {
-      question: "Which social media platforms does Proactic support?",
+      question: "3. Can I use my credits however I want?",
       answer:
-        "Proactic supports major social media platforms including Twitter, Facebook, Instagram, LinkedIn, and Pinterest, allowing you to manage all your social media accounts from one dashboard.",
+        "Yes! ResumeTweaker gives you the freedom to spend your credits on any feature. Whether you need a quick resume review or multiple interview prep sessions, you decide how to allocate your credits.",
     },
     {
-      question: "Can I schedule posts in advance with Proactic?",
+      question: "4. Do I need to commit to a subscription?",
       answer:
-        "Yes, you can schedule posts in advance across multiple social media platforms. This allows you to plan and organize your content calendar efficiently while maintaining a consistent posting schedule.",
+        "No subscriptions are required. With ResumeTweaker, there’s no long-term commitment. You simply purchase credits as needed, making it a hassle-free and budget-friendly option.",
     },
   ];
 
