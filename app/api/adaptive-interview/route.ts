@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { rateLimiter } from "@/lib/rateLimiter";
-import { adaptiveInitialPrompt } from "@/data/prompts/adaptiveStartPrompt";
+import { adaptivePrompt } from "@/data/prompts/adaptiveStartPrompt";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 
@@ -27,7 +27,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
 
   if (rateLimiter(session?.user?.id, ip)) throw ApiError.rateLimitExceeded;
 
-  const {
+  let {
     jd,
     companyName,
     position,
@@ -51,7 +51,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   );
 
   // Adaptive prompt generation
-  const prompt = adaptiveInitialPrompt(
+  const prompt = adaptivePrompt(
     job,
     position,
     companyName,
@@ -63,7 +63,6 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     totalDuration,
     currentQuestionIndex,
     interviewerPosition,
-    isSkipped
   );
 
   // Get generative model
@@ -71,23 +70,77 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   // console.log("Before Chat History: ", JSON.stringify(chatHistory,null,2));
   // Generate content using the model
   let result;
-  if (base64Audio) {
-    result = await model.generateContent([
+
+  if (isSkipped) {
+    chatHistory = [
+      ...chatHistory,
       {
-        inlineData: {
-          mimeType: "audio/webm",
-          data: base64Audio,
-        },
+        role: "user",
+        parts: [
+          {
+            text: "INFO: USER SKIPPED THE PERIVIOUS QUESTION"
+          },
+        ],
       },
-      {
-        text: prompt,
-      },
-    ]);
+    ];
+    result = await model.generateContent(prompt);
   } else {
-    result = await model.generateContent(
-      prompt
-    );
+    if (base64Audio) {
+      console.log("base64Audio is given");
+      const transcribeText = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: "audio/webm",
+            data: base64Audio,
+          },
+        },
+        {
+          text: "Transcribe this audio. If the audio is not transcriable or if the audio is not detectable just send 'ERROR: UNABLE TO DETECT INPUT' and nothing else. I repeat either send the transcribed text or 'ERROR: UNABLE TO DETECT INPUT' in case of undetectable audio.",
+        },
+      ]);
+  
+      chatHistory = [
+        ...chatHistory,
+        {
+          role: "user",
+          parts: [
+            {
+              text: transcribeText.response
+                .text()
+                .replace(/```json\s*|\s*```/g, "")
+                .trim(),
+            },
+          ],
+        },
+      ];
+      console.log(
+        JSON.stringify(
+          transcribeText.response
+            .text()
+            .replace(/```json\s*|\s*```/g, "")
+            .trim(),
+          null,
+          2
+        )
+      );
+  
+      result = await model.generateContent([
+        {
+          inlineData: {
+            mimeType: "audio/webm",
+            data: base64Audio,
+          },
+        },
+        {
+          text: prompt,
+        },
+      ]);
+    } else {
+      result = await model.generateContent(prompt);
+    }
   }
+
+ 
 
   // console.log("GEMINI RESPONSE FOR ADAPTIVE", result.response.text())
 

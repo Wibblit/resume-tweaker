@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState } from 'react';
+"use client";
+import { useEffect, useRef, useState } from "react";
 
 interface AudioVisualizationProps {
   isRecording: boolean;
@@ -11,6 +12,7 @@ export default function AudioVisualization({ isRecording }: AudioVisualizationPr
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const previousHeightsRef = useRef<number[]>([]);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     if (isRecording) {
@@ -19,12 +21,23 @@ export default function AudioVisualization({ isRecording }: AudioVisualizationPr
       stopVisualization();
     }
 
-    return () => stopVisualization();
+    return () => {
+      stopVisualization();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
   }, [isRecording]);
 
   const startVisualization = async () => {
     try {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      
       audioContextRef.current = new AudioContext();
       analyserRef.current = audioContextRef.current.createAnalyser();
       const source = audioContextRef.current.createMediaStreamSource(stream);
@@ -77,21 +90,16 @@ export default function AudioVisualization({ isRecording }: AudioVisualizationPr
 
       let targetHeight: number;
       if (speaking) {
-        // When speaking: create a dynamic wave pattern based on audio data
         const frequencyIndex = Math.floor(normalizedIndex * (dataArrayRef.current!.length - 1));
         const frequencyData = dataArrayRef.current![frequencyIndex];
         const baseHeight = (frequencyData / 255) * 100;
-        
-        // Add wave modulation
         const wave = Math.sin(time * 3 + normalizedIndex * Math.PI * 2) * 10;
         targetHeight = Math.max(5, Math.min(100, baseHeight + wave));
       } else {
-        // When not speaking: create a subtle breathing animation
         const breathingWave = Math.sin(time * 2 + normalizedIndex * Math.PI) * 10;
         targetHeight = 20 + breathingWave;
       }
 
-      // Smooth the transition
       const smoothedHeight = smoothValue(
         targetHeight,
         previousHeightsRef.current[index] || targetHeight
