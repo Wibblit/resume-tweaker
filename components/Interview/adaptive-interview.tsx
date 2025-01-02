@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
-import AudioRecorder from "./audioRecorder";
+import { AudioRecorder } from "@/lib/client/AudioRecorder";
 import {
   AudioLines,
   Loader2,
@@ -76,6 +76,8 @@ export default function AdaptiveInterview({
   const [skipQuestionLoading, setSkipQuestionLoding] = useState(false);
 
   const [isoLoader, setIsoLoader] = useState<boolean>(false);
+
+  const recorder = new AudioRecorder(mediaRecorderRef, setAudioBlob);
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -175,6 +177,7 @@ export default function AdaptiveInterview({
   };
 
   const handleNextQuestion = async () => {
+    recorder.stopRecording();
     if (!audioBlob) {
       toast({
         variant: "destructive",
@@ -188,7 +191,6 @@ export default function AdaptiveInterview({
     setIsTimerPaused(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
-
       const result = await fetch("/api/adaptive-interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -208,6 +210,7 @@ export default function AdaptiveInterview({
           interviewerPosition,
         }),
       });
+
       const data = await result.json();
       if (!result.ok) {
         toast({
@@ -215,17 +218,19 @@ export default function AdaptiveInterview({
           description: data.message,
           variant: "destructive",
         });
+        return;
       }
+
+      recorder.clearAudio();
       setChatHistory(data.chatHistory);
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setAudioBlob(null);
-      generateAudio(data.question);
 
-      if (currentQuestionIndex >= numberOfQuestions - 1) {
+      if (currentQuestionIndex + 1 >= numberOfQuestions - 1) {
         handleInterviewComplete();
       } else {
         setIsTimerPaused(false);
+        generateAudio(data.question);
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
@@ -234,7 +239,6 @@ export default function AdaptiveInterview({
         title: "Error",
         description: "Unable to load the next question. Please try again.",
       });
-      return;
       setIsTimerPaused(false);
     }
   };
@@ -257,15 +261,11 @@ export default function AdaptiveInterview({
   const handleSkipQuestion = async () => {
     setSkipQuestionLoding(true);
     setIsTimerPaused(true);
-    dispatch({
-      type: "STORE_ANSWER",
-      payload: {
-        questionIndex: currentQuestionIndex,
-        answer: "Skipped",
-      },
-    });
 
-    mediaRecorderRef.current?.stop();
+    if (recorder.isRecording()) {
+      recorder.stopRecording();
+    }
+    recorder.clearAudio();
     setIsPlayingAudio(false);
 
     try {
@@ -287,6 +287,7 @@ export default function AdaptiveInterview({
           interviewerPosition,
         }),
       });
+
       const data = await result.json();
       if (!result.ok) {
         toast({
@@ -294,13 +295,14 @@ export default function AdaptiveInterview({
           description: data.message,
           variant: "destructive",
         });
+        return;
       }
+
       setChatHistory(data.chatHistory);
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setAudioBlob(null);
       generateAudio(data.question);
-      setSkipQuestionLoding(false);
+
       if (currentQuestionIndex >= numberOfQuestions - 1) {
         handleInterviewComplete();
       } else {
@@ -308,6 +310,7 @@ export default function AdaptiveInterview({
       }
     } catch (error) {
       console.error("Error getting the next question:", error);
+    } finally {
       setSkipQuestionLoding(false);
       setIsTimerPaused(false);
     }
@@ -445,7 +448,7 @@ export default function AdaptiveInterview({
             }, 
             ${29 + Math.floor((255 - 29) * (timeLeft / ((duration * 60) / 2)))}
           )`,
-            color: timeLeft < (duration * 60 * 0.18) ? "white" : "black", // Adjust text color for better contrast
+            color: timeLeft < duration * 60 * 0.18 ? "white" : "black", // Adjust text color for better contrast
           }}
         >
           Time: {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:
@@ -527,40 +530,46 @@ export default function AdaptiveInterview({
                 )}
               </div>
             </div>
-            <AudioRecorder
-              isRecording={isRecording}
-              setIsRecording={setIsRecording}
-              setAudioBlob={setAudioBlob}
-              mediaRecorderRef={mediaRecorderRef}
-            />
             <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
-              <Button
-                onClick={() => setIsRecording(!isRecording)}
-                variant={isRecording ? "destructive" : "default"}
-                disabled={
-                  skipQuestionLoading ||
-                  !audioQueue[currentQuestionIndex] ||
-                  isoLoader
-                }
-                className="flex items-center"
-              >
-                {isRecording ? (
-                  <>
-                    <Pause className="mr-2 h-4 w-4" />
-                    Pause Recording
-                  </>
-                ) : (
-                  <>
-                    <Play className="mr-2 h-4 w-4" />
-                    {currentQuestionIndex === 0 ? (
-                      <span>Start Recording</span>
-                    ) : (
+              {currentQuestionIndex === 0 ? (
+                <Button
+                  onClick={() => {
+                    recorder.startRecording();
+                    setIsRecording(recorder.isRecording());
+                  }}
+                >
+                  <Play className="mr-2 h-4 w-4" />
+                  <span>Start Recording</span>
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    recorder.toggleRecordingState();
+                    setIsRecording(recorder.isRecording());
+                  }}
+                  variant={isRecording ? "destructive" : "default"}
+                  disabled={
+                    skipQuestionLoading ||
+                    !audioQueue[currentQuestionIndex] ||
+                    isoLoader
+                  }
+                  className="flex items-center"
+                >
+                  {isRecording ? (
+                    <>
+                      <Pause className="mr-2 h-4 w-4" />
+                      Pause Recording
+                    </>
+                  ) : (
+                    <>
+                      <Play className="mr-2 h-4 w-4" />
                       <span>Resume Recording</span>
-                    )}
-                  </>
-                )}
-              </Button>
+                    </>
+                  )}
+                </Button>
+              )}
+
               <Button
                 onClick={handleNextQuestions}
                 disabled={

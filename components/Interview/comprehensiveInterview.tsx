@@ -84,7 +84,6 @@
 
 //   const [isoLoader, setIsoLoader] = useState<boolean>(false);
 
-
 //   const generateAudioQueue = async () => {
 //     const startIndex = currentQuestionIndex;
 //     const endIndex = Math.min(startIndex + 3, questions.length);
@@ -117,8 +116,6 @@
 //       }
 //     }
 //   };
-
-
 
 //   const handleNextQuestion = () => {
 //     if (!audioBlob) {
@@ -425,8 +422,6 @@
 //   );
 // }
 
-
-
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -434,7 +429,7 @@ import { useDispatch } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import VideoRecorder from "./videoRecorder";
-import AudioRecorder from "./audioRecorder";
+import AudioRecorder from "./adaptiveAudioRecorder";
 import {
   AudioLines,
   CircleArrowRight,
@@ -483,8 +478,6 @@ export default function ComprehensiveInterview({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isQuitting, setIsQuitting] = useState(false);
   const [shouldStartTyping, setShouldStartTyping] = useState(false);
-
-  
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -707,7 +700,7 @@ export default function ComprehensiveInterview({
     try {
       // if (audioBlob) {
       //@ts-ignore
-        await generateReport(audioBlob);
+      await generateReport(audioBlob);
       // } else {
       //   setShowNoAudioAlert(true);
       // }
