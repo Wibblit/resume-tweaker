@@ -241,7 +241,10 @@ export default function ComprehensiveInterview({
         },
       });
 
-      const updatedSkippedQuestions = [...intervieweeSkippedQuestions, currentQuestionIndex + 1]
+      const updatedSkippedQuestions = [
+        ...intervieweeSkippedQuestions,
+        currentQuestionIndex + 1,
+      ];
       setIntervieweeSkippedQuestions(updatedSkippedQuestions);
 
       if (isRecording) {
@@ -298,7 +301,10 @@ export default function ComprehensiveInterview({
     setIsProcessing(false);
   };
 
-  const generateReport = async (audioBlob: Blob, finalSkippedQuestions?: number[]) => {
+  const generateReport = async (
+    audioBlob: Blob,
+    finalSkippedQuestions?: number[]
+  ) => {
     setIsLoading(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
@@ -397,19 +403,31 @@ export default function ComprehensiveInterview({
           <span>
             Comprehensive Interview - Question {currentQuestionIndex + 1}
           </span>
-          <Button
-            onClick={handleQuitInterview}
-            variant="outline"
-            className="flex items-center gap-2"
-            disabled={isQuitting || isProcessing}
-          >
-            {isQuitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
+          {isInterviewComplete ? (
+            <Button
+              onClick={() => router.replace("/ai-interview")}
+              variant="outline"
+              className="flex items-center gap-2"
+              disabled={isQuitting || isProcessing}
+            >
               <LogOut className="h-4 w-4" />
-            )}
-            Quit Interview
-          </Button>
+              Get back
+            </Button>
+          ) : (
+            <Button
+              onClick={handleQuitInterview}
+              variant="outline"
+              className="flex items-center gap-2"
+              disabled={isQuitting || isProcessing}
+            >
+              {isQuitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <LogOut className="h-4 w-4" />
+              )}
+              Quit Interview
+            </Button>
+          )}
         </CardTitle>
         <div
           className="px-4 py-2 rounded-full text-sm font-medium mt-4 shadow-md"
