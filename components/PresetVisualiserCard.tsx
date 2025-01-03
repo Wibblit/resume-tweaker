@@ -177,7 +177,10 @@ function PresetVisualCard() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-
+                <p className="text-sm text-muted-foreground text-start">
+                    <CheckCircle2 className="inline-block w-4 h-4 mr-1" />
+                    Feel free to bias the feature(s) you want to use the most.
+                  </p>
                 <div className="flex flex-wrap gap-2 mt-4 justify-center">
                   {BIAS_LABELS.map((label, index) => (
                     <Button
