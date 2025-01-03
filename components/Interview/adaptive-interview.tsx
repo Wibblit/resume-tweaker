@@ -8,6 +8,7 @@ import VideoRecorder from "./videoRecorder";
 import AudioRecorder from "./audioRecorder";
 import {
   AudioLines,
+  ClipboardCheck,
   Loader2,
   LogOut,
   Pause,
@@ -117,6 +118,12 @@ export default function AdaptiveInterview({
   };
 
   const handleConfirmQuit = () => {
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+    }
+    if (isPlayingAudio) {
+      stopAudio();
+    }
     router.replace("/ai-interview");
   };
 
@@ -175,7 +182,7 @@ export default function AdaptiveInterview({
   };
 
   const handleNextQuestion = async () => {
-    if (!audioBlob) {
+    if (!audioBlob && currentQuestionIndex !== numberOfQuestions - 1) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -187,46 +194,45 @@ export default function AdaptiveInterview({
 
     setIsTimerPaused(true);
     try {
-      const base64Audio = await blobToBase64(audioBlob);
+      if (currentQuestionIndex < numberOfQuestions - 1) {
+        const base64Audio = await blobToBase64(audioBlob!);
 
-      const result = await fetch("/api/adaptive-interview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jd,
-          companyName,
-          position,
-          job,
-          base64Audio,
-          isSkipped: false,
-          numberOfQuestions,
-          resumeText,
-          currentQuestionIndex: currentQuestionIndex + 1,
-          totalDuration: duration,
-          chatHistory,
-          timeLeft: timeLeft / 60,
-          interviewerPosition,
-        }),
-      });
-      const data = await result.json();
-      if (!result.ok) {
-        toast({
-          title: `Error ${result.status}`,
-          description: data.message,
-          variant: "destructive",
+        const result = await fetch("/api/adaptive-interview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jd,
+            companyName,
+            position,
+            job,
+            base64Audio,
+            isSkipped: false,
+            numberOfQuestions,
+            resumeText,
+            currentQuestionIndex: currentQuestionIndex + 1,
+            totalDuration: duration,
+            chatHistory,
+            timeLeft: timeLeft / 60,
+            interviewerPosition,
+          }),
         });
-      }
-      setChatHistory(data.chatHistory);
-      setQuestions((prev) => [...prev, data.question]);
-      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
-      setAudioBlob(null);
-      generateAudio(data.question);
-
-      if (currentQuestionIndex >= numberOfQuestions - 1) {
-        handleInterviewComplete();
+        const data = await result.json();
+        if (!result.ok) {
+          toast({
+            title: `Error ${result.status}`,
+            description: data.message,
+            variant: "destructive",
+          });
+        }
+        setChatHistory(data.chatHistory);
+        setQuestions((prev) => [...prev, data.question]);
+        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+        setAudioBlob(null);
+        generateAudio(data.question);
       } else {
-        setIsTimerPaused(false);
+        await handleInterviewComplete();
       }
+      setIsTimerPaused(false);
     } catch (error) {
       console.error("Error getting the next question:", error);
       toast({
@@ -421,14 +427,25 @@ export default function AdaptiveInterview({
       <CardHeader>
         <CardTitle className="text-2xl font-bold flex justify-between items-center pb-4">
           <span>Adaptive Interview - Question {currentQuestionIndex + 1}</span>
-          <Button
-            onClick={handleQuitInterview}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Quit Interview
-          </Button>
+          {isInterviewComplete ? (
+            <Button
+              variant="outline"
+              className="flex items-center gap-2"
+              onClick={() => router.replace("/ai-interview")}
+            >
+              <LogOut className="h-4 w-4" />
+              Get back
+            </Button>
+          ) : (
+            <Button
+              onClick={handleQuitInterview}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Quit Interview
+            </Button>
+          )}
         </CardTitle>
         <div
           className="px-4 py-2 rounded-full text-sm font-medium mt-4 shadow-md"
@@ -502,7 +519,8 @@ export default function AdaptiveInterview({
                     disabled={
                       skipQuestionLoading ||
                       !audioQueue[currentQuestionIndex] ||
-                      isoLoader
+                      isoLoader ||
+                      currentQuestionIndex === numberOfQuestions - 1
                     }
                     variant={"link"}
                     size={"sm"}
@@ -542,7 +560,8 @@ export default function AdaptiveInterview({
                 disabled={
                   skipQuestionLoading ||
                   !audioQueue[currentQuestionIndex] ||
-                  isoLoader
+                  isoLoader ||
+                  currentQuestionIndex === numberOfQuestions - 1
                 }
                 className="flex items-center"
               >
@@ -581,7 +600,16 @@ export default function AdaptiveInterview({
                 }`}
               >
                 {isNextLoading && <Loader2 className="animate-spin mr-1" />}
-                Next Question <CircleArrowRight className="w-4 h-4" />
+                {currentQuestionIndex === numberOfQuestions - 1 ||
+                timeLeft === 0 ? (
+                  <span className="flex gap-2 items-center">
+                    Get report <ClipboardCheck className="w-4 h-4" />
+                  </span>
+                ) : (
+                  <span className="flex gap-2 items-center">
+                    Next Question <CircleArrowRight className="w-4 h-4" />
+                  </span>
+                )}
               </Button>
             </div>
           </>
