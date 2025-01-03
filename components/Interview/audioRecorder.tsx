@@ -22,8 +22,8 @@ export default function AudioRecorder({
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
 
-    if (audioBlob === null) {
-      console.log("Clearing")
+  if (audioBlob === null) {
+    console.log("Clearing");
     chunksRef.current = [];
   }
 

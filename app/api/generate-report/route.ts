@@ -76,7 +76,8 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   }
 
   try {
-    const { questions, base64Audio, timeSpent } = await request.json();
+    const { questions, base64Audio, timeSpent, intervieweeSkippedQuestions } =
+      await request.json();
 
     console.log(
       "Questions",
@@ -84,7 +85,9 @@ export const POST = asyncHandler(async (request: NextRequest) => {
       "Time spent: ",
       timeSpent,
       "Audio length:",
-      base64Audio.length
+      base64Audio.length,
+      "interviewee skipped questions",
+      intervieweeSkippedQuestions
     );
 
     if (!questions || !base64Audio || !timeSpent) {
