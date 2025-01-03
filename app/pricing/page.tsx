@@ -2,7 +2,7 @@ import Pricing from "@/components/LandingPage/Pricing";
 import { auth } from "@/auth";
 import GetStartedSection from "@/components/LandingPage/GetStartedSection";
 import FAQAccordion from "@/components/faq-accordian";
-import { PricingBreakdown } from "@/components/credit-bundle-breakdown";
+import PresetVisualCard from "@/components/PresetVisualiserCard";
 
 export default async function PricingPage() {
   const session = await auth();
@@ -36,7 +36,7 @@ export default async function PricingPage() {
       </section>
       <section className="py-8 sm:pt-12 w-full" id="pricing">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <PricingBreakdown />
+          <PresetVisualCard/>
         </div>
       </section>
       <section className="py-8 sm:pt-12 w-full" id="pricing">
