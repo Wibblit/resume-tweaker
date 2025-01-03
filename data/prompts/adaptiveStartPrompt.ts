@@ -11,10 +11,8 @@ export const adaptivePrompt = (
   currentQuestionIndex: number,
   interviewerPosition: string
 ) => {
-  const lastUserAnswer = chatHistory?.length
-    ? chatHistory[chatHistory.length - 1]?.parts?.[0]?.text || "No previous answer"
-    : "No chat history available";
-
+  const UserAnswers = [...chatHistory.filter((mssg:any)=>mssg.role ==="user")]
+  const lastUserAnswer = UserAnswers[UserAnswers.length - 1]
   return currentQuestionIndex + 1 === 1
     ? `
   You are a high-tech natural language robot capable of conducting structured and professional interviews. Your task is to generate the first question for the interview based on the provided context.
@@ -81,9 +79,8 @@ export const adaptivePrompt = (
     - last_user_answer: ${JSON.stringify(lastUserAnswer)}.
 
   - Determine the status of the provided answer:
-    - If the last user answer mentions "skipped": then acknowledge the user skipped the previous question and move on to another question, see the topic from the last question posed which was skipped and go in another direction.
-    - If the last user answer mentions"ERROR: unable to transcribe user input": then Prompt the user to repeat, tell them that you could understand what they said, see if this has happened multiple times in the chat history, if so then ask the user to check things on their side.
-
+    - If the last user answer mentions "INFO: USER SKIPPED THE PREVIOUS QUESTION": then acknowledge the user skipped the previous question and move on to another question, see the topic from the last question posed which was skipped and go in another direction.
+    - If the last user answer mentions"ERROR: UNABLE TO DETECT INPUT": then Prompt the user to repeat, tell them that you could understand what they said, see if this has happened multiple times in the chat history, if so then ask the user to check things on their side.
   - Use the context below to frame the question:
     - **Position:** ${position}, **Job:** ${job} at **Company:** ${companyName}.
     - **Interviewer Position:** ${interviewerPosition}.

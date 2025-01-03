@@ -78,12 +78,24 @@ export const POST = asyncHandler(async (req: NextRequest) => {
         role: "user",
         parts: [
           {
-            text: "INFO: USER SKIPPED THE PERIVIOUS QUESTION"
+            text: "INFO: USER SKIPPED THE PREVIOUS QUESTION"
           },
         ],
       },
     ];
-    result = await model.generateContent(prompt);
+    result = await model.generateContent(adaptivePrompt(
+      job,
+      position,
+      companyName,
+      resumeText,
+      jd,
+      numberOfQuestions,
+      chatHistory,
+      timeLeft,
+      totalDuration,
+      currentQuestionIndex,
+      interviewerPosition,
+    ));
   } else {
     if (base64Audio) {
       console.log("base64Audio is given");
@@ -113,7 +125,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
           ],
         },
       ];
-      console.log(
+      console.log("Transcribed text", 
         JSON.stringify(
           transcribeText.response
             .text()
@@ -132,11 +144,35 @@ export const POST = asyncHandler(async (req: NextRequest) => {
           },
         },
         {
-          text: prompt,
+          text: adaptivePrompt(
+            job,
+            position,
+            companyName,
+            resumeText,
+            jd,
+            numberOfQuestions,
+            chatHistory,
+            timeLeft,
+            totalDuration,
+            currentQuestionIndex,
+            interviewerPosition,
+          ),
         },
       ]);
     } else {
-      result = await model.generateContent(prompt);
+      result = await model.generateContent(adaptivePrompt(
+        job,
+        position,
+        companyName,
+        resumeText,
+        jd,
+        numberOfQuestions,
+        chatHistory,
+        timeLeft,
+        totalDuration,
+        currentQuestionIndex,
+        interviewerPosition,
+      ));
     }
   }
 
