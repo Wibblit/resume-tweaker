@@ -1,4 +1,16 @@
-export const reportGenerationPrompt = `Based on the above questions and attached users audio response of those, evaluate the candidate's performance using the specific categories listed below. For each category, provide a score out of 10 and a brief comment explaining why that score was given also provide the likes and dislikes. Ensure that your feedback is based solely on the content of the responses provided.
+export const reportGenerationPrompt = (
+  interviewType: string,
+  skippedQuestions?: number[]
+)=> {
+  const context = 
+  interviewType == "comprehensive" ? 
+  `\nYou are provided with a list of questions and an audio sequence that contains all the answers provided by the user
+  Analyse the audio carefully line by line and make sense of what question's answer is present in  which part of the audio, For your information 
+  ${skippedQuestions?.length?` here is a list of the questions that were skipped by the user: ${skippedQuestions}`:" The user has answered all the questions without skipping any."}
+  Use this information and  
+  `:`\nYou are provided with the chathistory of an adaptive interview. Analyse the chat history carefully line by line and `;
+  
+  return context + `evaluate the candidate's performance using the specific categories listed below. For each category, provide a score out of 10 and a brief comment explaining why that score was given also provide the likes and dislikes. Ensure that your feedback is based solely on the content of the responses provided.
 
 Categories to Evaluate:
 
@@ -96,4 +108,4 @@ Address the candidate in first person (You) in the overall comment. Tell the can
 Strict Output Requirements:
 
 Only return the JSON structure specified.
-Do not return any other text, explanations, or formatting.`;
+Do not return any other text, explanations, or formatting.`;}

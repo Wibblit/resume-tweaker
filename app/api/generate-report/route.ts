@@ -105,9 +105,9 @@ export const POST = asyncHandler(async (request: NextRequest) => {
         },
       },
       {
-        text: `${JSON.stringify(
+        text: `Context\nQuestions:${JSON.stringify(
           questions
-        )}\nTime spent: ${timeSpent}\n${reportGenerationPrompt}`,
+        )}\n${reportGenerationPrompt("comprehensive",intervieweeSkippedQuestions)}`,
       },
     ]);
 
@@ -115,7 +115,9 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     const text = response.text();
     const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
     console.log("Gemini response for report generation:", response);
-
+    console.log("prompt: ",`Context\nQuestions:${JSON.stringify(
+          questions
+        )}\n${reportGenerationPrompt("comprehensive",intervieweeSkippedQuestions)}`)
     return NextResponse.json({ report: cleanedText });
   } catch (error) {
     console.error(

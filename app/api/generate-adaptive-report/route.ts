@@ -70,8 +70,9 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   
 
   const result = await model.generateContent(
-    `${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt}`
+    `Context\nchathistory:${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt("adaptive")}`
   );
+  console.log(`prompt: \nContext\nchathistory:${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt("adaptive")}`)
   const response = result.response;
   const text = response.text();
   const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
