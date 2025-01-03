@@ -630,7 +630,7 @@ export default function ComprehensiveInterview({
         await generateNextQuestionAudio();
         setCurrentQuestionIndex((prev) => prev + 1);
         setIsTypingComplete(false);
-        setAudioBlob(null);
+        // setAudioBlob(null);
       } else {
         await handleInterviewComplete();
       }
@@ -673,7 +673,7 @@ export default function ComprehensiveInterview({
         await generateNextQuestionAudio();
         setCurrentQuestionIndex((prev) => prev + 1);
         setIsTypingComplete(false);
-        setAudioBlob(null);
+        // setAudioBlob(null);
       } else {
         await handleInterviewComplete();
       }
@@ -720,6 +720,7 @@ export default function ComprehensiveInterview({
     setIsLoading(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
+      console.log("base64", base64Audio)
       const response = await fetch("/api/generate-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -928,6 +929,7 @@ export default function ComprehensiveInterview({
               setIsRecording={setIsRecording}
               setAudioBlob={setAudioBlob}
               mediaRecorderRef={mediaRecorderRef}
+            
             />
             <AudioVisualization isRecording={isRecording} />
             <div className="flex justify-between mt-4">
