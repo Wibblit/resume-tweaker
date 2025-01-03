@@ -80,7 +80,9 @@ export const ParallaxScroll = ({
                 src={el}
                 className="h-full w-full object-cover object-top"
                 height="600"
-                width="450"
+                width="600"
+                // unoptimized={true}
+                // priority
                 loading="lazy"
                 alt={`Resume template ${idx + 1}`}
               />
