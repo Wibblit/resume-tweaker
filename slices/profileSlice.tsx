@@ -30,11 +30,11 @@ export const initialState: ResumeData = {
     },
   ],
   skills: [
-        {
-          id: "",
-          name: "",
-          skills: [{ name: "", level: "" }],
-        },
+    {
+      id: "",
+      name: "",
+      skills: [{ name: "", level: "" }],
+    },
   ],
   projects: [
     {
@@ -129,6 +129,12 @@ const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
+    updatePartialProfileData(
+      state,
+      action: PayloadAction<Partial<ResumeData>>
+    ) {
+      return { ...state, ...action.payload };
+    },
     UpdateProfileData(state, action: PayloadAction<ResumeData>) {
       return { ...action.payload };
     },
@@ -141,5 +147,10 @@ const profileSlice = createSlice({
   },
 });
 
-export const { UpdateProfileData, Reset, setFullProfileData } = profileSlice.actions;
+export const {
+  UpdateProfileData,
+  Reset,
+  setFullProfileData,
+  updatePartialProfileData,
+} = profileSlice.actions;
 export default profileSlice.reducer;

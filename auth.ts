@@ -6,6 +6,7 @@ import LinkedIn from "next-auth/providers/linkedin";
 import { prisma } from "./prisma";
 import type { Provider } from "next-auth/providers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 const providers: Provider[] = [
   Google({
@@ -40,6 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
   pages: {
     signIn: "/login",
+    newUser: "/onboarding",
   },
   callbacks: {
     async session({ session, user }) {
@@ -50,7 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
     async authorized({ auth, request: { nextUrl } }) {
-      console.log("nextUrl from authorized callback", nextUrl)
+      console.log("nextUrl from authorized callback", nextUrl);
       const isLoggedIn = !!auth?.user;
       const protectedRoutes = [
         "/home",

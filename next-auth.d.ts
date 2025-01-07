@@ -1,0 +1,11 @@
+import NextAuth from "next-auth";
+
+declare module "next-auth" {
+  interface User {
+    createdAt?: string; // Add the createdAt field
+  }
+
+  interface Session {
+    isNewUser?: boolean; // Add the isNewUser field
+  }
+}

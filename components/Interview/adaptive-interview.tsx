@@ -230,6 +230,7 @@ export default function AdaptiveInterview({
         setAudioBlob(null);
         generateAudio(data.question);
       } else {
+        setIsInterviewComplete(true);
         await handleInterviewComplete();
       }
       setIsTimerPaused(false);
@@ -308,6 +309,7 @@ export default function AdaptiveInterview({
       generateAudio(data.question);
       setSkipQuestionLoding(false);
       if (currentQuestionIndex >= numberOfQuestions - 1) {
+        setIsInterviewComplete(true);
         handleInterviewComplete();
       } else {
         setIsTimerPaused(false);
