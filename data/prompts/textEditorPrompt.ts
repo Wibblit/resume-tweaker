@@ -14,7 +14,7 @@ const sectionPrompts: any = {
         "format": "bullet points",
         "focus": "Key achievements and responsibilities in professional roles",
         "tone": "Formal and professional",
-        "specifics": "Quantify achievements and utilize action verbs."
+        "specifics": "Quantify achievements and utilize action verbs. use STAR method"
     }`,
   languages: ``,
   profiles: ``,
@@ -38,7 +38,7 @@ const sectionPrompts: any = {
   culturalFit: `{
         "sentence_count": "2-3 sentences",
         "format": "short paragraph",
-        "focus": "How your values align with the company’s culture, followed by a polite request for an interview or further discussion",
+        "focus": "How your values align with the company's culture, followed by a polite request for an interview or further discussion",
         "tone": "Personal, confident, and enthusiastic"
     }`,
   date: ``,
@@ -46,7 +46,7 @@ const sectionPrompts: any = {
   interestInPosition: `{
         "sentence_count": "2-3 sentences",
         "format": "short paragraph",
-        "focus": "Why you’re interested in the position and the company",
+        "focus": "Why you're interested in the position and the company",
         "tone": "Personalized and enthusiastic"
     }`,
   keyAchievements: `{
@@ -91,43 +91,69 @@ const sectionPrompts: any = {
 
 export function getAISuggestionPrompt(prompt: string, section: string) {
   const isSection =
-  section === "salutation" ||
-  section === "date" ||
-  section === "recipientInfo" ||
-  section === "subject" ||
-  section === "opening" ||
-  section === "interestInPosition" ||
-  section === "professionalSummary" ||
-  section === "keyAchievements" ||
-  section === "culturalFit" ||
-  section === "closing" ||
+    section === "salutation" ||
+    section === "date" ||
+    section === "recipientInfo" ||
+    section === "subject" ||
+    section === "opening" ||
+    section === "interestInPosition" ||
+    section === "professionalSummary" ||
+    section === "keyAchievements" ||
+    section === "culturalFit" ||
+    section === "closing" ||
     section === "signOff";
-  
+
   const prompts = isSection
-    ? `Generate a professional and polished cover letter section based on the following input: ${prompt}.
+    ? `You are tasked with generating professional and polished cover letter content for the section "${section}". To perform this effectively:
+    
+1. **Input Validation**:
+   - Analyze the input : ${prompt} 
+   - If it contains gibberish, offensive content, or lacks coherence (e.g., "asdfasdf"), respond with "Invalid Input."
 
-Write the content following these rules: ${sectionPrompts[section]}
+2. **Generate Content**:
+   - Based on the valid input and section-specific rules, create concise, professional, and relevant content:
+     ${sectionPrompts[section]}
 
-Important: If the user input contains irrelevant, inappropriate, or nonsensical information, disregard such input. Instead, generate a cover letter section based on common professional practices relevant to the specified section.
+3. **Reasoning**:
+   - Ensure the response aligns with the section's intent (e.g., interest in position, achievements, or cultural fit).
+   - If no tone or audience is specified, default to professional and industry-agnostic language.
 
-ONLY REPLY IN PLAIN TEXT
+4. **Readability**:
+   - Ensure the content is clear, concise, and easy to read. Avoid overly complex sentences or jargon unless relevant to the context.
 
-Ensure the output is concise and clear. Adapt the language and tone to fit a professional and formal cover letter format, applicable across industries or roles unless specified otherwise.
-If specific details (such as job title, recipient’s name, or company) are missing, provide reasonable assumptions based on common professional standards. 
-PROVIDE ONLY REQUESTED INFORMATION, NO ADDITIONAL EXPLANATIONS OR COMMENTS.`
-    : `Generate a professional and polished resume entry based on the following input: "${prompt}".
+5. **Length Control**:
+   - Adhere to the section's guidelines (e.g., 2-3 sentences for summaries, 4-6 bullet points for experience).
+   - Avoid exceeding the specified length or introducing redundancy.
 
-Write the content following these rules: ${sectionPrompts[section]}
+6. IMPORTANT**Respond Only in Plain Text**:
+   - Provide the requested content without additional explanations, comments, or formatting.
 
-Important: If the user input contains irrelevant, inappropriate, or nonsensical information, disregard such input. Instead, generate a resume entry based on common professional accomplishments and responsibilities relevant to the specified section.
+ULTRA IMPORTANT: Do not attempt to hallucinate content if the input is unclear, irrelevant, or inappropriate. In such cases, respond with "Invalid Input."`
+    : `You are tasked with generating professional and polished resume content for the section "${section}". To perform this effectively:
+    
+1. **Input Validation**:
+   - Analyze the input  : ${prompt} 
+   - If it contains gibberish, offensive content, or lacks coherence (e.g., "asdfasdf"), respond with "Invalid Input."
 
-ONLY REPLY IN PLAIN TEXT
+2. **Generate Content**:
+   - Based on the valid input and section-specific rules, create concise, professional, and relevant content:
+     ${sectionPrompts[section]}
 
-1) Ensure the output is clear, concise and without redundancy or repetition.
-Adapt the language and tone to fit a professional context, applicable across industries or roles unless specified otherwise.
-2) If specific details (such as achievements, dates, or metrics) are missing, provide reasonable assumptions based on common professional standards.
-PROVIDE ONLY REQUESTED INFORMATION, NO ADDITIONAL EXPLANATIONS OR COMMENTS.
-`;
+3. **Reasoning**:
+   - Ensure the response aligns with the section's intent (e.g., achievements, responsibilities, or summary).
+   - If no tone or audience is specified, default to professional and industry-agnostic language.
+
+4. **Readability**:
+   - Ensure the content is clear, concise, and easy to read. Avoid overly complex sentences or jargon unless relevant to the context.
+
+5. **Length Control**:
+   - Adhere to the section's guidelines (e.g., 4-6 bullet points for experience, 2-3 sentences for summaries).
+   - Avoid exceeding the specified length or introducing redundancy.
+
+6. IMPORTANT**Respond Only in Plain Text**:
+   - Provide the requested content without additional explanations, comments, or formatting.
+
+ULTRA IMPORTANT: Do not attempt to hallucinate content if the input is unclear, irrelevant, or inappropriate. In such cases, respond with "Invalid Input."`;
 
   return prompts;
 }
@@ -145,27 +171,59 @@ export function getAIEnhancementPrompt(content: string, section: string) {
     section === "culturalFit" ||
     section === "closing" ||
     section === "signOff";
-  
- 
+
   const prompt = isSection
-    ? `Enhance the following cover letter section based on the input provided: ${content}.
+    ? `You are tasked with enhancing professional and polished cover letter content for the section "${section}". To perform this effectively:
 
-Write the content following these rules: ${sectionPrompts[section]}
+1. **Input Validation**:
+   - Analyze the input : ${content} 
+   - If it contains gibberish, offensive content, or lacks coherence, respond with "Invalid Input."
 
-IMPROVE THE CLARITY, CONCISENESS, AND PROFESSIONALISM of the content while preserving the original meaning and intent.
-ENSURE THE LANGUAGE IS FORMAL, action-oriented, and fits the tone of a professional cover letter.
-REMOVE ANY IRRELEVANT, INAPPROPRIATE, OR NONSENSICAL INFORMATION while maintaining the focus on the section's purpose (e.g., interest in the position, key achievements).
-Adapt the content to a professional context that is applicable across industries or roles unless otherwise specified.
-ONLY REPLY IN PLAIN TEXT, WITH NO ADDITIONAL EXPLANATIONS OR COMMENTS.
-PROVIDE ONLY THE ENHANCED VERSION OF THE INPUT. DO NOT INTRODUCE NEW INFORMATION OR SIGNIFICANTLY ALTER THE STRUCTURE UNLESS NECESSARY TO IMPROVE READABILITY AND FLOW.`
-    : `Enhance the following resume section based on the input provided: ${content}".
-Write the content following these rules: ${sectionPrompts[section]}
-IMPROVE THE CLARITY, CONCISENESS, AND PROFESSIONALISM of the content while preserving the original meaning and intent.
-ENSURE THE LANGUAGE IS FORMAL, action-oriented, and focused on achievements and responsibilities relevant to the resume.
-REMOVE ANY IRRELEVANT, INAPPROPRIATE, OR NONSENSICAL INFORMATION while maintaining the focus on the section's purpose (e.g., professional summary, experience description, key achievements).
-Adapt the content to a professional context that is applicable across industries or roles unless otherwise specified.
-ONLY REPLY IN PLAIN TEXT, WITH NO ADDITIONAL EXPLANATIONS OR COMMENTS.
-PROVIDE ONLY THE ENHANCED VERSION OF THE INPUT. DO NOT INTRODUCE NEW INFORMATION OR SIGNIFICANTLY ALTER THE STRUCTURE UNLESS NECESSARY TO IMPROVE READABILITY AND FLOW.`;
+2. **Enhance Content**:
+   - Based on the valid input and section-specific rules, improve the clarity, conciseness, and professionalism:
+     ${sectionPrompts[section]}
+
+3. **Reasoning**:
+   - Ensure the enhanced content aligns with the section's intent (e.g., achievements, interest, or cultural fit).
+   - If no tone or audience is specified, default to professional and industry-agnostic language.
+
+4. **Readability**:
+   - Ensure the content is clear, concise, and easy to read. Avoid overly complex sentences or jargon unless relevant to the context.
+
+5. **Length Control**:
+   - Adhere to the section's guidelines (e.g., 2-3 sentences for summaries, 4-6 bullet points for experience).
+   - Avoid introducing redundancy or altering the meaning unnecessarily.
+
+6. IMPORTANT**Respond Only in Plain Text**:
+   - Provide the enhanced content without additional explanations, comments, or formatting.
+
+ULTRA IMPORTANT: Do not attempt to hallucinate improvements if the input is unclear, irrelevant, or inappropriate. In such cases, respond with "Invalid Input."`
+    : `You are tasked with enhancing professional and polished resume content for the section "${section}". To perform this effectively:
+
+1. **Input Validation**:
+   - Analyze the input : ${content} 
+   - If it contains gibberish, offensive content, or lacks coherence, respond with "Invalid Input."
+
+2. **Enhance Content**:
+   - Based on the valid input and section-specific rules, improve the clarity, conciseness, and professionalism:
+     ${sectionPrompts[section]}
+
+3. **Reasoning**:
+   - Ensure the enhanced content aligns with the section's intent (e.g., achievements, responsibilities, or summary).
+   - If no tone or audience is specified, default to professional and industry-agnostic language.
+
+4. **Readability**:
+   - Ensure the content is clear, concise, and easy to read. Avoid overly complex sentences or jargon unless relevant to the context.
+
+5. **Length Control**:
+   - Adhere to the section's guidelines (e.g., 4-6 bullet points for experience, 2-3 sentences for summaries).
+   - Avoid introducing redundancy or altering the meaning unnecessarily.
+
+6. IMPORTANT: **Respond Only in Plain Text**:
+   - Provide the enhanced content without additional explanations, comments, or formatting.
+
+ULTRA IMPORTANT: Do not attempt to hallucinate improvements if the input is unclear, irrelevant, or inappropriate. In such cases, respond with "Invalid Input."`;
 
   return prompt;
 }
+

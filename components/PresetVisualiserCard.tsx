@@ -131,16 +131,18 @@ function PresetVisualCard() {
               </CardContent>
             </Card>
             <div className='flex-1'></div>
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-sm text-muted-foreground items-center flex justify-center">
                     <CheckCircle2 className="inline-block w-4 h-4 mr-1" />
-                    Credit usage is flexible across features
+                    <span>
+                      Credit usage is flexible across features
+                    </span>
                   </p>
           </div>
 
           {/* Right Column */}
           <div className="space-y-6">
             <Card>
-            <CardHeader>
+            <CardHeader >
                 <CardTitle className='text-xl'>{bundleNames[selectedBundle]} bundle</CardTitle>
                 <CardDescription>{selectedBundle} Credits</CardDescription>
             </CardHeader>
@@ -151,17 +153,17 @@ function PresetVisualCard() {
                       <XAxis 
                         dataKey="name"
                         tick={{ 
-                            fill: 'hsl(var(--foreground))'
+                            fill: 'hsl(var(--foreground))',
                         }}
-                        tickFormatter={(value) => value.split(' ').join('\n')}
+                        tickFormatter={(value) => value.split(' ').join(' ')}
                         tickLine={false}
                         axisLine={false}
                         height={60}
-                        
+                        interval={0}
                       />
                       <YAxis
                         tick={false} // Hides the ticks
-                        domain={[0, Math.max(...chartData.map(d => d.value)) * 1.1]} // Add extra space above bars
+                        domain={[0, Math.max(...chartData.map(d => d.value)) * 1.11]} // Add extra space above bars
                         axisLine={false} // Hides the axis line
                         tickLine={false} // Hides the tick line
                         width={0}
@@ -177,9 +179,10 @@ function PresetVisualCard() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <p className="text-sm text-muted-foreground text-start">
+                <p className="text-sm text-muted-foreground justify-center flex items-center">
                     <CheckCircle2 className="inline-block w-4 h-4 mr-1" />
-                    Feel free to bias the feature(s) you want to use the most.
+                    <span>Feel free to bias the feature(s) you want to use the most.
+                    </span>
                   </p>
                 <div className="flex flex-wrap gap-2 mt-4 justify-center">
                   {BIAS_LABELS.map((label, index) => (
