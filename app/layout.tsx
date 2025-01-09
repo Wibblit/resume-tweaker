@@ -5,6 +5,8 @@ import { ToastProvider } from "@/components/ToastProviderWrapper";
 import { ReduxProvider } from "@/components/ReduxProvider";
 import { Montserrat as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { LandingNav } from "@/components/LandingNav";
+import Footer from "@/components/LandingPage/Footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
@@ -69,36 +71,39 @@ export const metadata: Metadata = {
     "resumetweaker",
     "resume tweaker",
   ],
-  appleWebApp:{
+  appleWebApp: {
     title: "ResTweak",
   },
-  icons:{
-    icon: [{
-      rel: "icon",
-      type: "image/png",
-      url:"/favicons/favicon-96x96.png",
-      sizes:"96x96"
-    },{
-      rel: "icon",
-      type: "image/svg+xml",
-      url:"/favicons/favicon.svg"
-    },
-    {
-      rel: "shortcut icon",
-      url:"/favicons/favicon.ico"
-    },
-    {
-      rel: "apple-touch-icon",
-      url:"/favicons/apple-touch-icon.png",
-      sizes:"180x180"
-    }, ]
+  icons: {
+    icon: [
+      {
+        rel: "icon",
+        type: "image/png",
+        url: "/favicons/favicon-96x96.png",
+        sizes: "96x96",
+      },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        url: "/favicons/favicon.svg",
+      },
+      {
+        rel: "shortcut icon",
+        url: "/favicons/favicon.ico",
+      },
+      {
+        rel: "apple-touch-icon",
+        url: "/favicons/apple-touch-icon.png",
+        sizes: "180x180",
+      },
+    ],
   },
-  manifest: "/favicons/site.webmanifest"
+  manifest: "/favicons/site.webmanifest",
 };
 
 const fontSans = FontSans({
   // weight: ['100', '300', '400', '500', '700', '900'],
-  subsets: ["latin"]
+  subsets: ["latin"],
 });
 
 export default function RootLayout({
@@ -110,22 +115,26 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script
-            id="schema-org-script"
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "WebSite",
-                "name": "resumetweaker",
-                "alternateName": ["ResumeTweaker", "Resume Tweaker"],
-                "url": "https://resumetweaker.wibblit.com/",
-              })
-            }}
-          />
+          id="schema-org-script"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "resumetweaker",
+              alternateName: ["ResumeTweaker", "Resume Tweaker"],
+              url: "https://resumetweaker.wibblit.com/",
+            }),
+          }}
+        />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.className)}>
         <ThemeProviderWrapper>
-          <ReduxProvider>{children}</ReduxProvider>
+          <ReduxProvider>
+            <LandingNav />
+            {children}
+            <Footer />
+          </ReduxProvider>
         </ThemeProviderWrapper>
         <ToastProvider />
         <script

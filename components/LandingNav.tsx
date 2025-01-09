@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { ModeToggle } from "./ModeToggle";
 import { useRouter } from "next/navigation";
 import Logo from "./Logo";
+import { Button } from "./ui/button";
 
 export function LandingNav() {
   const pathname = usePathname();
@@ -15,10 +16,11 @@ export function LandingNav() {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const navItems = [
-    // { href: "/pricing", label: "Pricing" },
+    { href: "/editor", label: "Editor" },
+    { href: "/review", label: "Review" },
+    { href: "/interview", label: "Interview" },
+    { href: "/pricing", label: "Pricing" },
     { href: "/blogs", label: "Blogs" },
-    // { href: "/about", label: "About" },
-    // { href: "/features", label: "Features" },
   ];
 
   return (
@@ -28,38 +30,33 @@ export function LandingNav() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="flex items-center gap-2 group justify-center">
+              className="flex items-center gap-2 group justify-center"
+            >
               <Logo />
             </Link>
           </div>
           {/* {pathname === "/" && ( */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item) => (
-                <div className="flex">
-                  {pathname === "/" && (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className="hover:underline hover:text-primary hover:scale-105 transition-all duration-200 px-3 py-2 rounded-md font-medium"
-                    >
-                      {item.label}
-                    </Link>
-                  )}
-                  <div className="ml-4 flex items-center md:ml-6">
-                    <ModeToggle />
-                  </div>
-                </div>
-              ))}
+
+          {/* )} */}
+          <div className="md:flex items-center justify-between hidden">
+            <div className="flex items-center space-x-10">
+              <div className="flex space-x-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="hover:underline hover:text-primary hover:scale-105 transition-all duration-200 px-3 py-2 rounded-md font-medium"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="flex items-center">
+                <ModeToggle />
+              </div>
             </div>
           </div>
-          {/* )} */}
-          {/* <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
-              <ModeToggle />
-              <Button className="ml-3" onClick={() => router.push("/login")}>Login</Button>
-            </div>
-          </div> */}
+
           <div className="-mr-2 flex md:hidden">
             <button
               onClick={toggleMenu}
@@ -94,18 +91,24 @@ export function LandingNav() {
                 >
                   {item.label}
                 </Link>
-                <div className="flex w-1/6 items-center justify-center">
+                {/* <div className="flex w-1/6 items-center justify-center">
                   <ModeToggle />
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
-          {/* <div className="pt-4 pb-3 border-t border-primary">
+          <div className="pt-4 pb-3 border-t border-primary">
             <div className="flex items-center px-5">
               <ModeToggle />
-              <Button className="ml-auto" onClick={() => router.push("/login")}>Login</Button>
+
+              <Button className="ml-auto" onClick={() => {
+                router.push("/#join") 
+                toggleMenu()
+              }}>
+                Join Waitlist
+              </Button>
             </div>
-          </div> */}
+          </div>
         </div>
       )}
     </nav>

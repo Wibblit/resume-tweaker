@@ -1,13 +1,9 @@
-import Editor from "@/components/Editor";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 
-export default async function ResumeBuilder() {
-  const session = await auth();
-  return redirect("/");
-  if (!session?.user) {
-    redirect("/login?callbackUrl=/editor");
-  }
+export default async function Editor() {
+  return (
+    <div className=" mt-20">
+      <p> This is the Editor page to be added.</p>
+    </div>
+  );
 
-  return <Editor />;
 }

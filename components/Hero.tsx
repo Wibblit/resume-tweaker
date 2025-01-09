@@ -27,7 +27,7 @@ function SubmitButton() {
   );
 }
 
-export function Hero() {
+export function JoinHero() {
   const [email, setEmail] = useState("");
   const [userIp, setUserIp] = useState("");
   const { toast } = useToast();
@@ -58,7 +58,7 @@ export function Hero() {
   }
 
   return (
-    <div className="min-h-screen w-full rounded-md relative flex flex-col items-center justify-center antialiased">
+    <div id="join" className="min-h-screen w-full rounded-md relative flex flex-col items-center justify-center antialiased">
       <div className="max-w-2xl mx-auto p-4">
         <motion.h1
           className="relative z-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-center font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-b from-zinc-700 to-zinc-500 dark:from-zinc-200 dark:to-zinc-500"
@@ -98,9 +98,9 @@ export function Hero() {
           <SubmitButton />
         </motion.form>
       </div>
-      <Suspense fallback="loading...">
+      {/* <Suspense fallback="loading...">
         <BackgroundBeams/>
-      </Suspense>
+      </Suspense> */}
     </div>
   );
 }
