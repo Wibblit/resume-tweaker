@@ -25,6 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -67,6 +73,8 @@ import {
 } from "react-beautiful-dnd";
 import { updatePageVales } from "@/slices/addPageSlice";
 import Image from "next/image";
+import { FileJson, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const fonts = [
   "Arial",
@@ -175,6 +183,20 @@ export default function EditorRightSideBar({
   const separator = useAppSelector((state) => state.rightsidebar.separator);
   const icons = useAppSelector((state) => state.rightsidebar.icons);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
+
+  const CoverData = useAppSelector((state) => state?.coverletter);
+  const ResumeData = useAppSelector((state) => state?.leftsidebar);
+
+  console.log(CoverData, ResumeData);
+
+  const [segment, setSegment] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const pathSegments = window.location.pathname.split("/");
+      setSegment(pathSegments[1]); // Assuming 'editor' is the second segment
+    }
+  }, []);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -441,7 +463,9 @@ export default function EditorRightSideBar({
                                         {createAbbreviation(sectionName)
                                           .charAt(0)
                                           .toUpperCase() +
-                                          createAbbreviation(sectionName).slice(1)}
+                                          createAbbreviation(sectionName).slice(
+                                            1
+                                          )}
                                       </span>
                                     </div>
                                   )}
@@ -462,9 +486,7 @@ export default function EditorRightSideBar({
                     {...provided.droppableProps}
                     className="bg-muted p-2 rounded-md  mt-4"
                   >
-                    <h3 className="text-sm font-semibold mb-2">
-                      Unused
-                    </h3>
+                    <h3 className="text-sm font-semibold mb-2">Unused</h3>
 
                     {sectionOrder?.column3?.map((section, index) => (
                       <Draggable
@@ -708,29 +730,44 @@ export default function EditorRightSideBar({
   );
 
   const renderDownloadButton = () => (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button className="w-full">
-          <Download className="mr-2 h-4 w-4" /> Download
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Download className="mr-2 h-4 w-4" />
+          Download
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Button
-          className="w-full rounded-none py-2 px-4 justify-start hover:bg-accent hover:text-accent-foreground"
-          onClick={() =>
-            dispatch(DownloadPDF({ printFrameRef: printFrameRef }))
-          }
-        >
-          Download PDF
-        </Button>
-        <Button
-          className="w-full rounded-none py-2 px-4 justify-start hover:bg-accent hover:text-accent-foreground"
-          onClick={() => dispatch(DownloadJSON())}
-        >
-          Download JSON
-        </Button>
-      </PopoverContent>
-    </Popover>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-full p-0">
+        <div className="w-full">
+          <DropdownMenuItem
+            className="w-full px-4 py-2 text-left rounded-none hover:bg-accent hover:text-accent-foreground"
+            onClick={() =>
+              dispatch(DownloadPDF({ printFrameRef: printFrameRef }))
+            }
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            <span>Download PDF</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="w-full px-4 py-2 text-left rounded-none hover:bg-accent hover:text-accent-foreground"
+            onClick={() => {
+              const jsonString = JSON.stringify( segment === "editor" ? ResumeData : CoverData, null, 2); // Convert JSON to string
+              const blob = new Blob([jsonString], { type: "application/json" }); // Create a file-like object
+              const url = URL.createObjectURL(blob); // Generate a download URL
+              const link = document.createElement("a"); // Create a hidden <a> element
+              link.href = url;
+              link.download = `${segment === "editor" ? 'resume.json' : 'coverletter.json'}`; // Set the filename
+              link.click(); // Trigger download
+              URL.revokeObjectURL(url); // Clean up the URL after download
+            }}
+           
+          >
+            <FileJson className="mr-2 h-4 w-4" />
+            <span>Download JSON</span>
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 
   return (
