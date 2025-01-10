@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2 } from 'lucide-react'
 import { ResumeData } from "@/types/types"
+import { CustomDatePicker } from "@/components/DatePicker"
 import React from 'react'
 
 interface AdditionalInfoProps {
@@ -121,12 +122,12 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
           <div key={index} className="flex items-center space-x-2 mb-2">
             <Input
               value={lang.name}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLanguage(index, 'name', e.target.value)}
+              onChange={(e) => updateLanguage(index, 'name', e.target.value)}
               placeholder="Language"
             />
             <Input
               value={lang.level}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLanguage(index, 'level', e.target.value)}
+              onChange={(e) => updateLanguage(index, 'level', e.target.value)}
               placeholder="Proficiency Level"
             />
             <Button variant="ghost" size="icon" onClick={() => removeLanguage(index)}>
@@ -146,29 +147,31 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 value={vol.organization}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateVolunteer(index, 'organization', e.target.value)}
+                onChange={(e) => updateVolunteer(index, 'organization', e.target.value)}
                 placeholder="Organization"
               />
               <Input
                 value={vol.role}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateVolunteer(index, 'role', e.target.value)}
+                onChange={(e) => updateVolunteer(index, 'role', e.target.value)}
                 placeholder="Role"
               />
-              <Input
-                type="date"
-                value={vol.startDate}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateVolunteer(index, 'startDate', e.target.value)}
-                placeholder="Start Date"
-              />
-              <Input
-                type="date"
-                value={vol.endDate}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateVolunteer(index, 'endDate', e.target.value)}
-                placeholder="End Date"
-              />
+              <div>
+                <Label>Start Date</Label>
+                <CustomDatePicker
+                  date={vol.startDate ? new Date(vol.startDate) : undefined}
+                  onSelect={(date) => updateVolunteer(index, 'startDate', date ? date.toISOString() : '')}
+                />
+              </div>
+              <div>
+                <Label>End Date</Label>
+                <CustomDatePicker
+                  date={vol.endDate ? new Date(vol.endDate) : undefined}
+                  onSelect={(date) => updateVolunteer(index, 'endDate', date ? date.toISOString() : '')}
+                />
+              </div>
               <Input
                 value={vol.location}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateVolunteer(index, 'location', e.target.value)}
+                onChange={(e) => updateVolunteer(index, 'location', e.target.value)}
                 placeholder="Location"
               />
             </div>
@@ -189,23 +192,24 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 value={award.title}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateAward(index, 'title', e.target.value)}
+                onChange={(e) => updateAward(index, 'title', e.target.value)}
                 placeholder="Award Title"
               />
               <Input
                 value={award.awarder}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateAward(index, 'awarder', e.target.value)}
+                onChange={(e) => updateAward(index, 'awarder', e.target.value)}
                 placeholder="Awarder"
               />
-              <Input
-                type="date"
-                value={award.date}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateAward(index, 'date', e.target.value)}
-                placeholder="Date Received"
-              />
+              <div>
+                <Label>Date Received</Label>
+                <CustomDatePicker
+                  date={award.date ? new Date(award.date) : undefined}
+                  onSelect={(date) => updateAward(index, 'date', date ? date.toISOString() : '')}
+                />
+              </div>
               <Textarea
                 value={award.summary}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateAward(index, 'summary', e.target.value)}
+                onChange={(e) => updateAward(index, 'summary', e.target.value)}
                 placeholder="Award Summary"
                 className="md:col-span-2"
               />
@@ -227,33 +231,34 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 value={pub.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePublication(index, 'name', e.target.value)}
+                onChange={(e) => updatePublication(index, 'name', e.target.value)}
                 placeholder="Publication Name"
               />
               <Input
                 value={pub.publisher}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePublication(index, 'publisher', e.target.value)}
+                onChange={(e) => updatePublication(index, 'publisher', e.target.value)}
                 placeholder="Publisher"
               />
               <Input
                 value={pub.publishedIn}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePublication(index, 'publishedIn', e.target.value)}
+                onChange={(e) => updatePublication(index, 'publishedIn', e.target.value)}
                 placeholder="Published In"
               />
-              <Input
-                type="date"
-                value={pub.date}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePublication(index, 'date', e.target.value)}
-                placeholder="Publication Date"
-              />
+              <div>
+                <Label>Publication Date</Label>
+                <CustomDatePicker
+                  date={pub.date ? new Date(pub.date) : undefined}
+                  onSelect={(date) => updatePublication(index, 'date', date ? date.toISOString() : '')}
+                />
+              </div>
               <Input
                 value={pub.url.href}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePublication(index, 'url.href', e.target.value)}
+                onChange={(e) => updatePublication(index, 'url.href', e.target.value)}
                 placeholder="Publication URL"
               />
               <Input
                 value={pub.url.label}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePublication(index, 'url.label', e.target.value)}
+                onChange={(e) => updatePublication(index, 'url.label', e.target.value)}
                 placeholder="Publication URL Label"
               />
             </div>
@@ -274,28 +279,29 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 value={cert.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateCertification(index, 'name', e.target.value)}
+                onChange={(e) => updateCertification(index, 'name', e.target.value)}
                 placeholder="Certification Name"
               />
               <Input
                 value={cert.issuer}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateCertification(index, 'issuer', e.target.value)}
+                onChange={(e) => updateCertification(index, 'issuer', e.target.value)}
                 placeholder="Issuer"
               />
-              <Input
-                type="date"
-                value={cert.date}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateCertification(index, 'date', e.target.value)}
-                placeholder="Date Received"
-              />
+              <div>
+                <Label>Date Received</Label>
+                <CustomDatePicker
+                  date={cert.date ? new Date(cert.date) : undefined}
+                  onSelect={(date) => updateCertification(index, 'date', date ? date.toISOString() : '')}
+                />
+              </div>
               <Input
                 value={cert.url.href}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateCertification(index, 'url.href', e.target.value)}
+                onChange={(e) => updateCertification(index, 'url.href', e.target.value)}
                 placeholder="Certification URL"
               />
               <Input
                 value={cert.url.label}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateCertification(index, 'url.label', e.target.value)}
+                onChange={(e) => updateCertification(index, 'url.label', e.target.value)}
                 placeholder="Certification URL Label"
               />
             </div>
@@ -316,17 +322,17 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 value={ref.name}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateReference(index, 'name', e.target.value)}
+                onChange={(e) => updateReference(index, 'name', e.target.value)}
                 placeholder="Reference Name"
               />
               <Input
                 value={ref.phone}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateReference(index, 'phone', e.target.value)}
+                onChange={(e) => updateReference(index, 'phone', e.target.value)}
                 placeholder="Phone Number"
               />
               <Input
                 value={ref.email}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateReference(index, 'email', e.target.value)}
+                onChange={(e) => updateReference(index, 'email', e.target.value)}
                 placeholder="Email Address"
                 className="md:col-span-2"
               />
@@ -343,4 +349,3 @@ export default function AdditionalInfo({ updateFormData, formData }: AdditionalI
     </div>
   )
 }
-

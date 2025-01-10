@@ -71,6 +71,9 @@ interface CustomDatePickerProps {
 }
 
 export function CustomDatePicker({ date, onSelect }: CustomDatePickerProps) {
+  // Ensure `date` is valid before formatting
+  const isValidDate = date instanceof Date && !isNaN(date.getTime());
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -78,11 +81,11 @@ export function CustomDatePicker({ date, onSelect }: CustomDatePickerProps) {
           variant={"outline"}
           className={cn(
             "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !isValidDate && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "dd, MMM ''yy") : <span>Pick a date</span>}
+          {isValidDate ? format(date!, "dd, MMM yy") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
