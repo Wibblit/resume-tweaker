@@ -29,6 +29,7 @@ import { ResumeData } from "@/types/types";
 import { useRouter } from "next/navigation";
 import { updateProfiles } from "@/actions/updateProfile";
 import ThemeAwareLogo from "./ThemeAwareLogo";
+import ResumeUpload from "./onboarding/ResumeUpload";
 
 const steps = [
   { title: "Basic Info", description: "Personal details" },
@@ -131,7 +132,11 @@ export default function Onboarding(): JSX.Element {
               Complete your professional profile in {steps.length} simple steps
             </p>
           </div>
-
+          <ResumeUpload
+            onResumeData={(data) => {
+              dispatch(setFullProfileData(data as ResumeData));
+            }}
+          />
           {/* Progress */}
           <div className="space-y-4">
             <div className="flex justify-between text-sm text-muted-foreground">
@@ -172,7 +177,9 @@ export default function Onboarding(): JSX.Element {
                 >
                   {index < currentStep ? "✓" : index + 1}
                 </div>
-                <span className="text-sm font-medium text-nowrap">{step.title}</span>
+                <span className="text-sm font-medium text-nowrap">
+                  {step.title}
+                </span>
                 <span className="text-xs text-muted-foreground hidden sm:block">
                   {step.description}
                 </span>
