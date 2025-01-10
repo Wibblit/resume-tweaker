@@ -93,6 +93,7 @@ export default function ResumeUpload({ onResumeData }: ResumeUploadProps) {
     } finally {
       setIsOcrInProgress(false);
       setOcrProgress(1);
+
     }
   };
 

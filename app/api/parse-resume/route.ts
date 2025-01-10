@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
