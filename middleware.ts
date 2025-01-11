@@ -38,8 +38,14 @@ export default auth(async function middleware(req: NextRequest) {
   if (origin && allowedOrigins.includes(origin)) {
     const response = NextResponse.next();
     response.headers.set("Access-Control-Allow-Origin", origin);
-    response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    response.headers.set(
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
+    );
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization"
+    );
     response.headers.set("Access-Control-Allow-Credentials", "true");
     return response;
   }
@@ -52,19 +58,18 @@ export default auth(async function middleware(req: NextRequest) {
         Cookie: req.headers.get("cookie") || "",
       },
     });
-
     console.log("Session fetch response status:", sessionRes.status);
 
     if (!sessionRes.ok) {
       const errorText = await sessionRes.text();
       console.error("Failed to fetch session:", sessionRes.status, errorText);
-      return NextResponse.next(); 
+      return NextResponse.next();
     }
 
     session = await sessionRes.json();
   } catch (error) {
     console.error("Error fetching or parsing session:", error);
-    return NextResponse.next(); 
+    return NextResponse.next();
   }
 
   let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
@@ -78,8 +83,8 @@ export default auth(async function middleware(req: NextRequest) {
   }
 
   if (session) {
-      if (rateLimiter(session?.user?.id, ip)) {
-        console.log("Rate limit hit")
+    if (rateLimiter(session?.user?.id, ip)) {
+      console.log("Rate limit hit");
       return NextResponse.redirect(new URL("/rate-limit-error", req.url));
     }
   }

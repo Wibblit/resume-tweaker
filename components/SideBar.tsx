@@ -51,8 +51,6 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
     total: 1000,
   };
 
-
-
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-14 items-center border-b border-border px-4">
@@ -88,7 +86,11 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
-        {session?.user && <SignOutButton />}
+        {session?.user && (
+          <span>
+            <SignOutButton />
+          </span>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-start">

@@ -22,7 +22,6 @@ export default async function HomePage() {
   const [resumes, letters] = await Promise.all([getResumes(), getLetters()]);
 
   if (!session?.user) return redirect("/login");
-  
   //@ts-ignore
   return <Home resumes={resumes} letters={letters} />;
 }

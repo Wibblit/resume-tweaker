@@ -53,7 +53,7 @@ export default function Onboarding(): JSX.Element {
       setIsSaving(true);
       try {
         dispatch(setFullProfileData(formData));
-        await updateProfiles(formData);
+        await updateProfiles(formData, true);
         router.push("/home");
       } catch (error) {
         console.error("Error saving profile:", error);
@@ -69,9 +69,12 @@ export default function Onboarding(): JSX.Element {
     }
   };
 
-  const handleSkip = (): void => {
+  const handleSkip = async () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+    } else {
+      dispatch(setFullProfileData(formData));
+      await updateProfiles(formData, true);
     }
   };
 

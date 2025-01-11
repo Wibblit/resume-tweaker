@@ -1,25 +1,32 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Google from "next-auth/providers/google";
-import Apple from "next-auth/providers/apple";
 import LinkedIn from "next-auth/providers/linkedin";
 import { prisma } from "./prisma";
 import type { Provider } from "next-auth/providers";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 const providers: Provider[] = [
   Google({
     clientId: process.env.AUTH_GOOGLE_ID,
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
-  }),
-  Apple({
-    clientId: process.env.AUTH_APPLE_ID,
-    clientSecret: process.env.AUTH_APPLE_SECRET,
+    authorization: {
+      params: {
+        prompt: "consent",
+        access_type: "offline",
+        response_type: "code",
+      },
+    },
   }),
   LinkedIn({
     clientId: process.env.AUTH_LINKEDIN_ID,
     clientSecret: process.env.AUTH_LINKEDIN_SECRET,
+    authorization: {
+      params: {
+        prompt: "consent",
+        access_type: "offline",
+        response_type: "code",
+      },
+    },
   }),
 ];
 
@@ -37,22 +44,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   theme: {
     logo: "/rt-light-bg.svg",
   },
-  adapter: PrismaAdapter(prisma),
   providers,
   pages: {
     signIn: "/login",
-    newUser: "/onboarding",
   },
   callbacks: {
-    async session({ session, user }) {
-      session.user = user;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.isNewUser = user.isNewUser;
+      }
+      return token;
+    },
+    async session({ session, token }: any) {
+      session.user.id = token.id.toString() as string;
+      session.isNewUser = token.isNewUser;
       return session;
     },
     async signIn({ user, account, profile }) {
+      let existingUser = await prisma.user.findUnique({
+        where: { email: user.email! },
+      });
+      if (!existingUser) {
+        if (user && user.email && profile && account && account.provider)
+          existingUser = await prisma.user.create({
+            data: {
+              name: user.name || profile?.name || null,
+              email: user.email,
+              image: user.image || profile?.picture || null,
+              provider: account.provider,
+            },
+          });
+      } 
+      user.id = existingUser?.id;
       return true;
     },
     async authorized({ auth, request: { nextUrl } }) {
-      console.log("nextUrl from authorized callback", nextUrl);
+      console.log("auth from authorized", auth);
       const isLoggedIn = !!auth?.user;
       const protectedRoutes = [
         "/home",
@@ -71,12 +99,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       // Redirect logged-in users away from public routes (e.g., /login) to /home
-      if (isLoggedIn) {
-        return Response.redirect(new URL("/home", nextUrl));
-      }
+      // if (isLoggedIn) {
+      //   return Response.redirect(new URL("/home", nextUrl));
+      // }
 
       return true; // Allow access to non-protected routes
     },
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 30,
   },
   trustHost: true,
   cookies: {
