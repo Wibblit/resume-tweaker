@@ -120,6 +120,17 @@ export default function Pricing() {
 
   const [plans, setPlans] = useState([
     {
+      name: "Test",
+      credits: 200,
+      price: " ",
+      originalPrice: 299,
+      gatewayFee: 7.58,
+      tax: 41.22,
+      effectivePrice: 180.2,
+      popular: false,
+      priceID: "pri_01jhavw456v3zakrz4ewj0vt4q",
+    },
+    {
       name: "Starter",
       credits: 200,
       price: " ",
@@ -290,29 +301,12 @@ export default function Pricing() {
                     <span>Tax (18%):</span>
                     <span>
                       {currencyrates[currency].symbol}
-                      {/* {(
-                        Math.ceil(
-                          plan.price * currencyrates[currency].value +
-                            currencyrates[currency].fee +
-                            (plan.price * currencyrates[currency].value -
-                              currencyrates[currency].fee) *
-                              (currencyrates[currency].rate / 100)
-                        ) * 0.18
-                      ).toFixed(2)} */}
+                     
                     </span>
                   </div>
                   <div className="flex justify-between mt-2 font-medium text-foreground">
                     <span>Effective Price:</span>
                     <span>
-                      {currencyrates[currency].symbol}
-                      {/* {Math.ceil(
-                        plan.price * currencyrates[currency].value +
-                          currencyrates[currency].fee +
-                          (plan.price * currencyrates[currency].value -
-                            currencyrates[currency].fee) *
-                            (currencyrates[currency].rate / 100) *
-                            1.18
-                      )} */}
                     </span>
                   </div>
                 </div>
@@ -320,7 +314,7 @@ export default function Pricing() {
               <CardFooter>
                 <Button
                   className="w-full"
-                  onClick={() => router.push("/pricing/" + plan.name)}
+                  onClick={() => router.push("/checkout/" + plan.priceID)}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   Get Started

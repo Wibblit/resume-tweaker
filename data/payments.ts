@@ -1,5 +1,16 @@
 export const pricingPlans = [
   {
+    name: "Test",
+    credits: 200,
+    price: 1,
+    originalPrice: 299,
+    gatewayFee: 7.58,
+    tax: 41.22,
+    effectivePrice: 180.2,
+    popular: false,
+    priceID: "pri_01jhavw456v3zakrz4ewj0vt4q",
+  },
+  {
     name: "Starter",
     credits: 200,
     price: 229,
