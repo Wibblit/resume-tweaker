@@ -10,6 +10,7 @@ declare module "next-auth" {
     isNewUser?: boolean; // Add the isNewUser field
     user: {
       id: string;
+      email: string;
     }
   }
 }
