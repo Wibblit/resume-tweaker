@@ -4,11 +4,16 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { X } from "lucide-react";
 import ThemeAwareLogo from "@/components/ThemeAwareLogo";
 import { ThemeAwareWibblitLogo } from "@/components/ThemeAwareLogo";
+import { useParams } from "next/navigation";
 
-export default function PaymentSuccessPage() {
+export default function PaymentFailurePage() {
+  console.log(useParams());
+
+  const { priceID } = useParams();
+
   return (
     <main className="bg-background text-foreground min-h-screen flex flex-col items-center justify-center p-4">
       <motion.div
@@ -23,10 +28,10 @@ export default function PaymentSuccessPage() {
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
         >
-          <div className="bg-green-100 dark:bg-green-900 p-8 flex flex-col items-center space-y-6">
+          <div className="bg-red-100 dark:bg-red-900 p-8 flex flex-col items-center space-y-6">
             <ThemeAwareLogo className="w-48 h-auto" />
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
+              initial={{ scale: 0, rotate: 180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{
                 type: "spring",
@@ -34,34 +39,32 @@ export default function PaymentSuccessPage() {
                 damping: 20,
                 delay: 0.2,
               }}
-              className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center"
+              className="w-20 h-20 rounded-full bg-red-500 flex items-center justify-center"
             >
               <motion.div
                 animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 360, 360],
+                  rotate: [-10, 10, -10],
+                  scale: [1, 1.1, 1],
                 }}
                 transition={{
-                  duration: 1.5,
-                  ease: "easeInOut",
-                  times: [0, 0.2, 1],
+                  duration: 0.5,
                   repeat: Infinity,
-                  repeatDelay: 1,
+                  repeatType: "reverse",
                 }}
               >
-                <Check className="w-10 h-10 text-white" strokeWidth={3} />
+                <X className="w-10 h-10 text-white" strokeWidth={3} />
               </motion.div>
             </motion.div>
           </div>
 
           <div className="p-8 space-y-6">
             <motion.h1
-              className="text-3xl font-bold text-center text-green-600 dark:text-green-400"
+              className="text-3xl font-bold text-center text-red-600 dark:text-red-400"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              Payment Successful
+              Payment Failed
             </motion.h1>
 
             <motion.p
@@ -70,22 +73,31 @@ export default function PaymentSuccessPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              Great news! Your payment is complete, and your resume is ready for
-              a makeover.
+              We're sorry, but there was an issue processing your payment.
+              Please try again or contact support.
             </motion.p>
 
             <motion.div
-              className="flex justify-center"
+              className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
               <Button
                 asChild
-                className="px-6 py-2 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white"
+                variant="outline"
+                className="px-4 py-2 w-full sm:w-auto border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900"
               >
-                <Link href="/profile">
-                  <span className="text-base">View Your Profile</span>
+                <Link href="/support">
+                  <span className="text-base">Contact Support</span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                className="px-4 py-2 w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white"
+              >
+                <Link href={`/checkout/${priceID}`}>
+                  <span className="text-base">Try Again</span>
                 </Link>
               </Button>
             </motion.div>

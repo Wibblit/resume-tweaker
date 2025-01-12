@@ -1,14 +1,13 @@
 'use client'
 
 import { CheckoutGradients } from "@/components/gradients/checkout-gradients";
-import "../../../styles/checkout.css";
 import { CheckoutHeader } from "@/components/checkout/checkout-header";
 import { CheckoutContents } from "@/components/checkout/checkout-contents";
 import { auth } from "@/auth";
 // import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 
-export default async function CheckoutPage() {
+export default function CheckoutPage() {
 //   const session = await auth();
 //   const router = useRouter();
 //   if (!session) {

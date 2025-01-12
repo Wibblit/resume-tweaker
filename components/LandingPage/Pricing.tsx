@@ -269,7 +269,7 @@ export default function Pricing() {
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-bold">
                       {loading ? (
-                        <Skeleton className="w-full h-9 shadow-lg bg-gray-200 dark:bg-gray-700 rounded-md" />
+                         <Skeleton className="mt-4 h-[20px] w-full bg-border" />
                       ) : (
                         plan.price
                       )}
