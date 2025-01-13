@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: resume-tweaker-app
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      # Exclude node_modules from being mounted to prevent overwriting
+      - ./node_modules:/app/node_modules
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
