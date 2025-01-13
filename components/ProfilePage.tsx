@@ -32,6 +32,7 @@ import { CustomDatePicker } from "@/components/DatePicker";
 import Base64Image from "@/components/base64toPhoto";
 import { ErrorToastHandler } from "@/components/ErrorToastHandler";
 import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export default function Profile({ profData }: { profData: ResumeData }) {
   const dispatch = useAppDispatch();
@@ -595,15 +596,17 @@ export default function Profile({ profData }: { profData: ResumeData }) {
               {credits.current} / {credits.max} credits
             </p>
           </div>
-          <Button
-            onClick={handleUpgradeCredits}
-            variant="outline"
-            size="sm"
-            className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
-          >
-            <CreditCard className="mr-2 h-4 w-4" />
-            Upgrade
-          </Button>
+          <Link href={'/pricing'}>
+            <Button
+              // onClick={handleUpgradeCredits}
+              variant="outline"
+              size="sm"
+              className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Buy Credits
+            </Button>
+          </Link>
         </CardContent>
       </Card>
 
@@ -637,7 +640,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                 </CardHeader>
                 <CardContent>
                   {profileData.basics?.map((basic, index) =>
-                    renderEntryFields("basics", basic, index),
+                    renderEntryFields("basics", basic, index)
                   )}
                 </CardContent>
               </Card>
@@ -652,7 +655,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                 </CardHeader>
                 <CardContent>
                   {profileData.summary?.map((sum, index) =>
-                    renderEntryFields("summary", sum, index),
+                    renderEntryFields("summary", sum, index)
                   )}
                 </CardContent>
               </Card>

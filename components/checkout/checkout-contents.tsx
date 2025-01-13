@@ -1,14 +1,15 @@
 import { PriceSection } from "@/components/checkout/price-section";
-import { Environments, initializePaddle, Paddle, PaddleEventData } from "@paddle/paddle-js";
+import {
+  Environments,
+  initializePaddle,
+  Paddle,
+  PaddleEventData,
+} from "@paddle/paddle-js";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { initiatePayment } from "@/actions/initiatePayment";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useToast } from "@/hooks/use-toast";
-
-interface PathParams {
-  priceId: string;
-  [key: string]: string;
-}
+import { prisma } from "@/prisma";
 
 interface Props {
   userEmail?: string;
@@ -23,214 +24,146 @@ export function CheckoutContents({ userEmail, priceId }: Props) {
     null
   );
 
-  // const handleCheckoutEvents = (event: CheckoutEventsData) => {
-  //   setCheckoutData(event);
-  //   console.log(event)
-  // };
-
   const { toast } = useToast();
 
-  // useEffect(() => {
-  //   const initPaddle = async () => {
-  //     try {
-  //       if (
-  //         !paddle?.Initialized &&
-  //         process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
-  //         process.env.NEXT_PUBLIC_PADDLE_ENV
-  //       ) {
-  //         const initializedPaddle = await initializePaddle({
-  //           token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-  //           environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
-  //           eventCallback: (event) => {
-  //             if (event.data && event.name) {
-  //               console.log(event.name, event.data);
-  //               handleCheckoutEvents(event.data);
+  type CheckoutEventData = {
+    name: string;
+    data: any;
+  };
 
-  //               // Handle specific events
-  //               //@ts-ignore
-  //               // if (event.name === "checkout.payment.failed") {
-  //               //   console.error("Checkout failed:", event.data);
-  //               //   // Show an error message to the user
-  //               //   window.location.href = `/checkout/fail/${event.data.items[0].price_id}`;
-  //               // }
-  //             }
-  //           },
-  //           checkout: {
-  //             settings: {
-  //               displayMode: "inline",
-  //               theme: "dark",
-  //               allowLogout: !userEmail,
-  //               frameTarget: "paddle-checkout-frame",
-  //               frameInitialHeight: 450,
-  //               frameStyle:
-  //                 "width: 100%; background-color: transparent; border: none",
-  //               successUrl: "/checkout/success",
-  //             },
-  //           },
-  //         });
+  const handleCheckoutEvents = async (event: CheckoutEventData) => {
+    setCheckoutData(event.data);
+    console.log("Checkout Event:", event);
 
-  //         if (initializedPaddle && priceId) {
-  //           setPaddle(initializedPaddle);
-  //           console.log(initializedPaddle, "yoo");
+    const { name, data } = event;
 
-  //           try {
-  //             console.log(userEmail);
-  //             initializedPaddle.Checkout.open({
-  //               ...(userEmail && { customer: { email: userEmail } }),
-  //               items: [{ priceId, quantity: 1 }],
-  //             });
-  //           } catch (checkoutError) {
-  //             console.error("Error opening checkout:", checkoutError);
-  //              toast({
-  //                title: "Failed",
-  //                description: "Unable to checkout",
-  //                variant: "destructive",
-  //              });
-  //           }
-  //         }
-  //       }
-  //     } catch (initError) {
-  //       console.error("Failed to initialize Paddle:", initError);
-  //       toast({
-  //         title: "Failed",
-  //         description: "Unable to initiate paddle payment",
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   };
+    switch (name) {
+      case "checkout.payment.initiated":
+        console.log("Payment initiated:", data);
+        try {
+          const res = await initiatePayment(data);
 
-  //   initPaddle();
-  // }, [paddle?.Initialized, priceId, userEmail]);
+          console.log(res);
 
-type CheckoutEventData = {
-  name: string;
-  data: any;
-};
+          if (!res.success) {
+            toast({
+              title: "Payment Failed",
+              description: res.message,
+              variant: "destructive",
+            });
+            return;
+          }
 
+          toast({
+            title: "Payment Initiated",
+            description: "Your payment process has started.",
+          });
+        } catch (error) {
+          console.log(error);
+          toast({
+            title: "Payment failed",
+            description: "Failed to initiate payment",
+            variant: "destructive",
+          });
+        }
+        break;
 
-   const handleCheckoutEvents = (event: CheckoutEventData) => {
-     setCheckoutData(event.data);
-     console.log("Checkout Event:", event);
+      case "checkout.payment.failed":
+        console.error("Payment failed:", data);
+        toast({
+          title: "Payment Failed",
+          description: "Your payment could not be processed. Please try again.",
+          variant: "destructive",
+        });
+        if (data?.items?.[0]?.price_id) {
+          window.location.href = `/checkout/fail/${data.items[0].price_id}`;
+        }
+        break;
 
-     const { name, data } = event;
+      case "checkout.items.updated":
+        console.log("Items updated:", data);
+        toast({
+          title: "Cart Updated",
+          description: "Your cart items were updated.",
+        });
+        break;
+    }
+  };
 
-     switch (name) {
-       case "checkout.payment.initiated":
-         console.log("Payment initiated:", data);
-         toast({
-           title: "Payment Started",
-           description: "Your payment process has started."
-         });
-         break;
+  useEffect(() => {
+    const initPaddle = async () => {
+      try {
+        if (
+          !paddle?.Initialized &&
+          process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
+          process.env.NEXT_PUBLIC_PADDLE_ENV
+        ) {
+          const initializedPaddle = await initializePaddle({
+            token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+            environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
 
-       case "checkout.payment.failed":
-         console.error("Payment failed:", data);
-         toast({
-           title: "Payment Failed",
-           description:
-             "Your payment could not be processed. Please try again.",
-           variant: "destructive",
-         });
-         if (data?.items?.[0]?.price_id) {
-           window.location.href = `/checkout/fail/${data.items[0].price_id}`;
-         }
-         break;
+            eventCallback: (event: PaddleEventData) => {
+              if (
+                event?.name &&
+                typeof event.name === "string" &&
+                event?.data
+              ) {
+                console.log(`Event received: ${event.name}`, event.data);
 
-       case "checkout.customer.created":
-         console.log("Customer created:", data);
-         toast({
-           title: "Customer Registered",
-           description: "Your details have been successfully registered.",
-         });
-         break;
+                // Use type guard or type assertion if necessary
+                handleCheckoutEvents(event as CheckoutEventData);
+              } else {
+                console.error("Invalid event structure:", event);
+              }
+            },
 
-       case "checkout.items.updated":
-         console.log("Items updated:", data);
-         toast({
-           title: "Cart Updated",
-           description: "Your cart items were updated.",
-         });
-         break;
-     }
-   };
+            checkout: {
+              settings: {
+                displayMode: "inline",
+                theme: "dark",
+                allowLogout: true, // Adjust based on your needs
+                frameTarget: "paddle-checkout-frame",
+                frameInitialHeight: 450,
+                frameStyle:
+                  "width: 100%; background-color: transparent; border: none",
+                // successUrl: "/checkout/success",
+              },
+            },
+          });
 
-   useEffect(() => {
-     const initPaddle = async () => {
-       try {
-         if (
-           !paddle?.Initialized &&
-           process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
-           process.env.NEXT_PUBLIC_PADDLE_ENV &&
-           process.env.PADDLE_SELLER_ID
-         ) {
-           const initializedPaddle = await initializePaddle({
-             token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-             environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
+          if (initializedPaddle && priceId) {
+            setPaddle(initializedPaddle);
+            console.log("Paddle initialized:", initializedPaddle);
 
-             eventCallback: (event: PaddleEventData) => {
-               if (
-                 event?.name &&
-                 typeof event.name === "string" &&
-                 event?.data
-               ) {
-                 console.log(`Event received: ${event.name}`, event.data);
+            try {
+              initializedPaddle.Checkout.open({
+                ...(userEmail && { customer: { email: userEmail } }),
+                items: [{ priceId, quantity: 1 }],
+              });
+            } catch (checkoutError: any) {
+              console.error("Error during checkout:", checkoutError);
+              toast({
+                title: "Checkout Failed",
+                description: "Unable to start the checkout process.",
+                variant: "destructive",
+              });
+            }
+          }
+        }
+      } catch (initError: any) {
+        console.error("Failed to initialize Paddle:", initError);
+        toast({
+          title: "Initialization Failed",
+          description: `Error initializing Paddle: ${
+            initError.message || "Unknown error"
+          }`,
+          variant: "destructive",
+        });
+      }
+    };
 
-                 // Use type guard or type assertion if necessary
-                 handleCheckoutEvents(event as CheckoutEventData);
-               } else {
-                 console.error("Invalid event structure:", event);
-               }
-             },
-
-             checkout: {
-               settings: {
-                 displayMode: "inline",
-                 theme: "dark",
-                 allowLogout: true, // Adjust based on your needs
-                 frameTarget: "paddle-checkout-frame",
-                 frameInitialHeight: 450,
-                 frameStyle:
-                   "width: 100%; background-color: transparent; border: none",
-                  successUrl: "/checkout/success",
-               },
-             },
-           });
-
-           if (initializedPaddle && priceId) {
-             setPaddle(initializedPaddle);
-             console.log("Paddle initialized:", initializedPaddle);
-
-             try {
-               initializedPaddle.Checkout.open({
-                 ...(userEmail && { customer: { email: userEmail } }),
-                 items: [{ priceId, quantity: 1 }],
-               });
-             } catch (checkoutError: any) {
-               console.error("Error during checkout:", checkoutError);
-               toast({
-                 title: "Checkout Failed",
-                 description: "Unable to start the checkout process.",
-                 variant: "destructive",
-               });
-             }
-           }
-         }
-       } catch (initError: any) {
-         console.error("Failed to initialize Paddle:", initError);
-         toast({
-           title: "Initialization Failed",
-           description: `Error initializing Paddle: ${
-             initError.message || "Unknown error"
-           }`,
-           variant: "destructive",
-         });
-       }
-     };
-
-     initPaddle();
-   }, [paddle?.Initialized, priceId, userEmail]);
-
-
+    initPaddle();
+  }, [paddle?.Initialized, priceId, userEmail]);
 
   useEffect(() => {
     if (paddle && priceId && paddle.Initialized) {
