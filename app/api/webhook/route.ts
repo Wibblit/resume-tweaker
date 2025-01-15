@@ -5,6 +5,7 @@ import { getPaddleInstance } from "@/utils/paddle/get-paddle-instance";
 const webhookProcessor = new ProcessWebhook();
 
 export async function POST(request: NextRequest) {
+  console.log("I got hit")
   const signature = request.headers.get("paddle-signature") || "";
   const rawRequestBody = await request.text();
   const privateKey = process.env["PADDLE_NOTIFICATION_WEBHOOK_SECRET"] || "";
