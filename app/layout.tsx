@@ -7,6 +7,7 @@ import { Montserrat as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { LandingNav } from "@/components/LandingNav";
 import Footer from "@/components/LandingPage/Footer";
+import { GoogleAnalytics } from "@next/third-parties/google"
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
@@ -114,6 +115,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <GoogleAnalytics gaId="G-2SNY7ETV6E" />
         <script
           id="schema-org-script"
           type="application/ld+json"
