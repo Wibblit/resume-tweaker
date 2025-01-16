@@ -26,6 +26,23 @@ export class ProcessWebhook {
           updatedAt: new Date(),
         },
       });
+      if (paymentStatus === "SUCCESS") {
+        const response = await prisma.payment.findUnique({
+          where: {
+            transactionId: eventData.data.id,
+          },
+        });
+        await prisma.userAssets.update({
+          where: {
+            userId: response?.userId,
+          },
+          data: {
+            credits: {
+              increment: response?.credits, // Adds response.credits to the current credits
+            },
+          },
+        });
+      }
       console.log("Payment status updated:", response);
     } catch (e) {
       console.error("Error updating payment status:", e);

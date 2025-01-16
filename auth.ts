@@ -67,7 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         where: { email: user.email! },
       });
       if (!existingUser) {
-        if (user && user.email && profile && account && account.provider)
+        if (user && user.email && profile && account && account.provider) {
           existingUser = await prisma.user.create({
             data: {
               name: user.name || profile?.name || null,
@@ -76,7 +76,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               provider: account.provider,
             },
           });
-      } 
+          await prisma.userAssets.create({
+            data: {
+              userId: existingUser?.id,
+            },
+          });
+        }
+      }
       user.id = existingUser?.id;
       return true;
     },
