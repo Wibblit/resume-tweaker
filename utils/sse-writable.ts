@@ -1,23 +1,28 @@
-type Writable = WritableStreamDefaultWriter<any>; // Define Writable as a type alias for stream writers
+import { WritableStreamDefaultWriter } from "stream/web";
 
-// Store active SSE connections (grouped by user ID)
+type Writable = WritableStreamDefaultWriter<any>;
+
 const clients: Record<string, Writable[]> = {};
 
-/**
- * Broadcast a message to a specific user via their open SSE connections.
- * @param userId - The ID of the user to send the message to.
- * @param data - The message to send.
- */
-export const broadcastToUser = (userId: string, data: object) => {
+export const broadcastToUser = async (userId: string, data: object) => {
   if (clients[userId]) {
-    clients[userId].forEach((client) => {
-      client.write(`data: ${JSON.stringify(data)}\n\n`); // Send data to the client
-      client.close(); // Close the client connection after sending the message
-    });
-    delete clients[userId]; // Remove the user’s connection from the clients object
+    try {
+      await Promise.all(
+        clients[userId].map(async (client) => {
+          try {
+            await client.write(`data: ${JSON.stringify(data)}\n\n`);
+            await client.close();
+          } catch (error) {
+            console.error("Error sending message to client:", error);
+          }
+        })
+      );
+    } catch (error) {
+      console.error("Error broadcasting to user:", error);
+    }
+    delete clients[userId];
   }
 };
 
-// Export the `clients` object for use in other parts of the application (optional).
-export { clients };  export type { Writable };
-
+export { clients };
+export type { Writable };

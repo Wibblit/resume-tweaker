@@ -178,7 +178,18 @@ export function CheckoutContents({ userEmail, priceId, id }: Props) {
       const data = JSON.parse(event.data);
       console.log("SSE Message Received:", data);
 
+      if (data.event === "timeout") {
+        eventSource.close();
+        toast({
+          title: "Taking longer than expected",
+          description: "Please check your profile page for payment status.",
+          variant: "default",
+        });
+        return;
+      }
+
       if (data.event === "transaction.paid") {
+        eventSource.close();
         toast({
           title: "Payment Successful",
           description: "Your payment has been processed.",
@@ -188,16 +199,27 @@ export function CheckoutContents({ userEmail, priceId, id }: Props) {
         data.event === "transaction.payment_failed" ||
         data.event === "transaction.canceled"
       ) {
+        eventSource.close();
         toast({
           title: "Payment Failed",
-          description: "Your payment could not be processed.",
+          description: "Please check your profile page for payment status.",
           variant: "destructive",
         });
       }
     };
 
+    eventSource.onerror = (error) => {
+      console.error("SSE Error:", error);
+      eventSource.close();
+      toast({
+        title: "Connection Lost",
+        description: "Please check your profile page for payment status.",
+        variant: "default",
+      });
+    };
+
     return () => {
-      eventSource.close(); // Cleanup on unmount
+      eventSource.close();
     };
   }, [id]);
 
