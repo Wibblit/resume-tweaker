@@ -100,8 +100,10 @@ export default function Footer() {
             <h3 className="text-base font-semibold">Legal</h3>
             <ul className="space-y-3">
               {[
-                { href: "/privacy-policy", label: "Privacy Policy" },
-                { href: "/terms-of-service", label: "Terms of Service" },
+                { href: "/legal/privacy-policy", label: "Privacy Policy" },
+                { href: "/legal/terms-of-service", label: "Terms of Service" },
+                { href: "/legal/cookie-policy", label: "Cookie Policy" },
+                { href: "/legal/refund-policy", label: "Refund Policy" },
               ].map((link) => (
                 <li key={link.label}>
                   <Link
