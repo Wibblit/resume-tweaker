@@ -54,13 +54,13 @@ function EditorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
       {/* Hero Section */}
-      <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center overflow-hidden">
+      <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden">
         <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
         <div className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
             Create Professional Documents with
             <br />
-            <GradientText className="text-5xl md:text-7xl mt-2 animate-[float_6s_ease-in-out_infinite]">
+            <GradientText className="text-5xl md:text-7xl mt-2">
               AI-Powered Editor
             </GradientText>
           </h1>
@@ -80,7 +80,7 @@ function EditorPage() {
             <Button
               size="lg"
               variant="outline"
-              className="transition-all duration-200 hover:-translate-y-1 hover:shadow-lg backdrop-blur-sm bg-background/50"
+              className="transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/50"
               onClick={() => router.push("/#join")}
             >
               Create Cover Letter
@@ -227,7 +227,7 @@ function EditorPage() {
             allowing you to leverage AI power exactly when you need it during the writing process.
           </p>
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:-translate-y-1 hover:shadow-lg backdrop-blur-sm bg-background/10 border border-background/20">
+          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/10 border border-background/20">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/10">
                 <Sparkles className="w-8 h-8 text-primary" />
@@ -248,7 +248,7 @@ function EditorPage() {
               ))}
             </ul>
           </Card>
-          <div className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:-translate-y-1 hover:shadow-lg backdrop-blur-sm bg-background/10 border border-background/20">
+          <div className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/10 border border-background/20">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/10">
                 <Sparkles className="w-8 h-8 text-primary" />
@@ -282,7 +282,7 @@ function EditorPage() {
         </p>
         <Button
           size="lg"
-          className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
+          className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform"
           onClick={() => router.push("/#join")}
         >
           Get Started Now
