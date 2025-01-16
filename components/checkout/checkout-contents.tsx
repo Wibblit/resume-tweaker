@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
 import { initiatePayment } from "@/actions/initiatePayment";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useToast } from "@/hooks/use-toast";
-import { prisma } from "@/prisma";
 
 interface Props {
   userEmail?: string;
   priceId: string;
+  id: string;
 }
 
-export function CheckoutContents({ userEmail, priceId }: Props) {
+export function CheckoutContents({ userEmail, priceId, id }: Props) {
   console.log(priceId);
   const [quantity, setQuantity] = useState<number>(1);
   const [paddle, setPaddle] = useState<Paddle | null>(null);
@@ -170,6 +170,36 @@ export function CheckoutContents({ userEmail, priceId }: Props) {
       paddle.Checkout.updateItems([{ priceId: priceId, quantity: quantity }]);
     }
   }, [paddle, priceId, quantity]);
+
+  useEffect(() => {
+    const eventSource = new EventSource(`/api/sse?userId=${id}`);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("SSE Message Received:", data);
+
+      if (data.event === "transaction.paid") {
+        toast({
+          title: "Payment Successful",
+          description: "Your payment has been processed.",
+          variant: "default",
+        });
+      } else if (
+        data.event === "transaction.payment_failed" ||
+        data.event === "transaction.canceled"
+      ) {
+        toast({
+          title: "Payment Failed",
+          description: "Your payment could not be processed.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    return () => {
+      eventSource.close(); // Cleanup on unmount
+    };
+  }, [id]);
 
   return (
     <div

@@ -17,9 +17,9 @@ export default async function CheckoutPage({
     return redirect("/login");
   }
 
-  const { email} = session?.user;
+  const { email, id} = session?.user;
 
   console.log(session.user);
 
-  return <Checkout priceID={priceID} email={email} />;
+  return <Checkout priceID={priceID} email={email} id={id} />;
 }
