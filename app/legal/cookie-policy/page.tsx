@@ -1,7 +1,19 @@
 import React from 'react';
 
 export default function CookiePolicy() {
-  const rawhtml = `<div>
+  const rawhtml = ` <div>
+  <span>
+   <span>
+    <span>
+     In some cases we may use cookies to collect personal information, or that becomes personal information if we combine it with other information.
+    </span>
+   </span>
+  </span>
+ </div>
+ <div>
+ <br>
+ </div>
+ <div>
   <span>
    <span>
     <strong>
@@ -207,7 +219,7 @@ export default function CookiePolicy() {
        </td>
        <td>
         <span>
-         Session
+         __________
         </span>
        </td>
       </tr>
@@ -280,7 +292,7 @@ export default function CookiePolicy() {
        </td>
        <td>
         <span>
-         Session
+         __________
         </span>
        </td>
       </tr>
@@ -288,6 +300,178 @@ export default function CookiePolicy() {
     </table>
    </div>
   </section>
+ </div>
+ <div>
+  <span>
+   <span>
+    <strong>
+     <u>
+      Performance and functionality cookies:
+     </u>
+    </strong>
+   </span>
+  </span>
+ </div>
+ <div>
+  <p>
+   <span>
+    <span>
+     These cookies are used to enhance the performance and functionality of our Website but are non-essential to their use. However, without these cookies, certain functionality (like videos) may become unavailable.
+    </span>
+   </span>
+  </p>
+  <div>
+   <span>
+    <span>
+     <section>
+      <div>
+       <table>
+        <tbody>
+         <tr>
+          <td>
+           Name:
+          </td>
+          <td>
+           <span>
+            __Secure-ROLLOUT_TOKEN
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Purpose:
+          </td>
+          <td>
+           <span>
+            is used by YouTube to manage the phased rollout of new features and updates
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Provider:
+          </td>
+          <td>
+           <span>
+            .youtube.com
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Service:
+          </td>
+          <td>
+           <span>
+            Youtube
+            <a data-custom-class="link" href="https://policies.google.com/privacy" target="_blank">
+             <span>
+              View Service Privacy Policy
+             </span>
+            </a>
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Type:
+          </td>
+          <td>
+           <span>
+            server_cookie
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Expires in:
+          </td>
+          <td>
+           <span>
+            5 months 27 days
+           </span>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </section>
+     <section>
+      <div>
+       <table>
+        <tbody>
+         <tr>
+          <td>
+           Name:
+          </td>
+          <td>
+           <span>
+            VISITOR_PRIVACY_METADATA
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Purpose:
+          </td>
+          <td>
+           <span>
+            to store the user's cookie consent state for the current domain
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Provider:
+          </td>
+          <td>
+           <span>
+            .youtube.com
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Service:
+          </td>
+          <td>
+           <span>
+            Youtube
+            <a data-custom-class="link" href="https://policies.google.com/privacy" target="_blank">
+             <span>
+              View Service Privacy Policy
+             </span>
+            </a>
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Type:
+          </td>
+          <td>
+           <span>
+            server_cookie
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           Expires in:
+          </td>
+          <td>
+           <span>
+            5 months 27 days
+           </span>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+     </section>
+    </span>
+   </span>
+  </div>
  </div>
  <div>
   <div>
@@ -353,6 +537,397 @@ export default function CookiePolicy() {
          <td>
           <span>
            Adobe Analytics
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Type:
+         </td>
+         <td>
+          <span>
+           server_cookie
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Expires in:
+         </td>
+         <td>
+          <span>
+           session
+          </span>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section>
+     <div>
+      <table>
+       <tbody>
+        <tr>
+         <td>
+          Name:
+         </td>
+         <td>
+          <span>
+           _ga_#
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Purpose:
+         </td>
+         <td>
+          <span>
+           Used to distinguish individual users by means of designation of a randomly generated number as client identifier, which allows calculation of visits and sessions
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Provider:
+         </td>
+         <td>
+          <span>
+           .wibblit.com
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Service:
+         </td>
+         <td>
+          <span>
+           Google Analytics
+           <a data-custom-class="link" href="https://business.safety.google/privacy/" target="_blank">
+            <span>
+             View Service Privacy Policy
+            </span>
+           </a>
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Type:
+         </td>
+         <td>
+          <span>
+           http_cookie
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Expires in:
+         </td>
+         <td>
+          <span>
+           1 year 1 month 4 days
+          </span>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section>
+     <div>
+      <table>
+       <tbody>
+        <tr>
+         <td>
+          Name:
+         </td>
+         <td>
+          <span>
+           _ga
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Purpose:
+         </td>
+         <td>
+          <span>
+           Records a particular ID used to come up with data about website usage by the user
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Provider:
+         </td>
+         <td>
+          <span>
+           .wibblit.com
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Service:
+         </td>
+         <td>
+          <span>
+           Google Analytics
+           <a data-custom-class="link" href="https://business.safety.google/privacy/" target="_blank">
+            <span>
+             View Service Privacy Policy
+            </span>
+           </a>
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Type:
+         </td>
+         <td>
+          <span>
+           http_cookie
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Expires in:
+         </td>
+         <td>
+          <span>
+           1 year 1 month 4 days
+          </span>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section>
+     <div>
+      <table>
+       <tbody>
+        <tr>
+         <td>
+          Name:
+         </td>
+         <td>
+          <span>
+           NID
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Purpose:
+         </td>
+         <td>
+          <span>
+           Set by Google to set a unique user ID to remember user preferences. Persistent cookie that stays for 182 days
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Provider:
+         </td>
+         <td>
+          <span>
+           .google.com
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Service:
+         </td>
+         <td>
+          <span>
+           Google
+           <a data-custom-class="link" href="https://business.safety.google/privacy/" target="_blank">
+            <span>
+             View Service Privacy Policy
+            </span>
+           </a>
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Type:
+         </td>
+         <td>
+          <span>
+           server_cookie
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Expires in:
+         </td>
+         <td>
+          <span>
+           6 months
+          </span>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+   </span>
+  </div>
+ </div>
+ <div>
+  <span>
+   <span>
+    <strong>
+     <u>
+      Advertising cookies:
+     </u>
+    </strong>
+   </span>
+  </span>
+ </div>
+ <div>
+  <p>
+   <span>
+    <span>
+     <span>
+      These cookies are used to make advertising messages more relevant to you. They perform functions like preventing the same ad from continuously reappearing, ensuring that ads are properly displayed for advertisers, and in some cases selecting advertisements that are based on your interests.
+     </span>
+    </span>
+   </span>
+  </p>
+  <div>
+   <span>
+    <section>
+     <div>
+      <table>
+       <tbody>
+        <tr>
+         <td>
+          Name:
+         </td>
+         <td>
+          <span>
+           VISITOR_INFO1_LIVE
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Purpose:
+         </td>
+         <td>
+          <span>
+           YouTube is a Google-owned platform for hosting and sharing videos. YouTube collects user data through videos embedded in websites, which is aggregated with profile data from other Google services in order to display targeted advertising to web visitors across a broad range of their own and other websites. Used by Google in combination with SID to verify Google user account and most recent login time.
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Provider:
+         </td>
+         <td>
+          <span>
+           .youtube.com
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Service:
+         </td>
+         <td>
+          <span>
+           YouTube
+           <a data-custom-class="link" href="https://business.safety.google/privacy/" target="_blank">
+            <span>
+             View Service Privacy Policy
+            </span>
+           </a>
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Type:
+         </td>
+         <td>
+          <span>
+           server_cookie
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Expires in:
+         </td>
+         <td>
+          <span>
+           5 months 27 days
+          </span>
+         </td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+    </section>
+    <section>
+     <div>
+      <table>
+       <tbody>
+        <tr>
+         <td>
+          Name:
+         </td>
+         <td>
+          <span>
+           YSC
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Purpose:
+         </td>
+         <td>
+          <span>
+           YouTube is a Google-owned platform for hosting and sharing videos. YouTube collects user data through videos embedded in websites, which is aggregated with profile data from other Google services in order to display targeted advertising to web visitors across a broad range of their own and other websites. Used by Google in combination with SID to verify Google user account and most recent login time.
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Provider:
+         </td>
+         <td>
+          <span>
+           .youtube.com
+          </span>
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Service:
+         </td>
+         <td>
+          <span>
+           YouTube
+           <a data-custom-class="link" href="https://business.safety.google/privacy/" target="_blank">
+            <span>
+             View Service Privacy Policy
+            </span>
+           </a>
           </span>
          </td>
         </tr>
@@ -803,8 +1378,7 @@ export default function CookiePolicy() {
   </span>
  </div>
 </div>
-
-  `;
+`;
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:p-6 lg:p-28">
