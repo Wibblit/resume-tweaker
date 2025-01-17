@@ -1,5 +1,6 @@
 import { EventEntity, EventName } from "@paddle/paddle-node-sdk";
 import { prisma } from "@/prisma";
+import { broadcastToUser } from "../sse-writable";
 
 export class ProcessWebhook {
   async processEvent(eventData: EventEntity) {
@@ -41,6 +42,14 @@ export class ProcessWebhook {
               increment: response?.credits, // Adds response.credits to the current credits
             },
           },
+        });
+      }
+      const userId = response?.userId;
+      if (userId) {
+        broadcastToUser(response?.userId  , {
+          event: (await eventData).eventType,
+          transactionId: eventData.data.id,
+          status: paymentStatus,
         });
       }
       console.log("Payment status updated:", response);

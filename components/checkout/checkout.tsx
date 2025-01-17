@@ -3,17 +3,16 @@
 import { CheckoutGradients } from "@/components/gradients/checkout-gradients";
 import { CheckoutHeader } from "@/components/checkout/checkout-header";
 import { CheckoutContents } from "@/components/checkout/checkout-contents";
-import { auth } from "@/auth";
-import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+
 
 export default function Checkout({
   email,
   priceID,
+  id
 }: {
   email: string;
   priceID: string;
+  id: string;
 }) {
   console.log(email);
 
@@ -26,7 +25,7 @@ export default function Checkout({
         }
       >
         <CheckoutHeader />
-        <CheckoutContents  priceId={priceID} userEmail={email} />
+        <CheckoutContents priceId={priceID} userEmail={email} id={id} />
       </div>
     </div>
   );

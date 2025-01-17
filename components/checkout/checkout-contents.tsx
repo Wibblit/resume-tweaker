@@ -9,14 +9,14 @@ import { useEffect, useState } from "react";
 import { initiatePayment } from "@/actions/initiatePayment";
 import { CheckoutEventsData } from "@paddle/paddle-js/types/checkout/events";
 import { useToast } from "@/hooks/use-toast";
-import { prisma } from "@/prisma";
 
 interface Props {
   userEmail?: string;
   priceId: string;
+  id: string;
 }
 
-export function CheckoutContents({ userEmail, priceId }: Props) {
+export function CheckoutContents({ userEmail, priceId, id }: Props) {
   console.log(priceId);
   const [quantity, setQuantity] = useState<number>(1);
   const [paddle, setPaddle] = useState<Paddle | null>(null);
@@ -41,6 +41,7 @@ export function CheckoutContents({ userEmail, priceId }: Props) {
       case "checkout.payment.initiated":
         console.log("Payment initiated:", data);
         try {
+          console.log(data)
           const res = await initiatePayment(data);
 
           console.log(res);
@@ -75,9 +76,9 @@ export function CheckoutContents({ userEmail, priceId }: Props) {
           description: "Your payment could not be processed. Please try again.",
           variant: "destructive",
         });
-        if (data?.items?.[0]?.price_id) {
-          window.location.href = `/checkout/fail/${data.items[0].price_id}`;
-        }
+        // if (data?.items?.[0]?.price_id) {
+        //   window.location.href = `/checkout/fail/${data.items[0].price_id}`;
+        // }
         break;
 
       case "checkout.items.updated":
@@ -126,7 +127,7 @@ export function CheckoutContents({ userEmail, priceId }: Props) {
                 frameInitialHeight: 450,
                 frameStyle:
                   "width: 100%; background-color: transparent; border: none",
-                // successUrl: "/checkout/success",
+                successUrl: "/checkout/success",
               },
             },
           });
@@ -170,6 +171,58 @@ export function CheckoutContents({ userEmail, priceId }: Props) {
       paddle.Checkout.updateItems([{ priceId: priceId, quantity: quantity }]);
     }
   }, [paddle, priceId, quantity]);
+
+  useEffect(() => {
+    const eventSource = new EventSource(`/api/sse?userId=${id}`);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("SSE Message Received:", data);
+
+      if (data.event === "timeout") {
+        eventSource.close();
+        toast({
+          title: "Taking longer than expected",
+          description: "Please check your profile page for payment status.",
+          variant: "default",
+        });
+        return;
+      }
+
+      if (data.event === "transaction.paid") {
+        eventSource.close();
+        toast({
+          title: "Payment Successful",
+          description: "Your payment has been processed.",
+          variant: "default",
+        });
+      } else if (
+        data.event === "transaction.payment_failed" ||
+        data.event === "transaction.canceled"
+      ) {
+        eventSource.close();
+        toast({
+          title: "Payment Failed",
+          description: "Please check your profile page for payment status.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE Error:", error);
+      eventSource.close();
+      toast({
+        title: "Connection Lost",
+        description: "Please check your profile page for payment status.",
+        variant: "default",
+      });
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [id]);
 
   return (
     <div
