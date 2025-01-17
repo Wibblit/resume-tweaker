@@ -1387,7 +1387,7 @@ export default function CookiePolicy() {
           {/* Header Section */}
           <div className="text-start mb-12">
             <h1 className="text-4xl font-bold text-foreground mb-4">COOKIE POLICY</h1>
-            <p className="text-lg text-muted-foreground">Last updated January 16, 2025</p>
+            <p className="text-lg text-muted-foreground">Last updated January 17, 2025</p>
           </div>
 
           {/* Introduction Section */}
