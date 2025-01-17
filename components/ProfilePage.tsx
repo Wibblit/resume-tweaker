@@ -24,7 +24,15 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { updateProfiles } from "@/actions/updateProfile";
-import { CreditCard, Loader, Save, Plus, Trash2, Loader2 } from "lucide-react";
+import {
+  CreditCard,
+  Loader,
+  Save,
+  Plus,
+  Trash2,
+  Loader2,
+  History,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
 import { RichInput } from "@/components/TextEditor";
@@ -33,17 +41,20 @@ import Base64Image from "@/components/base64toPhoto";
 import { ErrorToastHandler } from "@/components/ErrorToastHandler";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { PaymentHistoryModal } from "./payment-history-model";
 
 export default function Profile({ profData }: { profData: ResumeData }) {
   const dispatch = useAppDispatch();
   const profileData = useAppSelector((state) => state.profile);
   const [activeTab, setActiveTab] = useState("personal");
-  const [credits, setCredits] = useState({ current: 50, max: 100 });
+  const [credits, setCredits] = useState({ current: 50, max: 10000 });
+  const [isCreditsLoading, setIsCreditsLoading] = useState<boolean>(true);
   const [isChanged, setIsChanged] = useState(false);
   const [initialData, setInitialData] = useState<ResumeData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [urlErrors, setUrlErrors] = useState<{ [key: string]: string }>({});
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -70,6 +81,31 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     console.log("Changes detected:", hasChanges);
   }, [profileData]);
 
+  useEffect(() => {
+    const fetchCredits = async () => {
+      setIsCreditsLoading(true);
+      try {
+        const response = await fetch(`/api/get-credits`);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
+        const data = await response.json();
+        console.log(data);
+        setCredits((prev) => ({ ...prev, current: data?.Credits?.credits }));
+      } catch (error) {
+        console.error("Error fetching blog:", error);
+      } finally {
+        setIsCreditsLoading(false);
+      }
+    };
+
+    fetchCredits();
+  }, []);
   const resumeSections = [
     {
       id: "basics",
@@ -156,11 +192,11 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     section: keyof ResumeData,
     id: string,
     field: string,
-    value: any,
+    value: any
   ) => {
     const updatedProfileData = { ...profileData };
     updatedProfileData[section] = updatedProfileData[section]?.map(
-      (entry: any) => (entry.id === id ? { ...entry, [field]: value } : entry),
+      (entry: any) => (entry.id === id ? { ...entry, [field]: value } : entry)
     );
     dispatch(UpdateProfileData(updatedProfileData));
   };
@@ -190,7 +226,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     const updatedProfileData = { ...profileData };
     //@ts-ignore
     updatedProfileData[section] = updatedProfileData[section].filter(
-      (entry: any) => entry.id !== id,
+      (entry: any) => entry.id !== id
     );
     dispatch(UpdateProfileData(updatedProfileData));
   };
@@ -231,7 +267,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
         "(\\:\\d+)?(\\/[-a-zA-Z\\d%_.~+]*)*" +
         "(\\?[;&a-zA-Z\\d%_.~+=-]*)?" +
         "(\\#[-a-zA-Z\\d_]*)?$",
-      "i",
+      "i"
     );
     return !!pattern.test(url);
   };
@@ -240,7 +276,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     section: keyof ResumeData,
     id: string,
     field: string,
-    value: string,
+    value: string
   ) => {
     const errorKey = `${section}-${id}-${field}`;
     if (value && !validateUrl(value)) {
@@ -308,7 +344,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
   const renderEntryFields = (
     section: keyof ResumeData,
     entry: any,
-    index: number,
+    index: number
   ) => {
     const fields = resumeSections.find((s) => s.id === section)?.fields || [];
     return (
@@ -341,7 +377,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                       section,
                       entry.id,
                       field,
-                      e.target.value.split(",").map((item) => item.trim()),
+                      e.target.value.split(",").map((item) => item.trim())
                     )
                   }
                   placeholder={`Enter ${field} (comma-separated)`}
@@ -423,7 +459,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                       section,
                       entry.id,
                       field,
-                      date ? date.toISOString() : "",
+                      date ? date.toISOString() : ""
                     )
                   }
                 />
@@ -443,7 +479,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                         <SelectItem key={level} value={level}>
                           {level}
                         </SelectItem>
-                      ),
+                      )
                     )}
                   </SelectContent>
                 </Select>
@@ -467,7 +503,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                               section,
                               entry.id,
                               "skills",
-                              updatedSkills,
+                              updatedSkills
                             );
                           }}
                           placeholder="Skill name"
@@ -483,7 +519,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                               section,
                               entry.id,
                               "skills",
-                              updatedSkills,
+                              updatedSkills
                             );
                           }}
                           defaultValue={skill.level}
@@ -497,7 +533,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                                 <SelectItem key={level} value={level}>
                                   {level}
                                 </SelectItem>
-                              ),
+                              )
                             )}
                           </SelectContent>
                         </Select>
@@ -509,7 +545,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
-                    ),
+                    )
                   )}
                   <Button
                     variant="outline"
@@ -554,7 +590,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
       <CardContent>
         <div className="space-y-4">
           {profileData[section]?.map((entry: any, index: number) =>
-            renderEntryFields(section, entry, index),
+            renderEntryFields(section, entry, index)
           )}
           {section !== "basics" && section !== "summary" && (
             <Button onClick={() => addEntry(section)}>
@@ -566,117 +602,141 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     </Card>
   );
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto p-4 space-y-4">
-        <Skeleton className="h-[200px] w-full" />
-        <Skeleton className="h-[150px] w-full" />
-        <Skeleton className="h-[300px] w-full" />
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Profile</h1>
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Credits</CardTitle>
-          <CardDescription>
-            Your current credit balance and level
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Progress
-            value={(credits.current / credits.max) * 100}
-            className="mb-2"
+      {isCreditsLoading ? (
+        <Skeleton className="h-[200px] w-full" />
+      ) : (
+        <>
+          <Card className="mb-6">
+            <div className="flex items-center justify-between">
+              <CardHeader>
+                <CardTitle>Credits</CardTitle>
+                <CardDescription>
+                  Your current credit balance and level
+                </CardDescription>
+              </CardHeader>
+              <Button
+                  variant="ghost"
+                  className="m-5"
+                size="icon"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <History className="h-4 w-4" />
+                <span className="sr-only">View payment history</span>
+              </Button>
+            </div>
+
+            <CardContent>
+              <Progress
+                value={(credits.current / credits.max) * 100}
+                className="mb-2"
+              />
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">
+                  {credits.current} / {credits.max} credits
+                </p>
+              </div>
+              <Link href="/pricing">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
+                >
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Buy Credits
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+          <PaymentHistoryModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
           />
-          <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">
-              {credits.current} / {credits.max} credits
-            </p>
-          </div>
-          <Link href={'/pricing'}>
-            <Button
-              // onClick={handleUpgradeCredits}
-              variant="outline"
-              size="sm"
-              className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
+        </>
+      )}
+      {isLoading ? (
+        <div className="container mx-auto space-y-4">
+          <Skeleton className="h-[200px] w-full" />
+          <Skeleton className="h-[150px] w-full" />
+          <Skeleton className="h-[300px] w-full" />
+        </div>
+      ) : (
+        <div className="my-5">
+          <div className="flex justify-between items-center mb-4">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
             >
-              <CreditCard className="mr-2 h-4 w-4" />
-              Buy Credits
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+              <div className="flex flex-wrap gap-4 justify-between items-center">
+                <TabsList>
+                  <TabsTrigger value="personal">Personal</TabsTrigger>
+                  <TabsTrigger value="professional">Professional</TabsTrigger>
+                  <TabsTrigger value="additional">Additional</TabsTrigger>
+                </TabsList>
+                <Button
+                  onClick={handleSaveChanges}
+                  disabled={!isChanged || isSaving}
+                  className="bg-primary w-full md:w-auto text-primary-foreground hover:bg-primary/90 py-1"
+                >
+                  {isSaving ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-2 h-4 w-4" />
+                  )}
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex flex-wrap gap-4 justify-between items-center">
-            <TabsList>
-              <TabsTrigger value="personal">Personal</TabsTrigger>
-              <TabsTrigger value="professional">Professional</TabsTrigger>
-              <TabsTrigger value="additional">Additional</TabsTrigger>
-            </TabsList>
-            <Button
-              onClick={handleSaveChanges}
-              disabled={!isChanged || isSaving}
-              className="bg-primary w-full md:w-auto text-primary-foreground hover:bg-primary/90 py-1"
-            >
-              {isSaving ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
+              <ScrollArea className="h-[calc(100vh-300px)] overflow-y-auto mt-4">
+                <TabsContent value="personal">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Personal Information</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {profileData.basics?.map((basic, index) =>
+                        renderEntryFields("basics", basic, index)
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {renderSection("profiles", "Profiles")}
+                </TabsContent>
+
+                <TabsContent value="professional">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Professional Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {profileData.summary?.map((sum, index) =>
+                        renderEntryFields("summary", sum, index)
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {renderSection("skills", "Skills")}
+                  {renderSection("experience", "Experience")}
+                  {renderSection("education", "Education")}
+                </TabsContent>
+
+                <TabsContent value="additional">
+                  {renderSection("projects", "Projects")}
+                  {renderSection("languages", "Languages")}
+                  {renderSection("volunteer", "Volunteer Experience")}
+                  {renderSection("awards", "Awards")}
+                  {renderSection("publications", "Publications")}
+                  {renderSection("certifications", "Certifications")}
+                  {renderSection("references", "References")}
+                </TabsContent>
+              </ScrollArea>
+            </Tabs>
           </div>
-
-          <ScrollArea className="h-[calc(100vh-300px)] overflow-y-auto mt-4">
-            <TabsContent value="personal">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Personal Information</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {profileData.basics?.map((basic, index) =>
-                    renderEntryFields("basics", basic, index)
-                  )}
-                </CardContent>
-              </Card>
-
-              {renderSection("profiles", "Profiles")}
-            </TabsContent>
-
-            <TabsContent value="professional">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Professional Summary</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {profileData.summary?.map((sum, index) =>
-                    renderEntryFields("summary", sum, index)
-                  )}
-                </CardContent>
-              </Card>
-
-              {renderSection("skills", "Skills")}
-              {renderSection("experience", "Experience")}
-              {renderSection("education", "Education")}
-            </TabsContent>
-
-            <TabsContent value="additional">
-              {renderSection("projects", "Projects")}
-              {renderSection("languages", "Languages")}
-              {renderSection("volunteer", "Volunteer Experience")}
-              {renderSection("awards", "Awards")}
-              {renderSection("publications", "Publications")}
-              {renderSection("certifications", "Certifications")}
-              {renderSection("references", "References")}
-            </TabsContent>
-          </ScrollArea>
-        </Tabs>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

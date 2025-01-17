@@ -41,6 +41,7 @@ export function CheckoutContents({ userEmail, priceId, id }: Props) {
       case "checkout.payment.initiated":
         console.log("Payment initiated:", data);
         try {
+          console.log(data)
           const res = await initiatePayment(data);
 
           console.log(res);
@@ -75,9 +76,9 @@ export function CheckoutContents({ userEmail, priceId, id }: Props) {
           description: "Your payment could not be processed. Please try again.",
           variant: "destructive",
         });
-        if (data?.items?.[0]?.price_id) {
-          window.location.href = `/checkout/fail/${data.items[0].price_id}`;
-        }
+        // if (data?.items?.[0]?.price_id) {
+        //   window.location.href = `/checkout/fail/${data.items[0].price_id}`;
+        // }
         break;
 
       case "checkout.items.updated":
@@ -126,7 +127,7 @@ export function CheckoutContents({ userEmail, priceId, id }: Props) {
                 frameInitialHeight: 450,
                 frameStyle:
                   "width: 100%; background-color: transparent; border: none",
-                // successUrl: "/checkout/success",
+                successUrl: "/checkout/success",
               },
             },
           });
