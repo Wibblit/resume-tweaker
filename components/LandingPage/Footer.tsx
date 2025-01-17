@@ -79,7 +79,7 @@ export default function Footer() {
                 { href: "/tutorials", label: "Tutorials" },
                 { href: "/blog", label: "Blog" },
                 {
-                  href: "mailto:support@wibblit.com",
+                  href: "mailto:contact@wibblit.com",
                   label: "Contact Support",
                 },
               ].map((link) => (
