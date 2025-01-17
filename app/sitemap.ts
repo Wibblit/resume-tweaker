@@ -17,9 +17,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/login`
+    }, 
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/legal/privacy-policy`
+    }, 
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/legal/cookie-policy`
+    }, 
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/legal/terms-of-service`
+    }, 
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/legal/refund-policy`
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/legal`
     },
     {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/blogs`,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/pricing`
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/interview`
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/review`
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/editor`
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/about`
     },
     ...postEntries,
   ];
