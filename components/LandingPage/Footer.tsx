@@ -125,11 +125,13 @@ export default function Footer() {
           <div className="flex gap-4">
             {[
               { url: "https://x.com/wibblitofficial", network: "x" },
-              {
-                url: "https://www.linkedin.com/in/wibblit-wibblit-00b204328",
-                network: "linkedin",
-              },
-              { url: "https://www.facebook.com/Wibblit", network: "facebook" },
+              { url: "https://bsky.app/profile/wibblit.bsky.social", network: "bsky.app" },
+              { url: "https://www.linkedin.com/company/wibblit",network: "linkedin"},
+              { url: "https://www.facebook.com/profile.php?id=61567985016999", network: "facebook" },
+              { url: "https://www.instagram.com/wibblitofficial/", network: "instagram" },
+              { url: "https://www.youtube.com/@wibblitofficial", network: "youtube" },
+              { url: "https://www.reddit.com/r/wibblit/", network: "reddit" },
+              { url: "https://www.tiktok.com/@wibblit", network: "tiktok" },
             ].map((social) => (
               <SocialIcon
                 key={social.network}
@@ -139,6 +141,7 @@ export default function Footer() {
                 fgColor="currentColor"
                 style={{ height: 30, width: 30 }}
                 className="hover:opacity-80 transition-opacity"
+                target="_blank"
               />
             ))}
           </div>

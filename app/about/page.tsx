@@ -1,5 +1,7 @@
-export default function About() {
+import VortexDemo from "@/components/about-animation";
+
+export default function AboutAnimation() {
     return <div className="mt-20">
-        This is about page
+        <VortexDemo/>
     </div>
 }
