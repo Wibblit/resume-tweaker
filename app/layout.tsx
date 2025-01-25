@@ -5,20 +5,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Provider } from "react-redux";
 import store from "@/store";
 import { Toaster } from "@/components/ui/toaster";
-import { Roboto_Flex as FontSans } from "next/font/google";
+import { Montserrat as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
-
-// const LTWave = localFont({
-//   src: "./fonts/LTWave-Regular.ttf",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
 
 const fontSans = FontSans({
   // weight: ['100', '300', '400', '500', '700', '900'],
   subsets: ["latin"],
-  variable: "--font-roboto",
 });
 
 export default function RootLayout({
@@ -29,12 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          href="https://fonts.cdnfonts.com/css/lt-wave-2"
-          rel="stylesheet"
-        />
       </head>
-      <body className={cn(` antialiased font-custom`, fontSans.variable)}>
+      <body className={cn(` antialiased font-custom`, fontSans.className)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
