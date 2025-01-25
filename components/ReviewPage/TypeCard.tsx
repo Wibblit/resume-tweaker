@@ -20,7 +20,7 @@ export function TypeCard({
   action,
 }: TypeCardProps) {
   return (
-    <div className="relative p-8 rounded-2xl border bg-card/50 backdrop-blur-sm hover-lift">
+    <div className="relative p-8 rounded-2xl border bg-muted/60 backdrop-blur-sm hover-lift">
       {isPro && (
         <span className="absolute -top-3 -right-3 px-6 py-1.5 bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary text-primary-foreground text-sm font-semibold rounded-full shadow-lg">
           Pro

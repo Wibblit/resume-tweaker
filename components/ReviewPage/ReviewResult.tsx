@@ -69,7 +69,7 @@ export default function ReviewResults({
     score: item.score,
   }));
   return (
-    <div className="p-6 rounded-xl border bg-card">
+    <div className="p-6 rounded-xl border bg-muted/40">
       {/* Overall Score */}
       <ChartContainer
         config={chartConfig}

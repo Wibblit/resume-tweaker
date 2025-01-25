@@ -18,7 +18,7 @@ export function ProcessStep({
 }: ProcessStepProps) {
   return (
     <div className="relative group">
-      <div className="p-6 rounded-xl border bg-card transition-all duration-300">
+      <div className="p-6 rounded-xl border bg-muted/60 transition-all duration-300">
         <div className="mb-4">
           <span className="inline-block p-3 rounded-lg bg-primary/10">
             {icon}

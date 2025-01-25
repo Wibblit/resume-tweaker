@@ -30,8 +30,29 @@ export const metadata: Metadata = {
   description:
     "Craft a standout resume with ease using the power of AI. Receive tailored suggestions, optimize your content for specific job roles, and ensure your resume perfectly aligns with job descriptions—designed to accelerate your path to landing your dream job.",
   icons: {
-    icon: "/icon.ico",
-  },
+    icon: [
+      {
+        rel: "icon",
+        type: "image/png",
+        url: "/favicons/favicon-96x96.png",
+        sizes: "96x96",
+      },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        url: "/favicons/favicon.svg",
+      },
+      {
+        rel: "shortcut icon",
+        url: "/favicons/favicon.ico",
+      },
+      {
+        rel: "apple-touch-icon",
+        url: "/favicons/apple-touch-icon.png",
+        sizes: "180x180",
+      },
+    ],
+  }
 };
 
 export default async function Home() {
