@@ -13,7 +13,7 @@ const features = [
     icon: <PenTool className="w-6 h-6" />,
     title: "Custom Sections",
     description: "Create and organize custom sections to highlight your unique experiences and skills.",
-    video: "https://assets.website-files.com/6437b5235154004a36c33925/64386032d3aac9a0e45bdc82_Video_1-transcode.mp4",
+    video: "/videos/editor-features/custom-sections.mp4",
   },
   {
     icon: <Wand2 className="w-6 h-6" />,
@@ -136,7 +136,7 @@ function EditorPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-20" />
             
             {/* Video Container */}
-            <div className="relative h-full rounded-xl overflow-hidden bg-muted/30 backdrop-blur-sm">
+            <div className="relative h-full rounded-xl overflow-hidden bg-muted/30 ">
               {features.map((feature, index) => (
                 <div
                   key={index}
@@ -146,9 +146,9 @@ function EditorPage() {
                       : 'opacity-0 translate-x-8'
                   }`}
                 >
-                  <div className={`absolute inset-0 bg-gradient-to-br`} />
+                  <div className={`absolute inset-0 bg-gradient-to-tr from-background/40 via-background/5 to-transparent`} />
                   <video
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-black"
                     autoPlay
                     loop
                     muted
@@ -158,7 +158,7 @@ function EditorPage() {
                   </video>
                   
                   {/* Feature Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent">
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/5 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 p-6">
                       <div className="flex items-center gap-3 mb-3">
                         <div className={`p-2 rounded-lg bg-opacity-20`}>

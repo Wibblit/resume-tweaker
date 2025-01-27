@@ -28,6 +28,7 @@ const images = [
   "/templates/template5.avif",
   "/templates/template6.avif",
   "/templates/template7.avif",
+  "/templates/jonathandoesmithresume-1.jpg",
   "/templates/template8.avif",
   "/templates/template9.avif",
   "/templates/ctemplate1.avif",
