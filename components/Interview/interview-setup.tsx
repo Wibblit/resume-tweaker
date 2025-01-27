@@ -113,7 +113,7 @@ export default function InterviewSetup() {
     try {
       await tts.download("en_US-hfc_female-medium", (progress) => {
         setTtsDownloadProgress(
-          Math.round((progress.loaded * 100) / progress.total),
+          Math.round((progress.loaded * 100) / progress.total)
         );
       });
       setTtsModelDownloaded(true);
@@ -129,7 +129,7 @@ export default function InterviewSetup() {
   }
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setLocalFormData((prev) => ({ ...prev, [name]: value }));
@@ -177,7 +177,24 @@ export default function InterviewSetup() {
     e.preventDefault();
     setLoading(true);
     const numberOfQuestions = Math.ceil(formData.duration / 2);
+
     try {
+      // const response = await fetch("/api/guards", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData.interviewType.toLowerCase()),
+      // });
+
+      // const data = await response.json();
+      // console.log(data);
+      // if (data.status === 402) {
+      //   return toast({
+      //     variant: "destructive", // Set the toast type to error
+      //     description: data.message || "Insufficient credits to proceed.", // Use the message from the API
+      //     title: "Insufficient credits",
+      //   });
+      // }
+
       const queryParams = new URLSearchParams({
         job: formData.job,
         position: formData.position,

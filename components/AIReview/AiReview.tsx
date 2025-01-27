@@ -159,16 +159,16 @@ export default function AIReview({
 }) {
   const searchParams = useSearchParams();
   const [reviewType, setReviewType] = useState(
-    searchParams.get("reviewType") ?? "generic",
+    searchParams.get("reviewType") ?? "generic"
   );
   const [resumeOption, setResumeOption] = useState<"select" | "upload">(
-    "select",
+    "select"
   );
   const [selectedResume, setSelectedResume] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult | null>(
-    null,
+    null
   );
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [userResumes, setUserResumes] = useState<UserResume[]>();
@@ -251,7 +251,7 @@ export default function AIReview({
   }, []);
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const uploadedFile = event.target.files?.[0];
     if (!uploadedFile) return;
@@ -302,13 +302,26 @@ export default function AIReview({
     setIsLoading(true);
     setAiSuggestions(null);
     try {
-      const response = await axios.post(`/api/get-resume-review/`, {
+      console.log(reviewType);
+
+      const response = await axios.post(`/api/get-resume-review`, {
         resumeId: selectedResume,
         resumeOption,
         resumeText,
         jd: jd,
         reviewType: reviewType,
       });
+      console.log(reviewType);
+
+      // if (response?.data?.status === 402) {
+      //   return toast({
+      //     variant: "destructive", // Set the toast type to error
+      //     description:
+      //       response?.data.message || "Insufficient credits to proceed.", // Use the message from the API
+      //     title: "Insufficient credits",
+      //   });
+      // }
+
       if (!response.data.resumeReview) {
         toast({
           title: `Error ${response.status}`,
@@ -535,7 +548,7 @@ export default function AIReview({
                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
-                        ),
+                        )
                       )}
                     </div>
                   </CardContent>

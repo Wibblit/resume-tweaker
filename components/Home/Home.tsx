@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,15 @@ import { CreateNewResumeButtonTop } from "./CreateNewButtonTop";
 import { CreateNewCoverLetterButtonTop } from "./CreateNewButtonTop";
 import { ResumesProps } from "@/types/types";
 import { LetterProps } from "@/types/types";
+import { useToast } from "@/hooks/use-toast";
 
 const RESUME = "resume";
 const COVER = "cover";
 
-
 interface Homeprops {
-  resumes : ResumesProps | []
-  letters: LetterProps  | []
+  resumes: ResumesProps | [];
+  letters: LetterProps | [];
 }
-
-
 
 export default function Home({ resumes, letters }: Homeprops) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -80,7 +78,7 @@ export default function Home({ resumes, letters }: Homeprops) {
               <ResumeContent resumes={resumes} searchQuery={searchQuery} />
             </TabsContent>
             <TabsContent value="letters" className="mt-4">
-              <LetterContent letters={ letters} searchQuery={searchQuery} />
+              <LetterContent letters={letters} searchQuery={searchQuery} />
             </TabsContent>
           </Tabs>
         </ScrollArea>

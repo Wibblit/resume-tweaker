@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,9 +22,20 @@ import {
   Coins,
   X,
   Chrome,
+  Loader,
 } from "lucide-react";
 import { Session } from "next-auth";
 import { SignOutButton } from "./SignOutButton";
+import { useAppSelector } from "@/hooks/hooks";
+import { useEffect, useState } from "react";
+import {
+  updateCredits,
+  updateLoadingFalse,
+  updateLoadingTrue,
+} from "@/slices/userAssets";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { useAppDispatch } from "@/hooks/hooks";
 
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
@@ -46,10 +57,37 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
 
+  const credit = useAppSelector((state) => state?.assets?.credits);
+  const loading = useAppSelector((state) => state?.assets?.loading);
+  const { toast } = useToast();
   const credits = {
-    used: 750,
-    total: 1000,
+    used: credit,
+    total: 10000,
   };
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        dispatch(updateLoadingTrue());
+        const response = await axios.get("/api/get-credits", {
+          withCredentials: true,
+        });
+        console.log(response?.data?.Credits?.credits);
+        dispatch(updateCredits(response?.data?.Credits?.credits));
+      } catch (error) {
+        console.log(error);
+        toast({
+          title: "Failed to Load Credits",
+          description: "Unable to fetch your credits. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        dispatch(updateLoadingFalse());
+      }
+    })();
+  }, []);
 
   return (
     <div className="flex h-full flex-col">
@@ -116,21 +154,29 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Credits
-              </span>
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <Loader className="animate-spin h-4 w-4" />
             </div>
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              {credits.used}/{credits.total}
-            </span>
-          </div>
-          <Progress
-            value={(credits.used / credits.total) * 100}
-            className="h-2"
-          />
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                  <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                    Credits
+                  </span>
+                </div>
+                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  {credits.used}/{credits.total}
+                </span>
+              </div>
+              <Progress
+                value={(credits.used / credits.total) * 100}
+                className="h-2"
+              />
+            </>
+          )}
         </div>
       </div>
     </div>
