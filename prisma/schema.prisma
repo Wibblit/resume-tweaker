@@ -174,7 +174,7 @@ model Payment {
   id             String   @id @default(cuid()) // Payment record ID
   transactionId  String   @unique             // Unique transaction identifier
   userId         String                         // Foreign key to User
-  user           User      @relation(fields: [userId], references: [id])
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   priceId        String                         // Identifier for purchased item
   priceName      String                         // Name of the purchased item
   quantity       Int                            // Quantity of the purchased item
@@ -199,7 +199,8 @@ model UserAssets {
   id        String   @id @default(cuid()) // Payment record ID
   userId    String      @unique
   credits   Int      @default(0) // Credits left for the user
-  slots     Int      @default(1) // Number of slots for storing resumes
+  resumeslot     Int      @default(1) // Number of slots for storing resumes
+  coverslot Int @default(1)
   updatedAt DateTime @updatedAt
 
 user User @relation(fields: [userId], references: [id], onDelete: Cascade)

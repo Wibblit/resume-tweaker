@@ -1,14 +1,20 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { initialState } from "@/slices/profileSlice";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { prisma } from "@/prisma";
+import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
+
+  if (!session || !session.user?.id) {
+    throw ApiError.userNotAuthenticated; // Handle unauthenticated users
+  }
+
   let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
-  let result = null;
+
+  console.log("Session", session);
   if (session?.user?.id) {
     try {
       if (rateLimiter(session?.user?.id, ip)) {
@@ -17,10 +23,16 @@ export async function GET(req: NextRequest) {
           { status: 429 }
         );
       }
-      result = await prisma.userAssets.findUnique({
+      console.log("yos", session?.user?.id)
+      const response = await prisma.userAssets.findUnique({
         where: {
           userId: session?.user?.id,
         },
+      });
+      console.log(`profile : ${response}`);
+      return NextResponse.json({
+        Credits: response,
+        message: "Credits fetched successfully",
       });
     } catch (error) {
       console.error("Error fetching credits:", error);
@@ -28,15 +40,5 @@ export async function GET(req: NextRequest) {
     } finally {
       prisma.$disconnect();
     }
-    console.log(`profile : ${result}`);
-    return NextResponse.json({
-      Credits: result,
-      message: "Credits fetched successfully",
-    });
   }
-  console.log(`credits : ${result}`);
-  return NextResponse.json({
-    Credits: result,
-    message: "Credits fetched successfully",
-  });
 }

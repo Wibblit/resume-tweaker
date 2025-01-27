@@ -11,7 +11,7 @@ interface MicroPhoneProps {
 }
 
 let micStream: any;
-let audioStreamer: AudioStreamer;
+let audioStreamer: AudioStreamer | null = null;
 
 export function MicroPhone({ recognizer, loading }: MicroPhoneProps) {
   const [muted, setMuted] = useState(true);

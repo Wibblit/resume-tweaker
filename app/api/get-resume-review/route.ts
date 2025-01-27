@@ -97,6 +97,7 @@ import { jdTailoredPrompt } from "@/data/prompts/jdTailoredPrompt";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
+// import { creditList } from "@/utils/credits";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -106,11 +107,35 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   if (!session || !session.user?.id) {
     throw ApiError.userNotAuthenticated; // Handle unauthenticated users
   }
-
-  const { resumeId, jd, resumeOption, resumeText } = await request.json();
+  const data = await request.json();
+  const { resumeId, jd, resumeOption, resumeText, reviewType } = data;
+  console.log(data);
   const prompt = jd ? jdTailoredPrompt : genericPrompt;
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
+
+  // const results = await prisma.userAssets.findUnique({
+  //   where: {
+  //     userId: session?.user?.id,
+  //   },
+  //   select: {
+  //     credits: true,
+  //   },
+  // });
+  // const requiredCredits = creditList.get(reviewType);
+
+  // if (
+  //   results?.credits &&
+  //   requiredCredits !== undefined &&
+  //   typeof requiredCredits === "number"
+  // ) {
+  //   if (results?.credits > requiredCredits) {
+  //     return NextResponse.json({
+  //       message: `You need at least ${requiredCredits} credits to access this feature.`,
+  //       status: 402,
+  //     });
+  //   }
+  // }
 
   // Rate limit check
   if (rateLimiter(session.user.id, ip)) {
@@ -126,7 +151,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
             userId: session.user.id,
           },
         });
-  
+
   if (!result) {
     throw ApiError.resourceNotFound; // If resume is not found
   }
