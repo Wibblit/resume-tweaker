@@ -11,6 +11,8 @@ import {
 } from "@/data/prompts/textEditorPrompt";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
+import { prisma } from "@/prisma";
+import { creditList } from "@/utils/credits";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -32,5 +34,17 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   console.log("result: ", result);
   const response = result.response;
   const text = response.text();
+
+  await prisma.userAssets.update({
+    where: {
+      userId: session?.user?.id,
+    },
+    data: {
+      credits: {
+        decrement: creditList.get("aienhance"),
+      },
+    },
+  });
+
   return NextResponse.json({ content: text });
 });

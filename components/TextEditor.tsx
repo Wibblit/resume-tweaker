@@ -67,6 +67,10 @@ import axios from "axios";
 import { Sparkles, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useAppDispatch } from "@/hooks/hooks";
+import { updateCredits } from "@/slices/userAssets";
+import { creditList } from "@/utils/credits";
+import { useAppSelector } from "@/hooks/hooks";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -145,8 +149,10 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
   const [prompt, setPrompt] = useState("");
   const [suggestion, setSuggestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   const { toast } = useToast();
+  const credits = useAppSelector((state) => state?.assets?.credits);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,6 +170,7 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
       return;
     }
     setSuggestion(response.data.content);
+    dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
     setIsLoading(false);
   };
 
@@ -230,6 +237,9 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
 const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
   const [isEnhanceLoading, setisEnhanceLoading] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
+  const credits = useAppSelector((state) => state?.assets?.credits);
+
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes("link").href;
     const url = window.prompt("URL", previousUrl);
@@ -248,6 +258,7 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
 
   const handleEnhanceText = async () => {
     const content = editor.getHTML().replace(/<[^>]*>?/gm, "");
+
     if (!content.trim()) {
       return;
     }
@@ -264,6 +275,7 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
       editor.commands.setContent("");
       editor.commands.insertContent(response.data.content);
       setisEnhanceLoading(false);
+      dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
     } catch (error) {
       setisEnhanceLoading(false);
       console.error("Error enhancing text:", error);
