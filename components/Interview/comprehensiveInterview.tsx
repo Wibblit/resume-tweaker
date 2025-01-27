@@ -26,6 +26,7 @@ import { ConfirmQuitModal } from "./ConfirmQuiteModal";
 import { TypeAnimation } from "react-type-animation";
 import { Skeleton } from "../ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import fetchRetry from "fetch-retry";
 
 interface ComprehensiveInterviewProps {
   questions: string[];
@@ -58,10 +59,14 @@ export default function ComprehensiveInterview({
   const [intervieweeSkippedQuestions, setIntervieweeSkippedQuestions] =
     useState<number[]>([]);
   const [recorded, setRecorded] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [currRetryNumber, setCurrRetryNumber] = useState(0);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
+  const fetch = fetchRetry(window.fetch);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -320,10 +325,28 @@ export default function ComprehensiveInterview({
           timeSpent: duration * 60 - timeLeft,
           intervieweeSkippedQuestions: finalSkippedQuestions,
         }),
+        retryOn: (attempt, error, response) => {
+          if (attempt >= 3) {
+            setShowErrorMessage(true);
+            setIsRetrying(false);
+            return false;
+          }
+          setCurrRetryNumber(attempt + 1);
+          if (response && response.status >= 400) {
+            console.log(`retrying, attempt number ${attempt + 1}`);
+            return true;
+          }
+          return false;
+        },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate report: ${response.statusText}`);
+        toast({
+          variant: "destructive",
+          title: `Error ${response.statusText}`,
+          description: "Failed to generate interview report. Please try again.",
+        });
+        return;
       }
 
       const data = await response.json();
@@ -583,7 +606,7 @@ export default function ComprehensiveInterview({
             </div>
           </>
         )}
-        {isLoading && (
+        {isLoading && !showErrorMessage && (
           <div className="w-full items-center text-center justify-center my-4">
             <div className="size-12 rounded-full border-t-2 border-primary ml-[calc(50%-24px)] border-b-2 animate-spin"></div>
             <div className="mt-2">
@@ -592,6 +615,34 @@ export default function ComprehensiveInterview({
           </div>
         )}
         {showReport && report && <InterviewResults data={report} />}
+        {showErrorMessage && !report && (
+          <div className="flex items-center space-x-4 mt-4 text-center w-full justify-center">
+            <span className="text-red-500">
+              Something went wrong. Please try again.
+            </span>
+            <Button
+              onClick={async () => {
+                setIsRetrying(true);
+                await generateReport(audioBlob!, intervieweeSkippedQuestions);
+              }}
+              disabled={isRetrying}
+              variant="outline"
+              size="sm"
+            >
+              {isRetrying ? (
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <div>Retrying......{currRetryNumber}</div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <RedoDot className="mr-2 h-4 w-4" />
+                  <div>Retry</div>
+                </div>
+              )}
+            </Button>
+          </div>
+        )}
         <ConfirmQuitModal
           isOpen={isQuitModalOpen}
           onClose={() => setIsQuitModalOpen(false)}

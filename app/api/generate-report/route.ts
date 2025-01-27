@@ -67,6 +67,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     throw ApiError.userNotAuthenticated; // Throw error if the user is not authenticated
   }
 
+  
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
 

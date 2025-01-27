@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addPage,
@@ -25,6 +26,7 @@ import {
   Menu,
   Settings,
   Import,
+  Eraser,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -148,7 +150,7 @@ const ResumePage: React.FC<{
       case 8:
         return <Template8 {...props} />;
       case 9:
-        return <Template9 {...props} />
+        return <Template9 {...props} />;
       default:
         return <Template1 {...props} />;
     }
@@ -341,6 +343,8 @@ export default function ResumePages({
     </div>
   );
 
+  const router = useRouter();
+
   return (
     <div className="flex flex-col h-[calc(100vh-0px)]">
       {isPhoneView ? (
@@ -405,7 +409,7 @@ export default function ResumePages({
                   <TooltipTrigger asChild>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <RotateCcw className="h-4 w-4" />
+                        <Eraser className="h-4 w-4" />
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
@@ -453,7 +457,12 @@ export default function ResumePages({
                   }}
                 />
               </div>
-              <ThemeAwareLogo className="w-4 h-4 z-10" />
+              <div
+                className="hover:cursor-pointer"
+                onClick={() => router.push("/home")}
+              >
+                <ThemeAwareLogo className="w-4 h-4 z-10" />
+              </div>
               <Separator
                 orientation="vertical"
                 className="h-4 bg-border mx-2 z-10"
@@ -467,7 +476,12 @@ export default function ResumePages({
       ) : (
         <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
           <div className="flex items-center space-x-3">
-            <ThemeAwareLogo />
+            <div
+              className="hover:cursor-pointer"
+              onClick={() => router.push("/home")}
+            >
+              <ThemeAwareLogo className="w-4 h-4 z-10" />
+            </div>
             <Separator orientation="vertical" className="h-6" />
             <span className="font-semibold text-lg">{resumeName}</span>
           </div>

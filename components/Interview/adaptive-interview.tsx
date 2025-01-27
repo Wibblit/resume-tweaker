@@ -725,8 +725,8 @@ export default function AdaptiveInterview({
           </div>
         )}
         {showReport && report && <InterviewResults data={report} />}
-        {showErrorMessage && isInterviewComplete && (
-          <div className="flex items-center space-x-4 mt-4">
+        {showErrorMessage && !report && (
+          <div className="flex items-center space-x-4 mt-4 w-full justify-center">
             <span className="text-red-500">
               Something went wrong. Please try again.
             </span>

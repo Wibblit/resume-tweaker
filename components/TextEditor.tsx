@@ -46,7 +46,7 @@ import {
   useEditor,
 } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
@@ -181,56 +181,73 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
     setPrompt("");
   };
 
+  const promptRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      promptRef.current?.focus();
+    }
+  }, [isOpen]);
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="px-2">
-          <Sparkles className="h-3 w-3 opacity-80" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <h4 className="font-medium">AI Suggestion</h4>
-          <Input
-            placeholder="Enter your prompt..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? (
-              <p className="flex items-center justify-center gap-1">
-                <Loader2 className="animate-spin" />
-                Generating...
-              </p>
-            ) : (
-              "Generate"
-            )}
+    <div>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger>
+          <Button
+            onClick={() => setIsOpen(!isOpen)}
+            variant="outline"
+            size="sm"
+            className="px-2"
+          >
+            <Sparkles className="h-3 w-3 opacity-80" />
           </Button>
-        </form>
-        {suggestion && (
-          <div className="mt-4 space-y-2">
-            <Textarea
-              value={suggestion}
-              readOnly
-              className="min-h-[100px] whitespace-pre-wrap"
+        </PopoverTrigger>
+        <PopoverContent className="w-80">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <h4 className="font-medium">AI Suggestion</h4>
+            <Input
+              ref={promptRef}
+              placeholder="Enter your prompt..."
+              value={prompt}
+              autoFocus
+              onChange={(e) => setPrompt(e.target.value)}
             />
-            <section className="flex items-center w-full justify-between mt-4">
-              <Button onClick={handleApply}>Apply Suggestion</Button>
-              <Button
-                onClick={() => {
-                  setIsOpen(false);
-                  setSuggestion("");
-                  setPrompt("");
-                }}
-                className="bg-destructive text-destructive-foreground"
-              >
-                Cancel
-              </Button>
-            </section>
-          </div>
-        )}
-      </PopoverContent>
-    </Popover>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <p className="flex items-center justify-center gap-1">
+                  <Loader2 className="animate-spin" />
+                  Generating...
+                </p>
+              ) : (
+                "Generate"
+              )}
+            </Button>
+          </form>
+          {suggestion && (
+            <div className="mt-4 space-y-2">
+              <Textarea
+                value={suggestion}
+                readOnly
+                className="min-h-[100px] whitespace-pre-wrap"
+              />
+              <section className="flex items-center w-full justify-between mt-4">
+                <Button onClick={handleApply}>Apply Suggestion</Button>
+                <Button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setSuggestion("");
+                    setPrompt("");
+                  }}
+                  className="bg-destructive text-destructive-foreground"
+                >
+                  Cancel
+                </Button>
+              </section>
+            </div>
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 

@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import AIInterviewSkeleton from "../loading";
+import fetchRetry from "fetch-retry";
 
 interface InterviewData {
   job: string;
@@ -24,10 +25,10 @@ interface InterviewData {
 export default function InterviewPage() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [comprehensiveQuestions, setComprehensiveQuestion] = useState<string[]>(
-    [],
+    []
   );
+  const router = useRouter();
   const [interviewData, setInterviewData] = useState<InterviewData>({
     job: "",
     position: "",
@@ -41,6 +42,7 @@ export default function InterviewPage() {
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  const fetch = fetchRetry(window.fetch);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -60,7 +62,7 @@ export default function InterviewPage() {
       e.preventDefault();
       if (
         confirm(
-          "Are you sure you want to leave? This will delete all ongoing interview details.",
+          "Are you sure you want to leave? This will delete all ongoing interview details."
         )
       ) {
         router.back();
@@ -86,7 +88,7 @@ export default function InterviewPage() {
           jd: searchParams.get("jd") || "",
           numberOfQuestions: parseInt(
             searchParams.get("numberOfQuestions") || "0",
-            10,
+            10
           ),
           interviewType: searchParams.get("interviewType") || "",
           duration: parseInt(searchParams.get("duration") || "0", 10),
@@ -121,6 +123,16 @@ export default function InterviewPage() {
             totalDuration: interviewData.duration,
             interviewerPosition: interviewData.interviewerPosition,
           }),
+          retryOn: (attempt, error, response) => {
+            if (attempt >= 3) {
+              return false;
+            }
+            if (response && response.status >= 400) {
+              console.log(`retrying, attempt number ${attempt + 1}`);
+              return true;
+            }
+            return false;
+          },
         });
         if (!response.ok) {
           toast({
@@ -128,6 +140,7 @@ export default function InterviewPage() {
             description: "Unable to join the interview. Please try again.",
             variant: "destructive",
           });
+          router.back();
         }
         const data = await response.json();
         setComprehensiveQuestion(data.questions || []);
