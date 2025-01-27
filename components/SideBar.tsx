@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -40,11 +40,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
   { name: "AI Review", icon: Star, href: "/ai-review" },
-  {
-    name: "AI Interview",
-    icon: MessageSquare,
-    href: "/ai-interview",
-  },
+  { name: "AI Interview", icon: MessageSquare, href: "/ai-interview" },
   { name: "Profile", icon: User, href: "/profile" },
 ];
 
@@ -111,6 +107,7 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
                   key={item.name}
                   variant={pathname === item.href ? "secondary" : "ghost"}
                   className="w-full justify-start"
+                  onClick={() => setIsSidebarOpen && setIsSidebarOpen(false)}
                   asChild
                 >
                   <Link href={item.href}>
@@ -124,11 +121,7 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
-        {session?.user && (
-          <span>
-            <SignOutButton />
-          </span>
-        )}
+        {session?.user && <SignOutButton />}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-start">

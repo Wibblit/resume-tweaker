@@ -9,6 +9,7 @@ import AudioRecorder from "./audioRecorder";
 import {
   AudioLines,
   CircleArrowRight,
+  ClipboardCheck,
   Loader2,
   LogOut,
   Pause,
@@ -567,12 +568,17 @@ export default function ComprehensiveInterview({
                 variant="default"
                 className="flex items-center justify-center gap-2"
               >
-                {isNextLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                {isNextLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                {currentQuestionIndex === questions.length - 1 ||
+                timeLeft === 0 ? (
+                  <span className="flex gap-2 items-center">
+                    Get report <ClipboardCheck className="w-4 h-4" />
+                  </span>
                 ) : (
-                  <CircleArrowRight className="w-4 h-4" />
+                  <span className="flex gap-2 items-center">
+                    Next Question <CircleArrowRight className="w-4 h-4" />
+                  </span>
                 )}
-                Next Question
               </Button>
             </div>
           </>

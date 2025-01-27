@@ -57,7 +57,7 @@ export default async function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <LandingNav />
         </div>
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section>
           <Hero />
         </section>
         <section className="py-20 sm:py-24" id="templates">

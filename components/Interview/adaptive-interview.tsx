@@ -14,6 +14,7 @@ import {
   Pause,
   Play,
   Volume2,
+  RedoDot,
 } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
@@ -24,7 +25,8 @@ import { useRouter } from "next/navigation";
 import { ConfirmQuitModal } from "./ConfirmQuiteModal";
 import { Skeleton } from "../ui/skeleton";
 import { TypeAnimation } from "react-type-animation";
-import { CircleArrowRight, RedoDot } from "lucide-react";
+import { CircleArrowRight } from "lucide-react";
+import fetchRetry from "fetch-retry";
 
 interface AdaptiveInterviewProps {
   interviewData: {
@@ -75,12 +77,16 @@ export default function AdaptiveInterview({
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
   const [skipQuestionLoading, setSkipQuestionLoding] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [currRetryNumber, setCurrRetryNumber] = useState(0);
 
   const [isoLoader, setIsoLoader] = useState<boolean>(false);
 
   const router = useRouter();
   const dispatch = useDispatch();
   const { toast } = useToast();
+  const fetch = fetchRetry(window.fetch);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -146,6 +152,19 @@ export default function AdaptiveInterview({
           timeLeft: timeLeft / 60,
           interviewerPosition,
         }),
+        retryOn: (attempt, error, response) => {
+          if (attempt >= 3) {
+            setShowErrorMessage(true);
+            setIsRetrying(false);
+            return false;
+          }
+          setCurrRetryNumber(attempt + 1);
+          if (response && response.status >= 400) {
+            console.log(`retrying, attempt number ${attempt + 1}`);
+            return true;
+          }
+          return false;
+        },
       });
       const data = await result.json();
       if (!result.ok) {
@@ -154,14 +173,18 @@ export default function AdaptiveInterview({
           description: data.message,
           variant: "destructive",
         });
+        return;
       }
       setChatHistory(data.chatHistory);
       setQuestions([data.question]);
       generateAudio(data.question);
+      setShowErrorMessage(false);
     } catch (error) {
       console.error("Error getting the first question:", error);
+      setShowErrorMessage(true);
     } finally {
       setIsTimerPaused(false);
+      setIsRetrying(false);
     }
   };
 
@@ -215,6 +238,19 @@ export default function AdaptiveInterview({
             timeLeft: timeLeft / 60,
             interviewerPosition,
           }),
+          retryOn: (attempt, error, response) => {
+            if (attempt >= 3) {
+              setShowErrorMessage(true);
+              setIsRetrying(false);
+              return false;
+            }
+            setCurrRetryNumber(attempt + 1);
+            if (response && response.status >= 400) {
+              console.log(`retrying, attempt number ${attempt + 1}`);
+              return true;
+            }
+            return false;
+          },
         });
         const data = await result.json();
         if (!result.ok) {
@@ -223,6 +259,7 @@ export default function AdaptiveInterview({
             description: data.message,
             variant: "destructive",
           });
+          return;
         }
         setChatHistory(data.chatHistory);
         setQuestions((prev) => [...prev, data.question]);
@@ -243,6 +280,8 @@ export default function AdaptiveInterview({
       });
       return;
       setIsTimerPaused(false);
+    } finally {
+      setIsRetrying(false);
     }
   };
 
@@ -293,6 +332,19 @@ export default function AdaptiveInterview({
           timeLeft: timeLeft / 60,
           interviewerPosition,
         }),
+        retryOn: (attempt, error, response) => {
+          if (attempt >= 3) {
+            setShowErrorMessage(true);
+            setIsRetrying(false);
+            return false;
+          }
+          setCurrRetryNumber(attempt + 1);
+          if (response && response.status >= 400) {
+            console.log(`retrying, attempt number ${attempt + 1}`);
+            return true;
+          }
+          return false;
+        },
       });
       const data = await result.json();
       if (!result.ok) {
@@ -301,6 +353,8 @@ export default function AdaptiveInterview({
           description: data.message,
           variant: "destructive",
         });
+        setSkipQuestionLoding(false);
+        return;
       }
       setChatHistory(data.chatHistory);
       setQuestions((prev) => [...prev, data.question]);
@@ -345,6 +399,22 @@ export default function AdaptiveInterview({
           timeSpent: duration * 60 - timeLeft,
           chatHistory,
         }),
+        retries: 3, // Number of retry attempts
+        retryDelay: 1000, // Delay between retries in milliseconds
+        retryOn: (attempt, error, response) => {
+          if (attempt >= 3) {
+            setShowErrorMessage(true);
+            setIsRetrying(false);
+            return false;
+          }
+          setCurrRetryNumber(attempt + 1);
+          if (response && response.status)
+            if (error !== null || response.status >= 400) {
+              console.log(`retrying, attempt number ${attempt + 1}`);
+              return true;
+            }
+          return false;
+        },
       });
 
       console.log("Request sent, status:", response.status);
@@ -356,10 +426,12 @@ export default function AdaptiveInterview({
           description: data.message,
           variant: "destructive",
         });
+        setShowErrorMessage(true);
+        return;
+      } else {
+        setShowErrorMessage(false);
       }
-
       console.log("Report data received:", data);
-
       setReport(JSON.parse(data.report));
       setShowReport(true);
     } catch (error) {
@@ -545,6 +617,34 @@ export default function AdaptiveInterview({
                     <RedoDot className="w-4 h-4" />
                   </Button>
                 )}
+                {showErrorMessage && (
+                  <div className="flex items-center space-x-4 mt-4">
+                    <span className="text-red-500">
+                      Something went wrong. Please try again.
+                    </span>
+                    <Button
+                      onClick={() => {
+                        setIsRetrying(true);
+                        fetchFirstQuestion();
+                      }}
+                      disabled={isRetrying}
+                      variant="outline"
+                      size="sm"
+                    >
+                      {isRetrying ? (
+                        <div className="flex items-center space-x-2">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <div>Retrying......{currRetryNumber}</div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2">
+                          <RedoDot className="mr-2 h-4 w-4" />
+                          <div>Retry</div>
+                        </div>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
             <AudioRecorder
@@ -625,6 +725,34 @@ export default function AdaptiveInterview({
           </div>
         )}
         {showReport && report && <InterviewResults data={report} />}
+        {showErrorMessage && isInterviewComplete && (
+          <div className="flex items-center space-x-4 mt-4">
+            <span className="text-red-500">
+              Something went wrong. Please try again.
+            </span>
+            <Button
+              onClick={async () => {
+                setIsRetrying(true);
+                await generateReport();
+              }}
+              disabled={isRetrying}
+              variant="outline"
+              size="sm"
+            >
+              {isRetrying ? (
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <div>Retrying......{currRetryNumber}</div>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <RedoDot className="mr-2 h-4 w-4" />
+                  <div>Retry</div>
+                </div>
+              )}
+            </Button>
+          </div>
+        )}
         <ConfirmQuitModal
           isOpen={isQuitModalOpen}
           onClose={() => setIsQuitModalOpen(false)}
