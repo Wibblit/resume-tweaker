@@ -27,6 +27,10 @@ import { TypeAnimation } from "react-type-animation";
 import { Skeleton } from "../ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import fetchRetry from "fetch-retry";
+import axios from "axios";
+import { useAppSelector } from "@/hooks/hooks";
+import { creditList } from "@/utils/credits";
+import { updateCredits } from "@/slices/userAssets";
 
 interface ComprehensiveInterviewProps {
   questions: string[];
@@ -62,16 +66,37 @@ export default function ComprehensiveInterview({
   const [isRetrying, setIsRetrying] = useState(false);
   const [currRetryNumber, setCurrRetryNumber] = useState(0);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [isdetect, setIsDetect] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
   const { toast } = useToast();
   const fetch = fetchRetry(window.fetch);
 
+  const credits = useAppSelector((state) => state?.assets?.credits);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentAudioUrl = audioQueue[currentQuestionIndex] || "";
   const currQuestion = questions[currentQuestionIndex] || "";
+
+  console.log(currentQuestionIndex, questions.length);
+  if (currentQuestionIndex >= Math.floor(questions.length / 2)) {
+    if (!isdetect) {
+      try {
+        (async () => {
+          await axios.patch("/api/credit-detector", {
+            type: "comprehensive",
+          });
+
+          setIsDetect(true);
+
+          dispatch(
+            updateCredits(credits - (creditList.get("comprehensive") ?? 0))
+          );
+        })();
+      } catch (error) {}
+    }
+  }
 
   // Timer effect
   useEffect(() => {

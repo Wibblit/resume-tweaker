@@ -5,6 +5,8 @@ import { rateLimiter } from "@/lib/rateLimiter";
 import { adaptivePrompt } from "@/data/prompts/adaptiveStartPrompt";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
+import { prisma } from "@/prisma";
+import { creditList } from "@/utils/credits";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -41,16 +43,13 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     totalDuration,
     timeLeft,
     interviewerPosition,
+    isdetected,
   } = await req.json();
-  console.log(
-    "totalduration, timeleft, currentQuestionIndex, isSkipped",
-    totalDuration,
-    timeLeft,
-    currentQuestionIndex,
-    isSkipped
-  );
 
-  // Adaptive prompt generation
+  if (currentQuestionIndex === 0) {
+    // Check for credits else redirect
+  }
+
   const prompt = adaptivePrompt(
     job,
     position,
@@ -62,14 +61,32 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     timeLeft,
     totalDuration,
     currentQuestionIndex,
-    interviewerPosition,
+    interviewerPosition
   );
 
-  // Get generative model
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  // console.log("Before Chat History: ", JSON.stringify(chatHistory,null,2));
-  // Generate content using the model
   let result;
+
+  console.log(
+    currentQuestionIndex,
+    Math.floor(numberOfQuestions / 2),
+    isdetected
+  );
+  if (currentQuestionIndex >= Math.floor(numberOfQuestions / 2)) {
+    if (!isdetected) {
+      await prisma.userAssets.update({
+        where: {
+          userId: session?.user?.id,
+        },
+        data: {
+          credits: {
+            decrement: creditList.get("adaptive"),
+          },
+        },
+      });
+      isdetected = true;
+    }
+  }
 
   if (isSkipped) {
     chatHistory = [
@@ -78,24 +95,26 @@ export const POST = asyncHandler(async (req: NextRequest) => {
         role: "user",
         parts: [
           {
-            text: "INFO: USER SKIPPED THE PREVIOUS QUESTION"
+            text: "INFO: USER SKIPPED THE PREVIOUS QUESTION",
           },
         ],
       },
     ];
-    result = await model.generateContent(adaptivePrompt(
-      job,
-      position,
-      companyName,
-      resumeText,
-      jd,
-      numberOfQuestions,
-      chatHistory,
-      timeLeft,
-      totalDuration,
-      currentQuestionIndex,
-      interviewerPosition,
-    ));
+    result = await model.generateContent(
+      adaptivePrompt(
+        job,
+        position,
+        companyName,
+        resumeText,
+        jd,
+        numberOfQuestions,
+        chatHistory,
+        timeLeft,
+        totalDuration,
+        currentQuestionIndex,
+        interviewerPosition
+      )
+    );
   } else {
     if (base64Audio) {
       console.log("base64Audio is given");
@@ -110,7 +129,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
           text: "Transcribe this audio. If the audio is not transcriable or if the audio is not detectable just send 'ERROR: UNABLE TO DETECT INPUT' and nothing else. I repeat either send the transcribed text or 'ERROR: UNABLE TO DETECT INPUT' in case of undetectable audio.",
         },
       ]);
-  
+
       chatHistory = [
         ...chatHistory,
         {
@@ -125,7 +144,8 @@ export const POST = asyncHandler(async (req: NextRequest) => {
           ],
         },
       ];
-      console.log("Transcribed text", 
+      console.log(
+        "Transcribed text",
         JSON.stringify(
           transcribeText.response
             .text()
@@ -135,7 +155,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
           2
         )
       );
-  
+
       result = await model.generateContent([
         {
           inlineData: {
@@ -155,30 +175,28 @@ export const POST = asyncHandler(async (req: NextRequest) => {
             timeLeft,
             totalDuration,
             currentQuestionIndex,
-            interviewerPosition,
+            interviewerPosition
           ),
         },
       ]);
     } else {
-      result = await model.generateContent(adaptivePrompt(
-        job,
-        position,
-        companyName,
-        resumeText,
-        jd,
-        numberOfQuestions,
-        chatHistory,
-        timeLeft,
-        totalDuration,
-        currentQuestionIndex,
-        interviewerPosition,
-      ));
+      result = await model.generateContent(
+        adaptivePrompt(
+          job,
+          position,
+          companyName,
+          resumeText,
+          jd,
+          numberOfQuestions,
+          chatHistory,
+          timeLeft,
+          totalDuration,
+          currentQuestionIndex,
+          interviewerPosition
+        )
+      );
     }
   }
-
- 
-
-  // console.log("GEMINI RESPONSE FOR ADAPTIVE", result.response.text())
 
   const chat = JSON.parse(
     result.response
@@ -187,17 +205,16 @@ export const POST = asyncHandler(async (req: NextRequest) => {
       .trim()
   ); // Ensure response is valid JSON
 
-  // Extract the last generated question
-  // console.log(prompt)
   const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
   console.log("Gemini response for adaptive:", result);
   console.log(
     "After Chat History: ",
     JSON.stringify([...chatHistory, ...chat], null, 2)
   );
-  // console.log("Last message: ", lastMessage)
-  // console.log("Output: ",JSON.stringify(chat, null, 2));
+
+  console.log("Detected", isdetected);
   return NextResponse.json({
+    isdetected: isdetected,
     question: lastMessage,
     chatHistory: [...chatHistory, ...chat],
   });

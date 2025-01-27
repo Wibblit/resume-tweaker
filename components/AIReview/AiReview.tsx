@@ -51,6 +51,9 @@ import {
 } from "@/components/ui/chart";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "next/navigation";
+import { creditList } from "@/utils/credits";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
+import { updateCredits } from "@/slices/userAssets";
 
 interface AIReviewCriteria {
   score: number;
@@ -179,6 +182,8 @@ export default function AIReview({
   const workerRef = useRef<Tesseract.Worker | null>(null);
   const [ocrProgress, setOcrProgress] = useState(0);
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+  const dispatch = useAppDispatch();
+  const credits = useAppSelector((state) => state?.assets?.credits);
 
   const { toast } = useToast();
 
@@ -331,6 +336,14 @@ export default function AIReview({
       }
       setJd("");
       setAiSuggestions(response.data.resumeReview);
+      dispatch(
+        updateCredits(
+          credits -
+            ((reviewType === "tailored"
+              ? creditList.get("tailored")
+              : creditList.get("generic")) ?? 0)
+        )
+      );
     } catch (error) {
       console.log(error);
     } finally {

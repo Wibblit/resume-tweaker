@@ -27,6 +27,9 @@ import { Skeleton } from "../ui/skeleton";
 import { TypeAnimation } from "react-type-animation";
 import { CircleArrowRight } from "lucide-react";
 import fetchRetry from "fetch-retry";
+import { updateCredits } from "@/slices/userAssets";
+import { useAppSelector } from "@/hooks/hooks";
+import { creditList } from "@/utils/credits";
 
 interface AdaptiveInterviewProps {
   interviewData: {
@@ -80,11 +83,14 @@ export default function AdaptiveInterview({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
   const [currRetryNumber, setCurrRetryNumber] = useState(0);
+  const [isdetected, setIsDetected] = useState<boolean>(false);
+  const [stopper, setStopper] = useState<boolean>(false);
 
   const [isoLoader, setIsoLoader] = useState<boolean>(false);
 
   const router = useRouter();
   const dispatch = useDispatch();
+  const credits = useAppSelector((state) => state?.assets?.credits);
   const { toast } = useToast();
   const fetch = fetchRetry(window.fetch);
 
@@ -151,6 +157,7 @@ export default function AdaptiveInterview({
           chatHistory: [],
           timeLeft: timeLeft / 60,
           interviewerPosition,
+          isdetected: isdetected,
         }),
         retryOn: (attempt, error, response) => {
           if (attempt >= 3) {
@@ -175,7 +182,12 @@ export default function AdaptiveInterview({
         });
         return;
       }
+      console.log("This is data", data);
       setChatHistory(data.chatHistory);
+      setIsDetected(data.isdetected);
+      if (data?.isdetected) {
+        dispatch(updateCredits(credits - (creditList.get("adaptive") ?? 0)));
+      }
       setQuestions([data.question]);
       generateAudio(data.question);
       setShowErrorMessage(false);
@@ -237,8 +249,10 @@ export default function AdaptiveInterview({
             chatHistory,
             timeLeft: timeLeft / 60,
             interviewerPosition,
+            isdetected: isdetected,
           }),
           retryOn: (attempt, error, response) => {
+            console.log(error);
             if (attempt >= 3) {
               setShowErrorMessage(true);
               setIsRetrying(false);
@@ -253,6 +267,8 @@ export default function AdaptiveInterview({
           },
         });
         const data = await result.json();
+        console.log(result?.ok);
+        console.log(data);
         if (!result.ok) {
           toast({
             title: `Error ${result.status}`,
@@ -261,13 +277,27 @@ export default function AdaptiveInterview({
           });
           return;
         }
+        console.log("This is also data", data);
         setChatHistory(data.chatHistory);
+        setIsDetected(data.isdetected);
+        if (data?.isdetected && !stopper) {
+          dispatch(updateCredits(credits - (creditList.get("adaptive") ?? 0)));
+          setStopper(true);
+        }
         setQuestions((prev) => [...prev, data.question]);
         setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         setAudioBlob(null);
         generateAudio(data.question);
       } else {
+        console.log("Yo i got you bro");
         setIsInterviewComplete(true);
+
+        if (!isdetected) {
+          setIsDetected(true);
+          setStopper(true);
+          dispatch(updateCredits(credits - (creditList.get("adaptive") ?? 0)));
+        }
+
         await handleInterviewComplete();
       }
       setIsTimerPaused(false);
@@ -279,7 +309,6 @@ export default function AdaptiveInterview({
         description: "Unable to load the next question. Please try again.",
       });
       return;
-      setIsTimerPaused(false);
     } finally {
       setIsRetrying(false);
     }
@@ -331,6 +360,7 @@ export default function AdaptiveInterview({
           totalDuration: duration,
           timeLeft: timeLeft / 60,
           interviewerPosition,
+          isdetected: isdetected,
         }),
         retryOn: (attempt, error, response) => {
           if (attempt >= 3) {
@@ -357,12 +387,22 @@ export default function AdaptiveInterview({
         return;
       }
       setChatHistory(data.chatHistory);
+      setIsDetected(data.isdetected);
+      if (data?.isdetected && !stopper) {
+        dispatch(updateCredits(credits - (creditList.get("adaptive") ?? 0)));
+        setStopper(true);
+      }
       setQuestions((prev) => [...prev, data.question]);
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
       setAudioBlob(null);
       generateAudio(data.question);
       setSkipQuestionLoding(false);
       if (currentQuestionIndex >= numberOfQuestions - 1) {
+        if (!isdetected) {
+          setIsDetected(true);
+          setStopper(true);
+          dispatch(updateCredits(credits - (creditList.get("adaptive") ?? 0)));
+        }
         setIsInterviewComplete(true);
         handleInterviewComplete();
       } else {
