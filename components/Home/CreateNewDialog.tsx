@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -20,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { UpdateId } from "@/slices/rightsidebarSlice";
 import { createCover } from "@/actions/createCover";
 import { Loader2 } from "lucide-react";
+import axios from "axios";
 
 const RESUME = "Resume";
 const COVER = "Cover Letter";
@@ -51,6 +54,17 @@ export function CreateNewDialog({
     setLoading(true);
     if (name.trim()) {
       if (type === RESUME) {
+        const verifier = await axios.get("/api/verify-resume-slots");
+
+        if (verifier.data?.slotVerify) {
+          setLoading(false);
+          return toast({
+            title: "No Slots Available",
+            description:
+              "Your slots are full. Please purchase more to save resumes.",
+            variant: "destructive",
+          });
+        }
         const response = await createResume(name);
         if (response && response.success) {
           localStorage.setItem("currResumeId", response?.resume?.id as string);
@@ -58,7 +72,7 @@ export function CreateNewDialog({
             setCurrentResume({
               currResumeId: response?.resume?.id as string,
               currResumeName: response?.resume?.resumeName as string,
-            }),
+            })
           );
 
           router.push("/editor");
@@ -71,6 +85,17 @@ export function CreateNewDialog({
           setLoading(false);
         }
       } else {
+        const verifier = await axios.get("/api/verify-cover-slots");
+
+        if (verifier.data?.slotVerify) {
+          setLoading(false);
+          return toast({
+            title: "No Slots Available",
+            description:
+              "Your slots are full. Please purchase more to save cover letter.",
+            variant: "destructive",
+          });
+        }
         const response = await createCover(name);
         if (response.status === 429) {
           toast({
@@ -87,7 +112,7 @@ export function CreateNewDialog({
             setCurrentCover({
               currCoverId: response?.cover?.id as string,
               currCoverName: response?.cover?.coverName as string,
-            }),
+            })
           );
           router.push("/covereditor");
         } else {

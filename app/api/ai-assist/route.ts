@@ -35,6 +35,28 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   const response = result.response;
   const text = response.text();
 
+  const res = await prisma.userAssets.findUnique({
+    where: {
+      userId: session?.user?.id,
+    },
+  });
+
+  if (!res) {
+    return NextResponse.json({
+      success: false,
+      message: "User assets not found.",
+    });
+  }
+
+  if (res?.credits < (creditList.get("aienhance") ?? 0)) {
+    return NextResponse.json({
+      message: `You need at least ${creditList.get(
+        "aienhance"
+      )}} credits to access this feature.`,
+      statusCode: 402,
+    });
+  }
+
   await prisma.userAssets.update({
     where: {
       userId: session?.user?.id,

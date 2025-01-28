@@ -157,7 +157,11 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const response = await axios.post<{ content: string }>("/api/ai-assist/", {
+    const response = await axios.post<{
+      message: string;
+      statusCode: number;
+      content: string;
+    }>("/api/ai-assist/", {
       prompt,
       section,
     });
@@ -169,6 +173,15 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
       });
       return;
     }
+
+    if (response.data.statusCode === 402) {
+      return toast({
+        title: "Insufficient Credits",
+        description: response?.data?.message,
+        variant: "destructive",
+      });
+    }
+
     setSuggestion(response.data.content);
     dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
     setIsLoading(false);
@@ -256,6 +269,7 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
 
   const dispatch = useAppDispatch();
   const credits = useAppSelector((state) => state?.assets?.credits);
+    const { toast } = useToast();
 
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes("link").href;
@@ -281,14 +295,24 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
     }
     try {
       setisEnhanceLoading(true);
-      const response = await axios.post<{ content: string }>(
-        "/api/ai-assist/",
-        {
-          content,
-          action: "enhance",
-          section,
-        }
-      );
+      const response = await axios.post<{
+        message: string;
+        statusCode: number;
+        content: string;
+      }>("/api/ai-assist/", {
+        content,
+        action: "enhance",
+        section,
+      });
+
+      if (response.data.statusCode === 402) {
+        return toast({
+          title: "Insufficient Credits",
+          description: response?.data?.message,
+          variant: "destructive",
+        });
+      }
+
       editor.commands.setContent("");
       editor.commands.insertContent(response.data.content);
       setisEnhanceLoading(false);

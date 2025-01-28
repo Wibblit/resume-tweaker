@@ -25,28 +25,28 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
 
-  // const results = await prisma.userAssets.findUnique({
-  //   where: {
-  //     userId: session?.user?.id,
-  //   },
-  //   select: {
-  //     credits: true,
-  //   },
-  // });
-  // const requiredCredits = creditList.get(reviewType);
+  const results = await prisma.userAssets.findUnique({
+    where: {
+      userId: session?.user?.id,
+    },
+    select: {
+      credits: true,
+    },
+  });
+  const requiredCredits = creditList.get(reviewType);
 
-  // if (
-  //   results?.credits &&
-  //   requiredCredits !== undefined &&
-  //   typeof requiredCredits === "number"
-  // ) {
-  //   if (results?.credits > requiredCredits) {
-  //     return NextResponse.json({
-  //       message: `You need at least ${requiredCredits} credits to access this feature.`,
-  //       status: 402,
-  //     });
-  //   }
-  // }
+  if (
+    results?.credits &&
+    requiredCredits !== undefined &&
+    typeof requiredCredits === "number"
+  ) {
+    if (results?.credits <  requiredCredits) {
+      return NextResponse.json({
+        message: `You need at least ${requiredCredits} credits to access this feature.`,
+        statusCode: 402,
+      });
+    }
+  }
 
   // Rate limit check
   if (rateLimiter(session.user.id, ip)) {

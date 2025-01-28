@@ -66,7 +66,6 @@ export default function ComprehensiveInterview({
   const [isRetrying, setIsRetrying] = useState(false);
   const [currRetryNumber, setCurrRetryNumber] = useState(0);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [isdetect, setIsDetect] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -78,25 +77,6 @@ export default function ComprehensiveInterview({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentAudioUrl = audioQueue[currentQuestionIndex] || "";
   const currQuestion = questions[currentQuestionIndex] || "";
-
-  console.log(currentQuestionIndex, questions.length);
-  if (currentQuestionIndex >= Math.floor(questions.length / 2)) {
-    if (!isdetect) {
-      try {
-        (async () => {
-          await axios.patch("/api/credit-detector", {
-            type: "comprehensive",
-          });
-
-          setIsDetect(true);
-
-          dispatch(
-            updateCredits(credits - (creditList.get("comprehensive") ?? 0))
-          );
-        })();
-      } catch (error) {}
-    }
-  }
 
   // Timer effect
   useEffect(() => {
@@ -376,6 +356,13 @@ export default function ComprehensiveInterview({
 
       const data = await response.json();
       setReport(JSON.parse(data.report));
+
+      if (data.success) {
+        dispatch(
+          updateCredits(credits - (creditList.get("comprehensive") ?? 0))
+        );
+      }
+
       setShowReport(true);
     } catch (error) {
       console.error("Error generating report:", error);

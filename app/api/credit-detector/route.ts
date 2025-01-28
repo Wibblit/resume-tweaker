@@ -16,23 +16,7 @@ export const PATCH = asyncHandler(async (req: NextRequest) => {
   if (rateLimiter(session?.user?.id, ip)) throw ApiError.rateLimitExceeded;
   const { type } = await req.json();
 
-  if (type === "comprehensive") {
-    await prisma.userAssets.update({
-      where: {
-        userId: session?.user?.id,
-      },
-      data: {
-        credits: {
-          decrement: creditList.get("comprehensive"),
-        },
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-    });
-  }
-
+  console.log(type, "This is the type");
   if (type === "resumeslot") {
     await prisma.userAssets.update({
       where: {

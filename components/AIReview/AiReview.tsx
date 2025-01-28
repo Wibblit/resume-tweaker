@@ -318,14 +318,14 @@ export default function AIReview({
       });
       console.log(reviewType);
 
-      // if (response?.data?.status === 402) {
-      //   return toast({
-      //     variant: "destructive", // Set the toast type to error
-      //     description:
-      //       response?.data.message || "Insufficient credits to proceed.", // Use the message from the API
-      //     title: "Insufficient credits",
-      //   });
-      // }
+      if (response?.data?.statusCode === 402) {
+        return toast({
+          variant: "destructive", // Set the toast type to error
+          description:
+            response?.data.message || "Insufficient credits to proceed.", // Use the message from the API
+          title: "Insufficient credits",
+        });
+      }
 
       if (!response.data.resumeReview) {
         toast({
