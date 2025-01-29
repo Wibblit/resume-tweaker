@@ -33,19 +33,15 @@ export const POST = asyncHandler(async (request: NextRequest) => {
       credits: true,
     },
   });
-  const requiredCredits = creditList.get(reviewType);
+  const requiredCredits = creditList.get(reviewType) ?? 0;
 
-  if (
-    results?.credits &&
-    requiredCredits !== undefined &&
-    typeof requiredCredits === "number"
-  ) {
-    if (results?.credits <  requiredCredits) {
-      return NextResponse.json({
-        message: `You need at least ${requiredCredits} credits to access this feature.`,
-        statusCode: 402,
-      });
-    }
+  console.log(requiredCredits, results);
+
+  if (results?.credits === undefined || results.credits < requiredCredits) {
+    return NextResponse.json({
+      message: `You need at least ${requiredCredits} credits to access this feature.`,
+      statusCode: 402,
+    });
   }
 
   // Rate limit check

@@ -26,6 +26,7 @@ import {
   FileText,
   Clock,
   UserCheck,
+  Loader,
 } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -41,6 +42,9 @@ import pdfToImages from "@/lib/pdfToImages";
 import Tesseract from "tesseract.js";
 import { useSearchParams } from "next/navigation";
 import * as tts from "@diffusionstudio/vits-web";
+import { useAppSelector } from "@/hooks/hooks";
+import { PremiumModal } from "../premium-modal";
+import { creditList } from "@/utils/credits";
 
 interface FormData {
   job: string;
@@ -76,6 +80,11 @@ export default function InterviewSetup() {
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
   const [ttsModelDownloaded, setTtsModelDownloaded] = useState(false);
   const [ttsDownloadProgress, setTtsDownloadProgress] = useState(0);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const { toast } = useToast();
 
@@ -128,6 +137,9 @@ export default function InterviewSetup() {
     }
   }
 
+  const loadings = useAppSelector((state) => state?.assets?.loading);
+  const credits = useAppSelector((state) => state?.assets?.credits);
+
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -175,6 +187,12 @@ export default function InterviewSetup() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     console.log("Revied");
     e.preventDefault();
+
+    if (credits < (creditList.get(formData.interviewType) ?? 0)) {
+      setOpen(true);
+      return;
+    }
+
     setLoading(true);
     const numberOfQuestions = Math.ceil(formData.duration / 2);
 
@@ -427,23 +445,43 @@ export default function InterviewSetup() {
               </RadioGroup>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-primary text-primary-foreground"
-              disabled={loading || isOcrInProgress || !ttsModelDownloaded}
-            >
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Starting Interview
-                </div>
-              ) : (
-                "Start Interview"
-              )}
-            </Button>
+            {loadings ? (
+              <div className="flex items-center justify-center">
+                <Loader className="w-4 h-4 animate-spin" />
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground"
+                disabled={loading || isOcrInProgress || !ttsModelDownloaded}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Starting Interview
+                  </div>
+                ) : (
+                  "Start Interview"
+                )}
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>
+      <PremiumModal
+        onClose={onClose}
+        open={open}
+        name={
+          formData.interviewType === "comprehensive"
+            ? "Comprehensive Interview"
+            : "Adaptive Interview"
+        }
+        credits={
+          formData.interviewType === "comprehensive"
+            ? creditList.get("comprehensive") ?? 0
+            : creditList.get("adaptive") ?? 0
+        }
+      />
     </div>
   );
 }

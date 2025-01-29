@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimiter } from "./lib/rateLimiter";
+import { prisma } from "./prisma";
+import { creditList } from "./utils/credits";
 
 const allowedOrigins = [
   "http://localhost:3000", // Add your allowed domains here
@@ -86,6 +88,49 @@ export default auth(async function middleware(req: NextRequest) {
     if (rateLimiter(session?.user?.id, ip)) {
       console.log("Rate limit hit");
       return NextResponse.redirect(new URL("/rate-limit-error", req.url));
+    }
+  }
+
+  if (req.nextUrl.pathname.startsWith("/ai-interview/interview")) {
+    const url = new URL(req.url);
+    const interviewType = url.searchParams.get("interviewType");
+
+    if (!interviewType || !creditList.has(interviewType)) {
+      return NextResponse.redirect(new URL("/ai-interview", req.url));
+    }
+
+    const requiredCredits = creditList.get(interviewType) ?? 0;
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json(
+        { message: "User not authenticated." },
+        { status: 401 }
+      );
+    }
+
+    try {
+      const user = await fetch(`${req.nextUrl.origin}/api/get-credits`, {
+        headers: {
+          Cookie: req.headers.get("cookie") || "",
+        },
+      });
+
+      const data = await user.json();
+
+      if (!data || data.Credits.credits < requiredCredits) {
+        return NextResponse.redirect(
+          new URL(
+            `/ai-interview?modal=true&credits=${requiredCredits}&featureName=${interviewType}`,
+            req.url
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching user credits:", error);
+      return NextResponse.json(
+        { message: "Internal server error." },
+        { status: 500 }
+      );
     }
   }
 

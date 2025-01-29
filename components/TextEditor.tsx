@@ -71,6 +71,8 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { updateCredits } from "@/slices/userAssets";
 import { creditList } from "@/utils/credits";
 import { useAppSelector } from "@/hooks/hooks";
+import { PremiumModal } from "./premium-modal";
+import { Loader } from "lucide-react";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -151,10 +153,20 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
 
+  const [open, setOpen] = useState<boolean>(false);
+  const onClose = () => {
+    setOpen(false);
+  };
+
   const { toast } = useToast();
   const credits = useAppSelector((state) => state?.assets?.credits);
+  const loading = useAppSelector((state) => state?.assets?.loading);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (credits < (creditList.get("aigenerate") ?? 0)) {
+      setOpen(true);
+      return;
+    }
     e.preventDefault();
     setIsLoading(true);
     const response = await axios.post<{
@@ -260,6 +272,12 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
           )}
         </PopoverContent>
       </Popover>
+      <PremiumModal
+        credits={creditList.get("aigenerate") ?? 0}
+        name="AI Generate"
+        open={open}
+        onClose={onClose}
+      />
     </div>
   );
 }
@@ -267,9 +285,12 @@ function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
 const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
   const [isEnhanceLoading, setisEnhanceLoading] = useState<boolean>(false);
 
+  const [open, setOpen] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
   const credits = useAppSelector((state) => state?.assets?.credits);
-    const { toast } = useToast();
+  const loading = useAppSelector((state) => state?.assets?.loading);
+  const { toast } = useToast();
 
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes("link").href;
@@ -287,7 +308,16 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }, [editor]);
 
+  const onClose = () => {
+    setOpen(false);
+  };
+
   const handleEnhanceText = async () => {
+    if (credits < (creditList.get("aienhance") ?? 0)) {
+      setOpen(true);
+      return;
+    }
+
     const content = editor.getHTML().replace(/<[^>]*>?/gm, "");
 
     if (!content.trim()) {
@@ -578,45 +608,63 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
           </Button>
         </Tooltip>
 
-        <AIPopover
-          section={section}
-          onSuggestionApply={(suggestion) =>
-            editor.commands.insertContent(suggestion)
-          }
-        />
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loader className="w-4 h-4 animate-spin" />
+          </div>
+        ) : (
+          <AIPopover
+            section={section}
+            onSuggestionApply={(suggestion) =>
+              editor.commands.insertContent(suggestion)
+            }
+          />
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="relative">
-              {isEnhanceLoading && (
-                <Loader2 className="w-3 h-3 absolute animate-spin -right-1 -top-1" />
-              )}
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={
-                  !editor
-                    .getHTML()
-                    .replace(/<[^>]*>?/gm, "")
-                    .trim() || isEnhanceLoading
-                }
-                className={`px-2 ${
-                  !editor
-                    .getHTML()
-                    .replace(/<[^>]*>?/gm, "")
-                    .trim() && "opacity-50 cursor-not-allowed"
-                } ${isEnhanceLoading && "opacity-50"}`}
-                onClick={handleEnhanceText}
-              >
-                <Wand2 className="h-3 w-3" />
-              </Button>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Enhance text with AI</p>
-          </TooltipContent>
-        </Tooltip>
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loader className="w-4 h-4 animate-spin" />
+          </div>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative">
+                {isEnhanceLoading && (
+                  <Loader2 className="w-3 h-3 absolute animate-spin -right-1 -top-1" />
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={
+                    !editor
+                      .getHTML()
+                      .replace(/<[^>]*>?/gm, "")
+                      .trim() || isEnhanceLoading
+                  }
+                  className={`px-2 ${
+                    !editor
+                      .getHTML()
+                      .replace(/<[^>]*>?/gm, "")
+                      .trim() && "opacity-50 cursor-not-allowed"
+                  } ${isEnhanceLoading && "opacity-50"}`}
+                  onClick={handleEnhanceText}
+                >
+                  <Wand2 className="h-3 w-3" />
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Enhance text with AI</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
+      <PremiumModal
+        credits={creditList.get("aienhance") ?? 0}
+        name="AI Enhance"
+        open={open}
+        onClose={onClose}
+      />
     </TooltipProvider>
   );
 };

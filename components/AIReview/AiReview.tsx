@@ -19,7 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Menu, Upload, TrendingUp, Loader2 } from "lucide-react";
+import {
+  FileText,
+  Menu,
+  Upload,
+  TrendingUp,
+  Loader2,
+  Loader,
+} from "lucide-react";
 import axios from "axios";
 import { RecentResume as UserResume } from "@/types/types";
 import {
@@ -54,6 +61,7 @@ import { useSearchParams } from "next/navigation";
 import { creditList } from "@/utils/credits";
 import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { updateCredits } from "@/slices/userAssets";
+import { PremiumModal } from "../premium-modal";
 
 interface AIReviewCriteria {
   score: number;
@@ -167,6 +175,7 @@ export default function AIReview({
   const [resumeOption, setResumeOption] = useState<"select" | "upload">(
     "select"
   );
+  const loading = useAppSelector((state) => state?.assets?.loading);
   const [selectedResume, setSelectedResume] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
@@ -184,6 +193,12 @@ export default function AIReview({
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
   const dispatch = useAppDispatch();
   const credits = useAppSelector((state) => state?.assets?.credits);
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const onClose = () => {
+    setOpen(false);
+  };
 
   const { toast } = useToast();
 
@@ -304,6 +319,10 @@ export default function AIReview({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (credits < (creditList.get(reviewType) ?? 0)) {
+      setOpen(true);
+      return;
+    }
     setIsLoading(true);
     setAiSuggestions(null);
     try {
@@ -503,20 +522,26 @@ export default function AIReview({
                 />
               </div>
             )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading || isOcrInProgress}
-            >
-              {isLoading ? (
-                <div className="flex">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing...
-                </div>
-              ) : (
-                "Get AI Suggestions"
-              )}
-            </Button>
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <Loader className="w-4 h-4 animate-spin" />
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || isOcrInProgress}
+              >
+                {isLoading ? (
+                  <div className="flex">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing...
+                  </div>
+                ) : (
+                  "Get AI Suggestions"
+                )}
+              </Button>
+            )}
           </form>
           <AnimatePresence>
             {aiSuggestions && (
@@ -571,6 +596,16 @@ export default function AIReview({
           </AnimatePresence>
         </div>
       </motion.main>
+      <PremiumModal
+        credits={
+          reviewType === "generic"
+            ? creditList.get("generic") ?? 0
+            : creditList.get("tailored") ?? 0
+        }
+        name={reviewType === "generic" ? "Generic Review" : "Tailored Review"}
+        onClose={onClose}
+        open={open}
+      />
     </div>
   );
 }
