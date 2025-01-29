@@ -75,8 +75,6 @@ export default function Footer() {
             <h3 className="text-base font-semibold">Support & Resources</h3>
             <ul className="space-y-3">
               {[
-                { href: "/faq", label: "FAQs" },
-                { href: "/tutorials", label: "Tutorials" },
                 { href: "/blog", label: "Blog" },
                 {
                   href: "mailto:contact@wibblit.com",
@@ -97,7 +95,11 @@ export default function Footer() {
 
           {/* Legal */}
           <div className="space-y-4">
-            <h3 className="text-base font-semibold">Legal</h3>
+            <h3 className="text-base font-semibold">
+              <Link href={"/legal"}>
+              Legal
+              </Link>
+              </h3>
             <ul className="space-y-3">
               {[
                 { href: "/legal/privacy-policy", label: "Privacy Policy" },
