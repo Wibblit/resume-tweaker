@@ -12,23 +12,31 @@ import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ResumesProps } from "@/types/types";
+import { useAppSelector } from "@/hooks/hooks";
+import { Loader } from "lucide-react";
 
 export default function ResumeContent({
   searchQuery,
-  resumes
+  resumes,
 }: {
-    searchQuery: string;
-  resumes : ResumesProps
+  searchQuery: string;
+  resumes: ResumesProps;
 }) {
   const [recentResumes, setRecentResumes] = useState<ResumesProps>([]);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { toast } = useToast()
+  const { toast } = useToast();
+  const loading = useAppSelector((state) => state?.assets?.loading);
+  const resumeslot = useAppSelector((state) => state?.assets?.resumeslot);
+  const usedresumeslot = useAppSelector((state) => state?.assets?.usedresumes);
+
+
+  console.log(resumeslot, usedresumeslot)
 
   useEffect(() => {
-    setRecentResumes(resumes)
-  }, [])
+    setRecentResumes(resumes);
+  }, []);
 
   const resumeTemplates = [
     { id: 1, name: "Classic Charm", img: "/templates/template1.avif" },
@@ -48,7 +56,15 @@ export default function ResumeContent({
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="text-2xl font-bold mb-4">Recently Edited Resumes</h2>
+        <div className="flex items-center justify-between flex-wrap mb-4">
+          <h2 className="text-2xl font-bold mb-4">Recently Edited Resumes</h2>
+          {loading ? (
+            <Loader className="animate-spin w-4 h-4" />
+          ) : (
+            <p className="mr-2 text-sm">Slots available : {resumeslot - usedresumeslot}</p>
+          )}
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <>
@@ -59,7 +75,11 @@ export default function ResumeContent({
           ) : (
             <>
               {recentResumes?.map((resume) => (
-                <ResumeItem  setRecentResumes={setRecentResumes!} key={resume.id} resume={resume} />
+                <ResumeItem
+                  setRecentResumes={setRecentResumes!}
+                  key={resume.id}
+                  resume={resume}
+                />
               ))}
               <CreateNewResumeButton />
             </>
@@ -73,7 +93,11 @@ export default function ResumeContent({
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {filteredTemplates.map((template) => (
-              <CreateNewDialog type="Resume" template={true} templateId={template.id}>
+              <CreateNewDialog
+                type="Resume"
+                template={true}
+                templateId={template.id}
+              >
                 <Button
                   key={template.id}
                   variant="outline"

@@ -5,6 +5,8 @@ interface userAssets {
   resumeslot: number;
   coverslot: number;
   loading: boolean;
+  usedresumes: number;
+  usedcoverletters: number;
 }
 
 const initialState: userAssets = {
@@ -12,6 +14,8 @@ const initialState: userAssets = {
   resumeslot: 1,
   coverslot: 1,
   loading: true,
+  usedresumes: 0,
+  usedcoverletters: 0,
 };
 
 const userAssets = createSlice({
@@ -34,6 +38,12 @@ const userAssets = createSlice({
     updateLoadingFalse(state) {
       state.loading = false;
     },
+    updateUsedResumeSlots(state, action) {
+      state.usedresumes = action.payload;
+    },
+    updateUsedCoverLetterSlots(state, action) {
+      state.usedcoverletters = action.payload;
+    },
   },
 });
 
@@ -43,5 +53,7 @@ export const {
   updateResumeSlot,
   updateLoadingFalse,
   updateLoadingTrue,
+  updateUsedCoverLetterSlots,
+  updateUsedResumeSlots,
 } = userAssets.actions;
 export default userAssets.reducer;

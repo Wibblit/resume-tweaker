@@ -14,7 +14,11 @@ import { CreateNewResumeButtonTop } from "./CreateNewButtonTop";
 import { CreateNewCoverLetterButtonTop } from "./CreateNewButtonTop";
 import { ResumesProps } from "@/types/types";
 import { LetterProps } from "@/types/types";
-import { useToast } from "@/hooks/use-toast";
+import {
+  updateUsedCoverLetterSlots,
+  updateUsedResumeSlots,
+} from "@/slices/userAssets";
+import { useAppDispatch } from "@/hooks/hooks";
 
 const RESUME = "resume";
 const COVER = "cover";
@@ -27,6 +31,11 @@ interface Homeprops {
 export default function Home({ resumes, letters }: Homeprops) {
   const [searchQuery, setSearchQuery] = useState("");
   const [tab, setTab] = useState(RESUME);
+
+  const dispatch = useAppDispatch();
+
+  dispatch(updateUsedResumeSlots(resumes.length));
+  dispatch(updateUsedCoverLetterSlots(letters.length));
 
   const router = useRouter();
 

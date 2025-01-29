@@ -9,4 +9,3 @@ creditList.set("resumeslot", 50);
 creditList.set("coverslot", 50);
 creditList.set("tailored", 10);
 creditList.set("generic", 5);
-

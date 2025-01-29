@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
 import { useToast } from "@/hooks/use-toast";
 import { LetterProps } from "@/types/types";
+import { useAppSelector } from "@/hooks/hooks";
+import { Loader } from "lucide-react";
 
 const COVER = "Cover Letter";
 export default function LetterContent({
@@ -27,6 +29,11 @@ export default function LetterContent({
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { toast } = useToast();
+  const loading = useAppSelector((state) => state?.assets?.loading);
+  const coverslot = useAppSelector((state) => state?.assets?.coverslot);
+  const usedcoverslot = useAppSelector(
+    (state) => state?.assets?.usedcoverletters
+  );
 
   useEffect(() => {
     setRecentCoverLetters(letters);
@@ -51,9 +58,19 @@ export default function LetterContent({
   return (
     <div className="space-y-6">
       <section>
-        <h2 className="text-2xl font-bold mb-4">
-          Recently Edited Cover Letters
-        </h2>
+        <div className="flex items-center justify-between flex-wrap mb-4">
+          <h2 className="text-2xl font-bold mb-4">
+            Recently Edited Cover Letters
+          </h2>
+          {loading ? (
+            <Loader className="animate-spin w-4 h-4" />
+          ) : (
+            <p className="mr-2 text-sm">
+              Slots available : {coverslot - usedcoverslot}
+            </p>
+          )}
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <>

@@ -18,13 +18,15 @@ import {
 import { FileText, Pencil, Copy, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { setCurrentCover } from "@/slices/currentCoverSlice";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { deleteCoverLetter } from "@/actions/deleteCoverLetter";
 import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameCoverLetterDialog";
 import { LetterProps } from "@/types/types";
 import { duplicateCoverLetter } from "@/actions/duplicateCoverLetter";
 import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+import { updateUsedCoverLetterSlots } from "@/slices/userAssets";
 
 export default function LetterItem({
   letter,
@@ -42,18 +44,32 @@ export default function LetterItem({
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+  const usedcoverletter = useAppSelector(
+    (state) => state?.assets?.usedcoverletters
+  );
 
   const handleOpen = () => {
     dispatch(
       setCurrentCover({
         currCoverId: letter.id,
         currCoverName: letter.coverName,
-      }),
+      })
     );
     router.push(`/covereditor`);
   };
 
   const handleDuplicate = async () => {
+    const verifier = await axios.get("/api/verify-cover-slots");
+
+    if (verifier.data?.slotVerify) {
+      return toast({
+        title: "No Slots Available",
+        description:
+          "Your slots are full. Please purchase more to save cover letter.",
+        variant: "destructive",
+      });
+    }
+
     const response = await duplicateCoverLetter(letter.id);
     if (response && response.success) {
       setRecentCoverLetters((prev) => {
@@ -72,6 +88,7 @@ export default function LetterItem({
         title: "Success",
         description: response.message,
       });
+      dispatch(updateUsedCoverLetterSlots(usedcoverletter + 1));
     } else {
       toast({
         title: `Error ${response.status}`,
@@ -85,13 +102,14 @@ export default function LetterItem({
     const { success, message, status } = await deleteCoverLetter(letter.id);
     if (success) {
       setRecentCoverLetters((prev) =>
-        prev?.filter((item) => item.id !== letter.id),
+        prev?.filter((item) => item.id !== letter.id)
       );
       toast({
         title: "Success",
         description: message,
         variant: "default",
       });
+      dispatch(updateUsedCoverLetterSlots(usedcoverletter - 1));
     } else {
       toast({
         title: `Error ${status}`,

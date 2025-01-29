@@ -42,7 +42,6 @@ const getResumes = cache(async () => {
       orderBy: {
         id: "desc",
       },
-      take: 3,
       select: {
         id: true,
         userId: true,
@@ -67,7 +66,6 @@ const getLetters = cache(async () => {
       orderBy: {
         id: "desc",
       },
-      take: 3,
       select: {
         id: true,
         userId: true,

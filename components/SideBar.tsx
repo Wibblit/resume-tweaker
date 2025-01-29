@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -32,6 +32,8 @@ import {
   updateCredits,
   updateLoadingFalse,
   updateLoadingTrue,
+  updateCoverSlot,
+  updateResumeSlot,
 } from "@/slices/userAssets";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
@@ -72,6 +74,8 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         });
         console.log(response?.data?.Credits?.credits);
         dispatch(updateCredits(response?.data?.Credits?.credits));
+        dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
+        dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
       } catch (error) {
         console.log(error);
         toast({

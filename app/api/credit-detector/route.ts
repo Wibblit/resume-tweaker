@@ -18,7 +18,7 @@ export const PATCH = asyncHandler(async (req: NextRequest) => {
 
   console.log(type, "This is the type");
   if (type === "resumeslot") {
-    await prisma.userAssets.update({
+    const data = await prisma.userAssets.update({
       where: {
         userId: session?.user?.id,
       },
@@ -34,11 +34,12 @@ export const PATCH = asyncHandler(async (req: NextRequest) => {
     return NextResponse.json({
       success: true,
       message: "Resume slot purchased successfully.",
+      data: data,
     });
   }
 
   if (type === "coverslot") {
-    await prisma.userAssets.update({
+    const data = await prisma.userAssets.update({
       where: {
         userId: session?.user?.id,
       },
@@ -54,6 +55,7 @@ export const PATCH = asyncHandler(async (req: NextRequest) => {
     return NextResponse.json({
       success: true,
       message: "Cover letter slot purchased successfully.",
+      data: data,
     });
   }
 });

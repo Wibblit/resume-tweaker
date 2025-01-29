@@ -18,13 +18,15 @@ import {
 import { FileText, Pencil, Copy, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { deleteResume } from "@/actions/deleteResume";
 import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameResumeDialog";
 import { ResumesProps } from "@/types/types";
 import { duplicateResume } from "@/actions/duplicateResume";
 import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+import { updateUsedResumeSlots } from "@/slices/userAssets";
 
 export default function ResumeItem({
   resume,
@@ -42,6 +44,8 @@ export default function ResumeItem({
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+  const usedresumeslots = useAppSelector(state => state?.assets?.usedresumes)
+
 
   const handleOpen = () => {
     dispatch(
@@ -54,6 +58,18 @@ export default function ResumeItem({
   };
 
   const handleDuplicate = async () => {
+
+    const verifier = await axios.get("/api/verify-resume-slots");
+
+    if (verifier.data?.slotVerify) {
+      return toast({
+        title: "No Slots Available",
+        description:
+          "Your slots are full. Please purchase more to save resumes.",
+        variant: "destructive",
+      });
+    }
+
     const response = await duplicateResume(resume.id);
     if (response && response.success) {
       setRecentResumes((prev) => {
@@ -73,6 +89,7 @@ export default function ResumeItem({
         title: "Success",
         description: response.message,
       });
+      dispatch(updateUsedResumeSlots(usedresumeslots + 1));
     } else {
       toast({
         title: `Error ${response.status}`,
@@ -92,6 +109,7 @@ export default function ResumeItem({
         description: message,
         variant: "default",
       });
+      dispatch(updateUsedResumeSlots(usedresumeslots -1))
     } else {
       toast({
         title: `Error ${status}`,
