@@ -140,7 +140,7 @@ export default function Pricing() {
           {pricingPlans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col ${
+              className={`relative flex flex-col pb-4 ${
                 plan.popular ? "border-primary shadow-lg scale-105" : ""
               }`}
             >
@@ -193,7 +193,7 @@ export default function Pricing() {
                   ))}
                 </div>
 
-                <div className="mt-6 pt-6 border-t text-sm text-muted-foreground">
+                {/* <div className="mt-6 pt-6 border-t text-sm text-muted-foreground">
                   <div className="flex justify-between">
                     <span>Gateway Fee:</span>
                     <span>
@@ -230,8 +230,8 @@ export default function Pricing() {
                       )}
                     </span>
                   </div>
-                </div>
-              </CardContent>
+                </div>*/}
+              </CardContent> 
               {/* <CardFooter>
                 <Button
                   className="w-full"
@@ -244,9 +244,9 @@ export default function Pricing() {
             </Card>
           ))}
         </div>
-        <div className="mt-24">
+        {/* <div className="mt-24">
           <PaymentOfferings />
-        </div>
+        </div> */}
       </div>
     </div>
   );

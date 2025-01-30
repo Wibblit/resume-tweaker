@@ -35,9 +35,6 @@ export default function GetStartedSection() {
                   transition={{ delay: 0.3 }}
                   className="text-lg text-muted-foreground max-w-2xl mx-auto md:mx-0"
                 >
-                  Join over 50,000 professionals who've elevated their job
-                  search with our cutting-edge AI resume builder. Stand out from
-                  the crowd with perfectly crafted resumes.
                 </motion.p>
               </div>
 
@@ -65,53 +62,7 @@ export default function GetStartedSection() {
               </motion.div>
 
               {/* Social proof section */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="pt-8 border-t space-y-6"
-              >
-                <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-                  {/* User avatars */}
-                  <div className="flex items-center">
-                    <div className="flex -space-x-3">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.img
-                          key={i}
-                          src={`https://i.pravatar.cc/100?img=${i + 1}`}
-                          alt={`User ${i + 1}`}
-                          className="w-10 h-10 rounded-full border-2 border-background"
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.6 + i * 0.1 }}
-                        />
-                      ))}
-                    </div>
-                    <div className="ml-4 flex items-center gap-2">
-                      <Users className="w-5 h-5 text-muted-foreground" />
-                      <span className="text-muted-foreground">50k+ users</span>
-                    </div>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-4">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={cn(
-                            "w-5 h-5",
-                            i < 5
-                              ? "text-yellow-400 fill-yellow-400"
-                              : "text-muted"
-                          )}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-muted-foreground">4.9/5 rating</span>
-                  </div>
-                </div>
-              </motion.div>
+              
             </div>
           </div>
         </motion.div>
