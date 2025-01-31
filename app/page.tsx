@@ -1,15 +1,3 @@
-// import { LandingNav } from "@/components/LandingNav";
-// import { Hero } from "@/components/Hero";
-
-// export default async function Home() {
-//   return (
-//     <main className="relative flex justify-center items-center flex-col overflow-hidden mx-auto">
-//         <Hero />
-//     </main>
-//   );
-// }
-
-
 import { Hero } from "@/components/LandingPage/Hero";
 import { JoinHero } from "@/components/Hero";
 import type { Metadata } from "next";
@@ -19,40 +7,36 @@ import { FeaturesSection } from "@/components/LandingPage/Features";
 import { StickyScrollReveal } from "@/components/LandingPage/More";
 import Pricing from "@/components/LandingPage/Pricing";
 import GetStartedSection from "@/components/LandingPage/GetStartedSection";
-import Footer from "@/components/LandingPage/Footer";
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import FAQAccordion from "@/components/faq-accordian";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Wibblit ResumeTweaker",
+  title: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
   description:
-    "Craft a standout resume with ease using the power of AI. Receive tailored suggestions, optimize your content for specific job roles, and ensure your resume perfectly aligns with job descriptions—designed to accelerate your path to landing your dream job.",
-  icons: {
-    icon: [
-      {
-        rel: "icon",
-        type: "image/png",
-        url: "/favicons/favicon-96x96.png",
-        sizes: "96x96",
-      },
-      {
-        rel: "icon",
-        type: "image/svg+xml",
-        url: "/favicons/favicon.svg",
-      },
-      {
-        rel: "shortcut icon",
-        url: "/favicons/favicon.ico",
-      },
-      {
-        rel: "apple-touch-icon",
-        url: "/favicons/apple-touch-icon.png",
-        sizes: "180x180",
-      },
-    ],
-  }
+    "Optimize your job search with AI-powered resume building and reviews, cover letter building, and interview prep. Get professional tools for every step of your application process with ResumeTweaker",
+  alternates: {
+    canonical: "https://resumetweaker.wibblit.com",
+  },
+  keywords: [
+    "AI resume builder",
+    "resume maker",
+    "AI resume review",
+    "AI resume analysis",
+    "AI Interviw",
+    "resume optimizer",
+    "resumetweaker",
+    "job search tools",
+    "resume templates",
+    "resume tweaking",
+    "AI resume writing",
+    "career tools",
+    "wibblit",
+    "resumetweaker",
+    "resume tweaker",
+    "ai interview prep",
+    "interview preparation"
+  ],
 };
 
 export default async function Home() {

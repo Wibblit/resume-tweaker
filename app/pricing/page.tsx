@@ -3,6 +3,34 @@ import { auth } from "@/auth";
 import GetStartedSection from "@/components/LandingPage/GetStartedSection";
 import FAQAccordion from "@/components/faq-accordian";
 import PresetVisualCard from "@/components/PresetVisualiserCard";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "ResumeTweaker Pricing | Affordable Resume and Interview Services",
+  description:
+    "Discover ResumeTweaker's affordable pricing plans for resume building, cover letter writing, and interview preparation services.",
+  alternates: {
+    canonical: "https://resumetweaker.wibblit.com/pricing",
+  },
+  keywords: [
+    "resume building pricing",
+    "cover letter writing cost",
+    "interview preparation pricing",
+    "affordable resume services",
+    "resume writing packages",
+    "resume builder subscription",
+    "cover letter service cost",
+    "interview coaching fees",
+    "resume service pricing",
+    "resume builder pricing",
+    "resume writing rates",
+    "cover letter builder pricing",
+    "interview prep packages",
+    "resume service plans",
+    "resume writing deals",
+  ],
+};
+
 
 export default async function PricingPage() {
   const session = await auth();

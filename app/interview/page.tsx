@@ -18,6 +18,34 @@ import InterviewResults from "@/components/Interview/interviewResults";
 // import { LandingNav } from "@/components/LandingPage/LandingNav";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "AI Interview Preparation Tools | ResumeTweaker",
+  description:
+    "Prepare for your next interview with ResumeTweaker's AI-driven interview prep tools. Practice common questions and receive personalized feedback.",
+  alternates: {
+    canonical: "https://resumetweaker.wibblit.com/interview",
+  },
+  keywords: [
+    "interview preparation tools",
+    "AI interview prep",
+    "interview coaching",
+    "mock interview service",
+    "interview practice",
+    "interview questions and answers",
+    "interview training",
+    "job interview preparation",
+    "interview simulator",
+    "interview skills training",
+    "interview practice questions",
+    "interview feedback",
+    "interview techniques",
+    "interview strategies",
+    "interview readiness",
+  ],
+};
+
 
 const dummyData = {
   evaluation: [

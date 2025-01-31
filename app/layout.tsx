@@ -12,13 +12,13 @@ import { GoogleAnalytics } from "@next/third-parties/google"
 export const metadata: Metadata = {
   metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
   title: {
-    default: "resumetweaker | AI Resume Builder",
-    template: "%s - resumetweaker",
+    default: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
+    template: "%s | ResumeTweaker",
   },
   description:
-    "resumetweaker is an AI-powered resume builder that helps you create, tweak, and perfect resumes tailored to your career goals. Boost your job search with smart suggestions and custom templates.",
+    "Optimize your job search with AI-powered resume building and reviews, cover letter building, and interview prep. Get professional tools for every step of your application process with ResumeTweaker",
   openGraph: {
-    title: "resumetweaker - AI Resume Builder",
+    title: "ResumeTweaker | AI Resume Review, Cover Letter & Interview Prep",
     description:
       "Create, tweak, and perfect your resume with resumetweaker’s AI-powered resume builder. Stand out in your job search with optimized and tailored resumes.",
     url: "https://resumetweaker.wibblit.com",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "resumetweaker - AI Resume Builder",
+        alt: "ResumeTweaker | AI Resume Review & Interview Prep",
       },
     ],
     locale: "en_US",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@wibblitofficial",
-    title: "resumetweaker - AI Resume Builder",
+    title: "ResumeTweaker | AI Resume Review & Interview Prep",
     description:
       "Use resumetweaker's AI to create and optimize your resume effortlessly.",
     images: [
@@ -51,9 +51,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
     nocache: true,
-  },
-  alternates: {
-    canonical: "https://resumetweaker.wibblit.com",
   },
   keywords: [
     "AI resume builder",
@@ -124,7 +121,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "resumetweaker",
-              alternateName: ["ResumeTweaker", "Resume Tweaker"],
+              alternateName: ["ResumeTweaker"],
               url: "https://resumetweaker.wibblit.com/",
             }),
           }}
