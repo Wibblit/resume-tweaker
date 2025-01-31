@@ -61,6 +61,7 @@ export function Hero() {
         </motion.div>
         <ResumeAnimation />
       </div>
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent"></div>
     </div>
   );
 }
