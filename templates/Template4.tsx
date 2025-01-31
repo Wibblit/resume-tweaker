@@ -6,7 +6,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
-import DateConverter from "@/components/DateConverter";
+import { formatDate } from "@/utils/formatDate";
 
 interface TemplateProps {
   content: ResumeData;
@@ -72,7 +72,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
-
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles = {
     container: {
       fontFamily: fontFamily,
@@ -110,8 +110,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {exp.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {exp.startDate && DateConverter(exp.startDate)} -{" "}
-                      {exp.endDate && DateConverter(exp.endDate)}
+                      {exp.startDate && formatDate(exp.startDate, datetype)} -{" "}
+                      {exp.endDate && formatDate(exp.endDate, datetype)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
@@ -143,9 +143,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {edu.institution}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {edu.startDate && DateConverter(edu.startDate)}{" "}
+                      {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
                       {edu.endDate && " - "}{" "}
-                      {edu.endDate && DateConverter(edu.endDate)}
+                      {edu.endDate && formatDate(edu.endDate, datetype)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
@@ -210,9 +210,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       )}
                     </h3>
                     <p className="text-xs text-gray-600">
-                      {project.startDate && DateConverter(project.startDate)}
+                      {project.startDate &&
+                        formatDate(project.startDate, datetype)}
                       {project.endDate && " - "}
-                      {project.endDate && DateConverter(project.endDate)}
+                      {project.endDate && formatDate(project.endDate, datetype)}
                     </p>
                   </div>
                   {project.summary && (
@@ -240,7 +241,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     {cert.name}
                   </span>
                   <span className="text-xs text-gray-600">
-                    {cert.date && DateConverter(cert.date)}
+                    {cert.date && formatDate(cert.date, datetype)}
                   </span>
                   {cert.url && (
                     <a
@@ -309,9 +310,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {vol.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {vol.startDate && DateConverter(vol.startDate)}{" "}
+                      {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
                       {vol.endDate && " - "}
-                      {vol.endDate && DateConverter(vol.endDate)}
+                      {vol.endDate && formatDate(vol.endDate, datetype)}
                     </span>
                   </div>
                   <p className="text-sm italic mb-1">{vol.role}</p>
@@ -335,7 +336,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     {pub.publisher}, {pub.publishedIn}
                   </p>
                   <p className="text-xs text-gray-600">
-                    {pub.date && DateConverter(pub.date)}
+                    {pub.date && formatDate(pub.date, datetype)}
                   </p>
                   {pub.url && (
                     <a
@@ -364,7 +365,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {award.title}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {award.date && DateConverter(award.date)}
+                      {award.date && formatDate(award.date, datetype)}
                     </span>
                   </div>
                   <h3 className="text-xs">{award.awarder}</h3>
@@ -432,9 +433,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                           {/* Start Date and End Date */}
                           {sec.startDate && (
                             <h3>
-                              {DateConverter(sec.startDate)}
+                              {formatDate(sec.startDate, datetype)}
                               {sec.endDate &&
-                                ` - ${DateConverter(sec.endDate)}`}
+                                ` - ${formatDate(sec.endDate, datetype)}`}
                             </h3>
                           )}
                         </div>

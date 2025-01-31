@@ -13,6 +13,7 @@ export const savecoverData = asyncHandler(
     coverStyles: CoverStyle,
     coverId: string,
   ) => {
+    console.log(coverStyles)
     const session = await auth();
     if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
     if (!coverData || !coverStyles || !coverId) throw ActionsError.badRequest;

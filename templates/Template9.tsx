@@ -5,8 +5,8 @@ import { ResumeData } from "@/types/types";
 import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
-import DateConverter from "@/components/DateConverter";
 import { SocialIcon } from "react-social-icons";
+import { formatDate } from "@/utils/formatDate";
 
 type SectionName =
   | "summary"
@@ -33,34 +33,6 @@ interface StanfordResumeTemplateProps {
   pageIndex: number;
 }
 
-function formatMonthYear(input: string): string {
-  // Extract the month and year from the input
-  const [_, month, year] = input.match(/(\w+)'(\d{2})/) || [];
-
-  // Define a mapping of month names to their numbers
-  const monthMap: { [key: string]: string } = {
-    Jan: "01",
-    Feb: "02",
-    Mar: "03",
-    Apr: "04",
-    May: "05",
-    Jun: "06",
-    Jul: "07",
-    Aug: "08",
-    Sep: "09",
-    Oct: "10",
-    Nov: "11",
-    Dec: "12",
-  };
-
-  // Return the formatted result
-  return `${monthMap[month]}/${year}`;
-}
-
-// Example usage
-const result = formatMonthYear("24, Nov'24");
-console.log(result); // Output: "11/24"
-
 
 export default function Component({
   content,
@@ -84,7 +56,7 @@ export default function Component({
 
     const isIcons = useAppSelector((state) => state?.rightsidebar?.icons)
     const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator)
-    
+      const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles = {
     container: {
       fontFamily,
@@ -176,9 +148,9 @@ export default function Component({
                   style={styles.dateRange}
                 >
                   {edu.startDate &&
-                    formatMonthYear(DateConverter(edu.startDate))}
+                    formatDate(edu.startDate, datetype)}
                   {edu.endDate &&
-                    ` - ${formatMonthYear(DateConverter(edu.endDate))}`}
+                    ` - ${formatDate(edu.endDate, datetype)}`}
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between">
@@ -211,9 +183,9 @@ export default function Component({
                   style={styles.dateRange}
                 >
                   {exp.startDate &&
-                    formatMonthYear(DateConverter(exp.startDate))}
+                    formatDate(exp.startDate, datetype)}
                   {exp.endDate &&
-                    ` - ${formatMonthYear(DateConverter(exp.endDate))}`}
+                    ` - ${formatDate(exp.endDate, datetype)}`}
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between">
@@ -264,9 +236,11 @@ export default function Component({
                 <div className="w-[160px] flex-shrink-0 mr-4">
                   <span style={styles.dateRange}>
                     {project.startDate &&
-                      formatMonthYear(DateConverter(project.startDate))}
+                      formatDate(project.startDate, datetype)}
                     {project.endDate &&
-                      ` - ${formatMonthYear(DateConverter(project.endDate))}`}
+                      ` - ${
+                        formatDate(project.endDate, datetype
+                      )}`}
                   </span>
                 </div>
 
@@ -299,7 +273,7 @@ export default function Component({
                 {cert.issuer && <span>, {cert.issuer}</span>}
                 {cert.date && (
                   <span className="ml-2">
-                    ({formatMonthYear(DateConverter(cert.date))})
+                    ({formatDate(cert.date, datetype)})
                   </span>
                 )}
               </div>
@@ -383,9 +357,11 @@ export default function Component({
                   </div>
                   <div style={styles.dateRange}>
                     {vol.startDate &&
-                      formatMonthYear(DateConverter(vol.startDate))}
+                      formatDate(vol.startDate, datetype)}
                     {vol.endDate &&
-                      ` - ${formatMonthYear(DateConverter(vol.endDate))}`}
+                      ` - ${
+                        formatDate(vol.endDate, datetype)
+                      }`}
                   </div>
                 </div>
               </div>
@@ -406,7 +382,9 @@ export default function Component({
                 <div>
                   {pub.publisher}
                   {pub.date && (
-                    <span>, {formatMonthYear(DateConverter(pub.date))}</span>
+                    <span>
+                      , {formatDate(pub.date, datetype)}
+                    </span>
                   )}
                 </div>
                 {pub.url && (
@@ -429,7 +407,9 @@ export default function Component({
                 {/* Fixed width date container */}
                 <div className="basis-[160px] flex-shrink-0 mr-4">
                   {award.date && (
-                    <span>{formatMonthYear(DateConverter(award.date))}</span>
+                    <span>
+                      {formatDate(award.date, datetype)}
+                    </span>
                   )}
                 </div>
 
@@ -503,9 +483,9 @@ export default function Component({
                           {/* Start Date and End Date */}
                           {sec.startDate && (
                             <h3>
-                              {DateConverter(sec.startDate)}
+                              {formatDate(sec.startDate, datetype)}
                               {sec.endDate &&
-                                ` - ${DateConverter(sec.endDate)}`}
+                                ` - ${formatDate(sec.endDate, datetype)}`}
                             </h3>
                           )}
                         </div>

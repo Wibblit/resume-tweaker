@@ -31,11 +31,12 @@ export type SectionName =
   | "publications"
   | "awards"
   | string;
-  
+
 export type ResumeStyles = Template & {
   font: string;
   fontSize: 0 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
   lineHeight: number;
+  datetype: string;
   margin: 0 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15;
   paperFormat: "a4" | "letter";
   baseColor: string;
@@ -227,9 +228,6 @@ export interface ResumeDataTemp {
     | undefined;
 }
 
-
-
-
 export type CoverLetterData = {
   salutation: string;
   date: string;
@@ -283,8 +281,8 @@ export type ResumesProps =
   | {
       id: string;
       userId: string;
-    resumeName: string;
-      updatedOn : Date
+      resumeName: string;
+      updatedOn: Date;
     }[]
   | [];
 
@@ -292,7 +290,7 @@ export type LetterProps =
   | {
       id: string;
       userId: string;
-    coverName: string;
-      updatedOn : Date
+      coverName: string;
+      updatedOn: Date;
     }[]
   | [];

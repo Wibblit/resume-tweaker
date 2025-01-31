@@ -102,6 +102,7 @@ export const saveResumeData = asyncHandler(
     resumeStyles: ResumeStyles,
     resumeId: string,
   ) => {
+    console.log(resumeStyles)
     const session = await auth();
     if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
     if (!resumeData || !resumeStyles || !resumeId)

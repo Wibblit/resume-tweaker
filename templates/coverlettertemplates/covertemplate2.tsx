@@ -2,9 +2,10 @@
 
 import React, { useEffect } from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch , useAppSelector} from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -26,6 +27,8 @@ export default function CoverTemplate3({
   pageFormat
 }: CoverLetterTemplateProps) {
   const dispatch = useAppDispatch();
+
+    const datetype = useAppSelector(state => state?.rightsidebar?.datetype)
 
   return (
     <div
@@ -62,7 +65,7 @@ export default function CoverTemplate3({
       </div>
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-between">
-          <p>{content.date}</p>
+          {content.date && <p>{formatDate(content.date, datetype)}</p>}
           <p>{content.recipientInfo}</p>
         </div>
         <p className="font-semibold">{content.salutation}</p>

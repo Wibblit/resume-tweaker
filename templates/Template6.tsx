@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
-import DateConverter from "@/components/DateConverter";
+import { formatDate } from "@/utils/formatDate";
 
 type SectionName =
   | "summary"
@@ -52,6 +52,8 @@ export default function Component({
   React.useEffect(() => {
     dispatch(UpdateBaseColor(baseColor));
   }, [dispatch, baseColor]);
+
+    const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -167,9 +169,9 @@ sectionTitle: {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">
-                      {exp.startDate && DateConverter(exp.startDate)}
+                      {exp.startDate && formatDate(exp.startDate, datetype)}
                       {exp.endDate && " - "}
-                      {exp.endDate && DateConverter(exp.endDate)}
+                      {exp.endDate && formatDate(exp.endDate, datetype)}
                     </p>
                     <p className="text-gray-600">{exp.location}</p>
                   </div>
@@ -193,9 +195,9 @@ sectionTitle: {
                   <div className="text-right flex items-center justify-between">
                     <h3 className="font-bold">{edu.institution}</h3>
                     <p className="font-bold">
-                      {edu.startDate && DateConverter(edu.startDate)}
+                      {edu.startDate && formatDate(edu.startDate, datetype)}
                       {edu.endDate && " - "}
-                      {edu.endDate && DateConverter(edu.endDate)}
+                      {edu.endDate && formatDate(edu.endDate, datetype)}
                     </p>
                   </div>
 
@@ -260,9 +262,10 @@ sectionTitle: {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">
-                      {project.startDate && DateConverter(project.startDate)}
+                      {project.startDate &&
+                        formatDate(project.startDate, datetype)}
                       {project.endDate && " - "}
-                      {project.endDate && DateConverter(project.endDate)}
+                      {project.endDate && formatDate(project.endDate, datetype)}
                     </p>
                   </div>
                 </div>
@@ -295,7 +298,7 @@ sectionTitle: {
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold">{cert.name}</h3>
                     <p className="font-bold">
-                      {cert.date && DateConverter(cert.date)}
+                      {cert.date && formatDate(cert.date, datetype)}
                     </p>
                   </div>
                   <div className="flex items-center justify-between">
@@ -396,9 +399,9 @@ sectionTitle: {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">
-                      {vol.startDate && DateConverter(vol.startDate)}
+                      {vol.startDate && formatDate(vol.startDate, datetype)}
                       {vol.endDate && " - "}
-                      {vol.endDate && DateConverter(vol.endDate)}
+                      {vol.endDate && formatDate(vol.endDate, datetype)}
                     </p>
                     <p className="text-gray-600">{vol.location}</p>
                   </div>
@@ -432,7 +435,7 @@ sectionTitle: {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">
-                      {pub.date && DateConverter(pub.date)}
+                      {pub.date && formatDate(pub.date, datetype)}
                     </p>
                   </div>
                 </div>
@@ -466,7 +469,7 @@ sectionTitle: {
                   </div>
                   <div className="text-right">
                     <p className="font-bold">
-                      {award.date && DateConverter(award.date)}
+                      {award.date && formatDate(award.date, datetype)}
                     </p>
                   </div>
                 </div>
@@ -531,9 +534,9 @@ sectionTitle: {
                           {/* Start Date and End Date */}
                           {sec.startDate && (
                             <h3>
-                              {DateConverter(sec.startDate)}
+                              {formatDate(sec.startDate, datetype)}
                               {sec.endDate &&
-                                ` - ${DateConverter(sec.endDate)}`}
+                                ` - ${formatDate(sec.endDate, datetype)}`}
                             </h3>
                           )}
                         </div>

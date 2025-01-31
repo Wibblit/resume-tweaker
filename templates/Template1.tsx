@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
-import DateConverter from "@/components/DateConverter";
+import { formatDate } from "@/utils/formatDate";
 
 type SectionName =
   | "summary"
@@ -51,8 +51,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
-  
-  const isSeparator = useAppSelector((state) => state.rightsidebar.separator)
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const isSeparator = useAppSelector((state) => state.rightsidebar.separator);
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -68,7 +68,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       fontWeight: "bold",
       marginBottom: isSeparator ? "0.5em" : "none",
       textTransform: "uppercase",
-      borderBottom: isSeparator ? `2px solid ${baseColor}` : 'none',
+      borderBottom: isSeparator ? `2px solid ${baseColor}` : "none",
       paddingBottom: "0.25em",
     },
     sectionTitleWithOutBorder: {
@@ -189,8 +189,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {edu.startDate && DateConverter(edu.startDate)} {edu.endDate && " - "}{" "}
-                        {edu.endDate &&  DateConverter(edu.endDate)}
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -227,8 +228,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {exp.startDate && DateConverter(exp.startDate)} {exp.endDate && " - "}{" "}
-                        {exp.endDate && DateConverter(exp.endDate)}
+                        {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
+                        {exp.endDate && " - "}{" "}
+                        {exp.endDate && formatDate(exp.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -278,9 +280,11 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                     <div>
                       <h3 style={styles.subtitle}>
-                        {project.startDate && DateConverter(project.startDate)}{" "}
+                        {project.startDate &&
+                          formatDate(project.startDate, datetype)}{" "}
                         {project.endDate && " - "}{" "}
-                        {project.endDate && DateConverter(project.endDate)}
+                        {project.endDate &&
+                          formatDate(project.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -314,7 +318,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{cert.name}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {cert.date && DateConverter(cert.date)}
+                        {cert.date && formatDate(cert.date, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -418,8 +422,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {vol.startDate && DateConverter(vol.startDate)} -{" "}
-                        {vol.endDate && DateConverter(vol.endDate)}
+                        {vol.startDate && formatDate(vol.startDate, datetype)} -{" "}
+                        {vol.endDate && formatDate(vol.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -460,7 +464,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                       )}
                     </div>
                     <h3 style={styles.subtitle}>
-                      {pub.date &&  DateConverter(pub.date)}
+                      {pub.date && formatDate(pub.date, datetype)}
                     </h3>
                   </div>
 
@@ -497,7 +501,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                     <div>
                       <h3 style={styles.subtitle}>
-                        {award.date && DateConverter(award.date)}
+                        {award.date && formatDate(award.date, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -516,13 +520,13 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         );
 
       default:
-         if (
-           !content ||
-           !Array.isArray(content[sectionName]) ||
-           //@ts-ignore
-           !content[sectionName]?.length
-         )
-           return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
         return (
           <div className="mb-6">
             <h2 style={styles.sectionTitle}>{sectionName}</h2>
@@ -570,8 +574,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         {/* Start Date and End Date */}
                         {sec.startDate && (
                           <h3 style={styles.subtitle}>
-                            {DateConverter(sec.startDate)}
-                            {sec.endDate && ` - ${DateConverter(sec.endDate)}`}
+                            {formatDate(sec.startDate, datetype)}
+                            {sec.endDate &&
+                              ` - ${formatDate(sec.endDate, datetype)}`}
                           </h3>
                         )}
                       </div>

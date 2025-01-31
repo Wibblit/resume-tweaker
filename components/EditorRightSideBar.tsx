@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useTheme } from "next-themes";
 import { useMediaQuery } from "react-responsive";
 import {
@@ -38,6 +38,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   ChevronRight,
   Search,
   GripVertical,
@@ -45,6 +53,8 @@ import {
   Download,
   Plus,
   Minus,
+  ChevronsUpDown,
+  Check,
 } from "lucide-react";
 import {
   UpdateBaseColor,
@@ -75,6 +85,8 @@ import { updatePageVales } from "@/slices/addPageSlice";
 import Image from "next/image";
 import { FileJson, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { updateDateType } from "@/slices/rightsidebarSlice";
 
 const fonts = [
   "Arial",
@@ -130,6 +142,37 @@ const covertemplate = [
   { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
 ];
 
+const dateFormats = [
+  {
+    value: "DD/MM/YYYY",
+    label: "DD/MM/YYYY (31/01/2025)",
+    countries: ["United Kingdom", "Australia", "India", "Europe", "Africa"],
+  },
+  {
+    value: "MM/DD/YYYY",
+    label: "MM/DD/YYYY (01/31/2025)",
+    countries: ["United States", "Philippines"],
+  },
+  {
+    value: "YYYY/MM/DD",
+    label: "YYYY/MM/DD (2025/01/31)",
+    countries: ["China", "Japan", "South Korea", "Canada", "Hungary"],
+  },
+  {
+    value: "DD.MM.YYYY",
+    label: "DD.MM.YYYY (31.01.2025)",
+    countries: ["Germany", "Russia", "Estonia", "Switzerland", "Austria"],
+  },
+  {
+    value: "Month DD, YYYY",
+    label: "Month DD, YYYY (January 31, 2025)",
+    countries: ["United States", "Canada"],
+  },
+  { value: "MMM 'YY", label: "MMM 'YY (Jan '25)", countries: ["Various"] },
+  { value: "MMM-YY", label: "MMM-YY (Jan-25)", countries: ["Various"] },
+  { value: "MMM/YY", label: "MMM/YY (Jan/25)", countries: ["Various"] },
+];
+
 function createAbbreviation(word: string): string {
   // If the word has more than 5 characters, return the first 5 + '.'
   if (word.length > 5) {
@@ -173,6 +216,7 @@ export default function EditorRightSideBar({
     (state) => state.rightsidebar.sectionOrder
   )!;
   const fontSize = useAppSelector((state) => state.rightsidebar.fontSize);
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const resumeData = useAppSelector((state) => state.leftsidebar);
   const pages = useAppSelector((state) => state.page.pages);
   const templateID = useAppSelector((state) => state.rightsidebar.id);
@@ -187,6 +231,22 @@ export default function EditorRightSideBar({
   const CoverData = useAppSelector((state) => state?.coverletter);
   const ResumeData = useAppSelector((state) => state?.leftsidebar);
 
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(datetype);
+  console.log(value)
+  const [search, setSearch] = useState("");
+
+  const filteredFormats = useMemo(() => {
+    const searchTerm = search.toLowerCase();
+    return dateFormats.filter(
+      (format) =>
+        format.value.toLowerCase().includes(searchTerm) ||
+        format.label.toLowerCase().includes(searchTerm) ||
+        format.countries.some((country) =>
+          country.toLowerCase().includes(searchTerm)
+        )
+    );
+  }, [search]);
   console.log(CoverData, ResumeData);
 
   const [segment, setSegment] = useState("");
@@ -636,6 +696,66 @@ export default function EditorRightSideBar({
             />
           </div>
         </div>
+        <div className="w-full max-w-sm">
+          <Label className="mb-2 block">Date Format Selection</Label>
+
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between "
+              >
+                {value
+                  ? dateFormats.find((format) => format.value === value)?.label
+                  : "Select date format..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0 md:w-[280px]">
+              <Command shouldFilter={false}>
+                <CommandInput
+                  placeholder="Search format, country..."
+                  onValueChange={setSearch}
+                />
+                <CommandList>
+                  <CommandEmpty>No date format found.</CommandEmpty>
+                  <CommandGroup>
+                    {filteredFormats.map((format) => (
+                      <CommandItem
+                        key={format.value}
+                        value={format.value}
+                        onSelect={(currentValue) => {
+                          setValue(currentValue);
+                          dispatch(updateDateType(currentValue));
+                          console.log(currentValue);
+                          setOpen(false);
+                          // Here you would dispatch an action to update Redux
+                          // For example: dispatch(updateDateFormat(currentValue))
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value === format.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <div>
+                          <div>{format.label}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {format.countries.join(", ")}
+                          </div>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+
         <div>
           <Label>Paper Format</Label>
           <Select value={paperFormat} onValueChange={handlePaperFormatChange}>
@@ -682,6 +802,7 @@ export default function EditorRightSideBar({
             ))}
           </div>
         </div>
+
         <div className="flex flex-col items-start justify-between space-y-6">
           {show && (
             <>
@@ -751,16 +872,21 @@ export default function EditorRightSideBar({
           <DropdownMenuItem
             className="w-full px-4 py-2 text-left rounded-none hover:bg-accent hover:text-accent-foreground"
             onClick={() => {
-              const jsonString = JSON.stringify( segment === "editor" ? ResumeData : CoverData, null, 2); // Convert JSON to string
+              const jsonString = JSON.stringify(
+                segment === "editor" ? ResumeData : CoverData,
+                null,
+                2
+              ); // Convert JSON to string
               const blob = new Blob([jsonString], { type: "application/json" }); // Create a file-like object
               const url = URL.createObjectURL(blob); // Generate a download URL
               const link = document.createElement("a"); // Create a hidden <a> element
               link.href = url;
-              link.download = `${segment === "editor" ? 'resume.json' : 'coverletter.json'}`; // Set the filename
+              link.download = `${
+                segment === "editor" ? "resume.json" : "coverletter.json"
+              }`; // Set the filename
               link.click(); // Trigger download
               URL.revokeObjectURL(url); // Clean up the URL after download
             }}
-           
           >
             <FileJson className="mr-2 h-4 w-4" />
             <span>Download JSON</span>

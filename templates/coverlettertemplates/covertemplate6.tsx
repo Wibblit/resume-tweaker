@@ -2,9 +2,10 @@
 
 import React, { useEffect } from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -24,7 +25,7 @@ export default function Component({
   margin,
 }: CoverLetterTemplateProps) {
   const dispatch = useAppDispatch();
-
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,
@@ -78,7 +79,7 @@ export default function Component({
         {/* Updated to use new styles */}
       </div>
       <div style={styles.header}>
-        <p>{content.date}</p>
+        {content.date && <p>{formatDate(content.date, datetype)}</p>}
         <p>{content.recipientInfo}</p>
       </div>
 

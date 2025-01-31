@@ -64,7 +64,7 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { Skill, URL, ResumeData, ResumeSection } from "@/types/types";
 import { RichInput } from "./TextEditor";
 import { useMediaQuery } from "react-responsive";
-import { CustomDatePicker } from "./DatePicker";
+import { CustomDatePicker } from "@/components/DatePicker"
 import {
   UpdateLeftBarData,
   Reset,

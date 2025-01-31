@@ -13,6 +13,7 @@ import { setCurrentCover } from "@/slices/currentCoverSlice";
 import axios from "axios";
 import { CPageData } from "@/types/types";
 import { updateCoverLetter } from "@/slices/coverletterSlice";
+import { updateDateType } from "@/slices/rightsidebarSlice";
 import {
   UpdateBaseColor,
   UpdateFont,
@@ -145,6 +146,7 @@ export default function CoverEditor() {
         if (styles.separator) dispatch(UpdateSeparator(styles.separator));
         if (styles.paperFormat) dispatch(UpdatePaperFormat(styles.paperFormat));
         if (styles.baseColor) dispatch(UpdateBaseColor(styles.baseColor));
+        if (styles.datetype) dispatch(updateDateType(styles.datetype));
       } catch (error) {
         console.error("Error fetching cover letter data:", error);
       } finally {

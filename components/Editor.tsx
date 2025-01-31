@@ -23,7 +23,8 @@ import {
   updateSectionOrder,
   UpdateSectionOrderLayout,
   UpdateSeparator,
-  UpdateSections
+  UpdateSections,
+  updateDateType
 } from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
@@ -140,6 +141,9 @@ export default function Editor() {
         }
         if (styles.baseColor) {
           dispatch(UpdateBaseColor(styles.baseColor));
+        }
+        if (styles.datetype) {
+          dispatch(updateDateType(styles.datetype));
         }
       } catch (error) {
         console.error("Error fetching resume data:", error);

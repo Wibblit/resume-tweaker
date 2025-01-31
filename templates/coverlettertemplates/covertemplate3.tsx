@@ -2,10 +2,11 @@
 
 import React, { useEffect } from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch,useAppSelector } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { PAGE_FORMATS } from "@/components/coverPage";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -29,7 +30,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
   const dispatch = useAppDispatch();
 
   const pageDimensions = PAGE_FORMATS[pageFormat];
-
+  const datetype = useAppSelector(state => state?.rightsidebar?.datetype)
   const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,
@@ -100,7 +101,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
       {/* Cover Letter Content */}
       <div style={{ padding: `${margin}mm`, position: "relative", zIndex: 1 }}>
         <div style={styles.section}>
-          <p>{content.date}</p>
+          {content.date && <p>{formatDate(content.date, datetype)}</p>}
         </div>
 
         <div style={styles.section}>

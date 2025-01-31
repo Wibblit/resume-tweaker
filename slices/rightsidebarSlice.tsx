@@ -17,6 +17,7 @@ const initialState: ResumeStyles = {
   fontSize: 10,
   lineHeight: 1,
   margin: 6,
+  datetype: "MMM 'YY",
   paperFormat: "a4",
   baseColor: "#475569",
   icons: true,
@@ -79,13 +80,15 @@ const rightsidebarSlice = createSlice({
       state.sections.push(action.payload);
     },
     UpdateSections(state, action) {
-      state.sections = action.payload
+      state.sections = action.payload;
     },
     CustomSectionRename(state, action) {
       const { oldName, newName } = action.payload;
       console.log(oldName, newName);
       const replacer = (arr: string[]): string[] => {
-        const newArray = arr.map((item) => (item === oldName ? newName.toLowerCase() : item));
+        const newArray = arr.map((item) =>
+          item === oldName ? newName.toLowerCase() : item
+        );
         return newArray;
       };
 
@@ -286,6 +289,9 @@ const rightsidebarSlice = createSlice({
     removeSection: (state, action: PayloadAction<number>) => {
       state.sectionOrder.sections.splice(action.payload - 1, 1);
     },
+    updateDateType(state, action) {
+      state.datetype = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(addPage, (state, action) => {
@@ -329,7 +335,8 @@ export const {
   UpdateSectionOrderLayout,
   addSection,
   removeSection,
-  UpdateSections
+  UpdateSections,
+  updateDateType
 } = rightsidebarSlice.actions;
 
 // Export the reducer

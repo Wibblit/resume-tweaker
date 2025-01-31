@@ -4,7 +4,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics, Profile } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
-import DateConverter from "@/components/DateConverter";
+import { formatDate } from "@/utils/formatDate";
 import Base64Image from "@/components/base64toPhoto";
 
 interface TemplateProps {
@@ -277,7 +277,7 @@ const Template5: React.FC<TemplateProps> = ({
     (state) => state.rightsidebar.sectionOrder
   );
   const scaleFactor = fontSize / 16;
-
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles = {
     container: {
       fontFamily: fontFamily,
@@ -351,7 +351,7 @@ const Template5: React.FC<TemplateProps> = ({
                       />
                       <div className="shrink-0 text-right">
                         <div className="font-bold">
-                          {pub.date && DateConverter(pub.date)}
+                          {pub.date && formatDate(pub.date, datetype)}
                         </div>
                       </div>
                     </div>
@@ -383,9 +383,9 @@ const Template5: React.FC<TemplateProps> = ({
                       </div>
                       <div className="shrink-0 text-right">
                         <div className="font-bold">
-                          {vol.startDate && DateConverter(vol.startDate)}{" "}
+                          {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
                           {vol.endDate && " - "}{" "}
-                          {vol.endDate && DateConverter(vol.endDate)}
+                          {vol.endDate && formatDate(vol.endDate, datetype)}
                         </div>
                         <div>{vol.location}</div>
                       </div>
@@ -436,16 +436,17 @@ const Template5: React.FC<TemplateProps> = ({
                       </div>
                       <div className="shrink-0 text-right">
                         <div className="font-bold">
-                          {award.date && DateConverter(award.date)}
+                          {award.date && formatDate(award.date, datetype)}
                         </div>
                       </div>
                     </div>
-                    {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={award.summary}
-                      />
-                    )}
+                    {award.summary &&
+                      !isEmptyString(award.summary) && (
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={award.summary}
+                        />
+                      )}
                   </div>
                 ))}
               </div>
@@ -471,9 +472,9 @@ const Template5: React.FC<TemplateProps> = ({
                       </div>
                       <div className="shrink-0 text-right">
                         <div>
-                          {exp.startDate && DateConverter(exp.startDate)}{" "}
+                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
                           {exp.endDate && " - "}{" "}
-                          {exp.endDate && DateConverter(exp.endDate)}
+                          {exp.endDate && formatDate(exp.endDate, datetype)}
                         </div>
                         <div>{exp.location}</div>
                       </div>
@@ -554,9 +555,9 @@ const Template5: React.FC<TemplateProps> = ({
                     </div>
                     <div className="shrink-0 text-right">
                       <div>
-                        {edu.startDate && DateConverter(edu.startDate)}{" "}
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
                         {edu.endDate && " - "}{" "}
-                        {edu.endDate && DateConverter(edu.endDate)}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}
                       </div>
                       <div>{edu.degree}</div>
                     </div>
@@ -584,7 +585,7 @@ const Template5: React.FC<TemplateProps> = ({
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div>{cert.date && DateConverter(cert.date)} </div>
+                    <div>{cert.date && formatDate(cert.date, datetype)} </div>
                   </div>
                 ))}
               </div>
@@ -613,9 +614,10 @@ const Template5: React.FC<TemplateProps> = ({
                       <div className="shrink-0 text-right">
                         <div>
                           {project.startDate &&
-                            DateConverter(project.startDate)}{" "}
+                            formatDate(project.startDate, datetype)}{" "}
                           {project.endDate && " - "}{" "}
-                          {project.endDate && DateConverter(project.endDate)}
+                          {project.endDate &&
+                            formatDate(project.endDate, datetype)}
                         </div>
                       </div>
                     </div>
@@ -685,9 +687,9 @@ const Template5: React.FC<TemplateProps> = ({
                           {/* Start Date and End Date */}
                           {sec.startDate && (
                             <h3>
-                              {DateConverter(sec.startDate)}
+                              {formatDate(sec.startDate, datetype)}
                               {sec.endDate &&
-                                ` - ${DateConverter(sec.endDate)}`}
+                                ` - ${formatDate(sec.endDate, datetype)}`}
                             </h3>
                           )}
                         </div>
