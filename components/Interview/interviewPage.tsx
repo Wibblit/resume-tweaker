@@ -113,7 +113,7 @@ function InterviewPage() {
         <div className="flex gap-4 flex-wrap justify-center">
           <Button
             size="lg"
-            className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary"
+            className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
             onClick={() => router.push("/#join")}
           >
             <Video className="w-6 h-6 mr-2" />
