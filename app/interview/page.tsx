@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { GradientText } from "@/components/gradient-text";
 import { TypeCard } from "@/components/ReviewPage/TypeCard";
