@@ -320,7 +320,7 @@ function EditorPage() {
         </p>
         <Button
           size="lg"
-          className="bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl transform"
+          className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl  transform"
           onClick={() => router.push("/#join")}
         >
           Get Started Now

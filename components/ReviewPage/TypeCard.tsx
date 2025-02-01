@@ -22,7 +22,7 @@ export function TypeCard({
   return (
     <div className="relative p-8 rounded-2xl border bg-card backdrop-blur-sm hover-lift">
       {isPro && (
-        <span className="absolute -top-3 -right-3 px-6 py-1.5 bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary text-primary-foreground text-sm font-semibold rounded-full shadow-lg">
+        <span className="absolute -top-3 -right-3 px-6 py-1.5 bg-gradient-to-r from-primary text-primary-foreground via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl rounded-full">
           Pro
         </span>
       )}
@@ -50,7 +50,7 @@ export function TypeCard({
       <Button
         className={cn(
           "w-full shadow-lg transition-all duration-300 hover:shadow-xl",
-          isPro && "bg-gradient-to-r from-zinc-400 via-zinc-200 to-primary hover:opacity-90"
+          isPro && "bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
         )}
         onClick={action}
         variant={isPro ? "default" : "outline"}
