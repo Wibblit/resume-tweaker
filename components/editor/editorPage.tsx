@@ -80,10 +80,16 @@ function EditorPage() {
   }, [activeFeature])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
+    <div className="min-h-screen ">
+      <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
+        dark:bg-[linear-gradient(to_right,#1c1c1c_1px,transparent_1px),linear-gradient(to_bottom,#1c1c1c_1px,transparent_1px)] 
+        bg-[size:6rem_4rem]
+        [mask-image:linear-gradient(to_bottom,black_95%,transparent)]
+        [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
+        
       {/* Hero Section */}
-      <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden">
-        <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-20"></div>
+      <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden ">
         <div className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
             Create Professional Documents with
@@ -108,7 +114,7 @@ function EditorPage() {
               variant="outline"
               className="transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/50"
               onClick={() => router.push("/#join")}
-            >
+              >
               Create Cover Letter
             </Button>
           </div>
@@ -132,13 +138,13 @@ function EditorPage() {
                 className={`w-full group relative rounded-xl p-4 transition-all duration-300 ${
                   activeFeature === index ? "bg-primary/5 shadow-lg" : "hover:bg-primary/5"
                 }`}
-              >
+                >
                 {/* Animated Border */}
                 <div
                   className={`absolute inset-0 rounded-xl transition-opacity duration-300 opacity-0 ${
                     activeFeature === index ? "opacity-100" : "group-hover:opacity-40"
                   }`}
-                >
+                  >
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-[shimmer_2s_infinite]" />
                 </div>
 
@@ -165,11 +171,11 @@ function EditorPage() {
             <div className="relative h-full rounded-xl overflow-hidden bg-muted/30 ">
               {features.map((feature, index) => (
                 <div
-                  key={index}
-                  className={`absolute inset-0 transition-all duration-500 ${
+                key={index}
+                className={`absolute inset-0 transition-all duration-500 ${
                     activeFeature === index ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
                   }`}
-                >
+                  >
                   <div className="absolute inset-0 bg-gradient-to-tr from-background/40 via-background/5 to-transparent" />
                   <video
                     ref={videoRefs.current[index]}
@@ -198,6 +204,7 @@ function EditorPage() {
           </div>
         </div>
       </section>
+                    </div>
 
       {/* Document Types */}
       <section className="container mx-auto max-w-7xl px-4 py-20 relative">

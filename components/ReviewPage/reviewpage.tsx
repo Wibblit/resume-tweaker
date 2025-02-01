@@ -80,6 +80,12 @@ export default function ReviewPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
+      <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
+        dark:bg-[linear-gradient(to_right,#1c1c1c_1px,transparent_1px),linear-gradient(to_bottom,#1c1c1c_1px,transparent_1px)] 
+        bg-[size:6rem_4rem]
+        [mask-image:linear-gradient(to_bottom,white_95%,transparent)]
+        [-webkit-mask-image:linear-gradient(to_bottom,white_95%,transparent)]">
+<div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-10"/>
       <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
           Optimize Your Resume with
@@ -111,9 +117,9 @@ export default function ReviewPage() {
               onClick={() => {
                 const reviewTypesSection =
                   document.getElementById("review-types");
-                reviewTypesSection?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
+                  reviewTypesSection?.scrollIntoView({ behavior: "smooth" });
+                }}
+                >
               Learn More
             </Button>
           </Link>
@@ -124,7 +130,7 @@ export default function ReviewPage() {
       <section
         id="review-types"
         className="container mx-auto max-w-7xl px-4 py-20"
-      >
+        >
         <h2 className="text-3xl font-bold text-center mb-12">
           <GradientText>Choose Your Review Type</GradientText>
         </h2>
@@ -142,7 +148,7 @@ export default function ReviewPage() {
               "Basic Improvement Suggestions",
             ]}
             action={() => router.push("/#join")}
-          />
+            />
           <TypeCard
             icon={<Sparkles className="w-6 h-6" />}
             title="Tailored Review"
@@ -156,7 +162,7 @@ export default function ReviewPage() {
             ]}
             action={() => router.push("/#join")}
             isPro
-          />
+            />
         </div>
 
         {/* Process Steps */}
@@ -169,6 +175,7 @@ export default function ReviewPage() {
           ))}
         </div>
       </section>
+          </div>
 
       {/* Sample Results Section */}
       <section className="mx-auto px-4 py-20 max-w-7xl">

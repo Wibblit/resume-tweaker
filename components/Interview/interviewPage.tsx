@@ -95,8 +95,15 @@ const processSteps = [
 function InterviewPage() {
   const router = useRouter();
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
+      <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
+        dark:bg-[linear-gradient(to_right,#1c1c1c_1px,transparent_1px),linear-gradient(to_bottom,#1c1c1c_1px,transparent_1px)] 
+        bg-[size:6rem_4rem]
+        [mask-image:linear-gradient(to_bottom,black_95%,transparent)]
+        [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
+
       {/* Hero Section */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-10"/>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8"></div>
       <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -115,7 +122,7 @@ function InterviewPage() {
             size="lg"
             className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
             onClick={() => router.push("/#join")}
-          >
+            >
             <Video className="w-6 h-6 mr-2" />
             Start Interview
           </Button>
@@ -124,11 +131,11 @@ function InterviewPage() {
               size="lg"
               variant="outline"
               // onClick={() => {
-              //   const featuresSection =
-              //     document.getElementById("interview-styles");
-              //   featuresSection?.scrollIntoView({ behavior: "smooth" });
-              // }}
-            >
+                //   const featuresSection =
+                //     document.getElementById("interview-styles");
+                //   featuresSection?.scrollIntoView({ behavior: "smooth" });
+                // }}
+                >
               Learn More
             </Button>
           </Link>
@@ -146,11 +153,12 @@ function InterviewPage() {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
-              ></iframe>
+                ></iframe>
             </div>
           </div>
         </div>
       </section>
+                </div>
 
       {/* Features Section */}
       <section

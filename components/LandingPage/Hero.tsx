@@ -79,13 +79,14 @@ export function Hero() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] w-full relative flex flex-col items-center justify-center antialiased bg-background overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] w-full relative flex flex-col items-center justify-center antialiased bg-transparent overflow-hidden ">
+      
       <div className="container px-4 md:px-6 flex flex-col items-center justify-center z-10 relative">
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-sm mb-4 md:mb-6">
-            <Sparkles className="mr-2 h-4 w-4 text-secondary-foreground" />
-            <span className="text-secondary-foreground">Supercharge your Job Search</span>
-          </div>
+          <span className='inline-flex h-full animate-background-shine cursor-pointer items-center justify-center rounded-full border bg-[linear-gradient(110deg,#fff,45%,#dbdbdb,55%,#fff)] dark:bg-[linear-gradient(110deg,#000,45%,#4D4B4B,55%,#000)] bg-[length:250%_100%] px-3 py-1 text-xs font-medium text-gray-300'>
+              <Sparkles className="mr-2 h-4 w-4 text-secondary-foreground" />
+              <span className="text-secondary-foreground">Supercharge your Job Search</span>  
+          </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter">
             Elevate your career with<br className="hidden sm:inline" />
             <WordRotate
@@ -118,6 +119,7 @@ export function Hero() {
           </div>
         </div>
       </div>
+
     </div>
   )
 }

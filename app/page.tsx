@@ -73,7 +73,14 @@ export default async function Home() {
   return (
     <main className="relative flex justify-center items-center flex-col mx-auto">
       <div className="w-full">
-        <section className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
+        dark:bg-[linear-gradient(to_right,#1c1c1c_1px,transparent_1px),linear-gradient(to_bottom,#1c1c1c_1px,transparent_1px)] 
+        bg-[size:6rem_4rem]
+        [mask-image:linear-gradient(to_bottom,black_80%,transparent)]
+        [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)]"></div>
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 ">
+          
           <Hero />
         </section>
         <section className="py-20 sm:py-24" id="templates">
@@ -81,6 +88,7 @@ export default async function Home() {
             <TemplatesSection />
           </div>
         </section>
+        </div>
         <section className="py-8 sm:py-24" id="features">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <FeaturesSection />
