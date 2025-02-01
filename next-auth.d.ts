@@ -4,6 +4,7 @@ declare module "next-auth" {
   interface User {
     createdAt?: string; // Add the createdAt field
     isNewUser?: boolean;
+    provider: string;
   }
 
   interface Session {
@@ -11,6 +12,10 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
+      image: string;
+      expires: string;
+      provider: string;
+      name: string;
     }
   }
 }

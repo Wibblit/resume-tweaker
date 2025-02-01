@@ -53,16 +53,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id;
         token.isNewUser = user.isNewUser;
+        token.provider = user.provider;
       }
       return token;
     },
     async session({ session, token }: any) {
+      console.log(session, token, "session token from auth.ts")
       session.user.id = token.id.toString() as string;
       session.user.email = token.email; 
       session.isNewUser = token.isNewUser;
+      session.user.provider = token.provider;
       return session;
     },
     async signIn({ user, account, profile }) {
+      console.log("profile, user and acc", profile, user, account)
       let existingUser = await prisma.user.findUnique({
         where: { email: user.email! },
       });
@@ -84,10 +88,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
       user.id = existingUser?.id;
+      user.provider = account?.provider as string;
       return true;
     },
     async authorized({ auth, request: { nextUrl } }) {
-      console.log("auth from authorized", auth);
       const isLoggedIn = !!auth?.user;
       const protectedRoutes = [
         "/home",
