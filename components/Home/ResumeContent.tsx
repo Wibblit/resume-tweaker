@@ -1,19 +1,22 @@
-"use client";
-
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import ResumeItem from "./ResumeItem";
 import { CreateNewResumeButton } from "./CreateNewButton";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { CreateNewDialog } from "./CreateNewDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ResumesProps } from "@/types/types";
-import { useAppSelector } from "@/hooks/hooks";
-import { Loader } from "lucide-react";
+import {
+  FileText,
+  Crown,
+  Sparkles,
+  Loader,
+  CreditCard,
+  Plus,
+} from "lucide-react";
 
 export default function ResumeContent({
   searchQuery,
@@ -30,13 +33,18 @@ export default function ResumeContent({
   const loading = useAppSelector((state) => state?.assets?.loading);
   const resumeslot = useAppSelector((state) => state?.assets?.resumeslot);
   const usedresumeslot = useAppSelector((state) => state?.assets?.usedresumes);
+  const avaiLableCredits = useAppSelector((state) => state.assets.credits);
 
-
-  console.log(resumeslot, usedresumeslot)
+  const availableSlots = resumeslot - usedresumeslot;
 
   useEffect(() => {
     setRecentResumes(resumes);
-  }, []);
+  }, [resumes]);
+
+  const handleBuyCredits = () => {
+    // Implement your credits purchase logic here
+    router.push("/pricing");
+  };
 
   const resumeTemplates = [
     { id: 1, name: "Classic Charm", img: "/templates/template1.avif" },
@@ -53,23 +61,74 @@ export default function ResumeContent({
   const filteredTemplates = resumeTemplates.filter((template) =>
     template.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  return (
-    <div className="space-y-6">
-      <section>
-        <div className="flex items-center justify-between flex-wrap mb-4">
-          <h2 className="text-2xl font-bold mb-4">Recently Edited Resumes</h2>
-          {loading ? (
-            <Loader className="animate-spin w-4 h-4" />
-          ) : (
-            <p className="mr-2 text-sm">Slots available : {resumeslot - usedresumeslot}</p>
-          )}
-        </div>
 
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      {/* Status Card */}
+      <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
+        <div className="p-6 bg-gradient-to-r from-primary/5 to-transparent">
+          <div className="flex items-center gap-y-4 flex-wrap justify-between">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 p-3 rounded-xl shadow-sm backdrop-blur-sm">
+                <Crown className="text-primary w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-card-foreground">
+                  Wibblit's resumetweaker
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Create professional resumes in minutes
+                </p>
+              </div>
+            </div>
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Loader className="animate-spin w-5 h-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Loading...
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-wrap sm:flex-nowrap items-center justify-start sm:justify-start gap-2">
+                <div className="flex items-center gap-1 bg-secondary/50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[140px] justify-center">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span className="font-medium text-secondary-foreground">
+                    {availableSlots} / {resumeslot} slots
+                  </span>
+                </div>
+
+                <Button
+                  onClick={handleBuyCredits}
+                  className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1 px-4 py-2 rounded-md shadow-sm text-sm min-w-[140px] justify-center"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span className="font-medium">Buy</span>
+                  <Plus className="w-4 h-4" />
+                </Button>
+
+                <div className="flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[140px] justify-center">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <span className="font-medium text-amber-700">
+                    {avaiLableCredits} Credits Available
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Resumes */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <FileText className="w-5 h-5 text-primary" />
+          Recent Resumes
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {isLoading ? (
             <>
               {[...Array(3)].map((_, index) => (
-                <Skeleton key={index} className="h-[120px] w-full rounded-md" />
+                <Skeleton key={index} className="h-[120px] w-full rounded-xl" />
               ))}
             </>
           ) : (
@@ -85,11 +144,19 @@ export default function ResumeContent({
             </>
           )}
         </div>
-      </section>
-      <section>
-        <h2 className="text-2xl font-bold mb-4">Resume Templates</h2>
+      </div>
+
+      {/* Templates */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          Resume Templates
+        </h2>
         {filteredTemplates.length === 0 ? (
-          <p className="text-muted-foreground">No matching templates found.</p>
+          <div className="bg-card/50 rounded-xl p-8 text-center">
+            <p className="text-muted-foreground">
+              No matching templates found.
+            </p>
+          </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {filteredTemplates.map((template) => (
@@ -109,7 +176,6 @@ export default function ResumeContent({
                       alt={template.name}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
-                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
                   </div>
@@ -119,7 +185,7 @@ export default function ResumeContent({
             ))}
           </div>
         )}
-      </section>
+      </div>
     </div>
   );
 }

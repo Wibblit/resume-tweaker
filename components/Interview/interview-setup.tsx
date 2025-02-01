@@ -45,6 +45,14 @@ import * as tts from "@diffusionstudio/vits-web";
 import { useAppSelector } from "@/hooks/hooks";
 import { PremiumModal } from "../premium-modal";
 import { creditList } from "@/utils/credits";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RecentResume } from "@/types/types";
 
 interface FormData {
   job: string;
@@ -57,7 +65,11 @@ interface FormData {
   interviewType: "comprehensive" | "adaptive";
 }
 
-export default function InterviewSetup() {
+export default function InterviewSetup({
+  recentResumes,
+}: {
+  recentResumes: RecentResume[];
+}) {
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
@@ -81,12 +93,18 @@ export default function InterviewSetup() {
   const [ttsModelDownloaded, setTtsModelDownloaded] = useState(false);
   const [ttsDownloadProgress, setTtsDownloadProgress] = useState(0);
   const [open, setOpen] = useState<boolean>(false);
+  const [resumeOption, setResumeOption] = useState<"select" | "upload">(
+    "select"
+  );
+  const [selectedResume, setSelectedResume] = useState("");
+  const [userResumes, setUserResumes] = useState<RecentResume[]>();
 
-  const onClose = () => {
-    setOpen(false);
-  };
-
+  const onClose = () => setOpen(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setUserResumes(recentResumes);
+  }, [recentResumes]);
 
   useEffect(() => {
     async function initWorker() {
@@ -104,7 +122,6 @@ export default function InterviewSetup() {
     async function checkStoredModels() {
       const storedModels = await tts.stored();
       if (storedModels.includes("en_US-hfc_female-medium")) {
-        console.log("Already have the model");
         setTtsModelDownloaded(true);
       } else {
         downloadTtsModel();
@@ -184,8 +201,13 @@ export default function InterviewSetup() {
     }
   };
 
+  const handleResumeSelect = (value: string) => {
+    setSelectedResume(value);
+    setResumeOption("select");
+    setLocalFormData((prev) => ({ ...prev, resume: null }));
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    console.log("Revied");
     e.preventDefault();
 
     if (credits < (creditList.get(formData.interviewType) ?? 0)) {
@@ -195,24 +217,9 @@ export default function InterviewSetup() {
 
     setLoading(true);
     const numberOfQuestions = Math.ceil(formData.duration / 2);
-
+    const userSelectedResume = userResumes?.find((resume) => resume.resumeName === selectedResume);
+    console.log('selected resume', JSON.stringify(userSelectedResume));
     try {
-      // const response = await fetch("/api/guards", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(formData.interviewType.toLowerCase()),
-      // });
-
-      // const data = await response.json();
-      // console.log(data);
-      // if (data.status === 402) {
-      //   return toast({
-      //     variant: "destructive", // Set the toast type to error
-      //     description: data.message || "Insufficient credits to proceed.", // Use the message from the API
-      //     title: "Insufficient credits",
-      //   });
-      // }
-
       const queryParams = new URLSearchParams({
         job: formData.job,
         position: formData.position,
@@ -221,8 +228,10 @@ export default function InterviewSetup() {
         numberOfQuestions: numberOfQuestions.toString(),
         interviewType: formData.interviewType,
         duration: formData.duration.toString(),
-        resumeText: resumeText,
+        resumeText: resumeOption === "select" ? JSON.stringify(userSelectedResume)  : resumeText,
         interviewerPosition: formData.interviewerPosition,
+        resumeOption,
+        selectedResume,
       }).toString();
       dispatch(setFormData(formData));
       router.push(`/ai-interview/interview?${queryParams}`);
@@ -250,7 +259,10 @@ export default function InterviewSetup() {
         <CardContent>
           {!ttsModelDownloaded && (
             <div className="mb-6">
-              <Label>Downloading Text-to-Speech Model</Label>
+              <Label>
+                Downloading Text-to-Speech model. This process is done only
+                once.
+              </Label>
               <Progress value={ttsDownloadProgress} className="mt-2" />
               <p className="text-sm text-muted-foreground mt-1">
                 {ttsDownloadProgress}% complete
@@ -329,42 +341,91 @@ export default function InterviewSetup() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label
-                htmlFor="resume"
-                className="text-foreground flex items-center"
-              >
+            <div className="space-y-4">
+              <Label className="text-foreground flex items-center">
                 <FileText className="w-4 h-4 mr-2" />
-                Upload Resume
+                Resume
               </Label>
-              <div className="flex items-center space-x-2">
-                <Input
-                  id="resume"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                  accept=".pdf,.doc,.docx"
-                />
-                <Button
-                  type="button"
-                  onClick={() => document.getElementById("resume")?.click()}
-                  variant="secondary"
-                  className="w-full bg-secondary text-secondary-foreground"
-                  disabled={isOcrInProgress}
-                >
-                  <Upload className="mr-2 h-4 w-4" /> Upload Resume
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  {formData.resume ? formData.resume.name : "No file chosen"}
-                </span>
-              </div>
-              {isOcrInProgress && (
-                <div className="mt-4">
-                  <Label>Extracting data from resume...</Label>
-                  <Progress value={ocrProgress * 100} className="mt-2" />
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {(ocrProgress * 100).toFixed(0)}% complete
-                  </p>
+              <RadioGroup
+                value={resumeOption}
+                onValueChange={(value: "select" | "upload") =>
+                  setResumeOption(value)
+                }
+                className="grid grid-cols-2 gap-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="select" id="select-resume" />
+                  <Label htmlFor="select-resume">Select Existing Resume</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="upload" id="upload-resume" />
+                  <Label htmlFor="upload-resume">Upload New Resume</Label>
+                </div>
+              </RadioGroup>
+
+              {resumeOption === "select" ? (
+                <div className="space-y-2">
+                  <Select
+                    value={selectedResume}
+                    onValueChange={handleResumeSelect}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Choose a resume" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {loadings ? (
+                        <SelectItem value="loading" disabled>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Loading resumes...
+                        </SelectItem>
+                      ) : userResumes?.length === 0 ? (
+                        <SelectItem value="no-resumes" disabled>
+                          No resumes found
+                        </SelectItem>
+                      ) : (
+                        userResumes?.map((resume) => (
+                          <SelectItem key={resume.id} value={resume.id}>
+                            {resume.resumeName}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="resume"
+                      type="file"
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx"
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById("resume")?.click()}
+                      className="whitespace-nowrap"
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Browse
+                    </Button>
+                  </div>
+                  {formData.resume && (
+                    <p className="text-sm text-muted-foreground">
+                      Selected file: {formData.resume.name}
+                    </p>
+                  )}
+                  {isOcrInProgress && (
+                    <div className="mt-4">
+                      <Label>Extracting data from resume...</Label>
+                      <Progress value={ocrProgress * 100} className="mt-2" />
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {(ocrProgress * 100).toFixed(0)}% complete
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

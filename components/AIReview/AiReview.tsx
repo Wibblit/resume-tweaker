@@ -467,7 +467,7 @@ export default function AIReview({
                       </h2>
                       <Input
                         type="file"
-                        accept=".pdf,.doc,.docx"
+                        accept=".pdf"
                         onChange={handleFileUpload}
                         className="w-full"
                         disabled={isOcrInProgress}
