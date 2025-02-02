@@ -125,7 +125,7 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
-        {session?.user && <SignOutButton />}
+        {session?.user && <SignOutButton isCollapsed />}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-start">

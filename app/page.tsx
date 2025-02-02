@@ -26,7 +26,7 @@ export default async function Home() {
   const session = await auth();
 
   if (session?.user) {
-    // return redirect("/home");
+    return redirect("/home");
   }
 
   const faqData = [

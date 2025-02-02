@@ -1,8 +1,10 @@
-import { useState } from "react"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
+"use client";
+
+import { useEffect, useState } from "react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -12,19 +14,39 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-} from "@/components/ui/alert-dialog"
-import { Session } from "next-auth" // Import the Session type
+} from "@/components/ui/alert-dialog";
+import { Session } from "next-auth"; // Import the Session type
+import { Loader } from "lucide-react";
+import { deleteAccount } from "@/actions/deleteAccount";
+import { useToast } from "@/hooks/use-toast";
+import { signOut } from "next-auth/react";
 
 function Account({ session }: { session: Session }) {
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [deleteConfirmation, setDeleteConfirmation] = useState("")
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
-  const handleDeleteAccount = () => {
-    console.log("Deleting account...")
-    // Implement actual account deletion logic here
-    setIsDeleteDialogOpen(false)
-    setDeleteConfirmation("")
-  }
+  const { toast } = useToast();
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+
+    const { success, message } = await deleteAccount();
+
+    if (success) {
+      toast({
+        title: "Account deletion success",
+        description: message,
+      });
+
+      await signOut({ redirect: false });
+      window.location.href = "/";
+      setIsDeleteDialogOpen(false);
+      setDeleteConfirmation("");
+    }
+
+    setDeleteLoading(false);
+  };
 
   return (
     <div className="space-y-6">
@@ -34,7 +56,11 @@ function Account({ session }: { session: Session }) {
           <p className="text-sm font-light">You look good today!</p>
         </div>
         <Avatar className="h-16 w-16">
-          <AvatarImage className="rounded-md" src={session?.user.image ?? "/placeholder.svg"} alt="User" />
+          <AvatarImage
+            className="rounded-md"
+            src={session?.user.image ?? "/placeholder.svg"}
+            alt="User"
+          />
           <AvatarFallback>Profile pic</AvatarFallback>
         </Avatar>
       </div>
@@ -62,7 +88,9 @@ function Account({ session }: { session: Session }) {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="font-medium">Auth Provider</h3>
-          <p className="text-sm font-light shrink-0">The provider you used to sign in</p>
+          <p className="text-sm font-light shrink-0">
+            The provider you used to sign in
+          </p>
         </div>
         <div className="space-y-2">
           <Input id="name" disabled value={session?.user.provider} />
@@ -72,20 +100,29 @@ function Account({ session }: { session: Session }) {
       <div className="space-y-4">
         <div>
           <h3 className="font-medium text-destructive">Danger Zone</h3>
-          <p className="text-sm font-light text-destructive">Permanently delete your account and all associated data</p>
+          <p className="text-sm font-light text-destructive">
+            Permanently delete your account and all associated data
+          </p>
         </div>
-        <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+        <Button
+          variant="destructive"
+          onClick={() => setIsDeleteDialogOpen(true)}
+        >
           Delete Account
         </Button>
       </div>
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account and remove your data from our
-              servers.
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers. To confirm, please
+              type <strong>"delete my account"</strong>.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="my-4">
@@ -96,16 +133,25 @@ function Account({ session }: { session: Session }) {
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteAccount} disabled={deleteConfirmation !== "delete my account"}>
-              Delete Account
+            {!deleteLoading && <AlertDialogCancel>Cancel</AlertDialogCancel>}
+            <AlertDialogAction
+              onClick={handleDeleteAccount}
+              disabled={deleteConfirmation !== "delete my account"}
+            >
+              {deleteLoading ? (
+                <>
+                  Deleting your account{" "}
+                  <Loader className="animate-spin w-4 h-4" />
+                </>
+              ) : (
+                "Delete Account"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
 
-export default Account
-
+export default Account;

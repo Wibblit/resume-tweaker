@@ -960,10 +960,10 @@ export default function LeftSideBar({
               </div>
             </ScrollArea>
             <div
-              className={`p-4 border-t  justify-center  ${
+              className={`border-t flex ${
                 isCollapsed
-                  ? "flex-col items-center space-y-2"
-                  : "flex space-x-4"
+                  ? "flex-col items-center"
+                  : "flex-row space-x-4 p-4 justify-center"
               }`}
             >
               <TooltipProvider>
@@ -971,8 +971,9 @@ export default function LeftSideBar({
                   <TooltipTrigger asChild>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="outline">
-                          <Import className="h-4 w-4" /> Import Data
+                        <Button variant={isCollapsed ? null : "outline"}>
+                          <Import className="h-4 w-4" />{" "}
+                          {isCollapsed ? "" : "Import Data"}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -1002,9 +1003,9 @@ export default function LeftSideBar({
                   <TooltipTrigger asChild>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="outline">
+                        <Button variant={isCollapsed ? null : "outline"}>
                           <Eraser className="h-4 w-4" />
-                          Clear Data
+                          {isCollapsed ? "" : "Clear Data"}
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
