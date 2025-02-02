@@ -37,6 +37,7 @@ import Link from "next/link"
 import { SettingsDialog } from "./settings/settings-dialog"
 import { usePathname } from "next/navigation"
 
+
 // Menu items.
 const items = [
   { title: "Resumes", icon: FileText, url: "/home" },
