@@ -64,7 +64,7 @@ export default async function PricingPage() {
         bg-[size:6rem_4rem]
         [mask-image:linear-gradient(to_bottom,black_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-20"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-20"></div>
       <section>
         <Pricing />
       </section>

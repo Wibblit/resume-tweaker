@@ -30,6 +30,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { GradientText } from "../gradient-text";
 
 interface CurrencySelectorProps {
   value: string;
@@ -116,7 +117,9 @@ export default function Pricing() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            Simple, Transparent Pricing
+              <GradientText>
+                   Simple, Transparent Pricing
+              </GradientText>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Choose the perfect plan for your career growth. All plans include

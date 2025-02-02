@@ -103,7 +103,7 @@ function InterviewPage() {
         [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
 
       {/* Hero Section */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-10"/>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_300px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_300px,#000,transparent)] -z-10"/>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8"></div>
       <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -120,7 +120,7 @@ function InterviewPage() {
         <div className="flex gap-4 flex-wrap justify-center">
           <Button
             size="lg"
-            className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
+            variant={"silver"}
             onClick={() => router.push("/#join")}
             >
             <Video className="w-6 h-6 mr-2" />
@@ -129,13 +129,7 @@ function InterviewPage() {
           <Link href='/#join'>
             <Button
               size="lg"
-              variant="outline"
-              // onClick={() => {
-                //   const featuresSection =
-                //     document.getElementById("interview-styles");
-                //   featuresSection?.scrollIntoView({ behavior: "smooth" });
-                // }}
-                >
+              variant="outline">
               Learn More
             </Button>
           </Link>
@@ -252,7 +246,7 @@ function InterviewPage() {
         </p>
         <Button
           size="lg"
-          className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
+          variant={"silver"}
           onClick={() => router.push("/#join")}
         >
           Begin Your Practice Interview

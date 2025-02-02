@@ -50,7 +50,7 @@ export function ProcessStep({
         <div
           className={cn(
             "absolute -top-4 -left-4 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold",
-            "bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl text-primary-foreground"
+            "bg-gradient-to-br text-primary-foreground from-zinc-800/80 via-zinc-500/80 to-zinc-800/80 dark:from-zinc-400/80 dark:via-zinc-200 dark:to-zinc-400/80 transition-all duration-500 easeInOut shadow-lg hover:shadow-xl"
           )}
         >
           {index + 1}

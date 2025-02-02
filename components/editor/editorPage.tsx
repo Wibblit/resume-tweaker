@@ -103,7 +103,7 @@ function EditorPage() {
           <div className="flex gap-6 flex-wrap justify-center">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
+              variant={"silver"}
               onClick={() => router.push("/#join")}
             >
               <FileText className="w-6 h-6 mr-2" />
@@ -128,7 +128,7 @@ function EditorPage() {
           </GradientText>
         </h2>
 
-        <div className="grid lg:grid-cols-[1fr,2fr] gap-16">
+        <div className="lg:grid lg:grid-cols-[1fr,2fr] gap-16 hidden">
           {/* Feature Navigation */}
           <div className="relative space-y-4">
             {features.map((feature, index) => (
@@ -139,15 +139,6 @@ function EditorPage() {
                   activeFeature === index ? "bg-primary/5 shadow-lg" : "hover:bg-primary/5"
                 }`}
                 >
-                {/* Animated Border */}
-                <div
-                  className={`absolute inset-0 rounded-xl transition-opacity duration-300 opacity-0 ${
-                    activeFeature === index ? "opacity-100" : "group-hover:opacity-40"
-                  }`}
-                  >
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-[shimmer_2s_infinite]" />
-                </div>
-
                 <div className="relative flex items-center gap-4">
                   <div className="p-2 rounded-lg bg-opacity-10">{feature.icon}</div>
                   <div className="flex-1 text-left ">
@@ -164,7 +155,7 @@ function EditorPage() {
           </div>
 
           {/* Feature Preview */}
-          <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-muted/50 via-muted/30 to-muted/10 p-1">
+          <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-muted/50 via-muted/30 to-muted/10 p-1 ">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-20" />
 
             {/* Video Container */}
@@ -179,7 +170,7 @@ function EditorPage() {
                   <div className="absolute inset-0 bg-gradient-to-tr from-background/40 via-background/5 to-transparent" />
                   <video
                     ref={videoRefs.current[index]}
-                    className="w-full h-full object-contain bg-black"
+                    className={`w-full h-full object-cover ${index >= 2 ? 'object-right' : 'object-left'} dark:bg-black bg-white`}
                     loop
                     muted
                     playsInline
@@ -189,13 +180,66 @@ function EditorPage() {
                   </video>
 
                   {/* Feature Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/5 to-transparent">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 rounded-lg bg-opacity-20">{feature.icon}</div>
-                        <h3 className="text-xl font-semibold">{feature.title}</h3>
+                        <div className="p-2 rounded-lg text-white bg-opacity-20">{feature.icon}</div>
+                        <h3 className="text-xl text-white font-semibold">{feature.title}</h3>
                       </div>
-                      <div className="px-3 text-sm text-muted-foreground">{feature.description}</div>
+                      <div className="px-3 text-white">{feature.description}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="block lg:hidden">
+          <div className="flex justify-between sm:justify-center sm:gap-3 px-1 mb-3 sm:mb-6 sm:px-10">
+              {features.map((feature, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveFeature(index)}
+                  className={`p-2 sm:p-3 md:p-4 rounded-lg transition-all duration-300  ${
+                    activeFeature === index
+                      ? 'bg-card text-foreground scale-105 sm:scale-110 border'
+                      : 'text-muted-foreground/60 hover:text-foreground/90'
+                  }`}
+                >
+                  <div className="flex-col justify-start">
+                    <div className="p-2 rounded-lg bg-opacity-10 sm:inline-block">{feature.icon}</div>
+                    <div className="flex-1 text-center hidden sm:inline-block">
+                      <h3 className="font-semibold hidden sm:inline-block">{feature.title}</h3>
+                    </div>
+                  </div>
+                </button>
+              ))}
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-3 sm:mb-4">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-all duration-500 ${
+                    activeFeature === index ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                  }`}
+                >
+                  <video
+                    ref={videoRefs.current[index]}
+                    className="w-full h-full object-cover dark:bg-black bg-white"
+                    loop
+                    muted
+                    playsInline
+                    autoPlay
+                  >
+                    <source src={feature.video} type="video/mp4" />
+                    <center>Your browser does not support video tags</center>
+                  </video>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent">
+                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6">
+                      <h3 className="text-lg sm:text-xl md:text-2xl text-white font-semibold">{feature.title}</h3>
+                      <p className="text-white/90 mt-1 sm:mt-2 text-xs sm:text-sm md:text-base">{feature.description}</p>
                     </div>
                   </div>
                 </div>
@@ -259,7 +303,7 @@ function EditorPage() {
           AI power exactly when you need it during the writing process.
         </p>
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/10 border border-background/20">
+          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg bg-card backdrop-blur-sm border border-background/20">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/10">
                 <Sparkles className="w-8 h-8 text-primary" />
@@ -282,7 +326,7 @@ function EditorPage() {
               )}
             </ul>
           </Card>
-          <div className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/10 border border-background/20">
+          <div className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-card border border-background/20">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-primary/10">
                 <Sparkles className="w-8 h-8 text-primary" />
@@ -320,7 +364,7 @@ function EditorPage() {
         </p>
         <Button
           size="lg"
-          className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl  transform"
+          variant={"silver"}
           onClick={() => router.push("/#join")}
         >
           Get Started Now

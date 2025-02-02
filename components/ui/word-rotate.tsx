@@ -4,6 +4,7 @@ import { AnimatePresence, motion, type MotionProps } from "framer-motion"
 import { useEffect, useState } from "react"
 
 import { cn } from "@/lib/utils"
+import { GradientText } from "../gradient-text"
 
 interface WordRotateProps {
   words: string[]
@@ -35,10 +36,12 @@ export function WordRotate({
   }, [words, duration])
 
   return (
-    <div className="overflow-hidden py-2">
+    <div className=" py-2">
       <AnimatePresence mode="wait">
         <motion.h1 key={words[index]} className={cn(className)} {...motionProps}>
-          {words[index]}
+          <GradientText>
+            {words[index]}
+          </GradientText>
         </motion.h1>
       </AnimatePresence>
     </div>

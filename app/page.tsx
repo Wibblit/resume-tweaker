@@ -78,7 +78,7 @@ export default async function Home() {
         bg-[size:6rem_4rem]
         [mask-image:linear-gradient(to_bottom,black_80%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_500px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_500px,#000,transparent)]"></div>
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 ">
           
           <Hero />

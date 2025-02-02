@@ -85,7 +85,7 @@ export default function ReviewPage() {
         bg-[size:6rem_4rem]
         [mask-image:linear-gradient(to_bottom,white_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,white_95%,transparent)]">
-<div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-10"/>
+<div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-10"/>
       <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
         <h1 className="text-4xl md:text-6xl font-bold mb-6">
           Optimize Your Resume with
@@ -103,14 +103,13 @@ export default function ReviewPage() {
             {" "}
             <Button
               size="lg"
-              className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
+              variant={"silver"}
             >
               <FileText className="w-6 h-6 mr-2" />
               Review My Resume
             </Button>
           </Link>
 
-          <Link href="/#join">
             <Button
               size="lg"
               variant="outline"
@@ -122,7 +121,6 @@ export default function ReviewPage() {
                 >
               Learn More
             </Button>
-          </Link>
         </div>
       </section>
 
@@ -220,8 +218,8 @@ export default function ReviewPage() {
         <Link href={'/#join'}>
           <Button
             size="lg"
+            variant={"silver"}
             // onClick={() => router.push("/ai-review")}
-            className="bg-gradient-to-r from-primary via-zinc-600 to-zinc-400 dark:from-zinc-400 dark:via-zinc-200 dark:to-primary hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl "
           >
             Start Resume Review
           </Button>

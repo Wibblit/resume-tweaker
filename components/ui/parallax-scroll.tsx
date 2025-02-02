@@ -47,7 +47,7 @@ export const ParallaxScroll = ({
 
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 180,
-    damping: 20,
+    damping: 40,
   }); // Increased stiffness for faster animation
 
   const translateFirst = useTransform(smoothProgress, [0, 1], [0, -150]);

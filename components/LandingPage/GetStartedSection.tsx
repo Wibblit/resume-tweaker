@@ -17,7 +17,7 @@ export default function GetStartedSection() {
           className="max-w-4xl mx-auto"
         >
           {/* Content Card */}
-          <div className="relative bg-card/50 backdrop-blur-sm border rounded-2xl p-8 md:p-12">
+          <div className="relative bg-card backdrop-blur-sm border rounded-2xl p-8 md:p-12">
             {/* Main content */}
             <div className="relative space-y-8">
               <div className="space-y-4 text-center md:text-left">
@@ -49,7 +49,8 @@ export default function GetStartedSection() {
                   {" "}
                   <Button
                     size="lg"
-                    className="group text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
+                    variant={"silver"}
+                    // className="group text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
                   >
                     Get Started Free
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
