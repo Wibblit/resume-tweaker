@@ -6,9 +6,9 @@ import {
   User,
   PaintbrushIcon as PaintBrushIcon,
   Download,
-  FileText,
+  Shield,
   MessageSquare,
-  Star,
+  Languages,
 } from "lucide-react";
 import {
   Dialog,
@@ -45,7 +45,8 @@ import { Separator } from "../../ui/separator";
 import { Session } from "next-auth";
 import Account from "./Account";
 import { useTheme } from "next-themes";
-
+import DataExport from "./DataExport";
+import { Switch } from "@/components/ui/switch";
 export function SettingsDialog({ isCollapsed }: { isCollapsed: boolean }) {
   const [activeSection, setActiveSection] = useState("account");
   const { data: session } = useSession();
@@ -55,13 +56,9 @@ export function SettingsDialog({ isCollapsed }: { isCollapsed: boolean }) {
     { title: "Account", icon: User, id: "account" },
     { title: "Appearance", icon: PaintBrushIcon, id: "appearance" },
     { title: "Data Export", icon: Download, id: "data-export" },
-    { title: "Resume Settings", icon: FileText, id: "resume-settings" },
-    {
-      title: "Interview Settings",
-      icon: MessageSquare,
-      id: "interview-settings",
-    },
-    { title: "Review Settings", icon: Star, id: "review-settings" },
+    { title: "Notifications", icon: MessageSquare, id: "notifications" },
+    { title: "Privacy", icon: Shield, id: "privacy" },
+    { title: "Language", icon: Languages, id: "language" },
   ];
 
   return (
@@ -151,24 +148,113 @@ export function SettingsDialog({ isCollapsed }: { isCollapsed: boolean }) {
               )}
               {activeSection === "data-export" && (
                 <div className="space-y-6">
-                  <p>Export your data in various formats.</p>
+                  <DataExport />
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Export your data to keep a backup of your information or
+                      transfer it to other platforms. You can download your
+                      complete history of resumes, interviews, and reviews.
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      The <strong>JSON format</strong> provides a comprehensive
+                      backup suitable for data migration, while the{" "}
+                      <strong>CSV format</strong> offers a human-readable
+                      version of your documents. All exports are encrypted and
+                      include only your personal data.
+                    </p>
+                  </div>
                 </div>
               )}
-              {activeSection === "resume-settings" && (
+              {activeSection === "notifications" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium">
-                    Resume Generation Settings
-                  </h3>
-                  <div className="space-y-2"></div>
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Notification Preferences</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>Email Notifications</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Receive updates about new AI features and
+                            improvements
+                          </p>
+                        </div>
+                        <Switch />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>Usage Reports</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Get weekly summaries of your AI interactions and
+                            document creations
+                          </p>
+                        </div>
+                        <Switch />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
-              {activeSection === "interview-settings" && (
+              {activeSection === "privacy" && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium">AI Interview Settings</h3>
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Privacy Settings</h4>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>AI Processing</Label>
+                        <p className="text-sm text-muted-foreground">
+                          All AI interactions are processed by Google's Gemini
+                          API and are subject to Google's privacy policy and
+                          data handling practices.
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>Document Storage</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Store history of generated resumes and cover letters
+                            (Requires available credits. New documents won't be
+                            stored if you've reached your credit limit)
+                          </p>
+                        </div>
+                        <Switch disabled checked />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Note: Document storage is tied to your available
+                        credits. Purchase additional credits to increase your
+                        storage capacity and continue saving new documents.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
-              {activeSection === "review-settings" && (
-                <div className="space-y-6"></div>
+              {activeSection === "language" && (
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h4 className="font-medium">Language Settings</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label>System Language</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Currently only available in English
+                          </p>
+                        </div>
+                        <Select defaultValue="en" disabled>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select language" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        We're working on adding support for more languages in
+                        the future. Stay tuned for updates!
+                      </p>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </ScrollArea>
