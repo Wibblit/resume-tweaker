@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "next-auth/react";
-import { Separator } from "../ui/separator";
+import { Separator } from "../../ui/separator";
 import { Session } from "next-auth";
 import Account from "./Account";
 import { useTheme } from "next-themes";
@@ -69,7 +69,9 @@ export function SettingsDialog({ isCollapsed }: { isCollapsed: boolean }) {
       <DialogTrigger asChild>
         <Button
           variant="ghost"
-          className={`w-full ${!isCollapsed && "justify-start"}`}
+          className={`w-full ${isCollapsed && "py-1 px-2"} ${
+            !isCollapsed && "justify-start"
+          }`}
         >
           <Settings className="h-4 w-4" />
           {!isCollapsed && <span className="ml-2">Settings</span>}
@@ -109,7 +111,7 @@ export function SettingsDialog({ isCollapsed }: { isCollapsed: boolean }) {
               </SidebarContent>
             </Sidebar>
           </div>
-          <ScrollArea className="flex-grow w-full h-full">
+          <ScrollArea className="w-full max-h-[600px]">
             <div className="p-6 space-y-6 w-full">
               {activeSection === "account" && <Account session={session!} />}
               {activeSection === "appearance" && (

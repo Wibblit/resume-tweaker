@@ -16,6 +16,7 @@ declare module "next-auth" {
       expires: string;
       provider: string;
       name: string;
+      createdAt: string;
     }
   }
 }

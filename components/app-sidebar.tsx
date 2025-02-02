@@ -1,6 +1,16 @@
-"use client"
+"use client";
 
-import { FileText, Star, MessageSquare, User, Loader, Coins, Sun, Moon, Laptop } from "lucide-react"
+import {
+  FileText,
+  Star,
+  MessageSquare,
+  User,
+  Loader,
+  Coins,
+  Sun,
+  Moon,
+  Laptop,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,29 +24,38 @@ import {
   SidebarFooter,
   SidebarMenuButton,
   useSidebar,
-} from "@/components/ui/sidebar"
-import type { Session } from "next-auth"
-import { useTheme } from "next-themes"
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks"
-import axios from "axios"
-import { useToast } from "@/hooks/use-toast"
+} from "@/components/ui/sidebar";
+import type { Session } from "next-auth";
+import { useTheme } from "next-themes";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 import {
   updateCredits,
   updateLoadingFalse,
   updateLoadingTrue,
   updateCoverSlot,
   updateResumeSlot,
-} from "@/slices/userAssets"
-import { useEffect } from "react"
-import { SignOutButton } from "./SignOutButton"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Button } from "./ui/button"
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
-import { Separator } from "./ui/separator"
-import Link from "next/link"
-import { SettingsDialog } from "./settings/settings-dialog"
-import { usePathname } from "next/navigation"
-
+} from "@/slices/userAssets";
+import { useEffect } from "react";
+import { SignOutButton } from "./SignOutButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "./ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { Separator } from "./ui/separator";
+import Link from "next/link";
+import { SettingsDialog } from "./Sidebar/settings/settings-dialog";
+import { usePathname } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -44,47 +63,47 @@ const items = [
   { title: "AI Review", icon: Star, url: "/ai-review" },
   { title: "AI Interview", icon: MessageSquare, url: "/ai-interview" },
   { title: "Profile", icon: User, url: "/profile" },
-]
+];
 
 export function AppSidebar({ session }: { session: Session }) {
-  const pathname = usePathname()
-  const { setTheme, theme } = useTheme()
-  const credit = useAppSelector((state) => state?.assets?.credits)
-  const loading = useAppSelector((state) => state?.assets?.loading)
-  const { toast } = useToast()
+  const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
+  const credit = useAppSelector((state) => state?.assets?.credits);
+  const loading = useAppSelector((state) => state?.assets?.loading);
+  const { toast } = useToast();
   const credits = {
     used: credit,
     total: 10000,
-  }
+  };
 
-  const { state: sidebarState } = useSidebar()
-  const isCollapsed = sidebarState === "collapsed"
+  const { state: sidebarState } = useSidebar();
+  const isCollapsed = sidebarState === "collapsed";
 
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
-        dispatch(updateLoadingTrue())
+        dispatch(updateLoadingTrue());
         const response = await axios.get("/api/get-credits", {
           withCredentials: true,
-        })
-        console.log(response?.data?.Credits?.credits)
-        dispatch(updateCredits(response?.data?.Credits?.credits))
-        dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot))
-        dispatch(updateCoverSlot(response?.data?.Credits?.coverslot))
+        });
+        console.log(response?.data?.Credits?.credits);
+        dispatch(updateCredits(response?.data?.Credits?.credits));
+        dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
+        dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
       } catch (error) {
-        console.log(error)
+        console.log(error);
         toast({
           title: "Failed to Load Credits",
           description: "Unable to fetch your credits. Please try again.",
           variant: "destructive",
-        })
+        });
       } finally {
-        dispatch(updateLoadingFalse())
+        dispatch(updateLoadingFalse());
       }
-    })()
-  }, [dispatch, toast])
+    })();
+  }, [dispatch, toast]);
 
   return (
     <TooltipProvider>
@@ -94,7 +113,9 @@ export function AppSidebar({ session }: { session: Session }) {
             {!isCollapsed && (
               <Link href="/" className="flex items-center gap-2 font-semibold">
                 <span className="sm:block text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
-                  <span className="text-zinc-500 dark:text-zinc-400">resume</span>
+                  <span className="text-zinc-500 dark:text-zinc-400">
+                    resume
+                  </span>
                   <span className="font-bold">tweaker</span>
                 </span>
               </Link>
@@ -109,7 +130,11 @@ export function AppSidebar({ session }: { session: Session }) {
               <SidebarMenu>
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton isActive={item.url === pathname} tooltip={item.title} asChild>
+                    <SidebarMenuButton
+                      isActive={item.url === pathname}
+                      tooltip={item.title}
+                      asChild
+                    >
                       <a href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
@@ -122,7 +147,9 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-          className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"}`}
+          className={`p-3 bg-background/80 rounded-md ${
+            isCollapsed && "flex items-center justify-center"
+          }`}
         >
           <Tooltip>
             <TooltipTrigger asChild>
@@ -132,7 +159,9 @@ export function AppSidebar({ session }: { session: Session }) {
                 </div>
               </div>
             </TooltipTrigger>
-            {isCollapsed && <TooltipContent side="right">Settings</TooltipContent>}
+            {isCollapsed && (
+              <TooltipContent side="right">Settings</TooltipContent>
+            )}
           </Tooltip>
           <Separator />
           {session?.user && (
@@ -142,18 +171,25 @@ export function AppSidebar({ session }: { session: Session }) {
                   <SignOutButton isCollapsed={isCollapsed} />
                 </div>
               </TooltipTrigger>
-              {isCollapsed && <TooltipContent side="right">Logout</TooltipContent>}
+              {isCollapsed && (
+                <TooltipContent side="right">Logout</TooltipContent>
+              )}
             </Tooltip>
           )}
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className={`w-full ${!isCollapsed && "justify-start"}`}>
+                  <Button
+                    variant="outline"
+                    className={`w-full ${!isCollapsed && "justify-start"}`}
+                  >
                     {theme === "light" && <Sun className="h-4 w-4" />}
                     {theme === "dark" && <Moon className="h-4 w-4" />}
                     {theme === "system" && <Laptop className="h-4 w-4" />}
-                    {!isCollapsed && <span className="ml-2 capitalize">{theme} Theme</span>}
+                    {!isCollapsed && (
+                      <span className="ml-2 capitalize">{theme} Theme</span>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-[200px]">
@@ -172,7 +208,9 @@ export function AppSidebar({ session }: { session: Session }) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </TooltipTrigger>
-            {isCollapsed && <TooltipContent side="right">Change Theme</TooltipContent>}
+            {isCollapsed && (
+              <TooltipContent side="right">Change Theme</TooltipContent>
+            )}
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -193,18 +231,23 @@ export function AppSidebar({ session }: { session: Session }) {
                         )}
                       </div>
                       {!isCollapsed && (
-                        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{credits.used}</span>
+                        <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                          {credits.used}
+                        </span>
                       )}
                     </div>
                   </>
                 )}
               </div>
             </TooltipTrigger>
-            {isCollapsed && <TooltipContent side="right">Credits: {credits.used} avl</TooltipContent>}
+            {isCollapsed && (
+              <TooltipContent side="right">
+                Credits: {credits.used} avl
+              </TooltipContent>
+            )}
           </Tooltip>
         </SidebarFooter>
       </Sidebar>
     </TooltipProvider>
-  )
+  );
 }
-

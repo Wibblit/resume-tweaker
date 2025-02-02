@@ -25,7 +25,7 @@ import {
   Loader,
 } from "lucide-react";
 import { Session } from "next-auth";
-import { SignOutButton } from "./SignOutButton";
+import { SignOutButton } from "../SignOutButton";
 import { useAppSelector } from "@/hooks/hooks";
 import { useEffect, useState } from "react";
 import {
@@ -38,6 +38,8 @@ import {
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useAppDispatch } from "@/hooks/hooks";
+import { Separator } from "../ui/separator";
+import { SettingsDialog } from "./settings/settings-dialog";
 
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
@@ -125,14 +127,24 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
-        {session?.user && <SignOutButton isCollapsed />}
+        <div>
+          <div className={"flex items-center justify-center w-full"}>
+            <SettingsDialog isCollapsed={false} />
+          </div>
+        </div>
+        <Separator />
+        {session?.user && (
+          <div>
+            <SignOutButton />
+          </div>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="w-full justify-start">
-              {theme === "light" && <Sun className="mr-2 h-4 w-4" />}
-              {theme === "dark" && <Moon className="mr-2 h-4 w-4" />}
-              {theme === "system" && <Laptop className="mr-2 h-4 w-4" />}
-              <span className="capitalize">{theme} Theme</span>
+              {theme === "light" && <Sun className="h-4 w-4" />}
+              {theme === "dark" && <Moon className="h-4 w-4" />}
+              {theme === "system" && <Laptop className="h-4 w-4" />}
+              <span className="ml-2 capitalize">{theme} Theme</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">
@@ -150,29 +162,23 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <div className="space-y-2">
+        <div>
           {loading ? (
             <div className="flex items-center justify-center">
               <Loader className="animate-spin h-4 w-4" />
             </div>
           ) : (
-            <>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
-                  <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                    Credits
-                  </span>
-                </div>
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center space-x-2">
+                <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  {credits.used}/{credits.total}
+                  Credits Available
                 </span>
               </div>
-              <Progress
-                value={(credits.used / credits.total) * 100}
-                className="h-2"
-              />
-            </>
+              <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {credits.used}
+              </span>
+            </div>
           )}
         </div>
       </div>

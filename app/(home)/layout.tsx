@@ -1,4 +1,4 @@
-import { MobileSideBar } from "@/components/MobileSideBar";
+import { MobileSideBar } from "@/components/Sidebar/MobileSideBar";
 // import SidebarContent from "@/components/SideBar";
 // import { auth } from "@/auth";
 

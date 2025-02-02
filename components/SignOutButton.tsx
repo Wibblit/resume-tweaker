@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 
 interface SignOutButtonProps {
-  isCollapsed: boolean
+  isCollapsed?: boolean
 }
 
 export function SignOutButton({ isCollapsed }: SignOutButtonProps) {
