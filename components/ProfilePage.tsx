@@ -42,6 +42,9 @@ import { ErrorToastHandler } from "@/components/ErrorToastHandler";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { PaymentHistoryModal } from "./payment-history-model";
+import Image from "next/image";
+import axios from "axios";
+import { updateProfileImage } from "@/slices/profileSlice";
 
 export default function Profile({ profData }: { profData: ResumeData }) {
   const dispatch = useAppDispatch();
@@ -55,8 +58,10 @@ export default function Profile({ profData }: { profData: ResumeData }) {
   const [isLoading, setIsLoading] = useState(true);
   const [urlErrors, setUrlErrors] = useState<{ [key: string]: string }>({});
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
+  const [isfileChanged, setIsFileChanged] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,6 +78,20 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     };
     fetchData();
   }, []); // Run once on mount by leaving the dependency array empty
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setIsChanged(true);
+      setIsFileChanged(true);
+    }
+  };
 
   useEffect(() => {
     const hasChanges =
@@ -178,6 +197,8 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     });
     return newEntry;
   };
+
+  console.log(imagePreview);
 
   const addEntry = (section: keyof ResumeData) => {
     const updatedProfileData = { ...profileData };
@@ -298,6 +319,32 @@ export default function Profile({ profData }: { profData: ResumeData }) {
   const handleSaveChanges = async () => {
     setIsSaving(true);
     try {
+      if (isfileChanged) {
+        if (!imageFile) {
+          toast({
+            title: "Error",
+            description: "Cannot find the image",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        console.log(imageFile);
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+        const response = await axios.post("/api/profile-file-ops", formData);
+        console.log(response.data.url)
+        dispatch(updateProfileImage(response.data.url)); // Store the uploaded image URL
+        toast({
+          title: "Success",
+          description: "Profile image uploaded successfully",
+        });
+        setIsFileChanged(false)
+      }
+
       //@ts-ignore
       const result = await updateProfiles(profileData);
       if (result.status === 429) {
@@ -334,11 +381,6 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleUpgradeCredits = () => {
-    console.log("Upgrading credits");
-    // Implement credit upgrade logic here
   };
 
   const renderEntryFields = (
@@ -412,39 +454,33 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                 </div>
               ) : field === "picture" ? (
                 <div className="flex-col items-center justify-center">
-                  {profileData?.basics && profileData?.basics[0]?.picture && (
+                  {imagePreview ? (
                     <div className="inline-block relative my-2">
                       <Trash2
                         onClick={DeleteProfilePicture}
                         className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer"
                       />
-                      <Base64Image
-                        base64String={profileData?.basics[0]?.picture}
-                        width={150}
-                        height={150}
-                        alt={profileData?.basics[0].name}
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{ width: 200, height: 200 }}
                       />
                     </div>
+                  ) : (
+                    profileData?.basics &&
+                    profileData?.basics[0]?.picture && (
+                      <div className="inline-block relative my-2">
+                        <Trash2
+                          onClick={DeleteProfilePicture}
+                          className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer"
+                        />
+                       <img src={profileData?.basics[0]?.picture} alt={profileData?.basics[0]?.picture} />
+                      </div>
+                    )
                   )}
                   <Input
                     id={`${field}-${entry.id}`}
-                    // onChange={(e) => {
-                    //   const file = e.target.files?.[0];
-                    //   if (file) {
-                    //     updateEntry(section, entry.id, field, file);
-                    //   }
-                    // }}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          const base64String = reader.result as string;
-                          updateEntry(section, entry.id, field, base64String); // Pass base64 string
-                        };
-                        reader.readAsDataURL(file); // This will encode the file as base64
-                      }
-                    }}
+                    onChange={handleFileChange}
                     type="file"
                     accept="image/*"
                   />
@@ -617,8 +653,8 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                 </CardDescription>
               </CardHeader>
               <Button
-                  variant="ghost"
-                  className="m-5"
+                variant="ghost"
+                className="m-5"
                 size="icon"
                 onClick={() => setIsModalOpen(true)}
               >

@@ -12,6 +12,7 @@
   "dependencies": {
     "@ai-sdk/google": "^0.0.55",
     "@auth/prisma-adapter": "^2.5.3",
+    "@aws-sdk/client-s3": "^3.740.0",
     "@diffusionstudio/vits-web": "^1.0.3",
     "@farscrl/tiptap-extension-spellchecker": "^1.0.6",
     "@google/generative-ai": "^0.21.0",
@@ -79,6 +80,7 @@
     "lucide-react": "^0.439.0",
     "mathjax-full": "^3.2.2",
     "microphone-stream": "^6.0.1",
+    "multer": "^1.4.5-lts.1",
     "next": "^14.2.13",
     "next-auth": "^5.0.0-beta.22",
     "next-themes": "^0.3.0",
@@ -116,6 +118,7 @@
     "@types/formidable": "^3.4.5",
     "@types/hoist-non-react-statics": "^3.3.5",
     "@types/lodash": "^4.17.12",
+    "@types/multer": "^1.4.12",
     "@types/node": "^20.16.10",
     "@types/prop-types": "^15.7.12",
     "@types/raf": "^3.4.3",

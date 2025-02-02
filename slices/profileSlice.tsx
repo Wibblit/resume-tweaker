@@ -144,6 +144,9 @@ const profileSlice = createSlice({
     Reset() {
       return { ...initialState };
     },
+    updateProfileImage(state, action) {
+      if (state.basics) state.basics[0].picture = action.payload;
+    },
   },
 });
 
@@ -152,5 +155,6 @@ export const {
   Reset,
   setFullProfileData,
   updatePartialProfileData,
+  updateProfileImage
 } = profileSlice.actions;
 export default profileSlice.reducer;
