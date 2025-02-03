@@ -149,8 +149,8 @@ export default function Pricing() {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
-                    <Star className="w-4 h-4" /> Most Popular
+                  <span className="bg-primary text-primary-foreground text-sm font-medium md:px-3 px-2 py-1 rounded-full flex items-center gap-1">
+                    <Star className="w-4 h-4 fill-background" /> <span className="text-nowrap">Most Popular</span>
                   </span>
                 </div>
               )}
@@ -158,7 +158,7 @@ export default function Pricing() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>{plan.name}</span>
-                  <Sparkles className="w-5 h-5 text-primary" />
+                  <Sparkles className="w-5 h-5" />
                 </CardTitle>
               </CardHeader>
 

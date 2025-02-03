@@ -10,11 +10,11 @@ import Footer from "@/components/LandingPage/Footer";
 import { GoogleAnalytics } from "@next/third-parties/google"
 
 export const metadata: Metadata = {
-  metadataBase: new URL(`${process.env.NEXT_PUBLIC_BASE_URL}`),
   title: {
     default: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
     template: "%s | ResumeTweaker",
   },
+  metadataBase: new URL("https://resumetweaker.wibblit.com/"),
   description:
     "Optimize your job search with AI-powered resume building and reviews, cover letter building, and interview prep. Get professional tools for every step of your application process with ResumeTweaker",
   openGraph: {
