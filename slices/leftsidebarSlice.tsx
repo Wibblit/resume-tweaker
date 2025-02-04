@@ -144,7 +144,7 @@ const leftsidebarSlice = createSlice({
     },
     DeleteCustomSection(state, action: PayloadAction<string>) {
       const sectionName = action.payload.toLowerCase();
-      console.log(sectionName)
+      console.log(sectionName);
       //@ts-ignore
       const { [sectionName]: deletedSection, ...restState } = state;
       return restState as ResumeData;
@@ -164,6 +164,9 @@ const leftsidebarSlice = createSlice({
       }
       return state;
     },
+    updateResumeImage(state, action) {
+      if (state.basics) state.basics[0].picture = action.payload;
+    },
   },
 });
 
@@ -173,6 +176,7 @@ export const {
   AddCustomSection,
   DeleteCustomSection,
   RenameCustomSection,
+  updateResumeImage
 } = leftsidebarSlice.actions;
 
 export default leftsidebarSlice.reducer;

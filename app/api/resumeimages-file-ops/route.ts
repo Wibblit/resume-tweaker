@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const url = await uploadFileToR2({
       file: file,
       //@ts-ignore
-      bucketName: process.env.R2_BUCKET_PROFILE,
+      bucketName: process.env.R2_BUCKET_RESUME,
     });
 
     return NextResponse.json(

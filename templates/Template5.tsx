@@ -244,11 +244,11 @@ const Header: React.FC<{
         </div>
       </div>
       {basics.picture ? (
-        <Base64Image
-          base64String={basics?.picture}
+        <img
+          src={basics?.picture}
+          alt={basics?.name}
           width={128}
           height={128}
-          alt={basics?.name}
         />
       ) : (
         <Picture

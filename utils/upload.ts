@@ -10,8 +10,6 @@ export async function uploadFileToR2({
   file,
   bucketName,
 }: uploadFileToR2): Promise<string> {
-  console.log("You got me", bucketName, file);
-
   if (!file) {
     throw new Error("No file provided or invalid file type");
   }
@@ -30,5 +28,5 @@ export async function uploadFileToR2({
 
   await r2Client.send(command);
 
-  return `https://${process.env.R2_ACCOUNT_ID}.${bucketName}.r2.cloudflarestorage.com/${uniqueFileName}`;
+  return `https://cdnresumetweaker.wibblit.com/${bucketName}/${uniqueFileName}`;
 }

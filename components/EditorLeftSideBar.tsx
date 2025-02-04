@@ -41,6 +41,7 @@ import {
   RotateCcw,
   Edit,
   Eraser,
+  Loader,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -64,16 +65,19 @@ import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { Skill, URL, ResumeData, ResumeSection } from "@/types/types";
 import { RichInput } from "./TextEditor";
 import { useMediaQuery } from "react-responsive";
-import { CustomDatePicker } from "@/components/DatePicker"
+import { CustomDatePicker } from "@/components/DatePicker";
 import {
   UpdateLeftBarData,
   Reset,
   AddCustomSection,
   DeleteCustomSection,
   RenameCustomSection,
+  updateResumeImage,
 } from "@/slices/leftsidebarSlice";
 import Base64Image from "./base64toPhoto";
 import { Trash } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface LeftSideBarProps {
   activeSection: keyof ResumeData | string;
@@ -105,6 +109,54 @@ export default function LeftSideBar({
   const sections = useAppSelector((state) => state.rightsidebar?.sections);
   const [isValid, setisValid] = useState<boolean>(true);
   const [isRenameValid, setisRenameValid] = useState<boolean>(true);
+  const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsUploading(true);
+    const file = e.target.files?.[0];
+    if (!file) {
+      toast({
+        title: "Error",
+        description: "Cannot find the image",
+        variant: "destructive",
+      });
+      setIsUploading(false)
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      if (resumeData.basics) {
+        let prev = resumeData.basics[0].picture;
+        const response = await axios.post(
+          "/api/resumeimages-file-ops",
+          formData
+        );
+        dispatch(updateResumeImage(response?.data?.url));
+        if (prev && profileData.basics) {
+           if (prev !== profileData.basics[0].picture) {
+             await axios.delete(
+               `/api/profile-file-ops?file=${encodeURIComponent(prev)}`
+             );
+           }
+        }
+       
+        toast({
+          title: "Success",
+          description: "Image upload success",
+        });
+      }
+      setIsUploading(false);
+    } catch (error) {
+      setIsUploading(false);
+      toast({
+        title: "Error",
+        description: "Cannot upload the image",
+        variant: "destructive",
+      });
+    }
+  };
 
   const defaultSections: ResumeSection[] = [
     {
@@ -289,21 +341,38 @@ export default function LeftSideBar({
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
-  const DeleteProfilePicture = () => {
-    const updatedResumeData = {
-      ...resumeData,
-      basics: resumeData.basics?.length
-        ? [
-            { ...resumeData.basics[0], picture: "" },
-            ...resumeData.basics.slice(1),
-          ]
-        : [],
-    };
+  const DeleteProfilePicture = async () => {
+    try {
+      setIsUploading(true);
 
-    console.log(updatedResumeData);
+      if (profileData.basics && resumeData.basics) {
+        if (profileData.basics[0].picture === resumeData.basics[0].picture) {
+          dispatch(updateResumeImage(undefined));
+          setIsUploading(false);
+          return;
+        }
+      }
 
-    if (updatedResumeData.basics) {
-      dispatch(UpdateLeftBarData(updatedResumeData));
+      if (resumeData.basics && resumeData.basics[0].picture) {
+        await axios.delete(
+          `/api/resumeimages-file-ops?file=${encodeURIComponent(
+            resumeData.basics[0].picture
+          )}`
+        );
+      }
+      dispatch(updateResumeImage(undefined));
+      setIsUploading(false);
+      toast({
+        title: "Success",
+        description: "Image updated",
+      });
+    } catch (error) {
+      setIsUploading(false);
+      toast({
+        title: "Error",
+        description: "Cannot find the image",
+        variant: "destructive",
+      });
     }
   };
 
@@ -481,37 +550,35 @@ export default function LeftSideBar({
                   />
                 </div>
               ) : field === "picture" ? (
-                <div className="flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
                   {resumeData?.basics && resumeData?.basics[0]?.picture && (
                     <div className="relative flex items-center justify-center">
-                      <Trash
-                        onClick={DeleteProfilePicture}
-                        className="absolute right-0 -top-2 w-4 h-4 my-3 text-red-500 cursor-pointer"
-                      />
-                      <Base64Image
-                        base64String={resumeData?.basics[0]?.picture}
-                        width={150}
-                        height={150}
-                        alt={resumeData?.basics[0].name}
-                      />
+                      {isUploading ? (
+                        <Loader className="animate-spin w-6 h-6 text-gray-500" />
+                      ) : (
+                        <div className="relative flex items-center justify-center">
+                          <Trash
+                            onClick={DeleteProfilePicture}
+                            className="absolute right-0 -top-2 w-4 h-4 my-3 text-red-500 cursor-pointer"
+                          />
+                          <img
+                            src={resumeData?.basics[0].picture}
+                            alt="profile"
+                            width={128}
+                            height={128}
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
+
                   <Input
                     id={`${field}-${entry.id}`}
                     className="my-2"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          const base64String = reader.result as string;
-                          updateEntry(section, entry.id, field, base64String);
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
+                    onChange={handleFileChange}
                     type="file"
                     accept="image/*"
+                    disabled={isUploading}
                   />
                 </div>
               ) : field === "startDate" ||

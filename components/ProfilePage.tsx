@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { UpdateProfileData } from "@/slices/profileSlice";
+import { UpdateProfileData, updateProfileImage } from "@/slices/profileSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,9 +42,8 @@ import { ErrorToastHandler } from "@/components/ErrorToastHandler";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { PaymentHistoryModal } from "./payment-history-model";
-import Image from "next/image";
 import axios from "axios";
-import { updateProfileImage } from "@/slices/profileSlice";
+import Image from "next/image";
 
 export default function Profile({ profData }: { profData: ResumeData }) {
   const dispatch = useAppDispatch();
@@ -60,8 +59,11 @@ export default function Profile({ profData }: { profData: ResumeData }) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isImageChanged, setIsImageChanged] = useState<boolean>(false);
+  const [isDelete, setIsDelete] = useState(false);
+  const [isDeleteURL, setisDeleteURL] = useState<string | null>(null);
+
   const { toast } = useToast();
-  const [isfileChanged, setIsFileChanged] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,20 +80,6 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     };
     fetchData();
   }, []); // Run once on mount by leaving the dependency array empty
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-      setIsChanged(true);
-      setIsFileChanged(true);
-    }
-  };
 
   useEffect(() => {
     const hasChanges =
@@ -125,6 +113,22 @@ export default function Profile({ profData }: { profData: ResumeData }) {
 
     fetchCredits();
   }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    console.log("Iam  in here");
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setIsChanged(true);
+      setIsImageChanged(true);
+    }
+  };
+
   const resumeSections = [
     {
       id: "basics",
@@ -198,8 +202,6 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     return newEntry;
   };
 
-  console.log(imagePreview);
-
   const addEntry = (section: keyof ResumeData) => {
     const updatedProfileData = { ...profileData };
     updatedProfileData[section] = [
@@ -222,25 +224,17 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     dispatch(UpdateProfileData(updatedProfileData));
   };
 
-  const DeleteProfilePicture = () => {
-    // Clone `basics[0]` to make it mutable
-    const updatedProfileData = {
-      ...profileData,
-      basics:
-        profileData.basics && profileData.basics.length
-          ? [
-              { ...profileData.basics[0], picture: "" }, // Update the picture property
-              ...profileData.basics.slice(1), // Keep the rest of the basics intact
-            ]
-          : [], // Fallback to an empty array if `basics` is undefined or empty
-    };
-
-    console.log(updatedProfileData);
-
-    // Dispatch the updated resume data only if basics exist
-    if (updatedProfileData.basics.length > 0) {
-      dispatch(UpdateProfileData(updatedProfileData));
+  const DeleteProfilePicture = async () => {
+    if (profileData.basics && profileData.basics[0].picture) {
+      setisDeleteURL(profileData.basics[0].picture);
+      setIsDelete(true);
     }
+
+    dispatch(updateProfileImage(undefined));
+    setImageFile(null);
+
+    setImagePreview(null);
+    setIsChanged(true);
   };
 
   const deleteEntry = (section: keyof ResumeData, id: string) => {
@@ -319,34 +313,45 @@ export default function Profile({ profData }: { profData: ResumeData }) {
   const handleSaveChanges = async () => {
     setIsSaving(true);
     try {
-      if (isfileChanged) {
-        if (!imageFile) {
-          toast({
-            title: "Error",
-            description: "Cannot find the image",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append("file", imageFile);
-        console.log(imageFile);
-        for (let [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
-        const response = await axios.post("/api/profile-file-ops", formData);
-        console.log(response.data.url)
-        dispatch(updateProfileImage(response.data.url)); // Store the uploaded image URL
+      let updatedProfileData = JSON.parse(JSON.stringify(profileData));
+      if (!imageFile && !isDelete) {
         toast({
-          title: "Success",
-          description: "Profile image uploaded successfully",
+          title: "Error",
+          description: "Cannot find the image",
+          variant: "destructive",
         });
-        setIsFileChanged(false)
+        return;
+      }
+      if (isImageChanged) {
+        const formData = new FormData();
+        //@ts-ignore
+        formData.append("file", imageFile);
+        if (profileData.basics) {
+          let prev = profileData.basics[0].picture;
+          const response = await axios.post("/api/profile-file-ops", formData);
+          if (updatedProfileData.basics)
+            updatedProfileData.basics[0].picture = response?.data?.url;
+          console.log(updatedProfileData);
+          dispatch(updateProfileImage(response?.data?.url));
+          if (prev) {
+            await axios.delete(
+              `/api/profile-file-ops?file=${encodeURIComponent(prev)}`
+            );
+          }
+        }
+        setIsImageChanged(false);
+        setImageFile(null);
+        setImagePreview(null);
+      }
+
+      if (isDelete && isDeleteURL) {
+        await axios.delete(
+          `/api/profile-file-ops?file=${encodeURIComponent(isDeleteURL)}`
+        );
       }
 
       //@ts-ignore
-      const result = await updateProfiles(profileData);
+      const result = await updateProfiles(updatedProfileData);
       if (result.status === 429) {
         toast({
           title: "Whoa there! You've hit the rate limit.",
@@ -381,6 +386,11 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleUpgradeCredits = () => {
+    console.log("Upgrading credits");
+    // Implement credit upgrade logic here
   };
 
   const renderEntryFields = (
@@ -454,30 +464,34 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                 </div>
               ) : field === "picture" ? (
                 <div className="flex-col items-center justify-center">
-                  {imagePreview ? (
+                  {isImageChanged && imagePreview ? (
                     <div className="inline-block relative my-2">
                       <Trash2
                         onClick={DeleteProfilePicture}
                         className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer"
                       />
                       <img
-                        src={imagePreview}
+                        src={imagePreview ?? undefined}
                         alt="Preview"
-                        style={{ width: 200, height: 200 }}
+                        width={128}
+                        height={128}
                       />
                     </div>
-                  ) : (
-                    profileData?.basics &&
-                    profileData?.basics[0]?.picture && (
-                      <div className="inline-block relative my-2">
-                        <Trash2
-                          onClick={DeleteProfilePicture}
-                          className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer"
-                        />
-                       <img src={profileData?.basics[0]?.picture} alt={profileData?.basics[0]?.picture} />
-                      </div>
-                    )
-                  )}
+                  ) : profileData.basics?.[0]?.picture ? (
+                    <div className="inline-block relative my-2">
+                      <Trash2
+                        onClick={DeleteProfilePicture}
+                        className="w-4 h-4 text-red-500 -right-4 absolute -top-2 cursor-pointer"
+                      />
+                      <img
+                        src={profileData.basics[0].picture}
+                        width={128}
+                        height={128}
+                        alt="Profile Picture"
+                      />
+                    </div>
+                  ) : null}
+
                   <Input
                     id={`${field}-${entry.id}`}
                     onChange={handleFileChange}
@@ -638,7 +652,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     </Card>
   );
   return (
-    <div className="max-w-7xl mx-auto w-full">
+    <div className="max-w-7xl mx-auto w-full p-2">
       <h1 className="text-3xl font-bold mb-6">Profile</h1>
       {isCreditsLoading ? (
         <Skeleton className="h-[200px] w-full" />

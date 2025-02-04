@@ -152,7 +152,7 @@ const Header: React.FC<{
   return (
     <div style={styles.container} className="flex items-center gap-4">
       {basics.picture ? (
-        <Base64Image base64String={basics?.picture} width={128} height={128} alt={basics?.name} />
+        <img src={basics?.picture} alt={basics?.name} width={128} height={128} />
       ) : (
         <Picture
           src={
