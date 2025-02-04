@@ -17,7 +17,7 @@ export default function ThemeAwareLogo({ className }: { className?: string }) {
   return (
     <Image
       src={logoSrc}
-      alt="Resume Tweaker Logo"
+      alt="ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep"
       width={16}
       height={16}
       className={`lg:w-6 lg:h-6 xl:w-7 xl:h-7 ${
@@ -46,7 +46,7 @@ export const ThemeAwareWibblitLogo = ({
   return (
     <Image
       src={logoSrc}
-      alt="Resume Tweaker Logo"
+      alt="ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep"
       width={16}
       height={16}
       className={`lg:w-6 lg:h-6 xl:w-7 xl:h-7 ${

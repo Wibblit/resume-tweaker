@@ -140,7 +140,7 @@ export async function submitEmail(formData: FormData) {
 <body>
     <div class="container">
         <div class="header">
-            <img src="https://drive.google.com/uc?export=view&id=1NsuqIyx5Ost_uoQ0d4HaxsNJ1HEicApU" alt="Resume Tweaker Logo" class="logoimg">
+            <img src="https://drive.google.com/uc?export=view&id=1NsuqIyx5Ost_uoQ0d4HaxsNJ1HEicApU" alt="ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep" class="logoimg">
         </div>
         <div class="content">
             <h1>Welcome to the Resume Tweaker Waitlist!</h1>

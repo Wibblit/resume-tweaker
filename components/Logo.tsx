@@ -20,7 +20,7 @@ export default function Logo() {
   return (
     <Image
       src={logoSrc}
-      alt="Resume Tweaker Logo"
+      alt="ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep"
       width={185}
       height={185}
       priority={true}

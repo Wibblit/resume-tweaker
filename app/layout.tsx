@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     site: "@wibblitofficial",
-    title: "ResumeTweaker | AI Resume Review & Interview Prep",
+    title: "ResumeTweaker | Resume Builer, AI Resume Review & Interview Prep",
     description:
       "Use resumetweaker's AI to create and optimize your resume effortlessly.",
     images: [
