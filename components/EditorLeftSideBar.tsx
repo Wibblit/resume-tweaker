@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -42,6 +43,8 @@ import {
   Edit,
   Eraser,
   Loader,
+  Save,
+  LogOut,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -441,6 +444,8 @@ export default function LeftSideBar({
 
     return !!pattern.test(url);
   };
+
+    const router = useRouter();
 
   const handleUrlChange = (
     section: keyof ResumeData | string,
@@ -1033,6 +1038,7 @@ export default function LeftSideBar({
                   : "flex-row space-x-4 p-4 justify-center"
               }`}
             >
+
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -1097,6 +1103,7 @@ export default function LeftSideBar({
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+             
             </div>
           </div>
           <div

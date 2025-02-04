@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { redirect, useRouter } from "next/navigation";
+import { useAppDispatch } from "@/hooks/hooks";
 import {
   addPage,
   deletePage,
@@ -27,6 +27,9 @@ import {
   Settings,
   Import,
   Eraser,
+  X,
+  Save,
+  Loader,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -43,11 +46,12 @@ import Template6 from "@/templates/Template6";
 import Template7 from "@/templates/Template7";
 import Template8 from "@/templates/Template8";
 import Template9 from "@/templates/Template9";
-
+import { LogOut } from "lucide-react";
+import { saveResumeData } from "@/actions/saveResumeData";
+import { useToast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { Skeleton } from "./ui/skeleton";
-import { RootState } from "@/store";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -197,10 +201,11 @@ export default function ResumePages({
   setIsMobileMenuOpen,
   isLoading,
 }: ResumePagesProps) {
-  const dispatch = useDispatch();
-  const { pages, historyIndex, history } = useSelector(
-    (state: RootState) => state.page
+  const dispatch = useAppDispatch();
+  const { pages, historyIndex, history } = useAppSelector(
+    (state) => state.page
   );
+  const { toast } = useToast();
   const pageSectionOrders = useAppSelector(
     (state) => state.rightsidebar?.sectionOrder?.sections
   );
@@ -214,6 +219,40 @@ export default function ResumePages({
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
   const addButtonRef = useRef<HTMLButtonElement>(null);
+
+  const ResumeDatas = useAppSelector((state) => state.leftsidebar);
+  const resumeStyles = useAppSelector((state) => state.rightsidebar);
+  const { currResumeId } = useAppSelector((state) => state.currentResume);
+  const [saving, setSaving] = useState<boolean>(false);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      console.log(resumeStyles);
+      const res = await saveResumeData(ResumeDatas, resumeStyles, currResumeId);
+      if (res.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
+      console.log("Reusme Update suceess");
+      toast({
+        title: "Success",
+        description: "The resume has been saved successfully.",
+      });
+      setSaving(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save the resume.",
+        variant: "destructive",
+      });
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -377,6 +416,43 @@ export default function ResumePages({
                   <TooltipTrigger asChild>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="z-10">
+                          <LogOut className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure you want to exit?"
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Would you like to save your changes before exiting?
+                            Any unsaved changes will be lost.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogAction
+                            onClick={() => router.push("/home")}
+                          >
+                            Exit
+                          </AlertDialogAction>
+                          <AlertDialogAction onClick={handleSave}>
+                            Save
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Exit editor</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
                         <Import className="h-4 w-4" />
                       </AlertDialogTrigger>
                       <AlertDialogContent>
@@ -433,6 +509,27 @@ export default function ResumePages({
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="z-10"
+                      onClick={handleSave}
+                    >
+                      {saving ? (
+                        <Loader className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Save resume</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             <div className="flex items-center space-x-2">
@@ -465,8 +562,9 @@ export default function ResumePages({
               </div>
               <Separator
                 orientation="vertical"
-                className="h-4 bg-border mx-2 z-10"
+                className="h-4 w-[1px] bg-gray-300 mx-2 z-10 dark:bg-gray-400"
               />
+
               <span className="font-semibold text-xs text-foreground z-10">
                 {resumeName}
               </span>
@@ -474,7 +572,44 @@ export default function ResumePages({
           </div>
         </div>
       ) : (
-        <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
+        <div className="p-4 border-b border-border flex justify-between items-center bg-background">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="z-10">
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you sure you want to exit?"
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Would you like to save your changes before exiting? Any
+                        unsaved changes will be lost.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => router.push("/home")}>
+                        Exit
+                      </AlertDialogAction>
+                      <AlertDialogAction onClick={handleSave}>
+                        Save
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Exit editor</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <div className="flex items-center space-x-3">
             <div
               className="hover:cursor-pointer"
@@ -485,6 +620,28 @@ export default function ResumePages({
             <Separator orientation="vertical" className="h-6" />
             <span className="font-semibold text-lg">{resumeName}</span>
           </div>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="z-10"
+                  onClick={handleSave}
+                >
+                  {saving ? (
+                    <Loader className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save resume</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       )}
 

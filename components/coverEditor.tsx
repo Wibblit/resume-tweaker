@@ -31,7 +31,6 @@ export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<
     keyof CoverLetterState | string
   >("salutation");
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

@@ -11,6 +11,9 @@ import {
   RotateCcw,
   Menu,
   Settings,
+  LogOut,
+  Loader,
+  Save,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -26,6 +29,26 @@ import CoverTemplate2 from "@/templates/coverlettertemplates/covertemplate2";
 import CoverTemplate3 from "@/templates/coverlettertemplates/covertemplate3";
 import CoverTemplate4 from "@/templates/coverlettertemplates/covertemplate4";
 import CoverTemplate5 from "@/templates/coverlettertemplates/covertemplate5";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogCancel
+} from "./ui/alert-dialog";
+import { useRouter } from "next/navigation";
+import { savecoverData } from "@/actions/saveCoverLetterData";
+import { useToast } from "@/hooks/use-toast";
 
 interface Page {
   id: number;
@@ -162,8 +185,46 @@ export default function Component({
   const [isHovering, setIsHovering] = useState(false);
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const currCoverName = useAppSelector(
+    (state) => state?.currentCoverLetter?.currCoverName
+  );
+  const { toast } = useToast();
+  const CoverLetterData = useAppSelector((state) => state.coverletter);
+  const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
+  const { currCoverId } = useAppSelector((state) => state.currentCoverLetter);
+  const [saving, setSaving] = useState<boolean>(false);
 
-  const currCoverName = useAppSelector((state) => state?.currentCoverLetter?.currCoverName)
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const response = await savecoverData(
+        CoverLetterData,
+        ResumeAppearance,
+        currCoverId
+      );
+      if (response.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Success",
+        description: "The cover letter has been saved successfully.",
+      });
+      setSaving(false);
+    } catch (error) {
+      setSaving(false);
+      toast({
+        title: "Error",
+        description: "Failed to save the cover letter.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     const updatedPages = pages.map((page) => ({
@@ -248,10 +309,69 @@ export default function Component({
             </motion.div>
           </AnimatePresence>
         )}
-        <div className="flex items-center space-x-3">
-          <ThemeAwareLogo />
-          <Separator orientation="vertical" className="h-6" />
-          <span className="font-semibold text-lg">{currCoverName}'s Cover Letter</span>
+        <div className="flex items-center space-x-3 justify-center w-full md:justify-between">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="z-10">
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you sure you want to exit?"
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Would you like to save your changes before exiting? Any
+                        unsaved changes will be lost.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => router.push("/home")}>
+                        Exit
+                      </AlertDialogAction>
+                      <AlertDialogAction onClick={handleSave}>
+                        Save
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Exit editor</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div className="flex items-center justify-center">
+            <ThemeAwareLogo />
+            <Separator orientation="vertical" className="h-6 mx-2" />
+            <span className="font-semibold text-lg">{currCoverName}</span>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="z-10"
+                  onClick={handleSave}
+                >
+                  {saving ? (
+                    <Loader className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save resume</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         {isPhoneView && (
           <div>
@@ -259,7 +379,7 @@ export default function Component({
               variant="ghost"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
+              className="md:hidden fixed top-4 right-4 z-50"
             >
               <Settings className="h-6 w-4" />
             </Button>
