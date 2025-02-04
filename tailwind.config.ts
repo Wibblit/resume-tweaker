@@ -81,19 +81,40 @@ const config: Config = {
   					height: '0'
   				}
   			},
-			  "background-shine": {
+			"background-shine": {
 				"from": {
-				  "backgroundPosition": "0 0"
+					"backgroundPosition": "0 0"
 				},
 				"to": {
-				  "backgroundPosition": "-200% 0"
+					"backgroundPosition": "-200% 0"
 				}
-			  }
+			},
+			'fade-in-top-to-bottom': {
+				'0%': {
+					opacity: "0",
+					transform: 'translateY(-50px)',
+				},
+				'100%': {
+					opacity: "1",
+					transform: 'translateY(0)',
+				},
+			},'fade-out-bottom-to-top': {
+				'0%': {
+					opacity: "1",
+					transform: 'translateY(0px)',
+				},
+				'100%': {
+					opacity: "0",
+					transform: 'translateY(-50)',
+				},
+			},
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-			"background-shine": "background-shine 2s linear infinite"
+			"background-shine": "background-shine 2s linear infinite",
+			'fade-in-top-to-bottom': 'fade-in-top-to-bottom 0.3s ease-out forwards',
+			'fade-out-bottom-to-top': 'fade-out-bottom-to-top 0.3s ease-in forwards',
   		}
   	}
   },

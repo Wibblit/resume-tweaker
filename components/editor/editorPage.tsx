@@ -88,7 +88,7 @@ function EditorPage() {
         [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
         
       {/* Hero Section */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#dcdcdc,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#181818,transparent)] -z-20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-20"></div>
       <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden ">
         <div className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
