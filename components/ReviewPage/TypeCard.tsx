@@ -21,11 +21,7 @@ export function TypeCard({
 }: TypeCardProps) {
   return (
     <div className="relative p-8 rounded-2xl border bg-card hover-lift">
-      {isPro && (
-        <span className="absolute -top-3 -right-3 px-6 py-1.5 bg-gradient-to-br  text-primary-foreground from-zinc-700/80 via-zinc-400 to-zinc-700/80 dark:from-zinc-400/80 dark:via-zinc-200 dark:to-zinc-400/80 hover:opacity-90 transition-all duration-300 shadow-lg hover:shadow-xl rounded-full">
-          Pro
-        </span>
-      )}
+      
 
       <div className="mb-6">
         <span className="inline-block p-4 rounded-xl bg-primary/10">
