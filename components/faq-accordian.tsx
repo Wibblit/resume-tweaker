@@ -24,7 +24,7 @@ export default function FAQAccordion({
             value={`item-${index}`}
             className="border rounded-lg bg-card px-6"
           >
-            <AccordionTrigger className="text-lg font-medium text-card-foreground hover:no-underline">
+            <AccordionTrigger className="text-lg font-medium text-left text-card-foreground hover:no-underline">
               {faq.question}
             </AccordionTrigger>
             <AccordionContent className="text-muted-foreground">
