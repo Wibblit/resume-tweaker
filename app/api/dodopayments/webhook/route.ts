@@ -1,6 +1,7 @@
 import { Webhook } from "standardwebhooks";
 import { NextRequest, NextResponse } from "next/server";
 import { WebhookPayload } from "@/types/api-types";
+import { paymentUpdate } from "@/actions/payments/paymentUpdate";
 const webhook = new Webhook(process.env.NEXT_PUBLIC_DODO_WEBHOOK_KEY!);
 
 export async function POST(request: NextRequest) {
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     await webhook.verify(rawBody, webhookHeaders);
     const payload = JSON.parse(rawBody) as WebhookPayload;
-
+    console.log("Payload:", JSON.stringify(payload, null, 2));
     if (!payload.data?.customer?.email) {
       return NextResponse.json(
         { error: "Missing customer email in payload" },
@@ -27,7 +28,6 @@ export async function POST(request: NextRequest) {
     const email = payload.data.customer.email;
     if (
       payload.data.payload_type === "Payment" &&
-      // payload.type === "payment.succeeded" &&
       !payload.data.subscription_id
     ) {
       console.log(
@@ -35,9 +35,7 @@ export async function POST(request: NextRequest) {
         email,
         JSON.stringify(payload, null, 2)
       );
-      if (payload.type === "payment.succeeded") {
-        
-      }
+      const response = await paymentUpdate(payload);
     }
 
     return NextResponse.json(

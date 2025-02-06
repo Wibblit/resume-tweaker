@@ -3,6 +3,7 @@ import { prisma } from "@/prisma";
 import { auth } from "@/auth";
 import { cache } from "react";
 import { ResumeData } from "@/types/types";
+import { getPaymentStatus } from "@/actions/payments/getPaymentStatus";
 
 export async function generateStaticParams() {
   // Fetch the profile data for the authenticated user

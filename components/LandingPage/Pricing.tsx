@@ -1,15 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Sparkles, Star } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { countries } from "@/data/payments"
-import { ChevronsUpDown } from "lucide-react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { QuantityDialog } from "@/app/pricing/QuantityDialog"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Check, Sparkles, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { countries } from "@/data/payments";
+import { ChevronsUpDown } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { QuantityDialog } from "@/app/pricing/QuantityDialog";
+import { useSession } from "next-auth/react";
 
 const features = [
   "AI Resume Editor",
@@ -18,21 +35,25 @@ const features = [
   "JD-Tailored Review",
   "Comprehensive AI Interview",
   "Adaptive Interview Practice",
-]
+];
 
 interface CurrencySelectorProps {
-  value: string
-  onChange: (value: string) => void
+  value: string;
+  onChange: (value: string) => void;
   countries: Array<{
-    code: string
-    name: string
-    flag: string
-  }>
+    code: string;
+    name: string;
+    flag: string;
+  }>;
 }
 
-export function CurrencySelector({ value, onChange, countries }: CurrencySelectorProps) {
-  const [open, setOpen] = useState(false)
-  const selectedCurrency = countries.find((country) => country.code === value)
+export function CurrencySelector({
+  value,
+  onChange,
+  countries,
+}: CurrencySelectorProps) {
+  const [open, setOpen] = useState(false);
+  const selectedCurrency = countries.find((country) => country.code === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -47,7 +68,9 @@ export function CurrencySelector({ value, onChange, countries }: CurrencySelecto
             <span className="flex items-center gap-2">
               <span>{selectedCurrency.flag}</span>
               <span>{selectedCurrency.name}</span>
-              <span className="text-muted-foreground">({selectedCurrency.code})</span>
+              <span className="text-muted-foreground">
+                ({selectedCurrency.code})
+              </span>
             </span>
           ) : (
             "Select currency..."
@@ -65,15 +88,19 @@ export function CurrencySelector({ value, onChange, countries }: CurrencySelecto
                 key={currency.code}
                 value={`${currency.name} ${currency.code}`}
                 onSelect={() => {
-                  onChange(currency.code)
-                  setOpen(false)
+                  onChange(currency.code);
+                  setOpen(false);
                 }}
               >
                 <span className="flex items-center gap-2 w-full">
                   <span>{currency.flag}</span>
                   <span>{currency.name}</span>
-                  <span className="text-muted-foreground ml-auto">{currency.code}</span>
-                  {value === currency.code && <Check className="h-4 w-4 text-primary" />}
+                  <span className="text-muted-foreground ml-auto">
+                    {currency.code}
+                  </span>
+                  {value === currency.code && (
+                    <Check className="h-4 w-4 text-primary" />
+                  )}
                 </span>
               </CommandItem>
             ))}
@@ -81,27 +108,24 @@ export function CurrencySelector({ value, onChange, countries }: CurrencySelecto
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 interface Plan {
-  name: string
-  baseCredits: number
-  price: string
-  originalPrice?: number
-  gatewayFee?: number
-  tax?: number
-  effectivePrice?: number
-  popular: boolean
-  productId: string
+  name: string;
+  baseCredits: number;
+  price: string;
+  popular: boolean;
+  productId: string;
 }
 
 export default function Pricing() {
-  const router = useRouter()
-  const [currency, setCurrency] = useState("IN")
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
-  const [quantity, setQuantity] = useState(1)
+  const router = useRouter();
+  const [currency, setCurrency] = useState("IN");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const { data: session } = useSession();
 
   const plans: Plan[] = [
     {
@@ -115,10 +139,6 @@ export default function Pricing() {
       name: "Essential",
       baseCredits: 400,
       price: " ",
-      originalPrice: 599,
-      gatewayFee: 12.16,
-      tax: 82.44,
-      effectivePrice: 363.4,
       popular: true,
       productId: "",
     },
@@ -126,10 +146,7 @@ export default function Pricing() {
       name: "Power",
       baseCredits: 1000,
       price: " ",
-      originalPrice: 1499,
-      gatewayFee: 25.9,
-      tax: 206.1,
-      effectivePrice: 913,
+
       popular: false,
       productId: "",
     },
@@ -137,53 +154,61 @@ export default function Pricing() {
       name: "Super Saver",
       baseCredits: 2000,
       price: " ",
-      originalPrice: 2999,
-      gatewayFee: 48.8,
-      tax: 412.2,
-      effectivePrice: 1829,
       popular: false,
       productId: "",
     },
-  ]
+  ];
 
   const handleGetStarted = (plan: Plan) => {
-    setSelectedPlan(plan)
-    setIsDialogOpen(true)
-  }
+    setSelectedPlan(plan);
+    setIsDialogOpen(true);
+  };
 
   const handleConfirmQuantity = (newQuantity: number) => {
-    setQuantity(newQuantity)
+    setQuantity(newQuantity);
     if (selectedPlan) {
       router.push(
-        `https://test.checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=http://localhost:3000/home`,
-      )
+        `https://test.checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=http://localhost:3000/profile&email=${session?.user.email}&disableEmail=true`
+      );
     }
-  }
+  };
 
   const calculateTotalCredits = (plan: Plan) => {
-    return plan.baseCredits
-  }
+    return plan.baseCredits;
+  };
 
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold tracking-tight mb-4">Simple, Transparent Pricing</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            Simple, Transparent Pricing
+          </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Choose the perfect plan for your career growth. All plans include full access to our AI-powered tools and
-            are <span className="text-primary font-semibold">inclusive of all taxes</span>.
+            Choose the perfect plan for your career growth. All plans include
+            full access to our AI-powered tools and are{" "}
+            <span className="text-primary font-semibold">
+              inclusive of all taxes
+            </span>
+            .
           </p>
         </div>
 
         <div className="w-full flex justify-center mb-8">
-          <CurrencySelector value={currency} onChange={setCurrency} countries={countries} />
+          <CurrencySelector
+            value={currency}
+            onChange={setCurrency}
+            countries={countries}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col ${plan.popular ? "border-primary shadow-lg scale-105" : ""}`}
+              className={`relative flex flex-col ${
+                plan.popular ? "border-primary shadow-lg scale-105" : ""
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -239,7 +264,9 @@ export default function Pricing() {
             onClose={() => setIsDialogOpen(false)}
             onConfirm={handleConfirmQuantity}
             title={`Purchase ${selectedPlan.name} Credits`}
-            description={`Each ${selectedPlan.name} pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
+            description={`Each ${
+              selectedPlan.name
+            } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
             initialQuantity={1}
             maxQuantity={10}
             baseCredits={selectedPlan.baseCredits}
@@ -247,5 +274,5 @@ export default function Pricing() {
         )}
       </div>
     </div>
-  )
+  );
 }
