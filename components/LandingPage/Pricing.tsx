@@ -123,10 +123,10 @@ export default function Pricing() {
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Choose the perfect plan for your career growth. All plans include
-            full access to our AI-powered tools and are{" "}
+            {" "}
             <span className="text-primary font-semibold">
-              inclusive of all taxes
-            </span>
+            full access
+            </span> to our AI-powered tools
             .
           </p>
         </div>
