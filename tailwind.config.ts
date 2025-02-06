@@ -108,6 +108,22 @@ const config: Config = {
 					transform: 'translateY(-50)',
 				},
 			},
+			'marquee': {
+				'0%': { transform: 'translateX(0%)' },
+				'100%': { transform: 'translateX(-100%)' }
+			  },
+			  'marquee-reverse': {
+				'0%': { transform: 'translateX(-100%)' },
+				'100%': { transform: 'translateX(0%)' }
+			  },
+			  'marquee-vertical': {
+				'0%': { transform: 'translateY(0%)' },
+				'100%': { transform: 'translateY(-100%)' }
+			  },
+			  'marquee-vertical-reverse': {
+				'0%': { transform: 'translateY(-100%)' },
+				'100%': { transform: 'translateY(0%)' }
+			  }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
@@ -115,6 +131,10 @@ const config: Config = {
 			"background-shine": "background-shine 2s linear infinite",
 			'fade-in-top-to-bottom': 'fade-in-top-to-bottom 0.3s ease-out forwards',
 			'fade-out-bottom-to-top': 'fade-out-bottom-to-top 0.3s ease-in forwards',
+			'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
+        	'marquee-vertical-reverse': 'marquee-vertical-reverse var(--duration) linear infinite',
+        	'marquee': 'marquee var(--duration) linear infinite',
+        	'marquee-reverse': 'marquee-reverse var(--duration) linear infinite',
   		}
   	}
   },

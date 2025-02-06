@@ -10,6 +10,8 @@ import GetStartedSection from "@/components/LandingPage/GetStartedSection";
 import { Button } from "@/components/ui/button";
 import FAQAccordion from "@/components/faq-accordian";
 import Link from "next/link";
+import { ImageMarquee } from "@/components/ui/marquee";
+
 
 export const metadata: Metadata = {
   title: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
@@ -84,8 +86,8 @@ export default async function Home() {
           <Hero />
         </section>
         <section className="py-20 sm:py-24" id="templates">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <TemplatesSection />
+          <div className=" mx-auto px-0 sm:px-0 lg:px-8">
+            <ImageMarquee />
           </div>
         </section>
         </div>
