@@ -15,7 +15,7 @@ export const MobileSideBar = ({ session }: MobileSideBarProps) => {
 
   return (
     <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-      <SheetTrigger asChild>
+      <SheetTrigger className="mt-4 ml-4 flex items-center justify-center" asChild>
         <Button variant="outline" size="icon" className="md:hidden">
           <Menu className="h-6 w-6" />
           <span className="sr-only">Toggle sidebar</span>

@@ -396,10 +396,6 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     }
   };
 
-  const handleUpgradeCredits = () => {
-    console.log("Upgrading credits");
-    // Implement credit upgrade logic here
-  };
 
   const renderEntryFields = (
     section: keyof ResumeData,
@@ -666,45 +662,42 @@ export default function Profile({ profData }: { profData: ResumeData }) {
         <Skeleton className="h-[200px] w-full" />
       ) : (
         <>
-          <Card className="mb-6">
-            <div className="flex items-center justify-between">
-              <CardHeader>
-                <CardTitle>Credits</CardTitle>
-                <CardDescription>
-                  Your current credit balance and level
-                </CardDescription>
+          <Card className="w-full">
+            <div className="flex items-center justify-between p-6">
+              <CardHeader className="p-0">
+                <CardTitle className="text-2xl font-bold">Credits</CardTitle>
+                <CardDescription>Your current credit balance</CardDescription>
               </CardHeader>
               <Button
                 variant="ghost"
-                className="m-5"
                 size="icon"
                 onClick={() => setIsModalOpen(true)}
+                className="text-muted-foreground hover:text-foreground"
               >
-                <History className="h-4 w-4" />
+                <History className="h-5 w-5" />
                 <span className="sr-only">View payment history</span>
               </Button>
             </div>
 
-            <CardContent>
-              <Progress
-                value={(credits.current / credits.max) * 100}
-                className="mb-2"
-              />
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-muted-foreground">
-                  {credits.current} / {credits.max} credits
-                </p>
+            <CardContent className="pb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold">{credits.current}</span>
+                  <span className="text-lg text-muted-foreground">
+                    credits available
+                  </span>
+                </div>
+                <Link href="/pricing" className="w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    <CreditCard className="mr-2 h-5 w-5" />
+                    Buy Credits
+                  </Button>
+                </Link>
               </div>
-              <Link href="/pricing">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-4 py-4 px-6 dark:bg-white dark:text-black text-white bg-black"
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Buy Credits
-                </Button>
-              </Link>
             </CardContent>
           </Card>
           <PaymentHistoryModal
@@ -727,7 +720,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <div className="flex flex-wrap gap-4 justify-between items-center">
+              {/* <div className="flex flex-wrap gap-4 justify-between items-center">
                 <TabsList>
                   <TabsTrigger value="personal">Personal</TabsTrigger>
                   <TabsTrigger value="professional">Professional</TabsTrigger>
@@ -736,12 +729,31 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                 <Button
                   onClick={handleSaveChanges}
                   disabled={!isChanged || isSaving}
-                  className="bg-primary w-full md:w-auto text-primary-foreground hover:bg-primary/90 py-1"
+                  className="bg-primary w-full md:w-auto text-primary-foreground hover:bg-primary/90"
                 >
                   {isSaving ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                   ) : (
-                    <Save className="mr-2 h-4 w-4" />
+                    <Save className="mr-1 h-4 w-4" />
+                  )}
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div> */}
+              <div className="flex flex-wrap gap-4 justify-between items-center">
+                <TabsList className="w-full sm:w-auto flex justify-center sm:justify-start">
+                  <TabsTrigger value="personal">Personal</TabsTrigger>
+                  <TabsTrigger value="professional">Professional</TabsTrigger>
+                  <TabsTrigger value="additional">Additional</TabsTrigger>
+                </TabsList>
+                <Button
+                  onClick={handleSaveChanges}
+                  disabled={!isChanged || isSaving}
+                  className="bg-primary w-full sm:w-auto text-primary-foreground hover:bg-primary/90 flex items-center justify-center"
+                >
+                  {isSaving ? (
+                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="mr-1 h-4 w-4" />
                   )}
                   {isSaving ? "Saving..." : "Save Changes"}
                 </Button>

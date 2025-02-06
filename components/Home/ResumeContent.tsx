@@ -99,14 +99,14 @@ export default function ResumeContent({
 
                 <Button
                   onClick={handleBuyCredits}
-                  className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1 px-4 py-2 rounded-md shadow-sm text-sm min-w-[140px] justify-center"
+                  className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1 px-4 py-2 rounded-md shadow-sm text-sm w-1/2 md:min-w-[140px] justify-center"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span className="font-medium">Buy</span>
                   <Plus className="w-4 h-4" />
                 </Button>
 
-                <div className="flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[140px] justify-center">
+                <div className="flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm w-full md:min-w-[140px] justify-center mt-2 md:mt-0">
                   <Sparkles className="w-4 h-4 text-amber-600" />
                   <span className="font-medium text-amber-700">
                     {avaiLableCredits} Credits Available

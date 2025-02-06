@@ -110,7 +110,7 @@ export default function LetterContent({
                   <Plus className="w-4 h-4" />
                 </Button>
 
-                <div className="flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[140px] justify-center">
+                <div className="flex items-center gap-1 bg-amber-50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm w-full mt-2 md:min-w-[140px] justify-center">
                   <Sparkles className="w-4 h-4 text-amber-600" />
                   <span className="font-medium text-amber-700">
                     {avaiLableCredits} Credits Available
