@@ -1,42 +1,18 @@
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT NOT NULL,
-    "emailVerified" TIMESTAMP(3),
     "image" TEXT,
+    "provider" TEXT NOT NULL DEFAULT '',
+    "isOnboarded" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "accounts" (
-    "userId" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "provider" TEXT NOT NULL,
-    "providerAccountId" TEXT NOT NULL,
-    "refresh_token" TEXT,
-    "access_token" TEXT,
-    "expires_at" INTEGER,
-    "token_type" TEXT,
-    "scope" TEXT,
-    "id_token" TEXT,
-    "session_state" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "accounts_pkey" PRIMARY KEY ("provider","providerAccountId")
-);
-
--- CreateTable
-CREATE TABLE "sessions" (
-    "sessionToken" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    "expires" TIMESTAMP(3) NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL
 );
 
 -- CreateTable
@@ -66,7 +42,10 @@ CREATE TABLE "resume" (
     "publications" JSONB NOT NULL DEFAULT '[]',
     "certifications" JSONB NOT NULL DEFAULT '[]',
     "references" JSONB NOT NULL DEFAULT '[]',
+    "custom" JSONB NOT NULL DEFAULT '{}',
     "styles" JSONB NOT NULL DEFAULT '{}',
+    "createdOn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedOn" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "resume_pkey" PRIMARY KEY ("id")
 );
@@ -78,6 +57,7 @@ CREATE TABLE "coverletter" (
     "coverName" TEXT NOT NULL,
     "salutation" TEXT NOT NULL DEFAULT '',
     "date" TEXT NOT NULL DEFAULT '',
+    "senderInfo" TEXT NOT NULL DEFAULT '',
     "recipientInfo" TEXT NOT NULL DEFAULT '',
     "subject" TEXT NOT NULL DEFAULT '',
     "opening" TEXT NOT NULL DEFAULT '',
@@ -88,6 +68,8 @@ CREATE TABLE "coverletter" (
     "closing" TEXT NOT NULL DEFAULT '',
     "signOff" TEXT NOT NULL DEFAULT '',
     "styles" JSONB NOT NULL DEFAULT '{}',
+    "createdOn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedOn" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "coverletter_pkey" PRIMARY KEY ("id")
 );
@@ -136,11 +118,39 @@ CREATE TABLE "profile" (
     CONSTRAINT "profile_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+-- CreateTable
+CREATE TABLE "payment" (
+    "id" TEXT NOT NULL,
+    "paymentId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "productId" TEXT NOT NULL,
+    "productName" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "total" DECIMAL(10,2) NOT NULL,
+    "tax" DECIMAL(10,2) NOT NULL,
+    "currency" TEXT NOT NULL,
+    "status" "PaymentStatus" NOT NULL,
+    "credits" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "payment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "userassets" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "credits" INTEGER NOT NULL DEFAULT 0,
+    "resumeslot" INTEGER NOT NULL DEFAULT 1,
+    "coverslot" INTEGER NOT NULL DEFAULT 1,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "userassets_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sessions_sessionToken_key" ON "sessions"("sessionToken");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "blog_slug_key" ON "blog"("slug");
@@ -148,11 +158,11 @@ CREATE UNIQUE INDEX "blog_slug_key" ON "blog"("slug");
 -- CreateIndex
 CREATE UNIQUE INDEX "profile_userId_key" ON "profile"("userId");
 
--- AddForeignKey
-ALTER TABLE "accounts" ADD CONSTRAINT "accounts_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "payment_paymentId_key" ON "payment"("paymentId");
 
--- AddForeignKey
-ALTER TABLE "sessions" ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "userassets_userId_key" ON "userassets"("userId");
 
 -- AddForeignKey
 ALTER TABLE "resume" ADD CONSTRAINT "resume_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -162,3 +172,9 @@ ALTER TABLE "coverletter" ADD CONSTRAINT "coverletter_userId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "profile" ADD CONSTRAINT "profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "payment" ADD CONSTRAINT "payment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "userassets" ADD CONSTRAINT "userassets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

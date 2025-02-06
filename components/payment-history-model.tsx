@@ -21,9 +21,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 interface Payment {
+  paymentId: string;
+  productName: string;
   id: string;
-  transactionId: string;
-  priceName: string;
   quantity: number;
   total: number;
   currency: string;
@@ -156,7 +156,7 @@ export function PaymentHistoryModal({
                     Bundle Name
                   </TableHead>
                   <TableHead className="w-[25%] md:w-[25%]">
-                    Transaction ID
+                    Payment ID
                   </TableHead>
                   <TableHead className="w-[10%] md:w-[10%]">Quantity</TableHead>
                   <TableHead className="w-[15%] md:w-[15%]">Total</TableHead>
@@ -171,17 +171,17 @@ export function PaymentHistoryModal({
                 {payments.map((payment) => (
                   <TableRow key={payment.id}>
                     <TableCell className="text-xs sm:text-sm md:text-base">
-                      {payment.priceName}
+                      {payment.productName}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <span className="truncate max-w-[80px] md:max-w-[150px] lg:max-w-[200px] text-xs sm:text-sm md:text-base">
-                          {payment.transactionId}
+                          {payment.paymentId}
                         </span>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => copyToClipboard(payment.transactionId)}
+                          onClick={() => copyToClipboard(payment.paymentId)}
                           className="h-6 w-6"
                         >
                           <Copy className="h-3 w-3" />

@@ -172,27 +172,21 @@ model Profile {
 
 model Payment {
   id             String   @id @default(cuid()) // Payment record ID
-  transactionId  String   @unique             // Unique transaction identifier
+  paymentId  String   @unique             // Unique transaction identifier
   userId         String                         // Foreign key to User
   user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  priceId        String                         // Identifier for purchased item
-  priceName      String                         // Name of the purchased item
+  productId        String                         // Identifier for purchased item
+  productName      String                         // Name of the purchased item
   quantity       Int                            // Quantity of the purchased item
   total          Decimal   @db.Decimal(10, 2)  // Total payment amount
   tax            Decimal   @db.Decimal(10, 2)  // Tax amount
   currency       String                         // Currency code (e.g., "INR")
-  status         PaymentStatus                  // Enum for payment status
+  status         String                  // Enum for payment status
   credits        Int
   createdAt      DateTime  @default(now())      // Payment initiation timestamp
   updatedAt      DateTime  @updatedAt          // Last updated timestamp
 
   @@map("payment")
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
 }
 
 model UserAssets {

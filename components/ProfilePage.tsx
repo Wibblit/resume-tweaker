@@ -45,7 +45,7 @@ import { PaymentHistoryModal } from "./payment-history-model";
 import axios from "axios";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { getPaymentStatus } from "@/actions/payments/getPaymentStatus";
+// import { getPaymentStatus } from "@/actions/payments/getPaymentStatus";
 
 export default function Profile({ profData }: { profData: ResumeData }) {
   const dispatch = useAppDispatch();
@@ -95,11 +95,11 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     const fetchCredits = async () => {
       setIsCreditsLoading(true);
       try {
-        const paymentId = searchParams.get("payment_id");
-        console.log("searcheParams, paymentId", searchParams, paymentId)
-        if (paymentId) {
-          const response = await getPaymentStatus(paymentId);
-        }
+        // const paymentId = searchParams.get("payment_id");
+        // console.log("searcheParams, paymentId", searchParams, paymentId)
+        // if (paymentId) {
+        //   const response = await getPaymentStatus(paymentId);
+        // }
         const response = await fetch(`/api/get-credits`);
         if (response.status === 429) {
           toast({
