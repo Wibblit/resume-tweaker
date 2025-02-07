@@ -4,6 +4,8 @@ import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData, Basics, Profile } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
+import { formatDate } from "@/utils/formatDate";
+import Base64Image from "@/components/base64toPhoto";
 
 interface TemplateProps {
   content: ResumeData;
@@ -12,6 +14,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -90,7 +93,7 @@ const Section: React.FC<{
       >
         {title}
       </h4>
-      <div>{children}</div>
+      <div className="text-black">{children}</div>
     </section>
   );
 };
@@ -140,7 +143,7 @@ const Profiles: React.FC<{
       style={styles.container}
       className="flex flex-wrap justify-center space-x-4 py-2"
     >
-      {profiles.map((profile, index) => (
+      {Array.isArray(profiles) && profiles.map((profile, index) => (
         <div className="flex gap-2 items-center" key={index}>
           {isIcons && profile.url.href !== "" && (
             <SocialIcon
@@ -240,14 +243,23 @@ const Header: React.FC<{
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
       </div>
-      <Picture
-        src={
-          typeof basics?.picture === "string" && basics?.picture !== ""
-            ? basics?.picture
-            : "/placeholder-user.jpeg"
-        }
-        alt={basics?.name || "Profile picture"}
-      />
+      {basics.picture ? (
+        <img
+          src={basics?.picture}
+          alt={basics?.name}
+          width={128}
+          height={128}
+        />
+      ) : (
+        <Picture
+          src={
+            typeof basics?.picture === "string" && basics?.picture !== ""
+              ? basics?.picture
+              : "/placeholder-user.jpeg"
+          }
+          alt={basics?.name || "Profile picture"}
+        />
+      )}
     </div>
   );
 };
@@ -259,12 +271,13 @@ const Template5: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
   const scaleFactor = fontSize / 16;
-
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles = {
     container: {
       fontFamily: fontFamily,
@@ -310,11 +323,6 @@ const Template5: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              {/* <div
-              dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-              style={sectionStyle}
-              className="text-justify"
-            /> */}
               <HTMLViewer
                 lineHeight={lineHeight}
                 content={content.summary[0].content}
@@ -342,7 +350,9 @@ const Template5: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{pub.date}</div>
+                        <div className="font-bold">
+                          {pub.date && formatDate(pub.date, datetype)}
+                        </div>
                       </div>
                     </div>
                     <div>{pub.publisher}</div>
@@ -372,9 +382,11 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${vol.startDate} ${
-                          vol.endDate && " - "
-                        } ${vol.endDate}`}</div>
+                        <div className="font-bold">
+                          {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
+                          {vol.endDate && " - "}{" "}
+                          {vol.endDate && formatDate(vol.endDate, datetype)}
+                        </div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -423,15 +435,18 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{award.awarder}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{award.date}</div>
+                        <div className="font-bold">
+                          {award.date && formatDate(award.date, datetype)}
+                        </div>
                       </div>
                     </div>
-                    {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={award.summary}
-                      />
-                    )}
+                    {award.summary &&
+                      !isEmptyString(award.summary) && (
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={award.summary}
+                        />
+                      )}
                   </div>
                 ))}
               </div>
@@ -456,16 +471,15 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div>{`${exp.startDate} - ${exp.endDate}`}</div>
+                        <div>
+                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
+                          {exp.endDate && " - "}{" "}
+                          {exp.endDate && formatDate(exp.endDate, datetype)}
+                        </div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
                     {exp.summary && !isEmptyString(exp.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
                       <HTMLViewer
                         lineHeight={lineHeight}
                         content={exp.summary}
@@ -480,15 +494,14 @@ const Template5: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section
               title="Skills"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
               <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
+                {content.skills.map((category, index) => (
                   <div key={index} className="space-y-2">
                     <div className="font-bold">{category.name}</div>
                     <div>
@@ -541,7 +554,11 @@ const Template5: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div>{`${edu.startDate} - ${edu.endDate}`}</div>
+                      <div>
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}
+                      </div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -568,7 +585,7 @@ const Template5: React.FC<TemplateProps> = ({
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div>{cert.date}</div>
+                    <div>{cert.date && formatDate(cert.date, datetype)} </div>
                   </div>
                 ))}
               </div>
@@ -595,15 +612,16 @@ const Template5: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div>{`${project.startDate} - ${project.endDate}`}</div>
+                        <div>
+                          {project.startDate &&
+                            formatDate(project.startDate, datetype)}{" "}
+                          {project.endDate && " - "}{" "}
+                          {project.endDate &&
+                            formatDate(project.endDate, datetype)}
+                        </div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
                       <HTMLViewer
                         lineHeight={lineHeight}
                         content={project.summary}
@@ -616,7 +634,87 @@ const Template5: React.FC<TemplateProps> = ({
           )
         );
       default:
-        return null;
+         if (
+           !content ||
+           //@ts-ignore
+           !Array.isArray(content[sectionName]) ||
+           //@ts-ignore
+           !content[sectionName]?.length
+         )
+           return null;
+        return (
+          <div className="mb-6">
+            <h2>{sectionName}</h2>
+            {
+              //@ts-ignore
+              content[sectionName] &&
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex flex-col justify-between">
+                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                      <div className="flex items-center justify-between">
+                        {/* Left Section: Name, Location, Link */}
+                        <div className="flex items-center gap-2">
+                          {/* Name */}
+                          {sec.name && <h3>{sec.name}</h3>}
+
+                          {/* Location */}
+                          {sec.location && <p className="">, {sec.location}</p>}
+
+                          {/* URL Link */}
+                          {sec.url && (
+                            <a
+                              href={sec.url.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center mx-2"
+                            >
+                              <p>
+                                {sec.url.label && (
+                                  <span className="mx-1">|</span>
+                                )}
+                                {sec.url.label}
+                              </p>
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Right Section: Dates */}
+                        <div>
+                          {/* Start Date and End Date */}
+                          {sec.startDate && (
+                            <h3>
+                              {formatDate(sec.startDate, datetype)}
+                              {sec.endDate &&
+                                ` - ${formatDate(sec.endDate, datetype)}`}
+                            </h3>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-2">
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            }
+          </div>
+        );
     }
   };
 
@@ -626,17 +724,22 @@ const Template5: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
+           p {
+          color:black
+          }
       `}</style>
       <div>
-        <Header
-          basics={content.basics[0]}
-          baseColor={baseColor}
-          fontSize={fontSize}
-          margin={margin}
-          lineHeight={lineHeight}
-        />
+        {content.basics && content?.basics[0] && (
+          <Header
+            basics={content.basics[0]!}
+            baseColor={baseColor}
+            fontSize={fontSize}
+            margin={margin}
+            lineHeight={lineHeight}
+          />
+        )}
         <Profiles
-          profiles={content.profiles}
+          profiles={content.profiles!}
           baseColor={baseColor}
           fontSize={fontSize}
           margin={margin}
@@ -645,21 +748,14 @@ const Template5: React.FC<TemplateProps> = ({
       </div>
       <div style={styles.container}>
         <div style={styles.mainContent}>
-          <style>{`
-            p {
-              white-space: pre-wrap; 
-              word-wrap: break-word; 
-              overflow-wrap: break-word;
-              text-align: justify;
-            }
-          `}</style>
-          {sectionOrder.column1.map((sectionName) =>
+
+          {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName)
           )}
         </div>
         <div style={styles.sidebar}>
           <div style={styles.sidebarContent}>
-            {sectionOrder.column2.map((sectionName) =>
+            {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
               renderSection(sectionName)
             )}
           </div>

@@ -41,7 +41,7 @@ export async function createBlogPost(
         tags: tags, 
         spark: 0,
         views: 0,
-        isFeatured : isFeatured
+        isFeatured: isFeatured,
       },
     });
 

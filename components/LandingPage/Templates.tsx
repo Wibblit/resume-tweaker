@@ -1,6 +1,4 @@
 "use client";
-
-//@ts-ignore
 import { ParallaxScroll } from "../ui/parallax-scroll";
 
 export function TemplatesSection() {
@@ -10,8 +8,7 @@ export function TemplatesSection() {
         Stand Out with Customizable Resume Templates
       </h1>
       <p className="my-4 text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto">
-        Tailor professional templates to match your unique style and career
-        goals
+        Tailor professional templates to match your unique style and career goals
       </p>
       <div className="mt-6">
         <ParallaxScroll images={images} />
@@ -28,7 +25,6 @@ const images = [
   "/templates/template5.avif",
   "/templates/template6.avif",
   "/templates/template7.avif",
-  "/templates/jonathandoesmithresume-1.jpg",
   "/templates/template8.avif",
   "/templates/template9.avif",
   "/templates/ctemplate1.avif",

@@ -1,32 +1,41 @@
 "use server";
 
 import { auth } from "@/auth";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function updateBlogPost(
-  id: string,
-  title: string,
-  slug: string,
-  excerpt: string | null,
-  content: string,
-  category: string,
-  author: string,
-  thumbnail: string,
-  published: boolean,
-  tags: string[],
-  isFeatured : boolean
-) {
-  try {
+export const updateBlogPost = asyncHandler(
+  async (
+    id: string,
+    title: string,
+    slug: string,
+    excerpt: string | null,
+    content: string,
+    category: string,
+    author: string,
+    thumbnail: string,
+    published: boolean,
+    tags: string[],
+    isFeatured: boolean,
+  ) => {
     const session = await auth();
-
-    // Ensure user is authenticated
-    if (!session || !session.user || !session.user.id) {
-      return {
-        success: false,
-        message: "User is not authenticated",
-      };
-    }
+    if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+    if (
+      !id ||
+      !title ||
+      !slug ||
+      !excerpt ||
+      !content ||
+      !category ||
+      !author ||
+      !thumbnail ||
+      !published ||
+      !tags ||
+      !isFeatured
+    )
+      throw ActionsError.badRequest;
 
     // Update blog post entry in Prisma
     const updatedBlogPost = await prisma.blog.update({
@@ -41,26 +50,17 @@ export async function updateBlogPost(
         thumbnail: thumbnail,
         published: published,
         tags: tags,
-        isFeatured : isFeatured
+        isFeatured: isFeatured,
         // Note: We're not updating spark and views here as they should be managed separately
       },
     });
-
     console.log("Blog post updated:", updatedBlogPost);
     revalidatePath('/', "layout")
     return {
       success: true,
       message: "Blog post updated successfully",
       blogPost: updatedBlogPost,
+      status: 200,
     };
-  } catch (error) {
-    console.error("Error updating blog post:", error);
-    return {
-      success: false,
-      message: "Failed to update blog post",
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  },
+);

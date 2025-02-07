@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState} from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check, ChevronDown, Sparkles, Star } from "lucide-react";
+import { Check,Sparkles, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { pricingPlans, currencyrates, currencies } from "@/data/payments";
-import PaymentOfferings from "@/app/pricing/paymentsofferings";
+import { QuantityDialog } from "@/app/pricing/QuantityDialog";
+import { useSession } from "next-auth/react";
+import { GradientText } from "../gradient-text";
+
 const features = [
   "AI Resume Editor",
   "AI Cover Letter Editor",
@@ -22,95 +23,70 @@ const features = [
   "Comprehensive AI Interview",
   "Adaptive Interview Practice",
 ];
-import { ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { GradientText } from "../gradient-text";
 
-interface CurrencySelectorProps {
-  value: string;
-  onChange: (value: string) => void;
-  currencies: Array<{
-    code: string;
-    name: string;
-    flag: string;
-  }>;
-}
-
-export function CurrencySelector({
-  value,
-  onChange,
-  currencies,
-}: CurrencySelectorProps) {
-  const [open, setOpen] = useState(false);
-  const selectedCurrency = currencies.find(
-    (currency) => currency.code === value
-  );
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-72 justify-between bg-background hover:bg-accent hover:text-accent-foreground -mt-8 mb-8"
-        >
-          {selectedCurrency ? (
-            <span className="flex items-center gap-2">
-              <span>{selectedCurrency.flag}</span>
-              <span>{selectedCurrency.name}</span>
-              <span className="text-muted-foreground">
-                ({selectedCurrency.code})
-              </span>
-            </span>
-          ) : (
-            "Select currency..."
-          )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-72 p-0">
-        <Command>
-          <CommandInput placeholder="Search currency..." className="h-9" />
-          <CommandEmpty>No currency found.</CommandEmpty>
-          <CommandGroup className="max-h-[300px] overflow-auto">
-            {currencies.map((currency) => (
-              <CommandItem
-                key={currency.code}
-                value={`${currency.name} ${currency.code}`}
-                onSelect={() => {
-                  onChange(currency.code);
-                  setOpen(false);
-                }}
-              >
-                <span className="flex items-center gap-2 w-full">
-                  <span>{currency.flag}</span>
-                  <span>{currency.name}</span>
-                  <span className="text-muted-foreground ml-auto">
-                    {currency.code}
-                  </span>
-                  {value === currency.code && (
-                    <Check className="h-4 w-4 text-primary" />
-                  )}
-                </span>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
+interface Plan {
+  name: string;
+  baseCredits: number;
+  price: string;
+  popular: boolean;
+  productId: string;
 }
 
 export default function Pricing() {
   const router = useRouter();
-  const [currency, setCurrency] = useState("INR");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const { data: session } = useSession();
+
+  const plans: Plan[] = [
+    {
+      name: "Starter",
+      baseCredits: 200,
+      price: "299",
+      popular: false,
+      productId: "pdt_DyYl9HeGUDa1yPqwLnx4Q",
+    },
+    {
+      name: "Essential",
+      baseCredits: 400,
+      price: "458",
+      popular: true,
+      productId: "pdt_xDPkyF0HvKOsJ0TsWVQ90",
+    },
+    {
+      name: "Power",
+      baseCredits: 1000,
+      price: " ",
+      popular: false,
+      productId: "",
+    },
+    {
+      name: "Super Saver",
+      baseCredits: 2000,
+      price: " ",
+      popular: false,
+      productId: "",
+    },
+  ];
+
+  const handleGetStarted = (plan: Plan) => {
+    setSelectedPlan(plan);
+    setIsDialogOpen(true);
+  };
+
+  const handleConfirmQuantity = (newQuantity: number) => {
+    setQuantity(newQuantity);
+    if (selectedPlan) {
+      router.push(
+        `https://test.checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=https://resume-tweaker-development.vercel.app/profile&email=${session?.user.email}&metadata_user_id=${session?.user.id}&metadata_packname=${selectedPlan.name}&metadata_credits=${selectedPlan.baseCredits}&disableEmail=true`
+      );
+    }
+  };
+
+  const calculateTotalCredits = (plan: Plan) => {
+    return plan.baseCredits;
+  };
 
   return (
     <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
@@ -131,16 +107,8 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="w-full flex justify-center mb-8">
-          <CurrencySelector
-            value={currency}
-            onChange={setCurrency}
-            currencies={currencies}
-          />
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {pricingPlans.map((plan) => (
+          {plans.map((plan) => (
             <Card
               key={plan.name}
               className={`relative flex flex-col pb-4 ${
@@ -158,32 +126,14 @@ export default function Pricing() {
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span>{plan.name}</span>
-                  <Sparkles className="w-5 h-5" />
+                  <Sparkles className="w-5 h-5 text-primary" />
                 </CardTitle>
               </CardHeader>
 
               <CardContent className="flex-grow">
                 <div className="mb-6">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold">
-                      {currencyrates[currency].symbol}{" "}
-                      {Math.ceil(
-                        plan.price * currencyrates[currency].value +
-                          currencyrates[currency].fee +
-                          (plan.price * currencyrates[currency].value -
-                            currencyrates[currency].fee) *
-                            (currencyrates[currency].rate / 100)
-                      )}
-                    </span>
-                    <span className="text-muted-foreground line-through text-sm">
-                      {currencyrates[currency].symbol}{" "}
-                      {Math.ceil(
-                        plan.originalPrice * currencyrates[currency].value
-                      )}
-                    </span>
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {plan.credits} Credits
+                    <span className="text-3xl font-bold">{plan.price}</span>
                   </div>
                 </div>
 
@@ -195,61 +145,35 @@ export default function Pricing() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
 
-                {/* <div className="mt-6 pt-6 border-t text-sm text-muted-foreground">
-                  <div className="flex justify-between">
-                    <span>Gateway Fee:</span>
-                    <span>
-                      {currencyrates[currency].symbol}
-                      {currencyrates[currency].fee}
-                    </span>
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <span>Tax (18%):</span>
-                    <span>
-                      {currencyrates[currency].symbol}
-                      {(
-                        Math.ceil(
-                          plan.price * currencyrates[currency].value +
-                            currencyrates[currency].fee +
-                            (plan.price * currencyrates[currency].value -
-                              currencyrates[currency].fee) *
-                              (currencyrates[currency].rate / 100)
-                        ) * 0.18
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between mt-2 font-medium text-foreground">
-                    <span>Effective Price:</span>
-                    <span>
-                      {currencyrates[currency].symbol}
-                      {Math.ceil(
-                        plan.price * currencyrates[currency].value +
-                          currencyrates[currency].fee +
-                          (plan.price * currencyrates[currency].value -
-                            currencyrates[currency].fee) *
-                            (currencyrates[currency].rate / 100) *
-                            1.18
-                      )}
-                    </span>
-                  </div>
-                </div>*/}
-              </CardContent> 
-              {/* <CardFooter>
+              <CardFooter>
                 <Button
                   className="w-full"
-                //   onClick={() => router.push("/pricing/" + plan.name)}
+                  onClick={() => handleGetStarted(plan)}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   Get Started
                 </Button>
-              </CardFooter> */}
+              </CardFooter>
             </Card>
           ))}
         </div>
-        {/* <div className="mt-24">
-          <PaymentOfferings />
-        </div> */}
+
+        {selectedPlan && (
+          <QuantityDialog
+            isOpen={isDialogOpen}
+            onClose={() => setIsDialogOpen(false)}
+            onConfirm={handleConfirmQuantity}
+            title={`Purchase ${selectedPlan.name} Credits`}
+            description={`Each ${
+              selectedPlan.name
+            } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
+            initialQuantity={1}
+            maxQuantity={10}
+            baseCredits={selectedPlan.baseCredits}
+          />
+        )}
       </div>
     </div>
   );

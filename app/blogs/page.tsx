@@ -1,6 +1,6 @@
 import LatestBlogs from "@/components/blogs/latestBlogs";
 import FeaturedBlogs from "@/components/blogs/featuredBlogs";
-import { AdminAddButton } from "@/components/AdminAddButton";
+import { AdminAddButton } from "@/components/blogs/AdminAddButton";
 import { Separator } from "@radix-ui/react-separator";
 import { auth } from "@/auth";
 import { Metadata } from "next";

@@ -45,8 +45,8 @@ interface FormData {
   resume: File | null;
   jd: string;
   duration: number;
-  interviewer: string;
   interviewType: "comprehensive" | "adaptive";
+  interviewerPosition: string,
   answers?: string[]; // Add the answers field as an optional array of strings
 }
 

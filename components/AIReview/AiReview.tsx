@@ -19,7 +19,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Menu, Upload, TrendingUp } from "lucide-react";
+import {
+  FileText,
+  Menu,
+  Upload,
+  TrendingUp,
+  Loader2,
+  Loader,
+} from "lucide-react";
 import axios from "axios";
 import { RecentResume as UserResume } from "@/types/types";
 import {
@@ -49,6 +56,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "next/navigation";
+import { creditList } from "@/utils/credits";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
+import { updateCredits } from "@/slices/userAssets";
+import { PremiumModal } from "../premium-modal";
 
 interface AIReviewCriteria {
   score: number;
@@ -150,11 +163,19 @@ function RadialChart({
   );
 }
 
-export default function AIReview() {
-  const [reviewType, setReviewType] = useState("generic");
+export default function AIReview({
+  recentResumes,
+}: {
+  recentResumes: UserResume[];
+}) {
+  const searchParams = useSearchParams();
+  const [reviewType, setReviewType] = useState(
+    searchParams.get("reviewType") ?? "generic"
+  );
   const [resumeOption, setResumeOption] = useState<"select" | "upload">(
     "select"
   );
+  const loading = useAppSelector((state) => state?.assets?.loading);
   const [selectedResume, setSelectedResume] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
@@ -163,11 +184,23 @@ export default function AIReview() {
   );
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [userResumes, setUserResumes] = useState<UserResume[]>();
+  const [resuLoading, setresuLoading] = useState<boolean>(false);
+  const [funcdisabler, setFuncDisabler] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const workerRef = useRef<Tesseract.Worker | null>(null);
   const [ocrProgress, setOcrProgress] = useState(0);
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+  const dispatch = useAppDispatch();
+  const credits = useAppSelector((state) => state?.assets?.credits);
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const { toast } = useToast();
 
   useEffect(() => {
     async function worker() {
@@ -234,19 +267,7 @@ export default function AIReview() {
       };
 
   useEffect(() => {
-    async function getUserResumes() {
-      try {
-        const response = await axios.get<{
-          recentResumes: UserResume[];
-          message: string;
-        }>("/api/get-recent-resumes/");
-        console.log(response, "user resumes");
-        setUserResumes(response.data.recentResumes);
-      } catch (error) {
-        console.error("Error fetching user resumes:", error);
-      }
-    }
-    getUserResumes();
+    setUserResumes(recentResumes);
   }, []);
 
   const handleFileUpload = async (
@@ -262,7 +283,10 @@ export default function AIReview() {
     await worker?.load();
     await worker?.loadLanguage("eng");
     await worker?.initialize("eng");
-    await worker?.setParameters({ tessjs_create_hocr: '1', tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD });
+    await worker?.setParameters({
+      tessjs_create_hocr: "1",
+      tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
+    });
 
     let ocrText = "";
 
@@ -276,7 +300,7 @@ export default function AIReview() {
       }
       setIsUploadDialogOpen(false);
       setResumeOption("upload");
-    } 
+    }
 
     setResumeText(ocrText);
     console.log(ocrText);
@@ -285,25 +309,60 @@ export default function AIReview() {
   };
 
   const handleResumeSelect = (value: string) => {
-    setSelectedResume(value);
-    setResumeOption("select");
-    setFile(null);
+    if (!resuLoading || funcdisabler) {
+      console.log("Now you called master!!");
+      setSelectedResume(value);
+      setResumeOption("select");
+      setFile(null);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (credits < (creditList.get(reviewType) ?? 0)) {
+      setOpen(true);
+      return;
+    }
     setIsLoading(true);
     setAiSuggestions(null);
     try {
-      const response = await axios.post(`/api/get-resume-review/`, {
+      console.log(reviewType);
+
+      const response = await axios.post(`/api/get-resume-review`, {
         resumeId: selectedResume,
         resumeOption,
         resumeText,
         jd: jd,
         reviewType: reviewType,
       });
+      console.log(reviewType);
+
+      if (response?.data?.statusCode === 402) {
+        return toast({
+          variant: "destructive", // Set the toast type to error
+          description:
+            response?.data.message || "Insufficient credits to proceed.", // Use the message from the API
+          title: "Insufficient credits",
+        });
+      }
+
+      if (!response.data.resumeReview) {
+        toast({
+          title: `Error ${response.status}`,
+          description: response.data.message,
+          variant: "destructive",
+        });
+      }
       setJd("");
       setAiSuggestions(response.data.resumeReview);
+      dispatch(
+        updateCredits(
+          credits -
+            ((reviewType === "tailored"
+              ? creditList.get("tailored")
+              : creditList.get("generic")) ?? 0)
+        )
+      );
     } catch (error) {
       console.log(error);
     } finally {
@@ -355,11 +414,24 @@ export default function AIReview() {
                     <SelectValue placeholder="Choose a resume" />
                   </SelectTrigger>
                   <SelectContent>
-                    {userResumes?.map((resume) => (
-                      <SelectItem key={resume.id} value={resume.id}>
-                        {resume.resumeName}
+                    {resuLoading ? (
+                      <SelectItem
+                        value={"null"}
+                        className="flex items-center justify-center"
+                      >
+                        <Loader2 className="mr-4 h-4 w-4 animate-spin" />
                       </SelectItem>
-                    ))}
+                    ) : userResumes?.length === 0 ? (
+                      <SelectItem value="noresumes">
+                        No resumes found
+                      </SelectItem>
+                    ) : (
+                      userResumes?.map((resume) => (
+                        <SelectItem key={resume.id} value={resume.id}>
+                          {resume.resumeName}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -395,7 +467,7 @@ export default function AIReview() {
                       </h2>
                       <Input
                         type="file"
-                        accept=".pdf,.doc,.docx"
+                        accept=".pdf"
                         onChange={handleFileUpload}
                         className="w-full"
                         disabled={isOcrInProgress}
@@ -450,13 +522,26 @@ export default function AIReview() {
                 />
               </div>
             )}
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading || isOcrInProgress}
-            >
-              {isLoading ? "Analyzing..." : "Get AI Suggestions"}
-            </Button>
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <Loader className="w-4 h-4 animate-spin" />
+              </div>
+            ) : (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isLoading || isOcrInProgress}
+              >
+                {isLoading ? (
+                  <div className="flex">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing...
+                  </div>
+                ) : (
+                  "Get AI Suggestions"
+                )}
+              </Button>
+            )}
           </form>
           <AnimatePresence>
             {aiSuggestions && (
@@ -511,6 +596,16 @@ export default function AIReview() {
           </AnimatePresence>
         </div>
       </motion.main>
+      <PremiumModal
+        credits={
+          reviewType === "generic"
+            ? creditList.get("generic") ?? 0
+            : creditList.get("tailored") ?? 0
+        }
+        name={reviewType === "generic" ? "Generic Review" : "Tailored Review"}
+        onClose={onClose}
+        open={open}
+      />
     </div>
   );
 }

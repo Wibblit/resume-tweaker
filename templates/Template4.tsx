@@ -6,6 +6,7 @@ import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
+import { formatDate } from "@/utils/formatDate";
 
 interface TemplateProps {
   content: ResumeData;
@@ -14,6 +15,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 export type SectionName =
@@ -65,11 +67,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
-
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles = {
     container: {
       fontFamily: fontFamily,
@@ -88,9 +91,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.summary &&
           content.summary.length > 0 && (
             <Section title="Summary" baseColor={baseColor}>
-              {/* <p className="text-sm text-justify leading-snug whitespace-pre-wrap">
-                {content.summary[0].content}
-              </p> */}
               <HTMLViewer
                 lineHeight={lineHeight}
                 content={content.summary[0].content}
@@ -110,7 +110,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {exp.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {exp.startDate} - {exp.endDate}
+                      {exp.startDate && formatDate(exp.startDate, datetype)} -{" "}
+                      {exp.endDate && formatDate(exp.endDate, datetype)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
@@ -142,7 +143,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {edu.institution}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {edu.startDate} {edu.endDate && " - "} {edu.endDate}
+                      {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                      {edu.endDate && " - "}{" "}
+                      {edu.endDate && formatDate(edu.endDate, datetype)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
@@ -161,10 +164,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section title="Skills" baseColor={baseColor}>
-              {content.skills[0].categories.map((category, index) => (
+              {content.skills.map((category, index) => (
                 <div key={index} className="mb-2">
                   <h3 className="text-sm font-semibold mb-1">
                     {category.name}
@@ -208,13 +210,13 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       )}
                     </h3>
                     <p className="text-xs text-gray-600">
-                      {project.startDate} - {project.endDate}
+                      {project.startDate &&
+                        formatDate(project.startDate, datetype)}
+                      {project.endDate && " - "}
+                      {project.endDate && formatDate(project.endDate, datetype)}
                     </p>
                   </div>
                   {project.summary && (
-                    // <p className="text-sm text-gray-700 leading-snug mb-1 text-justify whitespace-pre-wrap">
-                    //   {project.summary}
-                    // </p>
                     <HTMLViewer
                       lineHeight={lineHeight}
                       content={project.summary}
@@ -238,7 +240,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   <span className="text-sm font-semibold mr-2">
                     {cert.name}
                   </span>
-                  <span className="text-xs text-gray-600">{cert.date}</span>
+                  <span className="text-xs text-gray-600">
+                    {cert.date && formatDate(cert.date, datetype)}
+                  </span>
                   {cert.url && (
                     <a
                       href={cert.url.href}
@@ -306,7 +310,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {vol.organization}
                     </h3>
                     <span className="text-xs text-gray-600">
-                      {vol.startDate} - {vol.endDate}
+                      {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
+                      {vol.endDate && " - "}
+                      {vol.endDate && formatDate(vol.endDate, datetype)}
                     </span>
                   </div>
                   <p className="text-sm italic mb-1">{vol.role}</p>
@@ -329,7 +335,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   <p className="text-xs break-words">
                     {pub.publisher}, {pub.publishedIn}
                   </p>
-                  <p className="text-xs text-gray-600">{pub.date}</p>
+                  <p className="text-xs text-gray-600">
+                    {pub.date && formatDate(pub.date, datetype)}
+                  </p>
                   {pub.url && (
                     <a
                       href={pub.url.href}
@@ -356,13 +364,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     <h3 className="text-sm font-semibold mr-2">
                       {award.title}
                     </h3>
-                    <span className="text-xs text-gray-600">{award.date}</span>
+                    <span className="text-xs text-gray-600">
+                      {award.date && formatDate(award.date, datetype)}
+                    </span>
                   </div>
                   <h3 className="text-xs">{award.awarder}</h3>
                   {award.summary && (
-                    // <p className="text-xs mt-1 text-justify leading-snug whitespace-pre-wrap">
-                    //   {award.summary}
-                    // </p>
                     <HTMLViewer
                       lineHeight={lineHeight}
                       content={award.summary}
@@ -374,7 +381,86 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           )
         );
       default:
-        return null;
+         if (
+           !content ||
+           !Array.isArray(content[sectionName]) ||
+           //@ts-ignore
+           !content[sectionName]?.length
+         )
+           return null;
+        return (
+          <div className="mb-6">
+            <h2>{sectionName}</h2>
+            {
+              //@ts-ignore
+              content[sectionName] &&
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex flex-col justify-between">
+                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                      <div className="flex items-center justify-between">
+                        {/* Left Section: Name, Location, Link */}
+                        <div className="flex items-center gap-2">
+                          {/* Name */}
+                          {sec.name && <h3>{sec.name}</h3>}
+
+                          {/* Location */}
+                          {sec.location && <p className="">, {sec.location}</p>}
+
+                          {/* URL Link */}
+                          {sec.url && (
+                            <a
+                              href={sec.url.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center mx-2"
+                            >
+                              <p>
+                                {sec.url.label && (
+                                  <span className="mx-1">|</span>
+                                )}
+                                {sec.url.label}
+                              </p>
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Right Section: Dates */}
+                        <div>
+                          {/* Start Date and End Date */}
+                          {sec.startDate && (
+                            <h3>
+                              {formatDate(sec.startDate, datetype)}
+                              {sec.endDate &&
+                                ` - ${formatDate(sec.endDate, datetype)}`}
+                            </h3>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-2">
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            }
+          </div>
+        );
     }
   };
 
@@ -386,74 +472,83 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
+           p {
+          color:black
+          }
       `}</style>
-      <div className="mb-4 flex items-start">
-        <div className="w-3/4 ">
-          <div className="md:mb-0">
-            <h1 style={{ color: baseColor }} className="text-3xl font-bold">
-              {content.basics[0].name}
-            </h1>
-            <p className="text-base mb-1 text-gray-700 whitespace-pre-wrap">
-              {content.basics[0].headLine}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {content.profiles.map((profile, index) => (
-              <div className="flex gap-2 items-center" key={index}>
-                {isIcons && profile.url.href !== "" && (
-                  <SocialIcon
-                    style={{ width: "16px", height: "16px" }}
-                    url={profile.url.href}
-                  />
-                )}
-                <a
-                  href={profile.url.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline text-sm"
-                >
-                  {profile.url.label}
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-start justify-start">
-          <p className="text-xs break-words">{content.basics[0].location}</p>
-          <p className="text-xs break-words">
-            <a href={`tel:${content.basics[0].phone}`}>
-              {content.basics[0].phone}
-            </a>
-          </p>
-          <p className="text-xs break-words">
-            <a href={`mailto:${content.basics[0].email}`}>
-              {content.basics[0].email}
-            </a>
-          </p>
-          {content.basics[0].url && (
-            <a
-              href={content.basics[0].url.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              <p className="text-xs underline break-words">
-                {content.basics[0].url.label}
+      {content.basics && (
+        <div className="mb-4 flex items-start">
+          <div className="w-3/4 ">
+            <div className="md:mb-0">
+              <h1 style={{ color: baseColor }} className="text-3xl font-bold">
+                {content?.basics[0].name}
+              </h1>
+              <p className="text-base mb-1 text-gray-700 whitespace-pre-wrap">
+                {content?.basics[0].headLine}
               </p>
-            </a>
-          )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {content?.profiles?.map((profile, index) => (
+                <div className="flex gap-2 items-center" key={index}>
+                  {isIcons && profile.url.href !== "" && (
+                    <SocialIcon
+                      style={{ width: "16px", height: "16px" }}
+                      url={profile.url.href}
+                    />
+                  )}
+                  <a
+                    href={profile.url.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-sm"
+                  >
+                    {profile.url.label}
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start justify-start">
+            <p className="text-xs break-words">{content?.basics[0].location}</p>
+            <p className="text-xs break-words">
+              <a href={`tel:${content?.basics[0].phone}`}>
+                {content?.basics[0].phone}
+              </a>
+            </p>
+            <p className="text-xs break-words">
+              <a href={`mailto:${content?.basics[0].email}`}>
+                {content?.basics[0].email}
+              </a>
+            </p>
+            {content?.basics[0].url && (
+              <a
+                href={content?.basics[0].url.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                <p className="text-xs underline break-words">
+                  {content?.basics[0].url.label}
+                </p>
+              </a>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex flex-row">
-        <div className={`w-3/5 ${sectionOrder.column1.length !== 0 && "pr-8"}`}>
-          {sectionOrder.column1.map((sectionName) =>
+        <div
+          className={`w-3/5 ${
+            sectionOrder.sections[pageIndex].column1.length !== 0 && "pr-8"
+          }`}
+        >
+          {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
             renderSection(sectionName as SectionName)
           )}
         </div>
         <div className="min-w-2/5">
-          {sectionOrder.column2.map((sectionName) =>
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
             renderSection(sectionName as SectionName)
           )}
         </div>

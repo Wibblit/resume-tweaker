@@ -1,46 +1,30 @@
 "use server";
 import { auth } from "@/auth";
-
+import { rateLimiter } from "@/lib/rateLimiter";
+import { headers } from "next/headers";
 import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 
-export async function createCover(coverName: string) {
-  try {
-    const session = await auth();
-    console.log("Hello", coverName)
-    if (!session || !session.user || !session.user.id) {
-      return {
-        success: false,
-        message: "User is not authenticated",
-      };
-    }  
-      
-    const cover = await prisma.coverletter.create({
-      data: {
-        userId: session.user.id.toString(),
-        coverName: coverName.toString(),
-      },
-    });
-      
-      console.log(cover)
+export const createCover = asyncHandler(async (coverName: string) => {
+  const session = await auth();
 
-    return {
-      success: true,
-      message: "Resume created successfully",
-      cover,
-    };
-  } catch (error) {
-    let errorMessage = "An unknown error occurred";
-    throw error
-    // if (error instanceof Error) {
-    //   errorMessage = error.message;
-    // }
+  if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+  if (!coverName) throw ActionsError.badRequest;
 
-    // return {
-    //   success: false,
-    //   message: "Failed to create resume",
-    //   error: errorMessage,
-    // };
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  const cover = await prisma.coverletter.create({
+    data: {
+      userId: session.user.id.toString(),
+      coverName: coverName.toString(),
+    },
+  });
+
+  revalidatePath("/home", "page");
+  return {
+    success: true,
+    message: "Resume created successfully",
+    cover,
+    status: 200,
+  };
+});

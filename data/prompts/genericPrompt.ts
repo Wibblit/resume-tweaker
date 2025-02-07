@@ -17,6 +17,10 @@ export const genericPrompt = `Evaluate the provided resume based on the followin
           Grammar and Language (10 points)
           Evaluate the overall grammar, spelling, and professional tone of the resume.
 
+          NOTE: 
+            Make sure to assess different parts of the resume, dont write comments only about one section.
+            Structure the comments by first giving the main comment and then move on to the specific section(s) which the comment is about.
+
           After evaluating the resume, provide the results in the following JSON format:
 
           { 

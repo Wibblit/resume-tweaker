@@ -1,14 +1,28 @@
-import InterviewSetup from "@/components/interview-setup";
+import Interview from "@/components/Interview/InterviewPage";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { prisma } from "@/prisma";
 
-export default function Home() {
-  return redirect("/");
-  return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        AI Interview Setup
-      </h1>
-      <InterviewSetup />
-    </main>
-  );
+export default async function AIInterviewPage() {
+  const session = await auth();
+  if (!session?.user) return redirect("/login?callbackUrl=/ai-interview");
+
+  const result = await prisma.resume.findMany({
+    where: {
+      userId: session?.user?.id,
+    },
+    orderBy: {
+      id: "desc",
+    },
+    take: 3,
+    select: {
+      id: true,
+      userId: true,
+      resumeName: true,
+      updatedOn: true,
+    },
+  });
+  await prisma.$disconnect();
+
+  return <Interview recentResumes={result} />;
 }

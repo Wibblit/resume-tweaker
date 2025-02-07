@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import InterviewPage from "@/components/Interview/interviewPage";
+import InterviewPage from "@/components/LandingPage/LandingInterviewPage";
 
 export const metadata: Metadata = {
   title: "AI Interview Preparation Tools | ResumeTweaker",

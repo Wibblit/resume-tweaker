@@ -1,111 +1,737 @@
-import React from 'react';
-import { User, Mail, Phone, Briefcase, GraduationCap } from 'lucide-react';
+"use client";
+
+import React from "react";
+import { cn, isEmptyString, isUrl } from "@/lib/utils";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
+import { ResumeData, Basics } from "@/types/types";
+import { SocialIcon } from "react-social-icons";
+import HTMLViewer from "@/components/HTMLViewer";
+import { formatDate } from "@/utils/formatDate";
 
 interface TemplateProps {
-  content: {
-    name: string;
-    email: string;
-    phone: string;
-    summary: string;
-    experience: { title: string; company: string; duration: string; description: string }[];
-    education: { degree: string; institution: string; year: string }[];
-    skills: string[];
-  };
+  content: ResumeData;
   baseColor: string;
   fontSize: number;
   fontFamily: string;
   lineHeight: number;
   margin: number;
-  photoUrl?: string;
+  pageIndex: number;
 }
 
-const Template8: React.FC<TemplateProps> = ({
-  content,
-  baseColor,
-  fontSize,
-  fontFamily,
-  lineHeight,
-  margin,
-  photoUrl
-}) => {
+const Link: React.FC<{
+  url: { href: string; label: string };
+  icon?: React.ReactNode;
+  iconOnRight?: boolean;
+  label?: string;
+  className?: string;
+}> = ({ url, icon, iconOnRight, label, className }) => {
+  if (!isUrl(url?.href)) return null;
+
   return (
-    <div
-      style={{
-        fontFamily,
-        fontSize: `${fontSize}px`,
-        lineHeight: `${lineHeight}`,
-        color: baseColor,
-        padding: `${margin}mm`,
-        height: '100%',
-      }}
+    <div className="flex items-center gap-x-1.5">
+      {!iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
+      <a
+        href={url.href}
+        target="_blank"
+        rel="noreferrer noopener nofollow"
+        className={cn("inline-block", className)}
+        style={{ color: "currentColor" }}
+      >
+        {label ?? (url.label || url.href)}
+      </a>
+      {iconOnRight &&
+        (icon ?? (
+          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
+        ))}
+    </div>
+  );
+};
+
+const LinkedEntity: React.FC<{
+  name: string;
+  url: { href: string; label: string };
+  separateLinks: boolean;
+  className?: string;
+}> = ({ name, url, separateLinks, className }) => {
+  return !separateLinks && isUrl(url.href) ? (
+    <Link
+      url={url}
+      label={name}
+      icon={
+        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+      }
+      iconOnRight={true}
+      className={className}
+    />
+  ) : (
+    <div className={className}>{name}</div>
+  );
+};
+
+const Section: React.FC<{
+  title: string;
+  children: React.ReactNode;
+  baseColor: string;
+  isRightColumn?: boolean;
+}> = ({ title, children, baseColor, isRightColumn }) => {
+  const isSeparator: boolean = useAppSelector(
+    (state) => state.rightsidebar.separator
+  );
+
+  console.log(title, isRightColumn);
+
+  return (
+    <section
+      className="mb-4  pt-4 "
+      style={
+        isSeparator
+          ? { borderTop: `1px solid ${isRightColumn ? baseColor : "white" }` }
+          : undefined
+      }
     >
-      <header className="flex items-center justify-between mb-8 bg-gray-100 p-6 rounded-lg">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">{content.name}</h1>
-          <div className="flex items-center mb-1">
-            <Mail className="w-4 h-4 mr-2" />
-            <span>{content.email}</span>
-          </div>
-          <div className="flex items-center">
-            <Phone className="w-4 h-4 mr-2" />
-            <span>{content.phone}</span>
-          </div>
-        </div>
-        <div className="w-40 h-40 rounded-full overflow-hidden shadow-2xl border-4 border-white">
-          {photoUrl ? (
-            <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-bl from-purple-600 to-blue-500 flex items-center justify-center">
-              <User className="w-20 h-20 text-white" />
+      <h4
+        className="mb-2 text-base font-bold uppercase"
+        style={{ color: isRightColumn ? baseColor : "white"  }}
+      >
+        {title}
+      </h4>
+      <div>{children}</div>
+    </section>
+  );
+};
+
+const Picture: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+  return (
+    <div className="w-32 h-32 flex-shrink-0 rounded-md overflow-hidden">
+      <img src={src} alt={alt} className="w-full h-full object-cover" />
+    </div>
+  );
+};
+
+const Header: React.FC<{
+  basics: Basics;
+  baseColor: string;
+  fontSize: number;
+  lineHeight: number;
+}> = ({ basics, baseColor, fontSize, lineHeight }) => {
+  const scaleFactor = fontSize / 16;
+  const imageSize = 128; // 8rem = 128px
+  const contentWidth = `calc(100% - ${imageSize}px - 1rem)`; // Subtracting image width and gap
+
+  const styles = {
+    container: {
+      fontSize: `${fontSize}px`,
+      lineHeight: `${lineHeight}`,
+    },
+    content: {
+      width: contentWidth,
+    },
+    name: {
+      fontSize: `${Math.max(2, imageSize / 38) * scaleFactor}rem`,
+      fontWeight: "bold",
+      marginBottom: "",
+      lineHeight: 1.2,
+    },
+    headline: {
+      fontSize: `${Math.max(1.2, imageSize / 64) * scaleFactor}rem`,
+      marginBottom: "",
+      lineHeight: 1.4,
+      color : "inherit"
+    },
+    details: {
+      fontSize: `${Math.max(1, imageSize / 128) * scaleFactor}rem`,
+      lineHeight: 1.6,
+    },
+  };
+
+  return (
+    <div style={styles.container} className="flex mb-4">
+      <div className="w-full">
+        <h2 style={styles.name} className="tracking-wider">
+          {basics?.name}
+        </h2>
+        <p style={styles.headline}>{basics?.headLine}</p>
+        <div
+          style={styles.details}
+          className="flex flex-wrap items-center gap-x-4"
+        >
+          {basics?.location && (
+            <div className="flex items-center gap-x-1.5 mr-2">
+              <i className="ph ph-bold ph-map-pin" />
+              <div>{basics.location}</div>
             </div>
           )}
-        </div>
-      </header>
-      <div className="grid grid-cols-3 gap-8">
-        <div className="col-span-2">
-          <section className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2 flex items-center">
-              <Briefcase className="w-6 h-6 mr-2" />
-              Experience
-            </h2>
-            {content.experience.map((exp, index) => (
-              <div key={index} className="mb-4">
-                <h3 className="font-semibold">{exp.title}</h3>
-                <p className="text-sm text-gray-600">{exp.company} | {exp.duration}</p>
-                <p>{exp.description}</p>
-              </div>
-            ))}
-          </section>
-          <section>
-            <h2 className="text-2xl font-semibold mb-2 flex items-center">
-              <GraduationCap className="w-6 h-6 mr-2" />
-              Education
-            </h2>
-            {content.education.map((edu, index) => (
-              <div key={index} className="mb-2">
-                <h3 className="font-semibold">{edu.degree}</h3>
-                <p className="text-sm">{edu.institution} | {edu.year}</p>
-              </div>
-            ))}
-          </section>
-        </div>
-        <div>
-          <section className="mb-6">
-            <h2 className="text-2xl font-semibold mb-2">Professional Summary</h2>
-            <p>{content.summary}</p>
-          </section>
-          <section>
-            <h2 className="text-2xl font-semibold mb-2">Skills</h2>
-            <ul className="list-disc list-inside">
-              {content.skills.map((skill, index) => (
-                <li key={index}>{skill}</li>
-              ))}
-            </ul>
-          </section>
+          {basics?.phone && (
+            <div className="flex items-center gap-x-1.5 mr-2">
+              <i className="ph ph-bold ph-phone" />
+              <a href={`tel:${basics.phone}`} target="_blank" rel="noreferrer">
+                {basics.phone}
+              </a>
+            </div>
+          )}
+          {basics?.email && (
+            <div className="flex items-center gap-x-1.5 mr-2">
+              <i className="ph ph-bold ph-at" />
+              <a
+                href={`mailto:${basics.email}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {basics.email}
+              </a>
+            </div>
+          )}
+          {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
       </div>
     </div>
   );
 };
 
-export default Template8;
+const Template3: React.FC<TemplateProps> = ({
+  content,
+  baseColor,
+  fontSize,
+  fontFamily,
+  lineHeight,
+  margin,
+  pageIndex,
+}) => {
+  const dispatch = useAppDispatch();
+  const sectionOrder = useAppSelector(
+    (state) => state.rightsidebar.sectionOrder
+  );
+  const isIcons: boolean = useAppSelector(
+    (state) => state?.rightsidebar?.icons
+  );
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const styles = {
+    container: {
+      fontFamily: fontFamily,
+      fontSize: `${fontSize}px`,
+      lineHeight: `${lineHeight}`,
+      color: "black",
+      minHeight: "100vh",
+      height: "100%",
+      display: "flex",
+    },
+    body: {
+      fontSize: `${1.1 * (fontSize / 16)}rem`,
+      color: "black",
+    },
+    sidebar: {
+      backgroundColor: baseColor,
+      width: "40%",
+      color: "white",
+      padding: `${margin}mm`,
+    },
+    sidebarContent: {
+      padding: `${margin}mm`,
+      height: "100%",
+    },
+    mainContent: {
+      width: "60%",
+      padding: `${margin}mm`,
+    },
+  };
+  const renderSection = (
+    sectionName: string,
+    isRightColumn: boolean = false
+  ) => {
+    const sectionStyle = isRightColumn ? { color: "white" } : styles.body;
+
+    switch (sectionName) {
+      case "summary":
+        return (
+          content.summary &&
+          content.summary.length > 0 && (
+            <Section
+              title=""
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              {/* <div
+                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
+                style={sectionStyle}
+                className="text-justify"
+              /> */}
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content}
+              />
+            </Section>
+          )
+        );
+      case "awards":
+        return (
+          content.awards &&
+          content.awards.length > 0 && (
+            <Section
+              title="AWARDS"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.awards.map((award, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{award.title}</div>
+                        <div>{award.awarder}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">
+                          {award.date && formatDate(award.date, datetype)}
+                        </div>
+                      </div>
+                    </div>
+                    {award.summary && !isEmptyString(award.summary) && (
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "publications":
+        return (
+          content.publications &&
+          content.publications.length > 0 && (
+            <Section
+              title="PUBLICATIONS"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.publications.map((pub, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={pub.name}
+                        url={pub.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">
+                          {pub.date && formatDate(pub.date, datetype)}
+                        </div>
+                      </div>
+                    </div>
+                    <div>{pub.publisher}</div>
+                    <div>{pub.publishedIn}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "volunteerings":
+        console.log(content.volunteer);
+        return (
+          content.volunteer &&
+          content.volunteer.length > 0 && (
+            <Section
+              title="VOLUNTEER EXPERIENCE"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.volunteer.map((vol, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{vol.organization}</div>
+                        <div>{vol.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div className="font-bold">
+                          {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
+                          {vol.endDate && " - "}{" "}
+                          {vol.endDate && formatDate(vol.endDate, datetype)}
+                        </div>
+                        <div>{vol.location}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "references":
+        return (
+          content.references &&
+          content.references.length > 0 && (
+            <Section
+              title="REFERENCES"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.references.map((ref, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{ref.name}</div>
+                    <div>{ref.phone}</div>
+                    <div>{ref.email}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "experience":
+        return (
+          content.experience &&
+          content.experience.length > 0 && (
+            <Section
+              title="EXPERIENCE"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.experience.map((exp, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-bold">{exp.organization}</div>
+                        <div>{exp.role}</div>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <div>
+                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
+                          {exp.endDate && " - "}{" "}
+                          {exp.endDate && formatDate(exp.endDate, datetype)}
+                        </div>
+                        <div>{exp.location}</div>
+                      </div>
+                    </div>
+                    {exp.summary && !isEmptyString(exp.summary) && (
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
+                      //   style={sectionStyle}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={exp.summary}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "skills":
+        return (
+          content.skills &&
+          content.skills.length > 0 && (
+            <Section
+              title="SKILLS"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.skills.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{category.name}</div>
+                    <div>
+                      {category.skills.map((skill) => skill.name).join(", ")}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "profiles":
+        return (
+          content.profiles &&
+          content.profiles.length > 0 && (
+            <Section
+              title="PROFILES"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                {content.profiles.map((profile, index) => (
+                  <div className="flex gap-2 items-center" key={index}>
+                    {isIcons && profile.url.href !== "" && (
+                      <SocialIcon
+                        style={{ width: "16px", height: "16px" }}
+                        url={profile.url.href}
+                      />
+                    )}
+                    <a
+                      href={profile.url.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-sm"
+                    >
+                      {profile.url.label}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "languages":
+        return (
+          content.languages &&
+          content.languages.length > 0 && (
+            <Section
+              title="LANGUAGES"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-2">
+                {content.languages.map((lang, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{lang.name}</span>
+                    <span>{lang.level}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "education":
+        return (
+          content.education &&
+          content.education.length > 0 && (
+            <Section
+              title="EDUCATION"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.education.map((edu, index) => (
+                  <div key={index} className="flex items-start justify-between">
+                    <div>
+                      <div className="font-bold">{edu.institution}</div>
+                      <div>{edu.field}</div>
+                      <div>{edu.score}</div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div>
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}{" "}
+                      </div>
+                      <div>{edu.degree}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "certifications":
+        return (
+          content.certifications &&
+          content.certifications.length > 0 && (
+            <Section
+              title="CERTIFICATIONS"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-2">
+                {content.certifications.map((cert, index) => (
+                  <div key={index}>
+                    <LinkedEntity
+                      name={cert.name}
+                      url={cert.url}
+                      separateLinks={false}
+                      className="font-bold"
+                    />
+                    <div>{cert.date && formatDate(cert.date, datetype)}</div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "projects":
+        return (
+          content.projects &&
+          content.projects.length > 0 && (
+            <Section
+              title="PROJECTS"
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
+              <div className="space-y-4">
+                {content.projects.map((project, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="flex items-start justify-between">
+                      <LinkedEntity
+                        name={project.name}
+                        url={project.url}
+                        separateLinks={false}
+                        className="font-bold"
+                      />
+                      <div className="shrink-0 text-right">
+                        <div>
+                          {project.startDate &&
+                            formatDate(project.startDate, datetype)}{" "}
+                          {project.endDate && " - "}{" "}
+                          {project.endDate &&
+                            formatDate(project.endDate, datetype)}
+                        </div>
+                      </div>
+                    </div>
+                    {project.summary && !isEmptyString(project.summary) && (
+                      // <div
+                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
+                      //   style={sectionStyle}
+                      //   className="text-justify"
+                      // />
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={project.summary}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )
+        );
+      case "basics":
+        return (
+          content.basics && (
+            <Header
+              basics={content.basics[0]}
+              baseColor={baseColor}
+              fontSize={fontSize}
+              lineHeight={lineHeight}
+            />
+          )
+        );
+      default:
+         if (
+           !content ||
+           //@ts-ignore
+           !Array.isArray(content[sectionName]) ||
+           //@ts-ignore
+           !content[sectionName]?.length
+         )
+           return null;
+        return (
+          <div className="mb-6">
+            <h2>{sectionName}</h2>
+            {
+              //@ts-ignore
+              content[sectionName] &&
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex flex-col justify-between">
+                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                      <div className="flex items-center justify-between">
+                        {/* Left Section: Name, Location, Link */}
+                        <div className="flex items-center gap-2">
+                          {/* Name */}
+                          {sec.name && <h3>{sec.name}</h3>}
+
+                          {/* Location */}
+                          {sec.location && <p className="">, {sec.location}</p>}
+
+                          {/* URL Link */}
+                          {sec.url && (
+                            <a
+                              href={sec.url.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center mx-2"
+                            >
+                              <p>
+                                {sec.url.label && (
+                                  <span className="mx-1">|</span>
+                                )}
+                                {sec.url.label}
+                              </p>
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Right Section: Dates */}
+                        <div>
+                          {/* Start Date and End Date */}
+                          {sec.startDate && (
+                            <h3>
+                              {formatDate(sec.startDate, datetype)}
+                              {sec.endDate &&
+                                ` - ${formatDate(sec.endDate, datetype)}`}
+                            </h3>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-2">
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            }
+          </div>
+        );
+    }
+  };
+
+  console.log(sectionOrder.sections[0].column1)
+
+  return (
+    <div className="resume-content" style={styles.container}>
+      <style>{`
+        .resume-content, .resume-content * {
+          font-family: ${fontFamily}, sans-serif !important;
+        }
+           p {
+          color:black
+          }
+      `}</style>
+
+      <div className="w-4/12" style={styles.sidebar}>
+        {sectionOrder.sections.length > 0 &&
+          sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
+            renderSection(sectionName)
+          )}
+      </div>
+
+      <div style={styles.mainContent}>
+        {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
+          renderSection(sectionName, true)
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Template3;

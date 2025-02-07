@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
- @layer base { 
-  /* Apply LTWave font globally, but exclude containers with the .no-ltwave class */
-  /* *:not(.no-ltwave) {
-    font-family: "Poppins", sans-serif;
-  } */
- } 
-
 @layer base {
   :root {
     --grad-foreground: #000000;
@@ -38,6 +31,14 @@
     --chart-3: 240 1% 58%;
     --chart-4: 240 1% 42%;
     --chart-5: 240 2% 26%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -67,6 +68,14 @@
     --chart-3: 240 1% 58%;
     --chart-4: 240 1% 42%;
     --chart-5: 240 2% 26%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -75,6 +84,14 @@
     text-wrap: balance;
   }
 }
+
+/* Force the text color inside the editor content */
+/*  */
+
+.wysiwyg, .wysiwyg * {
+  color: inherit !important;
+}
+
 
 @layer base {
   * {
@@ -87,3 +104,55 @@
     @apply prose max-w-none prose-headings:mt-0 prose-headings:mb-2 prose-p:mt-0 prose-p:mb-2 prose-ul:mt-0 prose-ul:mb-2 prose-li:mt-0 prose-li:mb-2 prose-ol:mt-0 prose-ol:mb-2 prose-img:mt-0 prose-img:mb-2 prose-hr:mt-0 prose-hr:mb-2 prose-p:leading-normal prose-li:leading-normal prose-a:break-all;
   }
 }
+
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float-particle {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px);
+    opacity: 0;
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 15s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-float-particle {
+  animation: float-particle var(--duration, 7s) ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background ;
+  }
+  .wysiwyg {
+    @apply prose max-w-none prose-headings:mt-0 prose-headings:mb-2 prose-p:mt-0 prose-p:mb-2 prose-ul:mt-0 prose-ul:mb-2 prose-li:mt-0 prose-li:mb-2 prose-ol:mt-0 prose-ol:mb-2 prose-img:mt-0 prose-img:mb-2 prose-hr:mt-0 prose-hr:mb-2 prose-p:leading-normal prose-li:leading-normal prose-a:break-all;
+    @apply bg-background text-foreground;
+  }
+}
+
+
+

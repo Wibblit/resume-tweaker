@@ -13,6 +13,7 @@ import { setCurrentCover } from "@/slices/currentCoverSlice";
 import axios from "axios";
 import { CPageData } from "@/types/types";
 import { updateCoverLetter } from "@/slices/coverletterSlice";
+import { updateDateType } from "@/slices/rightsidebarSlice";
 import {
   UpdateBaseColor,
   UpdateFont,
@@ -24,19 +25,19 @@ import {
   UpdatePaperFormat,
   UpdateSeparator,
 } from "@/slices/rightsidebarSlice";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<
-    keyof CoverLetterState | ""
+    keyof CoverLetterState | string
   >("salutation");
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const CoverLetterData = useAppSelector((state) => state.coverletter);
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
   const { currCoverId } = useAppSelector((state) => state.currentCoverLetter);
-
+  const { toast } = useToast();
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const dispatch = useAppDispatch();
@@ -45,28 +46,55 @@ export default function CoverEditor() {
 
   const saveData = async () => {
     try {
-      await savecoverData(CoverLetterData, ResumeAppearance, currCoverId);
-      console.log("Cover letter data saved successfully");
+      const response = await savecoverData(
+        CoverLetterData,
+        ResumeAppearance,
+        currCoverId
+      );
+      if (response.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Success",
+        description: "The cover letter has been saved successfully.",
+      });
     } catch (error) {
-      console.error("Error saving cover letter data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save the cover letter.",
+        variant: "destructive",
+      });
     }
   };
-  
-    useEffect(() => {
-      async function getCoverData() {
-        try {
-          setIsLoading(true);
-          const coverId = currCoverId
-            ? currCoverId
-            : localStorage.getItem("currCoverId");
-            const response = await axios.get<{
-            coverData: CPageData;
-            message: string;
+
+  useEffect(() => {
+    async function getCoverData() {
+      try {
+        setIsLoading(true);
+        const coverId = currCoverId
+          ? currCoverId
+          : localStorage.getItem("currCoverId");
+        const response = await axios.get<{
+          coverData: CPageData;
+          message: string;
         }>(`/api/get-cover-letter-data/${coverId}`);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         console.log(response);
         const coverData = response.data.coverData;
         console.log(coverData);
-        console.log("Hello This is to show that the response has received.")
+        console.log("Hello This is to show that the response has received.");
         const {
           id,
           styles,
@@ -74,6 +102,7 @@ export default function CoverEditor() {
           userId,
           salutation,
           date,
+          senderInfo,
           recipientInfo,
           subject,
           opening,
@@ -84,7 +113,7 @@ export default function CoverEditor() {
           closing,
           signOff,
         } = coverData;
-        localStorage.setItem("currCoverId", id)
+        localStorage.setItem("currCoverId", id);
         dispatch(
           setCurrentCover({
             currCoverId: coverData.id,
@@ -95,6 +124,7 @@ export default function CoverEditor() {
           updateCoverLetter({
             salutation,
             date,
+            senderInfo,
             recipientInfo,
             subject,
             opening,
@@ -106,15 +136,16 @@ export default function CoverEditor() {
             signOff,
           })
         );
-        dispatch(UpdateId(styles.id));
-        dispatch(UpdateFont(styles.font));
-        dispatch(UpdateFontSize(styles.fontSize));
-        dispatch(UpdateLineHeight(styles.lineHeight));
-        dispatch(UpdateMargin(styles.margin));
-        dispatch(UpdateIcons(styles.icons));
-        dispatch(UpdateSeparator(styles.separator));
-        dispatch(UpdatePaperFormat(styles.paperFormat));
-        dispatch(UpdateBaseColor(styles.baseColor));
+        if (styles.id) dispatch(UpdateId(styles.id));
+        if (styles.font) dispatch(UpdateFont(styles.font));
+        if (styles.fontSize) dispatch(UpdateFontSize(styles.fontSize));
+        if (styles.lineHeight) dispatch(UpdateLineHeight(styles.lineHeight));
+        if (styles.margin) dispatch(UpdateMargin(styles.margin));
+        if (styles.icons) dispatch(UpdateIcons(styles.icons));
+        if (styles.separator) dispatch(UpdateSeparator(styles.separator));
+        if (styles.paperFormat) dispatch(UpdatePaperFormat(styles.paperFormat));
+        if (styles.baseColor) dispatch(UpdateBaseColor(styles.baseColor));
+        if (styles.datetype) dispatch(updateDateType(styles.datetype));
       } catch (error) {
         console.error("Error fetching cover letter data:", error);
       } finally {
@@ -161,7 +192,7 @@ export default function CoverEditor() {
   }, [CoverLetterData, ResumeAppearance, currCoverId]);
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
+    <div className="flex flex-col h-screen bg-background">
       <div className="flex flex-grow overflow-hidden">
         <div className="relative">
           <CoverLeftSideBar

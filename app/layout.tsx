@@ -8,6 +8,11 @@ import { cn } from "@/lib/utils";
 import { LandingNav } from "@/components/LandingNav";
 import Footer from "@/components/LandingPage/Footer";
 import { GoogleAnalytics } from "@next/third-parties/google"
+import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "next-auth/react";
+import { Provider } from "react-redux";
+import store from "@/store";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: {
@@ -112,7 +117,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <GoogleAnalytics gaId="G-2SNY7ETV6E" />
+      <GoogleAnalytics gaId="G-2SNY7ETV6E" />
         <script
           id="schema-org-script"
           type="application/ld+json"
@@ -128,14 +133,17 @@ export default function RootLayout({
         />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.className)}>
-        <ThemeProviderWrapper>
-          <ReduxProvider>
-            <LandingNav />
-            {children}
-            <Footer />
-          </ReduxProvider>
-        </ThemeProviderWrapper>
-        <ToastProvider />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SessionProvider>
+            <Provider store={store}>{children}</Provider>
+          </SessionProvider>
+        </ThemeProvider>
+        <Toaster />
         <script
           src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"
           integrity="sha512-Z8CqofpIcnJN80feS2uccz+pXWgZzeKxDsDNMD/dJ6997/LSRY+W4NmEt9acwR+Gt9OHN0kkI1CTianCwoqcjQ=="

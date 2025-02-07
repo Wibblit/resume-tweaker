@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -37,18 +38,55 @@ import {
   Star,
   Trash2,
   Book,
+  Import,
+  RotateCcw,
+  Edit,
+  Eraser,
+  Loader,
+  Save,
+  LogOut,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import LeftSidePanel from "./LeftSidePanel";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
-import { SkillCategory, Skill, URL } from "@/types/types";
+import { Skill, URL, ResumeData, ResumeSection } from "@/types/types";
 import { RichInput } from "./TextEditor";
 import { useMediaQuery } from "react-responsive";
-import { ResumeData, ResumeSection } from "@/types/types";
+import { CustomDatePicker } from "@/components/DatePicker";
+import {
+  UpdateLeftBarData,
+  Reset,
+  AddCustomSection,
+  DeleteCustomSection,
+  RenameCustomSection,
+  updateResumeImage,
+} from "@/slices/leftsidebarSlice";
+import Base64Image from "./base64toPhoto";
+import { Trash } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface LeftSideBarProps {
-  activeSection: keyof ResumeData | "";
-  setActiveSection: React.Dispatch<React.SetStateAction<keyof ResumeData | "">>;
+  activeSection: keyof ResumeData | string;
+  setActiveSection: React.Dispatch<
+    React.SetStateAction<keyof ResumeData | string>
+  >;
   isPanelOpen: boolean;
   setIsPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -67,8 +105,63 @@ export default function LeftSideBar({
   const dispatch = useAppDispatch();
   const resumeData = useAppSelector((state) => state.leftsidebar);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
+  const [isAddSectionSheetOpen, setIsAddSectionSheetOpen] = useState(false);
+  const [newSectionName, setNewSectionName] = useState("");
+  const [renameSectionId, setRenameSectionId] = useState<string | null>(null);
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const sections = useAppSelector((state) => state.rightsidebar?.sections);
+  const [isValid, setisValid] = useState<boolean>(true);
+  const [isRenameValid, setisRenameValid] = useState<boolean>(true);
+  const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
-  const resumeSections: ResumeSection[] = [
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsUploading(true);
+    const file = e.target.files?.[0];
+    if (!file) {
+      toast({
+        title: "Error",
+        description: "Cannot find the image",
+        variant: "destructive",
+      });
+      setIsUploading(false)
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      if (resumeData.basics) {
+        let prev = resumeData.basics[0].picture;
+        const response = await axios.post(
+          "/api/resumeimages-file-ops",
+          formData
+        );
+        dispatch(updateResumeImage(response?.data?.url));
+        if (prev && profileData.basics) {
+           if (prev !== profileData.basics[0].picture) {
+             await axios.delete(
+               `/api/profile-file-ops?file=${encodeURIComponent(prev)}`
+             );
+           }
+        }
+       
+        toast({
+          title: "Success",
+          description: "Image upload success",
+        });
+      }
+      setIsUploading(false);
+    } catch (error) {
+      setIsUploading(false);
+      toast({
+        title: "Error",
+        description: "Cannot upload the image",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const defaultSections: ResumeSection[] = [
     {
       id: "basics",
       icon: <UserPlus className="w-4 h-4" />,
@@ -99,7 +192,7 @@ export default function LeftSideBar({
       id: "skills",
       icon: <Code className="w-4 h-4" />,
       title: "Skills",
-      fields: ["categories"],
+      fields: ["name", "skills"],
     },
     {
       id: "projects",
@@ -172,6 +265,32 @@ export default function LeftSideBar({
     },
   ];
 
+  const customSections: ResumeSection[] = Object.keys(resumeData)
+    .filter(
+      (key) =>
+        !defaultSections.some((section) => section.id === key) &&
+        key !== "customSections"
+    )
+    .map((key) => ({
+      id: key,
+      icon: <FileText className="w-4 h-4" />,
+      title: key.charAt(0).toUpperCase() + key.slice(1),
+      fields: [
+        "name",
+        "description",
+        "startDate",
+        "endDate",
+        "location",
+        "url",
+        "summary",
+      ],
+    }));
+
+  const resumeSections: ResumeSection[] = [
+    ...defaultSections,
+    ...customSections,
+  ];
+
   useEffect(() => {
     if (isPhoneView) {
       setIsCollapsed(true);
@@ -200,15 +319,15 @@ export default function LeftSideBar({
     };
   }, [isDragging]);
 
-  const createEmptyEntry = (section: keyof ResumeData) => {
+  const createEmptyEntry = (section: keyof ResumeData | string) => {
     const newEntry: any = { id: Date.now().toString() };
     const sectionFields =
       resumeSections.find((s) => s.id === section)?.fields || [];
     sectionFields.forEach((field) => {
       if (field === "url") {
         newEntry[field] = { href: "", label: "" };
-      } else if (field === "categories" && section === "skills") {
-        newEntry[field] = [{ id: Date.now().toString(), name: "", skills: [] }];
+      } else if (field === "skills" && section === "skills") {
+        newEntry[field] = [];
       } else {
         newEntry[field] = "";
       }
@@ -216,56 +335,81 @@ export default function LeftSideBar({
     return newEntry;
   };
 
-  const addEntry = (section: keyof ResumeData) => {
+  const addEntry = (section: keyof ResumeData | string) => {
     const updatedResumeData = { ...resumeData };
-    if (section === "skills") {
-      updatedResumeData[section] = updatedResumeData[section].map((entry) => ({
-        ...entry,
-        categories: [
-          ...entry.categories,
-          { id: Date.now().toString(), name: "", skills: [] },
-        ],
-      }));
-    } else {
-      updatedResumeData[section] = [
-        ...updatedResumeData[section],
-        createEmptyEntry(section),
-      ];
-    }
+    updatedResumeData[section as keyof ResumeData] = [
+      ...(updatedResumeData[section as keyof ResumeData] || []),
+      createEmptyEntry(section),
+    ];
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
+  const DeleteProfilePicture = async () => {
+    try {
+      setIsUploading(true);
+
+      if (profileData.basics && resumeData.basics) {
+        if (profileData.basics[0].picture === resumeData.basics[0].picture) {
+          dispatch(updateResumeImage(undefined));
+          setIsUploading(false);
+          return;
+        }
+      }
+
+      if (resumeData.basics && resumeData.basics[0].picture) {
+        await axios.delete(
+          `/api/resumeimages-file-ops?file=${encodeURIComponent(
+            resumeData.basics[0].picture
+          )}`
+        );
+      }
+      dispatch(updateResumeImage(undefined));
+      setIsUploading(false);
+      toast({
+        title: "Success",
+        description: "Image updated",
+      });
+    } catch (error) {
+      setIsUploading(false);
+      toast({
+        title: "Error",
+        description: "Cannot find the image",
+        variant: "destructive",
+      });
+    }
+  };
+
   const updateEntry = (
-    section: keyof ResumeData,
+    section: keyof ResumeData | string,
     id: string,
     field: string,
     value: any
   ) => {
     const updatedResumeData = { ...resumeData };
-    updatedResumeData[section] = updatedResumeData[section].map((entry: any) =>
+    updatedResumeData[section as keyof ResumeData] = updatedResumeData[
+      section as keyof ResumeData
+    ]?.map((entry: any) =>
       entry.id === id ? { ...entry, [field]: value } : entry
     );
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
-  const deleteEntry = (section: keyof ResumeData, id: string) => {
+  const deleteEntry = (section: keyof ResumeData | string, id: string) => {
     const updatedResumeData = { ...resumeData };
     //@ts-ignore
-    updatedResumeData[section] = updatedResumeData[section].filter(
-      (entry: any) => entry.id !== id
-    );
+    updatedResumeData[section as keyof ResumeData] = updatedResumeData[
+      section as keyof ResumeData
+    ].filter((entry: any) => entry.id !== id);
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
-  const deleteSkillCategory = (entryId: string, categoryId: string) => {
+  const addSkill = (entryId: string) => {
     const updatedResumeData = { ...resumeData };
-    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+    updatedResumeData.skills = updatedResumeData.skills?.map((entry) => {
       if (entry.id === entryId) {
         return {
           ...entry,
-          categories: entry.categories.filter(
-            (category) => category.id !== categoryId
-          ),
+          skills: [...entry.skills, { name: "", level: "" }],
         };
       }
       return entry;
@@ -273,49 +417,13 @@ export default function LeftSideBar({
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
-  const addSkill = (entryId: string, categoryId: string) => {
+  const deleteSkill = (entryId: string, skillIndex: number) => {
     const updatedResumeData = { ...resumeData };
-    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
+    updatedResumeData.skills = updatedResumeData.skills?.map((entry) => {
       if (entry.id === entryId) {
         return {
           ...entry,
-          categories: entry.categories.map((category) => {
-            if (category.id === categoryId) {
-              return {
-                ...category,
-                skills: [...category.skills, { name: "", level: undefined }],
-              };
-            }
-            return category;
-          }),
-        };
-      }
-      return entry;
-    });
-    dispatch(UpdateLeftBarData(updatedResumeData));
-  };
-
-  const deleteSkill = (
-    entryId: string,
-    categoryId: string,
-    skillIndex: number
-  ) => {
-    const updatedResumeData = { ...resumeData };
-    updatedResumeData.skills = updatedResumeData.skills.map((entry) => {
-      if (entry.id === entryId) {
-        return {
-          ...entry,
-          categories: entry.categories.map((category) => {
-            if (category.id === categoryId) {
-              return {
-                ...category,
-                skills: category.skills.filter(
-                  (_, index) => index !== skillIndex
-                ),
-              };
-            }
-            return category;
-          }),
+          skills: entry.skills.filter((_, index) => index !== skillIndex),
         };
       }
       return entry;
@@ -337,8 +445,10 @@ export default function LeftSideBar({
     return !!pattern.test(url);
   };
 
+    const router = useRouter();
+
   const handleUrlChange = (
-    section: keyof ResumeData,
+    section: keyof ResumeData | string,
     id: string,
     field: string,
     value: string
@@ -358,8 +468,8 @@ export default function LeftSideBar({
     }
 
     const updatedResumeData = { ...resumeData };
-    const sectionData = updatedResumeData[section];
-    const updatedSection = sectionData.map((entry: any) => {
+    const sectionData = updatedResumeData[section as keyof ResumeData];
+    const updatedSection = sectionData?.map((entry: any) => {
       if (entry.id === id) {
         const currentUrl = entry[field] as URL;
         return {
@@ -373,31 +483,27 @@ export default function LeftSideBar({
       return entry;
     });
 
-    updatedResumeData[section] = updatedSection;
+    updatedResumeData[section as keyof ResumeData] = updatedSection;
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
 
   const renderEntryFields = (
-    section: keyof ResumeData,
+    section: keyof ResumeData | string,
     entry: any,
     index: number
   ) => {
     const fields = resumeSections.find((s) => s.id === section)?.fields || [];
     return (
       <div key={entry.id} className="mb-8">
-        {section !== "skills" && (
-          <h3 className="text-lg font-semibold mb-4">
-            {section.charAt(0).toUpperCase() + section.slice(1)} {index + 1}
-          </h3>
-        )}
+        <h3 className="text-lg font-semibold mb-4">
+          {section.charAt(0).toUpperCase() + section.slice(1)} {index + 1}
+        </h3>
         <div className="space-y-4">
           {fields.map((field) => (
             <div key={field}>
-              {field !== "categories" && (
-                <Label htmlFor={`${field}-${entry.id}`}>
-                  {field.charAt(0).toUpperCase() + field.slice(1)}
-                </Label>
-              )}
+              <Label htmlFor={`${field}-${entry.id}`}>
+                {field.charAt(0).toUpperCase() + field.slice(1)}
+              </Label>
               {field === "summary" || field === "content" ? (
                 <RichInput
                   content={entry[field] || ""}
@@ -432,8 +538,7 @@ export default function LeftSideBar({
                     type="url"
                   />
                   {urlErrors[`${section}-${entry.id}-${field}`] && (
-                    <p className="text-sm text-red-500">
-                
+                    <p className="text-sm  text-red-500">
                       {urlErrors[`${section}-${entry.id}-${field}`]}
                     </p>
                   )}
@@ -450,28 +555,50 @@ export default function LeftSideBar({
                   />
                 </div>
               ) : field === "picture" ? (
-                <Input
-                  id={`${field}-${entry.id}`}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      updateEntry(section, entry.id, field, file);
-                    }
-                  }}
-                  type="file"
-                  accept="image/*"
-                />
+                <div className="flex flex-col items-center justify-center">
+                  {resumeData?.basics && resumeData?.basics[0]?.picture && (
+                    <div className="relative flex items-center justify-center">
+                      {isUploading ? (
+                        <Loader className="animate-spin w-6 h-6 text-gray-500" />
+                      ) : (
+                        <div className="relative flex items-center justify-center">
+                          <Trash
+                            onClick={DeleteProfilePicture}
+                            className="absolute right-0 -top-2 w-4 h-4 my-3 text-red-500 cursor-pointer"
+                          />
+                          <img
+                            src={resumeData?.basics[0].picture}
+                            alt="profile"
+                            width={128}
+                            height={128}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <Input
+                    id={`${field}-${entry.id}`}
+                    className="my-2"
+                    onChange={handleFileChange}
+                    type="file"
+                    accept="image/*"
+                    disabled={isUploading}
+                  />
+                </div>
               ) : field === "startDate" ||
                 field === "endDate" ||
                 field === "date" ? (
-                <Input
-                  id={`${field}-${entry.id}`}
-                  value={entry[field] || ""}
-                  onChange={(e) =>
-                    updateEntry(section, entry.id, field, e.target.value)
+                <CustomDatePicker
+                  date={entry[field] ? new Date(entry[field]) : undefined}
+                  onSelect={(date) =>
+                    updateEntry(
+                      section,
+                      entry.id,
+                      field,
+                      date ? date.toISOString() : ""
+                    )
                   }
-                  placeholder={`Enter ${field} (YYYY-MM)`}
-                  type="month"
                 />
               ) : field === "level" ? (
                 <Select
@@ -491,128 +618,78 @@ export default function LeftSideBar({
                     ))}
                   </SelectContent>
                 </Select>
-              ) : field === "categories" && section === "skills" ? (
+              ) : field === "skills" && section === "skills" ? (
                 <div className="space-y-4">
-                  {((entry[field] as SkillCategory[]) || []).map(
-                    (category, categoryIndex) => (
-                      <div key={category.id} className="border p-4 rounded-md">
-                        <h4 className="text-md font-semibold mb-2">
-                          Category {categoryIndex + 1}
-                        </h4>
+                  {(entry.skills || []).map(
+                    (skill: Skill, skillIndex: number) => (
+                      <div
+                        key={skillIndex}
+                        className="flex items-center space-x-2 mb-2"
+                      >
                         <Input
-                          value={category.name}
+                          value={skill.name}
                           onChange={(e) => {
-                            const updatedCategories = [...entry[field]];
-                            updatedCategories[categoryIndex] = {
-                              ...updatedCategories[categoryIndex],
+                            const updatedSkills = [...entry.skills];
+                            updatedSkills[skillIndex] = {
+                              ...updatedSkills[skillIndex],
                               name: e.target.value,
                             };
                             updateEntry(
                               section,
                               entry.id,
-                              field,
-                              updatedCategories
+                              "skills",
+                              updatedSkills
                             );
                           }}
-                          placeholder="Category name"
-                          className="mb-2"
+                          placeholder="Skill name"
                         />
-                        {category.skills.map((skill, skillIndex) => (
-                          <div
-                            key={skillIndex}
-                            className="flex items-center space-x-2 mb-2"
-                          >
-                            <Input
-                              value={skill.name}
-                              onChange={(e) => {
-                                const updatedCategories = [...entry[field]];
-                                const updatedSkills = [
-                                  ...updatedCategories[categoryIndex].skills,
-                                ];
-                                updatedSkills[skillIndex] = {
-                                  ...updatedSkills[skillIndex],
-                                  name: e.target.value,
-                                };
-                                updatedCategories[categoryIndex] = {
-                                  ...updatedCategories[categoryIndex],
-                                  skills: updatedSkills,
-                                };
-                                updateEntry(
-                                  section,
-                                  entry.id,
-                                  field,
-                                  updatedCategories
-                                );
-                              }}
-                              placeholder="Skill name"
-                            />
-                            <Select
-                              onValueChange={(value) => {
-                                const updatedCategories = [...entry[field]];
-                                const updatedSkills = [
-                                  ...updatedCategories[categoryIndex].skills,
-                                ];
-                                updatedSkills[skillIndex] = {
-                                  ...updatedSkills[skillIndex],
-                                  level: value,
-                                };
-                                updatedCategories[categoryIndex] = {
-                                  ...updatedCategories[categoryIndex],
-                                  skills: updatedSkills,
-                                };
-                                updateEntry(
-                                  section,
-                                  entry.id,
-                                  field,
-                                  updatedCategories
-                                );
-                              }}
-                              defaultValue={skill.level}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select level" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {["Beginner", "Intermediate", "Advanced"].map(
-                                  (level) => (
-                                    <SelectItem key={level} value={level}>
-                                      {level}
-                                    </SelectItem>
-                                  )
-                                )}
-                              </SelectContent>
-                            </Select>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() =>
-                                deleteSkill(entry.id, category.id, skillIndex)
-                              }
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        ))}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => addSkill(entry.id, category.id)}
-                          className="mr-2"
+                        <Select
+                          onValueChange={(value) => {
+                            const updatedSkills = [...entry.skills];
+                            updatedSkills[skillIndex] = {
+                              ...updatedSkills[skillIndex],
+                              level: value,
+                            };
+                            updateEntry(
+                              section,
+                              entry.id,
+                              "skills",
+                              updatedSkills
+                            );
+                          }}
+                          defaultValue={skill.level}
                         >
-                          Add Skill
-                        </Button>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select level" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Beginner", "Intermediate", "Advanced"].map(
+                              (level) => (
+                                <SelectItem key={level} value={level}>
+                                  {level}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() =>
-                            deleteSkillCategory(entry.id, category.id)
-                          }
+                          onClick={() => deleteSkill(entry.id, skillIndex)}
                         >
-                          Delete Category
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     )
                   )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addSkill(entry.id)}
+                    className="w-full"
+                  >
+                    Add Skill
+                  </Button>
                 </div>
               ) : (
                 <Input
@@ -626,48 +703,101 @@ export default function LeftSideBar({
               )}
             </div>
           ))}
-          {section !== "basics" &&
-            section !== "summary" &&
-            section !== "skills" && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => deleteEntry(section, entry.id)}
-              >
-                <Trash2 className="w-4 h-4 mr-2" /> Delete
-              </Button>
-            )}
+          {section !== "basics" && section !== "summary" && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => deleteEntry(section, entry.id)}
+            >
+              <Trash2 className="w-4 h-4 mr-2" /> Delete
+            </Button>
+          )}
         </div>
       </div>
     );
   };
 
-  const renderSheetContent = (section: keyof ResumeData) => {
-    const sectionEntries = resumeData[section] || [];
+  const renderSheetContent = (section: keyof ResumeData | string) => {
+    if (section === "createdOn" || section === "updatedOn")
+      return <React.Fragment></React.Fragment>;
+    console.log(section);
+    const sectionEntries =
+      (resumeData[section as keyof ResumeData] as any[]) || [];
+
+    console.log(sectionEntries);
 
     return (
       <div className="flex flex-col h-full">
         <ScrollArea className="flex-grow pr-4 my-8">
-          {sectionEntries.map((entry, index) =>
-            renderEntryFields(section, entry, index)
-          )}
           {sectionEntries.length === 0 && (
             <p className="text-center text-muted-foreground">
               No entries yet. Add some!
             </p>
+          )}
+          {sectionEntries.map((entry, index) =>
+            renderEntryFields(section, entry, index)
           )}
         </ScrollArea>
         {section !== "basics" && section !== "summary" && (
           <div className="mt-4 space-y-2 mb-12">
             <Button onClick={() => addEntry(section)} className="w-full">
               <Plus className="w-4 h-4 mr-2" />
-              {section === "skills" ? "Add New Category" : "Add New Entry"}
+              Add New Entry
             </Button>
           </div>
         )}
       </div>
     );
   };
+
+  const profileData = useAppSelector((state) => state?.profile);
+
+  const handleImport = () => {
+    console.log("Import from profile");
+    dispatch(UpdateLeftBarData(profileData));
+  };
+
+  const handleNewSectionName = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    if (sections.includes(ev.target.value.toLowerCase())) setisValid(false);
+    else setisValid(true);
+    setNewSectionName(ev.target.value);
+  };
+
+  const handleNewSectionRename = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    if (sections.includes(ev.target.value.toLowerCase()))
+      setisRenameValid(false);
+    else setisRenameValid(true);
+    setNewSectionTitle(ev.target.value);
+  };
+
+  const handleReset = () => {
+    console.log("Clear all data");
+    dispatch(Reset());
+  };
+
+  const handleAddSection = () => {
+    if (newSectionName) {
+      dispatch(AddCustomSection(newSectionName.toLowerCase()));
+      setNewSectionName("");
+      setIsAddSectionSheetOpen(false);
+    }
+  };
+
+  const handleDeleteSection = (sectionId: string) => {
+    dispatch(DeleteCustomSection(sectionId));
+  };
+
+  const handleRenameSection = (sectionId: string) => {
+    if (newSectionTitle) {
+      dispatch(
+        RenameCustomSection({ oldName: sectionId, newName: newSectionTitle })
+      );
+      setRenameSectionId(null);
+      setNewSectionTitle("");
+    }
+  };
+
+  console.log(resumeSections);
 
   return (
     <>
@@ -679,6 +809,23 @@ export default function LeftSideBar({
           renderSheetContent={renderSheetContent}
           isPanelOpen={isPanelOpen}
           setIsPanelOpen={setIsPanelOpen}
+          defaultSections={defaultSections}
+          handleDeleteSection={handleDeleteSection}
+          isCollapsed={isCollapsed}
+          setNewSectionTitle={setNewSectionTitle}
+          setRenameSectionId={setRenameSectionId}
+          handleNewSectionRename={handleNewSectionRename}
+          newSectionTitle={newSectionTitle}
+          renameSectionId={renameSectionId}
+          isRenameValid={isRenameValid}
+          handleRenameSection={handleRenameSection}
+          handleAddSection={handleAddSection}
+          handleNewSectionName={handleNewSectionName}
+          isAddSectionSheetOpen={isAddSectionSheetOpen}
+          isValid={isValid}
+          newSectionName={newSectionName}
+          setIsAddSectionSheetOpen={setIsAddSectionSheetOpen}
+          type="resume"
         />
       ) : (
         <div
@@ -706,41 +853,258 @@ export default function LeftSideBar({
               </Button>
             </div>
             <ScrollArea className="flex-grow">
-              <div className="p-4 space-y-4">
-                {resumeSections.map((section) => (
-                  <Sheet key={section.id}>
-                    <SheetTrigger asChild>
-                      <Button
-                        variant={
-                          activeSection === section.id ? "default" : "ghost"
-                        }
-                        className={`w-full justify-start ${
-                          isCollapsed ? "px-2" : ""
-                        }`}
-                        onClick={() => setActiveSection(section.id)}
-                      >
-                        {section.icon}
-                        {!isCollapsed && (
-                          <span className="ml-2">{section.title}</span>
-                        )}
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent
-                      side="left"
-                      className="w-[400px] sm:w-[540px]"
+              <div className="p-4 space-y-2">
+                {resumeSections.map((section) => {
+                  if (
+                    section.title !== "UpdatedOn" &&
+                    section.title !== "CreatedOn"
+                  ) {
+                    return (
+                      <Sheet key={section.id}>
+                        <SheetTrigger asChild>
+                          <div className="flex items-center">
+                            <Button
+                              variant={
+                                activeSection === section.id
+                                  ? "default"
+                                  : "ghost"
+                              }
+                              className={`w-full justify-start ${
+                                isCollapsed ? "px-2" : ""
+                              }`}
+                              onClick={() => setActiveSection(section.id)}
+                            >
+                              {section.icon}
+                              {!isCollapsed && (
+                                <span className="ml-2">{section.title}</span>
+                              )}
+                            </Button>
+                            {!isCollapsed &&
+                              !defaultSections.some(
+                                (s) => s.id === section.id
+                              ) && (
+                                <React.Fragment>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setRenameSectionId(section.id);
+                                      setNewSectionTitle(section.title);
+                                    }}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteSection(section.id);
+                                    }}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </React.Fragment>
+                              )}
+                          </div>
+                        </SheetTrigger>
+                        <SheetContent
+                          side="left"
+                          className="w-[400px] sm:w-[540px]"
+                        >
+                          <SheetHeader>
+                            <SheetTitle>Edit {section.title}</SheetTitle>
+                            <SheetDescription>
+                              Modify or add new entries to this section.
+                            </SheetDescription>
+                          </SheetHeader>
+                          {renderSheetContent(section.id)}
+                        </SheetContent>
+                      </Sheet>
+                    );
+                  } else {
+                    return <React.Fragment></React.Fragment>;
+                  }
+                })}
+                <Sheet
+                  open={renameSectionId !== null}
+                  onOpenChange={(open) => !open && setRenameSectionId(null)}
+                >
+                  <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+                    <SheetHeader>
+                      <SheetTitle>Rename Section</SheetTitle>
+                      <SheetDescription>
+                        Rename your existing section to a new title.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="space-y-4 mt-4">
+                      <Label htmlFor="rename-section-name">
+                        New Section Name
+                      </Label>
+                      <Input
+                        id="rename-section-name"
+                        value={newSectionTitle}
+                        onChange={handleNewSectionRename}
+                        placeholder="Enter new section name"
+                      />
+                      {!isRenameValid && (
+                        <span className="text-red-500 text-sm w-full text-center">
+                          This section already exists.
+                        </span>
+                      )}
+                      <div className="flex items-center justify-between mt-2">
+                        <Button
+                          onClick={
+                            isRenameValid
+                              ? //@ts-ignore
+                                () => handleRenameSection(renameSectionId)
+                              : undefined
+                          }
+                          className={`w-full ${
+                            !isRenameValid
+                              ? "cursor-not-allowed opacity-50"
+                              : ""
+                          }`}
+                        >
+                          Rename Section
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setRenameSectionId(null)}
+                          className="w-full mt-2"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
+                <Sheet
+                  open={isAddSectionSheetOpen}
+                  onOpenChange={setIsAddSectionSheetOpen}
+                >
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start ${
+                        isCollapsed ? "px-2" : ""
+                      }`}
                     >
-                      <SheetHeader>
-                        <SheetTitle>Edit {section.title}</SheetTitle>
-                        <SheetDescription>
-                          Modify or add new entries to this section.
-                        </SheetDescription>
-                      </SheetHeader>
-                      {renderSheetContent(section.id)}
-                    </SheetContent>
-                  </Sheet>
-                ))}
+                      <Plus className="w-4 h-4" />
+                      {!isCollapsed && (
+                        <span className="ml-2">Add Section</span>
+                      )}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+                    <SheetHeader>
+                      <SheetTitle>Add New Section</SheetTitle>
+                      <SheetDescription>
+                        Create a custom section for your resume.
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="space-y-4 mt-4">
+                      <Label htmlFor="new-section-name">Section Name</Label>
+                      <Input
+                        id="new-section-name"
+                        value={newSectionName}
+                        onChange={handleNewSectionName}
+                        placeholder="Enter section name"
+                      />
+                      {!isValid && (
+                        <span className="text-red-500 text-sm w-full text-center">
+                          This section already exists.
+                        </span>
+                      )}
+                      <Button
+                        onClick={isValid ? () => handleAddSection() : undefined}
+                        className={`w-full ${
+                          !isValid ? "cursor-not-allowed opacity-50" : ""
+                        }`}
+                      >
+                        Create Section
+                      </Button>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </ScrollArea>
+            <div
+              className={`border-t flex ${
+                isCollapsed
+                  ? "flex-col items-center"
+                  : "flex-row space-x-4 p-4 justify-center"
+              }`}
+            >
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant={isCollapsed ? null : "outline"}>
+                          <Import className="h-4 w-4" />{" "}
+                          {isCollapsed ? "" : "Import Data"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Import Data</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action will import data from your profile. Are
+                            you sure you want to continue?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleImport}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Import from profile</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant={isCollapsed ? null : "outline"}>
+                          <Eraser className="h-4 w-4" />
+                          {isCollapsed ? "" : "Clear Data"}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Clear All Data</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action will clear all your resume data. Are you
+                            sure you want to continue?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleReset}>
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Clear all data</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+             
+            </div>
           </div>
           <div
             className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-border hover:bg-muted"

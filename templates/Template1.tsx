@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
-import { ResumeData } from "@/types/types";
+import { ResumeData, ResumeDataTemp, Custom } from "@/types/types";
 import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { Github, Linkedin, Globe } from "lucide-react";
 import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
+import { formatDate } from "@/utils/formatDate";
 
 type SectionName =
   | "summary"
@@ -30,6 +31,7 @@ interface ModernResumeTemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
@@ -39,6 +41,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
@@ -48,8 +51,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
-  
-  const isSeparator = useAppSelector((state) => state.rightsidebar.separator)
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const isSeparator = useAppSelector((state) => state.rightsidebar.separator);
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -65,7 +68,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       fontWeight: "bold",
       marginBottom: isSeparator ? "0.5em" : "none",
       textTransform: "uppercase",
-      borderBottom: isSeparator ? `2px solid ${baseColor}` : 'none',
+      borderBottom: isSeparator ? `2px solid ${baseColor}` : "none",
       paddingBottom: "0.25em",
     },
     sectionTitleWithOutBorder: {
@@ -148,11 +151,11 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         );
 
       case "skills":
-        if (!content.skills?.[0]?.categories) return null;
+        if (content.skills?.length === 0) return null;
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>Skills</h2>
-            {content.skills[0].categories.map((category, index) => (
+            {content?.skills?.map((category, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
                   <div className="w-full flex items-center justify-between">
@@ -186,7 +189,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {edu.startDate} {edu.endDate && " - "} {edu.endDate}
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -223,7 +228,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {exp.startDate} {exp.endDate && " - "} {exp.endDate}
+                        {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
+                        {exp.endDate && " - "}{" "}
+                        {exp.endDate && formatDate(exp.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -273,8 +280,11 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                     <div>
                       <h3 style={styles.subtitle}>
-                        {project.startDate} {project.endDate && " - "}{" "}
-                        {project.endDate}
+                        {project.startDate &&
+                          formatDate(project.startDate, datetype)}{" "}
+                        {project.endDate && " - "}{" "}
+                        {project.endDate &&
+                          formatDate(project.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -307,7 +317,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{cert.name}</h3>
                     <div>
-                      <h3 style={styles.subtitle}>{cert.date}</h3>
+                      <h3 style={styles.subtitle}>
+                        {cert.date && formatDate(cert.date, datetype)}
+                      </h3>
                     </div>
                   </div>
                   <div className="w-full flex items-start justify-between">
@@ -410,7 +422,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {vol.startDate} - {vol.endDate}
+                        {vol.startDate && formatDate(vol.startDate, datetype)} -{" "}
+                        {vol.endDate && formatDate(vol.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
@@ -450,7 +463,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         </a>
                       )}
                     </div>
-                    <h3 style={styles.subtitle}>{pub.date}</h3>
+                    <h3 style={styles.subtitle}>
+                      {pub.date && formatDate(pub.date, datetype)}
+                    </h3>
                   </div>
 
                   <div className="w-full flex items-center justify-start">
@@ -485,7 +500,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
 
                     <div>
-                      <h3 style={styles.subtitle}>{award.date}</h3>
+                      <h3 style={styles.subtitle}>
+                        {award.date && formatDate(award.date, datetype)}
+                      </h3>
                     </div>
                   </div>
 
@@ -503,7 +520,89 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         );
 
       default:
-        return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
+        return (
+          <div className="mb-6">
+            <h2 style={styles.sectionTitle}>{sectionName}</h2>
+            {content[sectionName] &&
+              Array.isArray(content[sectionName]) &&
+              //@ts-ignore
+              content[sectionName]?.map((sec: Custom, index: number) => (
+                <div key={index} className="mb-4">
+                  <div className="flex flex-col justify-between">
+                    {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                    <div className="flex items-center justify-between">
+                      {/* Left Section: Name, Location, Link */}
+                      <div className="flex items-center gap-2">
+                        {/* Name */}
+                        {sec.name && (
+                          <h3 style={styles.subtitle}>{sec.name}</h3>
+                        )}
+
+                        {/* Location */}
+                        {sec.location && (
+                          <p style={styles.subtitle} className="">
+                            , {sec.location}
+                          </p>
+                        )}
+
+                        {/* URL Link */}
+                        {sec.url && (
+                          <a
+                            href={sec.url.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.link}
+                            className="flex items-center mx-2"
+                          >
+                            <p style={styles.normal}>
+                              {sec.url.label && <span className="mx-1">|</span>}
+                              {sec.url.label}
+                            </p>
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Right Section: Dates */}
+                      <div>
+                        {/* Start Date and End Date */}
+                        {sec.startDate && (
+                          <h3 style={styles.subtitle}>
+                            {formatDate(sec.startDate, datetype)}
+                            {sec.endDate &&
+                              ` - ${formatDate(sec.endDate, datetype)}`}
+                          </h3>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Description: Placed below the main row */}
+                    {sec.description && (
+                      <p style={styles.normal} className="mt-1">
+                        {sec.description}
+                      </p>
+                    )}
+
+                    {/* Summary: Placed below the description */}
+                    {sec.summary && (
+                      <div className="mt-2">
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={sec.summary}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        );
     }
   };
 
@@ -527,7 +626,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       }
     `}
       </style>
-      {sectionOrder.column1.map((sectionName) =>
+      {sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
         renderSection(sectionName as SectionName)
       )}
     </div>
