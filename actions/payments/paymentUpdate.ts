@@ -5,7 +5,7 @@ import { WebhookPayload } from "@/types/api-types";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
 
-export const paymentUpdate = asyncHandler(async (payload: WebhookPayload) => {
+export const paymentUpdate = asyncHandler(async (payload: any) => {
   if (!payload) {
     throw ActionsError.custom("No payload available", 400);
   }

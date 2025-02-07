@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 
     const email = payload.data.customer.email;
     if (
+      //@ts-ignore
       payload.data.payload_type === "Payment" &&
       !payload.data.subscription_id
     ) {
