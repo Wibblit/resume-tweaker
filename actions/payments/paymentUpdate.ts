@@ -30,7 +30,11 @@ export const paymentUpdate = asyncHandler(async (payload: any) => {
         status: payload.data.status,
         tax: payload.data.tax,
         total: payload.data.total_amount,
-        userId: payload.data.metadata.user_id,
+        user: {
+          connect: {
+            id: payload.data.metadata.user_id,
+          },
+        },
       },
     });
 
