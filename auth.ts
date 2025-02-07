@@ -60,7 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }: any) {
       session.user.id = token.id.toString() as string;
-      session.user.email = token.email; 
+      session.user.email = token.email;
       session.isNewUser = token.isNewUser;
       session.user.provider = token.provider;
       session.user.createdAt = token.createdAt;
@@ -70,6 +70,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       let existingUser = await prisma.user.findUnique({
         where: { email: user.email! },
       });
+      if (
+        existingUser &&
+        account?.provider &&
+        existingUser?.provider !== account?.provider
+      ) {
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { provider: account.provider },
+        });
+      }
       if (!existingUser) {
         if (user && user.email && profile && account && account.provider) {
           existingUser = await prisma.user.create({
