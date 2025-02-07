@@ -131,16 +131,16 @@ export default function Pricing() {
     {
       name: "Starter",
       baseCredits: 200,
-      price: "299 Rs",
+      price: "299",
       popular: false,
       productId: "pdt_DyYl9HeGUDa1yPqwLnx4Q",
     },
     {
       name: "Essential",
       baseCredits: 400,
-      price: " ",
+      price: "458",
       popular: true,
-      productId: "",
+      productId: "pdt_xDPkyF0HvKOsJ0TsWVQ90",
     },
     {
       name: "Power",
