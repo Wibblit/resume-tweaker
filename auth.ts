@@ -38,7 +38,7 @@ export const providerMap = providers.map((provider) => {
     return { id: provider.id, name: provider.name };
   }
 });
-
+let callbackUrl = "";
 //main
 export const { handlers, signIn, signOut, auth, } = NextAuth({
   theme: {
@@ -46,7 +46,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
   },
   providers,
   pages: {
-    signIn: "/login",
+    signIn: `/login?callbackUrl=${callbackUrl}`,
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -81,6 +81,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
         });
       }
       if (!existingUser) {
+        callbackUrl = "/onboarding"
         if (user && user.email && profile && account && account.provider) {
           existingUser = await prisma.user.create({
             data: {
@@ -89,7 +90,8 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
               image: user.image || profile?.picture || null,
               provider: account.provider,
             },
-          });
+          }
+        );
           await prisma.userAssets.create({
             data: {
               userId: existingUser?.id,
@@ -97,6 +99,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
           });
         }
       }
+      callbackUrl = ""
       user.id = existingUser?.id;
       user.provider = account?.provider as string;
       user.createdAt = existingUser?.createdAt.toISOString();

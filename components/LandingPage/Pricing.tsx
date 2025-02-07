@@ -1,6 +1,6 @@
 "use client";
 
-import { useState} from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,9 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check,Sparkles, Star } from "lucide-react";
+import { Check, Sparkles, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { QuantityDialog } from "@/app/pricing/QuantityDialog";
+import { QuantityDialog } from "@/app/(staticPages)/pricing/QuantityDialog";
 import { useSession } from "next-auth/react";
 import { GradientText } from "../gradient-text";
 
@@ -93,17 +93,19 @@ export default function Pricing() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-              <GradientText>
-                   Simple, Transparent Pricing
-              </GradientText>
+            <GradientText>
+              Simple, Transparent Pricing
+            </GradientText>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Choose the perfect plan for your career growth. All plans include
             {" "}
             <span className="text-primary font-semibold">
-            full access
-            </span> to our AI-powered tools
-            .
+              full access
+            </span> to our AI-powered tools. We accept {" "}
+            <span className="text-primary font-semibold">
+              100+
+            </span> currencies.
           </p>
         </div>
 
@@ -111,9 +113,8 @@ export default function Pricing() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col pb-4 ${
-                plan.popular ? "border-primary shadow-lg scale-105" : ""
-              }`}
+              className={`relative flex flex-col pb-4 ${plan.popular ? "border-primary shadow-lg scale-105" : ""
+                }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -150,7 +151,12 @@ export default function Pricing() {
               <CardFooter>
                 <Button
                   className="w-full"
-                  onClick={() => handleGetStarted(plan)}
+                  onClick={() => {
+                    if (!session) {
+                      return router.push("/login")
+                    }
+                    handleGetStarted(plan)
+                  }}
                   variant={plan.popular ? "default" : "outline"}
                 >
                   Get Started
@@ -166,9 +172,8 @@ export default function Pricing() {
             onClose={() => setIsDialogOpen(false)}
             onConfirm={handleConfirmQuantity}
             title={`Purchase ${selectedPlan.name} Credits`}
-            description={`Each ${
-              selectedPlan.name
-            } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
+            description={`Each ${selectedPlan.name
+              } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
             initialQuantity={1}
             maxQuantity={10}
             baseCredits={selectedPlan.baseCredits}

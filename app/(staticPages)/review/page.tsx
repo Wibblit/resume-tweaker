@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import ReviewPage from "@/components/ReviewPage/reviewpage";
+import ReviewPage from "@/components/LandingPage/LandingReviewPage";
 
 export const metadata: Metadata = {
   title: "AI Powered Resume Review | ResumeTweaker",

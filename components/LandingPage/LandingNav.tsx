@@ -73,7 +73,11 @@ export function LandingNav() {
               </div>
               <div className="flex items-center">
                 <ModeToggle />
-                <Link href={"/login"} className="inline-flex items- py-2 px-3 ml-3 bg-primary justify-center text-secondary gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">Login</Link>
+                <Link href={"/login"} className="px-3">
+                <Button variant={"silver"}>
+                Login
+                </Button>
+                </Link>
               </div>
             </div>
           </div>

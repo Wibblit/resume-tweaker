@@ -1,19 +1,12 @@
 import "./globals.css";
 import { Metadata } from "next";
-import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
-import { ToastProvider } from "@/components/ToastProviderWrapper";
-import { ReduxProvider } from "@/components/ReduxProvider";
 import { Montserrat as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { LandingNav } from "@/components/LandingNav";
-import Footer from "@/components/LandingPage/Footer";
 import { GoogleAnalytics } from "@next/third-parties/google"
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "next-auth/react";
-import { Provider } from "react-redux";
-import store from "@/store";
 import { Toaster } from "@/components/ui/toaster";
-
+import { ReduxWrapper } from "@/components/ReduxWrapper";
 export const metadata: Metadata = {
   title: {
     default: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
@@ -140,7 +133,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SessionProvider>
-            <Provider store={store}>{children}</Provider>
+            <ReduxWrapper>
+              {children}
+            </ReduxWrapper>
           </SessionProvider>
         </ThemeProvider>
         <Toaster />

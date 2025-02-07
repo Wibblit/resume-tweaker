@@ -657,7 +657,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
   );
   return (
     <div className="max-w-7xl mx-auto w-full p-2">
-      <h1 className="text-3xl font-bold mb-6">Profile</h1>
+      <h1 className="text-3xl font-bold my-6">Profile</h1>
       {isCreditsLoading ? (
         <Skeleton className="h-[200px] w-full" />
       ) : (

@@ -99,7 +99,7 @@ export default function ReviewPage() {
           analysis. Perfect your resume for your dream job.
         </p>
         <div className="flex gap-4 flex-wrap justify-center">
-          <Link href="/#join">
+          <Link href="/login?callbackUrl=/ai-review">
             {" "}
             <Button
               size="lg"
@@ -145,7 +145,7 @@ export default function ReviewPage() {
               "Language Enhancement",
               "Basic Improvement Suggestions",
             ]}
-            action={() => router.push("/#join")}
+            action={() => router.push("/login?callbackUrl=/ai-review")}
             />
           <TypeCard
             icon={<Sparkles className="w-6 h-6" />}
@@ -158,7 +158,7 @@ export default function ReviewPage() {
               "Qualification Matching",
               "Targeted Improvement Plan",
             ]}
-            action={() => router.push("/#join")}
+            action={() => router.push("/login?callbackUrl=/ai-review")}
             isPro
             />
         </div>
@@ -215,7 +215,7 @@ export default function ReviewPage() {
           Get instant feedback and improve your chances of landing your dream
           job.
         </p>
-        <Link href={'/#join'}>
+        <Link href={'/login?callbackUrl=/ai-review'}>
           <Button
             size="lg"
             variant={"silver"}

@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import EditorPage from "@/components/editor/editorPage"
+import EditorPage from "@/components/LandingPage/LandingEditorPage"
 
 export const metadata: Metadata = {
   title: "ResumeTweaker | AI Resume and Cover Letter Builder",

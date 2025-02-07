@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'SUCCESS', 'FAILED');
-
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
@@ -129,7 +126,7 @@ CREATE TABLE "payment" (
     "total" DECIMAL(10,2) NOT NULL,
     "tax" DECIMAL(10,2) NOT NULL,
     "currency" TEXT NOT NULL,
-    "status" "PaymentStatus" NOT NULL,
+    "status" TEXT NOT NULL,
     "credits" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

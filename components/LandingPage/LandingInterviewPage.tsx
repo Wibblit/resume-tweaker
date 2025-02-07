@@ -121,12 +121,12 @@ function InterviewPage() {
           <Button
             size="lg"
             variant={"silver"}
-            onClick={() => router.push("/#join")}
+            onClick={() => router.push("/login?callbackUrl=/ai-interview")}
             >
             <Video className="w-6 h-6 mr-2" />
             Start Interview
           </Button>
-          <Link href='/#join'>
+          <Link href='/login?callbackUrl=/ai-interview'>
             <Button
               size="lg"
               variant="outline">
@@ -175,7 +175,7 @@ function InterviewPage() {
               "Ideal for Structured Interview Preparation",
             ]}
             action={() =>
-              router.push("/#join")
+              router.push("/login?callbackUrl=/ai-interview")
             }
           />
           <TypeCard
@@ -188,7 +188,7 @@ function InterviewPage() {
               "Simulates Real-World Interview Dynamics",
               "Challenging and Engaging Practice",
             ]}
-            action={() => router.push("/#join")}
+            action={() => router.push("/login?callbackUrl=/ai-interview")}
             isPro
           />
         </div>
@@ -247,7 +247,7 @@ function InterviewPage() {
         <Button
           size="lg"
           variant={"silver"}
-          onClick={() => router.push("/#join")}
+          onClick={() => router.push("/login?callbackUrl=/ai-interview")}
         >
           Begin Your Practice Interview
         </Button>

@@ -86,125 +86,121 @@ function EditorPage() {
         bg-[size:6rem_4rem]
         [mask-image:linear-gradient(to_bottom,black_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
-        
-      {/* Hero Section */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-20"></div>
-      <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden ">
-        <div className="relative z-10">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
-            Create Professional Documents with
-            <br />
-            <GradientText className="text-5xl md:text-7xl mt-2">AI-Powered Editor</GradientText>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Craft compelling resumes and cover letters with our intelligent editor. Get AI assistance, choose from
-            multiple templates, and customize every detail.
-          </p>
-          <div className="flex gap-6 flex-wrap justify-center">
-            <Button
-              size="lg"
-              variant={"silver"}
-              onClick={() => router.push("/#join")}
-            >
-              <FileText className="w-6 h-6 mr-2" />
-              Create Resume
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/50"
-              onClick={() => router.push("/#join")}
+
+        {/* Hero Section */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-20"></div>
+        <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden ">
+          <div className="relative z-10">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
+              Create Professional Documents with
+              <br />
+              <GradientText className="text-5xl md:text-7xl mt-2">AI-Powered Editor</GradientText>
+            </h1>
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+              Craft compelling resumes and cover letters with our intelligent editor. Get AI assistance, choose from
+              multiple templates, and customize every detail.
+            </p>
+            <div className="flex gap-6 flex-wrap justify-center">
+              <Button
+                size="lg"
+                variant={"silver"}
+                onClick={() => router.push("/login")}
               >
-              Create Cover Letter
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <section className="container relative mx-auto max-w-7xl px-4 py-32">
-        <h2 className="text-4xl font-bold text-center mb-24">
-          <GradientText className="animate-[shine_8s_ease-in-out_infinite] bg-[size:200%_auto]">
-            Experience the Features
-          </GradientText>
-        </h2>
-
-        <div className="lg:grid lg:grid-cols-[1fr,2fr] gap-16 hidden">
-          {/* Feature Navigation */}
-          <div className="relative space-y-4">
-            {features.map((feature, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveFeature(index)}
-                className={`w-full group relative rounded-xl p-4 transition-all duration-300 ${
-                  activeFeature === index ? "bg-primary/5 shadow-lg" : "hover:bg-primary/5"
-                }`}
-                >
-                <div className="relative flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-opacity-10">{feature.icon}</div>
-                  <div className="flex-1 text-left ">
-                    <h3 className="font-semibold">{feature.title}</h3>
-                  </div>
-                  <ArrowRight
-                    className={`w-5 h-5 transition-transform duration-300 ${
-                      activeFeature === index ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
-                    }`}
-                  />
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* Feature Preview */}
-          <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-muted/50 via-muted/30 to-muted/10 p-1 ">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-20" />
-
-            {/* Video Container */}
-            <div className="relative h-full rounded-xl overflow-hidden bg-muted/30 ">
-              {features.map((feature, index) => (
-                <div
-                key={index}
-                className={`absolute inset-0 transition-all duration-500 ${
-                    activeFeature === index ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
-                  }`}
-                  >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-background/40 via-background/5 to-transparent" />
-                  <video
-                    ref={videoRefs.current[index]}
-                    className={`w-full h-full object-cover ${index >= 2 ? 'object-right' : 'object-left'} dark:bg-black bg-white`}
-                    loop
-                    muted
-                    playsInline
-                  >
-                    <source src={feature.video} type="video/mp4" />
-                    <center>Your browser does not support video tags</center>
-                  </video>
-
-                  {/* Feature Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent">
-                    <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 rounded-lg text-white bg-opacity-20">{feature.icon}</div>
-                        <h3 className="text-xl text-white font-semibold">{feature.title}</h3>
-                      </div>
-                      <div className="px-3 text-white">{feature.description}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                <FileText className="w-6 h-6 mr-2" />
+                Create Resume
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/50"
+                onClick={() => router.push("/login")}
+              >
+                Create Cover Letter
+              </Button>
             </div>
           </div>
-        </div>
-        <div className="block lg:hidden">
-          <div className="flex justify-between sm:justify-center sm:gap-3 px-1 mb-3 sm:mb-6 sm:px-10">
+        </section>
+
+        <section className="container relative mx-auto max-w-7xl px-4 py-32">
+          <h2 className="text-4xl font-bold text-center mb-24">
+            <GradientText className="animate-[shine_8s_ease-in-out_infinite] bg-[size:200%_auto]">
+              Experience the Features
+            </GradientText>
+          </h2>
+
+          <div className="lg:grid lg:grid-cols-[1fr,2fr] gap-16 hidden">
+            {/* Feature Navigation */}
+            <div className="relative space-y-4">
               {features.map((feature, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveFeature(index)}
-                  className={`p-2 sm:p-3 md:p-4 rounded-lg transition-all duration-300  ${
-                    activeFeature === index
+                  className={`w-full group relative rounded-xl p-4 transition-all duration-300 ${activeFeature === index ? "bg-primary/5 shadow-lg" : "hover:bg-primary/5"
+                    }`}
+                >
+                  <div className="relative flex items-center gap-4">
+                    <div className="p-2 rounded-lg bg-opacity-10">{feature.icon}</div>
+                    <div className="flex-1 text-left ">
+                      <h3 className="font-semibold">{feature.title}</h3>
+                    </div>
+                    <ArrowRight
+                      className={`w-5 h-5 transition-transform duration-300 ${activeFeature === index ? "translate-x-0 opacity-100" : "-translate-x-4 opacity-0"
+                        }`}
+                    />
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Feature Preview */}
+            <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gradient-to-br from-muted/50 via-muted/30 to-muted/10 p-1 ">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent opacity-20" />
+
+              {/* Video Container */}
+              <div className="relative h-full rounded-xl overflow-hidden bg-muted/30 ">
+                {features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-all duration-500 ${activeFeature === index ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                      }`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-tr from-background/40 via-background/5 to-transparent" />
+                    <video
+                      ref={videoRefs.current[index]}
+                      className={`w-full h-full object-cover ${index >= 2 ? 'object-right' : 'object-left'} dark:bg-black bg-white`}
+                      loop
+                      muted
+                      playsInline
+                    >
+                      <source src={feature.video} type="video/mp4" />
+                      <center>Your browser does not support video tags</center>
+                    </video>
+
+                    {/* Feature Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="p-2 rounded-lg text-white bg-opacity-20">{feature.icon}</div>
+                          <h3 className="text-xl text-white font-semibold">{feature.title}</h3>
+                        </div>
+                        <div className="px-3 text-white">{feature.description}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="block lg:hidden">
+            <div className="flex justify-between sm:justify-center sm:gap-3 px-1 mb-3 sm:mb-6 sm:px-10">
+              {features.map((feature, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveFeature(index)}
+                  className={`p-2 sm:p-3 md:p-4 rounded-lg transition-all duration-300  ${activeFeature === index
                       ? 'bg-card text-foreground scale-105 sm:scale-110 border'
                       : 'text-muted-foreground/60 hover:text-foreground/90'
-                  }`}
+                    }`}
                 >
                   <div className="flex-col justify-start">
                     <div className="p-2 rounded-lg bg-opacity-10 sm:inline-block">{feature.icon}</div>
@@ -214,41 +210,40 @@ function EditorPage() {
                   </div>
                 </button>
               ))}
-          </div>
-          <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-3 sm:mb-4">
-              {features.map((feature, index) => (
-                <div
-                  key={index}
-                  className={`absolute inset-0 transition-all duration-500 ${
-                    activeFeature === index ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
-                  }`}
-                >
-                  <video
-                    ref={videoRefs.current[index]}
-                    className="w-full h-full object-cover dark:bg-black bg-white"
-                    loop
-                    muted
-                    playsInline
-                    autoPlay
+            </div>
+            <div className="max-w-4xl mx-auto">
+              <div className="relative aspect-[16/10] rounded-xl overflow-hidden mb-3 sm:mb-4">
+                {features.map((feature, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-all duration-500 ${activeFeature === index ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
+                      }`}
                   >
-                    <source src={feature.video} type="video/mp4" />
-                    <center>Your browser does not support video tags</center>
-                  </video>
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent">
-                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6">
-                      <h3 className="text-lg sm:text-xl md:text-2xl text-white font-semibold">{feature.title}</h3>
-                      <p className="text-white/90 mt-1 sm:mt-2 text-xs sm:text-sm md:text-base">{feature.description}</p>
+                    <video
+                      ref={videoRefs.current[index]}
+                      className="w-full h-full object-cover dark:bg-black bg-white"
+                      loop
+                      muted
+                      playsInline
+                      autoPlay
+                    >
+                      <source src={feature.video} type="video/mp4" />
+                      <center>Your browser does not support video tags</center>
+                    </video>
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-6">
+                        <h3 className="text-lg sm:text-xl md:text-2xl text-white font-semibold">{feature.title}</h3>
+                        <p className="text-white/90 mt-1 sm:mt-2 text-xs sm:text-sm md:text-base">{feature.description}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-                    </div>
+        </section>
+      </div>
 
       {/* Document Types */}
       <section className="container mx-auto max-w-7xl px-4 py-20 relative">
@@ -271,7 +266,7 @@ function EditorPage() {
                 "Export to PDF or JSON format",
                 "Real-time AI writing assistance",
               ]}
-              action={() => router.push("/#join")}
+              action={() => router.push("/login")}
             />
 
             <TypeCard
@@ -285,7 +280,7 @@ function EditorPage() {
                 "Export options",
                 "Real-time formatting preview",
               ]}
-              action={() => router.push("/#join")}
+              action={() => router.push("/login")}
             />
           </div>
         </div>
@@ -365,7 +360,7 @@ function EditorPage() {
         <Button
           size="lg"
           variant={"silver"}
-          onClick={() => router.push("/#join")}
+          onClick={() => router.push("/login")}
         >
           Get Started Now
         </Button>
