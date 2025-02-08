@@ -28,7 +28,7 @@ export const paymentUpdate = asyncHandler(async (payload: any) => {
         productName: payload.data.metadata.packname,
         quantity: payload.data.product_cart[0].quantity,
         status: payload.data.status,
-        tax: payload.data.tax,
+        tax: payload.data.tax ?? 0,
         total: payload.data.total_amount,
         user: {
           connect: {
