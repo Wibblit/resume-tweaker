@@ -91,7 +91,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
               provider: account.provider,
             },
           }
-        );
+          );
           await prisma.userAssets.create({
             data: {
               userId: existingUser?.id,
@@ -109,10 +109,10 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
       const isLoggedIn = !!auth?.user;
       const protectedRoutes = [
         "/home",
-        "/ai-interview",
-        "/ai-review",
+        "/home/ai-interview",
+        "/home/ai-review",
         "/profile",
-        "/editor",
+        "/home/editor",
       ];
       const isProtectedRoute = protectedRoutes.some((route) =>
         nextUrl.pathname.startsWith(route)

@@ -210,7 +210,7 @@ export function PaymentHistoryModal({
                       {payment.status}
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm md:text-base">
-                      {new Date(payment.updatedAt).toLocaleString()}
+                      {new Date(payment.updatedAt).toLocaleDateString("en-US", {year: "numeric", month: "long", day: "2-digit"})}
                     </TableCell>
                   </TableRow>
                 ))}

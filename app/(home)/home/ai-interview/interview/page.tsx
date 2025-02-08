@@ -156,10 +156,9 @@ export default function InterviewPage() {
     return <AIInterviewSkeleton interviewType="interview" />;
   }
 
-  return router.push("/")
   return (
     <main className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8 text-center text-foreground">
+      <h1 className="text-3xl font-bold my-4 text-center text-foreground">
         AI Interview
       </h1>
       {interviewData.interviewType === "adaptive" ? (

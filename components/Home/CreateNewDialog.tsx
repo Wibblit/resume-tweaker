@@ -124,7 +124,7 @@ export function CreateNewDialog({
             })
           );
 
-          router.push("/editor");
+          router.push("/home/editor");
         } else {
           toast({
             title: `Error ${response.status}`,
@@ -163,7 +163,7 @@ export function CreateNewDialog({
               currCoverName: response?.cover?.coverName as string,
             })
           );
-          router.push("/covereditor");
+          router.push("/home/covereditor");
         } else {
           toast({
             title: "Error",

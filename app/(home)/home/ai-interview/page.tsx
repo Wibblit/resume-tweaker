@@ -5,7 +5,8 @@ import { prisma } from "@/prisma";
 
 export default async function AIInterviewPage() {
   const session = await auth();
-  if (!session?.user) return redirect("/login?callbackUrl=/ai-interview");
+  console.log("session:KJDSKJGFJSHDF",session)
+  if (!session?.user) return redirect("/login?callbackUrl=/home/ai-interview");
 
   const result = await prisma.resume.findMany({
     where: {

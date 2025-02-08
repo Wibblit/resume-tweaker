@@ -85,30 +85,30 @@ export default function ReviewPage() {
         bg-[size:6rem_4rem]
         [mask-image:linear-gradient(to_bottom,white_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,white_95%,transparent)]">
-<div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-10"/>
-      <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-          Optimize Your Resume with
-          <br />
-          <GradientText className="text-5xl md:text-7xl">
-            AI-Powered Review
-          </GradientText>
-        </h1>
-        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Get instant, professional feedback on your resume with advanced AI
-          analysis. Perfect your resume for your dream job.
-        </p>
-        <div className="flex gap-4 flex-wrap justify-center">
-          <Link href="/login?callbackUrl=/ai-review">
-            {" "}
-            <Button
-              size="lg"
-              variant={"silver"}
-            >
-              <FileText className="w-6 h-6 mr-2" />
-              Review My Resume
-            </Button>
-          </Link>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-10" />
+        <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Optimize Your Resume with
+            <br />
+            <GradientText className="text-5xl md:text-7xl">
+              AI-Powered Review
+            </GradientText>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Get instant, professional feedback on your resume with advanced AI
+            analysis. Perfect your resume for your dream job.
+          </p>
+          <div className="flex gap-4 flex-wrap justify-center">
+            <Link href="/login?callbackUrl=/home/ai-review">
+              {" "}
+              <Button
+                size="lg"
+                variant={"silver"}
+              >
+                <FileText className="w-6 h-6 mr-2" />
+                Review My Resume
+              </Button>
+            </Link>
 
             <Button
               size="lg"
@@ -116,64 +116,64 @@ export default function ReviewPage() {
               onClick={() => {
                 const reviewTypesSection =
                   document.getElementById("review-types");
-                  reviewTypesSection?.scrollIntoView({ behavior: "smooth" });
-                }}
-                >
+                reviewTypesSection?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
               Learn More
             </Button>
-        </div>
-      </section>
-
-      {/* Review Types Section */}
-      <section
-        id="review-types"
-        className="container mx-auto max-w-7xl px-4 py-20"
-        >
-        <h2 className="text-3xl font-bold text-center mb-12">
-          <GradientText>Choose Your Review Type</GradientText>
-        </h2>
-
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          <TypeCard
-            icon={<CheckCircle className="w-6 h-6" />}
-            title="Generic Review"
-            description="Comprehensive analysis of your resume's structure, content, and impact. Perfect for overall resume improvement."
-            features={[
-              "ATS Compatibility Check",
-              "Content Quality Analysis",
-              "Format Optimization",
-              "Language Enhancement",
-              "Basic Improvement Suggestions",
-            ]}
-            action={() => router.push("/login?callbackUrl=/ai-review")}
-            />
-          <TypeCard
-            icon={<Sparkles className="w-6 h-6" />}
-            title="Tailored Review"
-            description="Job-specific analysis comparing your resume against the target role. Upload a job description for customized feedback."
-            features={[
-              "Keyword Alignment Analysis",
-              "Skills Gap Identification",
-              "Job-Specific Recommendations",
-              "Qualification Matching",
-              "Targeted Improvement Plan",
-            ]}
-            action={() => router.push("/login?callbackUrl=/ai-review")}
-            isPro
-            />
-        </div>
-
-        {/* Process Steps */}
-        <h2 className="text-3xl font-bold text-center mb-12">
-          <GradientText>How It Works</GradientText>
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {processSteps.map((step, index) => (
-            <ProcessStep key={index} {...step} index={index} />
-          ))}
-        </div>
-      </section>
           </div>
+        </section>
+
+        {/* Review Types Section */}
+        <section
+          id="review-types"
+          className="container mx-auto max-w-7xl px-4 py-20"
+        >
+          <h2 className="text-3xl font-bold text-center mb-12">
+            <GradientText>Choose Your Review Type</GradientText>
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-16">
+            <TypeCard
+              icon={<CheckCircle className="w-6 h-6" />}
+              title="Generic Review"
+              description="Comprehensive analysis of your resume's structure, content, and impact. Perfect for overall resume improvement."
+              features={[
+                "ATS Compatibility Check",
+                "Content Quality Analysis",
+                "Format Optimization",
+                "Language Enhancement",
+                "Basic Improvement Suggestions",
+              ]}
+              action={() => router.push("/login?callbackUrl=/home/ai-review")}
+            />
+            <TypeCard
+              icon={<Sparkles className="w-6 h-6" />}
+              title="Tailored Review"
+              description="Job-specific analysis comparing your resume against the target role. Upload a job description for customized feedback."
+              features={[
+                "Keyword Alignment Analysis",
+                "Skills Gap Identification",
+                "Job-Specific Recommendations",
+                "Qualification Matching",
+                "Targeted Improvement Plan",
+              ]}
+              action={() => router.push("/login?callbackUrl=/home/ai-review")}
+              isPro
+            />
+          </div>
+
+          {/* Process Steps */}
+          <h2 className="text-3xl font-bold text-center mb-12">
+            <GradientText>How It Works</GradientText>
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {processSteps.map((step, index) => (
+              <ProcessStep key={index} {...step} index={index} />
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* Sample Results Section */}
       <section className="mx-auto px-4 py-20 max-w-7xl">
@@ -215,11 +215,11 @@ export default function ReviewPage() {
           Get instant feedback and improve your chances of landing your dream
           job.
         </p>
-        <Link href={'/login?callbackUrl=/ai-review'}>
+        <Link href={'/login?callbackUrl=/home/ai-review'}>
           <Button
             size="lg"
             variant={"silver"}
-            // onClick={() => router.push("/ai-review")}
+          // onClick={() => router.push("/home/ai-review")}
           >
             Start Resume Review
           </Button>

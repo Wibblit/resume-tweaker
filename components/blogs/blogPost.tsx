@@ -44,7 +44,7 @@ export default function BlogPost({ data }: BlogPostProps) {
   const [showAllToc, setShowAllToc] = useState<boolean>(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
-
+  const {toast} = useToast();
   useEffect(() => {
     setLoading(true);
     const setData = async () => {
@@ -419,3 +419,5 @@ export default function BlogPost({ data }: BlogPostProps) {
     </article>
   );
 }
+
+

@@ -188,7 +188,7 @@ export default function ComprehensiveInterview({
       if (isPlayingAudio) {
         stopAudio();
       }
-      router.replace("/ai-interview");
+      router.replace("/home/ai-interview");
     } catch (error) {
       console.error("Error during quit:", error);
       setIsQuitting(false);
@@ -441,7 +441,7 @@ export default function ComprehensiveInterview({
           </span>
           {isInterviewComplete ? (
             <Button
-              onClick={() => router.replace("/ai-interview")}
+              onClick={() => router.replace("/home/ai-interview")}
               variant="outline"
               className="flex items-center gap-2"
               disabled={isQuitting || isProcessing}
@@ -472,24 +472,21 @@ export default function ComprehensiveInterview({
               timeLeft > (duration * 60) / 2
                 ? "white"
                 : `rgb(
-                    ${
-                      127 +
-                      Math.floor(
-                        (255 - 127) * (timeLeft / ((duration * 60) / 2))
-                      )
-                    },
-                    ${
-                      29 +
-                      Math.floor(
-                        (255 - 29) * (timeLeft / ((duration * 60) / 2))
-                      )
-                    },
-                    ${
-                      29 +
-                      Math.floor(
-                        (255 - 29) * (timeLeft / ((duration * 60) / 2))
-                      )
-                    }
+                    ${127 +
+                Math.floor(
+                  (255 - 127) * (timeLeft / ((duration * 60) / 2))
+                )
+                },
+                    ${29 +
+                Math.floor(
+                  (255 - 29) * (timeLeft / ((duration * 60) / 2))
+                )
+                },
+                    ${29 +
+                Math.floor(
+                  (255 - 29) * (timeLeft / ((duration * 60) / 2))
+                )
+                }
                   )`,
             color: timeLeft < duration * 60 * 0.18 ? "white" : "black",
           }}
@@ -605,7 +602,7 @@ export default function ComprehensiveInterview({
               >
                 {isNextLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {currentQuestionIndex === questions.length - 1 ||
-                timeLeft === 0 ? (
+                  timeLeft === 0 ? (
                   <span className="flex gap-2 items-center">
                     Get report <ClipboardCheck className="w-4 h-4" />
                   </span>

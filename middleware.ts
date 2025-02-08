@@ -91,12 +91,12 @@ export default auth(async function middleware(req: NextRequest) {
     }
   }
 
-  if (req.nextUrl.pathname.startsWith("/ai-interview/interview")) {
+  if (req.nextUrl.pathname.startsWith("/home/ai-interview/interview")) {
     const url = new URL(req.url);
     const interviewType = url.searchParams.get("interviewType");
 
     if (!interviewType || !creditList.has(interviewType)) {
-      return NextResponse.redirect(new URL("/ai-interview", req.url));
+      return NextResponse.redirect(new URL("/home/ai-interview", req.url));
     }
 
     const requiredCredits = creditList.get(interviewType) ?? 0;
@@ -120,7 +120,7 @@ export default auth(async function middleware(req: NextRequest) {
       if (!data || data.Credits.credits < requiredCredits) {
         return NextResponse.redirect(
           new URL(
-            `/ai-interview?modal=true&credits=${requiredCredits}&featureName=${interviewType}`,
+            `/home/ai-interview?modal=true&credits=${requiredCredits}&featureName=${interviewType}`,
             req.url
           )
         );

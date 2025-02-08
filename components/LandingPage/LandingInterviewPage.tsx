@@ -102,57 +102,57 @@ function InterviewPage() {
         [mask-image:linear-gradient(to_bottom,black_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
 
-      {/* Hero Section */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_300px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_300px,#000,transparent)] -z-10"/>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8"></div>
-      <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-          Master Your Next Interview with
-          <br />
-          <GradientText className="text-5xl md:text-7xl">
-            AI-Powered Practice
-          </GradientText>
-        </h1>
-        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Experience realistic interview simulations with advanced AI
-          technology. Perfect your responses and boost your confidence.
-        </p>
-        <div className="flex gap-4 flex-wrap justify-center">
-          <Button
-            size="lg"
-            variant={"silver"}
-            onClick={() => router.push("/login?callbackUrl=/ai-interview")}
-            >
-            <Video className="w-6 h-6 mr-2" />
-            Start Interview
-          </Button>
-          <Link href='/login?callbackUrl=/ai-interview'>
+        {/* Hero Section */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_300px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_300px,#000,transparent)] -z-10" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8"></div>
+        <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Master Your Next Interview with
+            <br />
+            <GradientText className="text-5xl md:text-7xl">
+              AI-Powered Practice
+            </GradientText>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Experience realistic interview simulations with advanced AI
+            technology. Perfect your responses and boost your confidence.
+          </p>
+          <div className="flex gap-4 flex-wrap justify-center">
             <Button
               size="lg"
-              variant="outline">
-              Learn More
+              variant={"silver"}
+              onClick={() => router.push("/login?callbackUrl=/home/ai-interview")}
+            >
+              <Video className="w-6 h-6 mr-2" />
+              Start Interview
             </Button>
-          </Link>
-        </div>
+            <Link href='/login?callbackUrl=/home/ai-interview'>
+              <Button
+                size="lg"
+                variant="outline">
+                Learn More
+              </Button>
+            </Link>
+          </div>
 
-        {/* Video Placeholder */}
-        <div className="w-full">
-          <div className="mt-16 rounded-xl max-w-7xl bg-zinc-900/5 dark:bg-zinc-100/5 p-2 border-2 border-zinc-900/10 dark:border-zinc-100/10">
-            <div className="aspect-video rounded-lg bg-zinc-900/10 dark:bg-zinc-100/10 flex items-center justify-center">
-              <iframe
-                loading="lazy"
-                className="w-full h-full rounded-lg"
-                src="https://www.youtube.com/embed/algtoUPPyq8"
-                title="YouTube video player"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
+          {/* Video Placeholder */}
+          <div className="w-full">
+            <div className="mt-16 rounded-xl max-w-7xl bg-zinc-900/5 dark:bg-zinc-100/5 p-2 border-2 border-zinc-900/10 dark:border-zinc-100/10">
+              <div className="aspect-video rounded-lg bg-zinc-900/10 dark:bg-zinc-100/10 flex items-center justify-center">
+                <iframe
+                  loading="lazy"
+                  className="w-full h-full rounded-lg"
+                  src="https://www.youtube.com/embed/algtoUPPyq8"
+                  title="YouTube video player"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
                 ></iframe>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-                </div>
+        </section>
+      </div>
 
       {/* Features Section */}
       <section
@@ -175,7 +175,7 @@ function InterviewPage() {
               "Ideal for Structured Interview Preparation",
             ]}
             action={() =>
-              router.push("/login?callbackUrl=/ai-interview")
+              router.push("/login?callbackUrl=/home/ai-interview")
             }
           />
           <TypeCard
@@ -188,7 +188,7 @@ function InterviewPage() {
               "Simulates Real-World Interview Dynamics",
               "Challenging and Engaging Practice",
             ]}
-            action={() => router.push("/login?callbackUrl=/ai-interview")}
+            action={() => router.push("/login?callbackUrl=/home/ai-interview")}
             isPro
           />
         </div>
@@ -247,7 +247,7 @@ function InterviewPage() {
         <Button
           size="lg"
           variant={"silver"}
-          onClick={() => router.push("/login?callbackUrl=/ai-interview")}
+          onClick={() => router.push("/login?callbackUrl=/home/ai-interview")}
         >
           Begin Your Practice Interview
         </Button>

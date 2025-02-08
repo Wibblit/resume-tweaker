@@ -228,13 +228,13 @@ export default function InterviewSetup({
         numberOfQuestions: numberOfQuestions.toString(),
         interviewType: formData.interviewType,
         duration: formData.duration.toString(),
-        resumeText: resumeOption === "select" ? JSON.stringify(userSelectedResume)  : resumeText,
+        resumeText: resumeOption === "select" ? JSON.stringify(userSelectedResume) : resumeText,
         interviewerPosition: formData.interviewerPosition,
         resumeOption,
         selectedResume,
       }).toString();
       dispatch(setFormData(formData));
-      router.push(`/ai-interview/interview?${queryParams}`);
+      router.push(`/home/ai-interview/interview?${queryParams}`);
     } catch (error) {
       console.error("Error generating questions:", error);
       toast({

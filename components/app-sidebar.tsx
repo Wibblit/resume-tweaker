@@ -60,8 +60,8 @@ import { usePathname } from "next/navigation";
 // Menu items.
 const items = [
   { title: "Resumes", icon: FileText, url: "/home" },
-  { title: "AI Review", icon: Star, url: "/ai-review" },
-  { title: "AI Interview", icon: MessageSquare, url: "/ai-interview" },
+  { title: "AI Review", icon: Star, url: "/home/ai-review" },
+  { title: "AI Interview", icon: MessageSquare, url: "/home/ai-interview" },
   { title: "Profile", icon: User, url: "/profile" },
 ];
 
@@ -147,9 +147,8 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-          className={`p-3 bg-background/80 rounded-md ${
-            isCollapsed && "flex items-center justify-center"
-          }`}
+          className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"
+            }`}
         >
           <Tooltip>
             <TooltipTrigger asChild>

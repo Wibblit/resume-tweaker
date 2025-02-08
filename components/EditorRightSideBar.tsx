@@ -204,7 +204,7 @@ export default function EditorRightSideBar({
   setIsMobileMenuOpen,
   currentRoute,
 }: RightSideBarProps) {
-  const show = currentRoute === "/editor";
+  const show = currentRoute === "/home/editor";
   const { theme, setTheme } = useTheme();
   const [dark, setDark] = useState<boolean>(theme === "dark");
   const [paperFormat, setPaperFormat] = useState<string>("a4");
@@ -426,55 +426,55 @@ export default function EditorRightSideBar({
                 <div className="grid grid-cols-2 gap-4 pr-4">
                   {!show
                     ? covertemplate.map((template) => (
-                        <SheetClose asChild key={template.id}>
-                          <Button
-                            variant="outline"
-                            className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            onClick={() => {
-                              setSelectedTemplate(template.name);
-                              dispatch(UpdateId(template.id));
-                            }}
-                          >
-                            <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
-                              <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                              <Image
-                                src={template.image}
-                                alt={`${template.name} template`}
-                                fill
-                                className="absolute inset-0 w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </div>
-                            <div className="p-2 text-center font-medium">
-                              {template.name}
-                            </div>
-                          </Button>
-                        </SheetClose>
-                      ))
+                      <SheetClose asChild key={template.id}>
+                        <Button
+                          variant="outline"
+                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          onClick={() => {
+                            setSelectedTemplate(template.name);
+                            dispatch(UpdateId(template.id));
+                          }}
+                        >
+                          <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
+                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
+                            <Image
+                              src={template.image}
+                              alt={`${template.name} template`}
+                              fill
+                              className="absolute inset-0 w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className="p-2 text-center font-medium">
+                            {template.name}
+                          </div>
+                        </Button>
+                      </SheetClose>
+                    ))
                     : templates.map((template) => (
-                        <SheetClose asChild key={template.id}>
-                          <Button
-                            variant="outline"
-                            className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            onClick={() => {
-                              setSelectedTemplate(template.name);
-                              dispatch(UpdateId(template.id));
-                            }}
-                          >
-                            <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
-                              <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                              <img
-                                src={template.image}
-                                alt={`${template.name} template`}
-                                className="absolute inset-0 w-full h-full object-cover"
-                              />
-                            </div>
-                            <div className="p-2 text-center font-medium">
-                              {template.name}
-                            </div>
-                          </Button>
-                        </SheetClose>
-                      ))}
+                      <SheetClose asChild key={template.id}>
+                        <Button
+                          variant="outline"
+                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                          onClick={() => {
+                            setSelectedTemplate(template.name);
+                            dispatch(UpdateId(template.id));
+                          }}
+                        >
+                          <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
+                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
+                            <img
+                              src={template.image}
+                              alt={`${template.name} template`}
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="p-2 text-center font-medium">
+                            {template.name}
+                          </div>
+                        </Button>
+                      </SheetClose>
+                    ))}
                 </div>
               </div>
             </SheetContent>
@@ -881,9 +881,8 @@ export default function EditorRightSideBar({
               const url = URL.createObjectURL(blob); // Generate a download URL
               const link = document.createElement("a"); // Create a hidden <a> element
               link.href = url;
-              link.download = `${
-                segment === "editor" ? "resume.json" : "coverletter.json"
-              }`; // Set the filename
+              link.download = `${segment === "editor" ? "resume.json" : "coverletter.json"
+                }`; // Set the filename
               link.click(); // Trigger download
               URL.revokeObjectURL(url); // Clean up the URL after download
             }}

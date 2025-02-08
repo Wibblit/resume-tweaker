@@ -5,7 +5,7 @@ import { prisma } from "@/prisma";
 
 export default async function AIReviewPage() {
   const session = await auth();
-  if (!session?.user) return redirect("/login?callbackUrl=/ai-review");
+  if (!session?.user) return redirect("/login?callbackUrl=/home/ai-review");
 
   const result = await prisma.resume.findMany({
     where: {

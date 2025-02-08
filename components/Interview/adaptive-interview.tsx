@@ -136,7 +136,7 @@ export default function AdaptiveInterview({
     if (isPlayingAudio) {
       stopAudio();
     }
-    router.replace("/ai-interview");
+    router.replace("/home/ai-interview");
   };
 
   const fetchFirstQuestion = async () => {
@@ -545,7 +545,7 @@ export default function AdaptiveInterview({
             <Button
               variant="outline"
               className="flex items-center gap-2"
-              onClick={() => router.replace("/ai-interview")}
+              onClick={() => router.replace("/home/ai-interview")}
             >
               <LogOut className="h-4 w-4" />
               Get back
@@ -568,12 +568,10 @@ export default function AdaptiveInterview({
               timeLeft > (duration * 60) / 2
                 ? "white" // or "black" for dark theme
                 : `rgb(
-            ${
-              127 + Math.floor((255 - 127) * (timeLeft / ((duration * 60) / 2)))
-            }, 
-            ${
-              29 + Math.floor((255 - 29) * (timeLeft / ((duration * 60) / 2)))
-            }, 
+            ${127 + Math.floor((255 - 127) * (timeLeft / ((duration * 60) / 2)))
+                }, 
+            ${29 + Math.floor((255 - 29) * (timeLeft / ((duration * 60) / 2)))
+                }, 
             ${29 + Math.floor((255 - 29) * (timeLeft / ((duration * 60) / 2)))}
           )`,
             color: timeLeft < duration * 60 * 0.18 ? "white" : "black", // Adjust text color for better contrast
@@ -638,13 +636,12 @@ export default function AdaptiveInterview({
                     }
                     variant={"link"}
                     size={"sm"}
-                    className={`text-blue-500 hover:underline flex items-center justify-center ${
-                      skipQuestionLoading ||
-                      !audioQueue[currentQuestionIndex] ||
-                      isoLoader
+                    className={`text-blue-500 hover:underline flex items-center justify-center ${skipQuestionLoading ||
+                        !audioQueue[currentQuestionIndex] ||
+                        isoLoader
                         ? "cursor-not-allowed opacity-50"
                         : ""
-                    }`}
+                      }`}
                   >
                     {skipQuestionLoading ? (
                       <>
@@ -732,18 +729,17 @@ export default function AdaptiveInterview({
                   !audioQueue[currentQuestionIndex]
                 }
                 variant="default"
-                className={`flex items-center justify-center ${
-                  skipQuestionLoading ||
-                  isNextLoading ||
-                  isoLoader ||
-                  !audioQueue[currentQuestionIndex]
+                className={`flex items-center justify-center ${skipQuestionLoading ||
+                    isNextLoading ||
+                    isoLoader ||
+                    !audioQueue[currentQuestionIndex]
                     ? "cursor-not-allowed opacity-50"
                     : ""
-                }`}
+                  }`}
               >
                 {isNextLoading && <Loader2 className="animate-spin mr-1" />}
                 {currentQuestionIndex === numberOfQuestions - 1 ||
-                timeLeft === 0 ? (
+                  timeLeft === 0 ? (
                   <span className="flex gap-2 items-center">
                     Get report <ClipboardCheck className="w-4 h-4" />
                   </span>

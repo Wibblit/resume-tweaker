@@ -54,7 +54,7 @@ export default function ResumeItem({
         currResumeName: resume.resumeName,
       }),
     );
-    router.push(`/editor`);
+    router.push(`/home/editor`);
   };
 
   const handleDuplicate = async () => {
@@ -109,7 +109,7 @@ export default function ResumeItem({
         description: message,
         variant: "default",
       });
-      dispatch(updateUsedResumeSlots(usedresumeslots -1))
+      dispatch(updateUsedResumeSlots(usedresumeslots - 1))
     } else {
       toast({
         title: `Error ${status}`,

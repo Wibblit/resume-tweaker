@@ -43,8 +43,8 @@ import { SettingsDialog } from "./settings/settings-dialog";
 
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
-  { name: "AI Review", icon: Star, href: "/ai-review" },
-  { name: "AI Interview", icon: MessageSquare, href: "/ai-interview" },
+  { name: "AI Review", icon: Star, href: "/home/ai-review" },
+  { name: "AI Interview", icon: MessageSquare, href: "/home/ai-interview" },
   { name: "Profile", icon: User, href: "/profile" },
 ];
 

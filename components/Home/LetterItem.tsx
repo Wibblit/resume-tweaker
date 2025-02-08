@@ -55,7 +55,7 @@ export default function LetterItem({
         currCoverName: letter.coverName,
       })
     );
-    router.push(`/covereditor`);
+    router.push(`/home/covereditor`);
   };
 
   const handleDuplicate = async () => {
