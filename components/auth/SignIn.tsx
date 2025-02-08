@@ -15,19 +15,20 @@ import { Sun, Moon, Laptop } from "lucide-react";
 import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { getOnboardingStatus } from "@/actions/getOnboardingStatus";
 
 export function SignIn() {
   const [isLoading, setIsLoading] = useState("");
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  
-  const params = useSearchParams()
+  const [url,seturl] = useState("/onboarding");
+  const params = useSearchParams();
   const redirect = params.get("callbackUrl");
   const isDarkTheme = resolvedTheme === "dark";
-   
+
   const providerConfig = [
     {
-      name: "google", 
+      name: "google",
       iconPath: "/svgs/socialmedia/google.svg",
     },
     {
@@ -48,13 +49,16 @@ export function SignIn() {
 
   const handleOAuthLogin = async (provider: string) => {
     setIsLoading(provider);
-      try {
-        await signIn(provider, {
-          redirectTo: redirect ? redirect : "/home",
-        });
-      } catch (error) { 
-        throw error;
-      }
+    if (redirect){
+        seturl("/onboarding"+`?callbackUrl=${redirect}`)
+    }
+    try {
+      await signIn(provider, {
+        redirectTo: url??"/onboarding",
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 
   if (!mounted) {
@@ -104,7 +108,10 @@ export function SignIn() {
                   />
                   {isLoading === provider.name
                     ? "Signing in..."
-                    : `${provider.name[0].toUpperCase() + provider.name.substring(1)}`}
+                    : `${
+                        provider.name[0].toUpperCase() +
+                        provider.name.substring(1)
+                      }`}
                 </div>
               </Button>
             </motion.div>
@@ -135,7 +142,7 @@ export function SignIn() {
               Privacy Policy
             </a>
           </div>
-           <div className="flex justify-center space-x-2">
+          <div className="flex justify-center space-x-2">
             {themeOptions.map((option) => (
               <Button
                 key={option.name}

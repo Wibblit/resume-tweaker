@@ -1,6 +1,16 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import { redirect, useRouter } from "next/navigation";
+import { useAppDispatch } from "@/hooks/hooks";
+import {
+  addPage,
+  deletePage,
+  updatePages,
+  undo,
+  redo,
+  updatePageVales,
+} from "../slices/addPageSlice";
 import ThemeAwareLogo from "./ThemeAwareLogo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,13 +22,14 @@ import {
   ZoomIn,
   ZoomOut,
   Plus,
-  FileDown,
   RotateCcw,
   Menu,
-  ChevronDown,
-  ChevronUp,
-  FileText,
   Settings,
+  Import,
+  Eraser,
+  X,
+  Save,
+  Loader,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -32,9 +43,33 @@ import Template3 from "@/templates/Template3";
 import Template4 from "@/templates/Template4";
 import Template5 from "@/templates/Template5";
 import Template6 from "@/templates/Template6";
+import Template7 from "@/templates/Template7";
+import Template8 from "@/templates/Template8";
+import Template9 from "@/templates/Template9";
+import { LogOut } from "lucide-react";
+import { saveResumeData } from "@/actions/saveResumeData";
+import { useToast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/hooks/hooks";
 import { ResumeData } from "@/types/types";
 import { Skeleton } from "./ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Reset, UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 
 interface Page {
   id: number;
@@ -72,6 +107,7 @@ const MM_TO_PX = 3.78;
 const ResumePage: React.FC<{
   page: Page;
   pageNumber: number;
+  pageIndex: number;
   pageFormat: "a4" | "letter";
   baseColor: string;
   fontSize: number;
@@ -81,6 +117,7 @@ const ResumePage: React.FC<{
 }> = ({
   page,
   pageNumber,
+  pageIndex,
   pageFormat,
   baseColor,
   fontSize,
@@ -88,7 +125,7 @@ const ResumePage: React.FC<{
   lineHeight,
   margin,
 }) => {
-  const renderTemplate = (page: Page) => {
+  const renderTemplate = (page: Page, pageIndex: number) => {
     const props = {
       content: page.content,
       baseColor,
@@ -96,6 +133,7 @@ const ResumePage: React.FC<{
       fontFamily,
       lineHeight,
       margin,
+      pageIndex,
     };
 
     switch (page.template) {
@@ -111,6 +149,12 @@ const ResumePage: React.FC<{
         return <Template5 {...props} />;
       case 6:
         return <Template6 {...props} />;
+      case 7:
+        return <Template7 {...props} />;
+      case 8:
+        return <Template8 {...props} />;
+      case 9:
+        return <Template9 {...props} />;
       default:
         return <Template1 {...props} />;
     }
@@ -123,18 +167,18 @@ const ResumePage: React.FC<{
       className="relative bg-white text-foreground shadow-2xl mb-8"
       style={{
         fontFamily,
-        width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
-        minHeight: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+        width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+        minHeight: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
       }}
     >
       <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
         Page {pageNumber}
       </div>
-      {renderTemplate(page)}
+      {renderTemplate(page, pageIndex)}
       <div
         className="absolute inset-x-0 border-b border-dashed"
         style={{
-          top: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+          top: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
         }}
       />
     </div>
@@ -157,34 +201,64 @@ export default function ResumePages({
   setIsMobileMenuOpen,
   isLoading,
 }: ResumePagesProps) {
+  const dispatch = useAppDispatch();
+  const { pages, historyIndex, history } = useAppSelector(
+    (state) => state.page
+  );
+  const { toast } = useToast();
+  const pageSectionOrders = useAppSelector(
+    (state) => state.rightsidebar?.sectionOrder?.sections
+  );
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
   );
-  const resumeName = useAppSelector((state) => state.currentResume).currResumeName;
-  const [pages, setPages] = useState<Page[]>([
-    { id: 1, template: templateNumber, content: resumeData },
-  ]);
-  const [history, setHistory] = useState<Page[][]>([
-    [{ id: 1, template: templateNumber, content: resumeData }],
-  ]);
-  const [historyIndex, setHistoryIndex] = useState<number>(0);
-  const [isHovering, setIsHovering] = useState(false);
+  const resumeName = useAppSelector(
+    (state) => state.currentResume
+  ).currResumeName;
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+
+  const ResumeDatas = useAppSelector((state) => state.leftsidebar);
+  const resumeStyles = useAppSelector((state) => state.rightsidebar);
+  const { currResumeId } = useAppSelector((state) => state.currentResume);
+  const [saving, setSaving] = useState<boolean>(false);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      console.log(resumeStyles);
+      const res = await saveResumeData(ResumeDatas, resumeStyles, currResumeId);
+      if (res.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
+      console.log("Reusme Update suceess");
+      toast({
+        title: "Success",
+        description: "The resume has been saved successfully.",
+      });
+      setSaving(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save the resume.",
+        variant: "destructive",
+      });
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
-    const updatedPages = pages.map((page) => ({
-      ...page,
-      template: templateNumber,
-      content: resumeData,
-    }));
-    setPages(updatedPages);
-
-    // Update history
-    const newHistory = [...history.slice(0, historyIndex + 1), updatedPages];
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-  }, [templateNumber, resumeData]);
+    dispatch(
+      updatePageVales({ pageSectionOrders, resumeData, templateNumber })
+    );
+  }, [templateNumber, resumeData, dispatch, pageSectionOrders]);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -205,26 +279,10 @@ export default function ResumePages({
     };
   }, [transformRef]);
 
-  const addPage = () => {
-    const newPageId = pages.length + 1;
-    const lastPage = pages[pages.length - 1];
-    const newPages = [
-      ...pages,
-      {
-        id: newPageId,
-        template: lastPage.template,
-        content: resumeData,
-      },
-    ];
-    setPages(newPages);
-
-    // Update history
-    const newHistory = [...history.slice(0, historyIndex + 1), newPages];
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
-
-    // Scroll to the new page after a short delay to ensure the page has been rendered
+  function addNewPage() {
+    dispatch(addPage({ template: templateNumber, content: {} }));
     setTimeout(() => {
+      const newPageId = pages.length + 1;
       const newPageElement = document.getElementById(`page-${newPageId}`);
       if (newPageElement && scrollAreaRef.current) {
         const scrollViewport = scrollAreaRef.current.querySelector(
@@ -243,32 +301,19 @@ export default function ResumePages({
         }
       }
     }, 100);
+  }
+
+  const deletePageById = (id: number) => {
+    console.log("delete page id yo", id);
+    dispatch(deletePage(id));
   };
 
-  const deletePage = (id: number) => {
-    if (pages.length > 1) {
-      const newPages = pages.filter((page) => page.id !== id);
-      setPages(newPages);
-
-      // Update history
-      const newHistory = [...history.slice(0, historyIndex + 1), newPages];
-      setHistory(newHistory);
-      setHistoryIndex(newHistory.length - 1);
-    }
+  const undoAction = () => {
+    dispatch(undo());
   };
 
-  const undo = () => {
-    if (historyIndex > 0) {
-      setHistoryIndex(historyIndex - 1);
-      setPages(history[historyIndex - 1]);
-    }
-  };
-
-  const redo = () => {
-    if (historyIndex < history.length - 1) {
-      setHistoryIndex(historyIndex + 1);
-      setPages(history[historyIndex + 1]);
-    }
+  const redoAction = () => {
+    dispatch(redo());
   };
 
   const resetView = () => {
@@ -280,16 +325,34 @@ export default function ResumePages({
     }
   };
 
+  const profileData = useAppSelector((state) => state?.profile);
+
+  const handleImport = () => {
+    // Function to handle importing from profile
+    console.log("Import from profile");
+    //@ts-ignore
+    dispatch(UpdateLeftBarData(profileData));
+  };
+
+  const handleReset = () => {
+    // Function to handle clearing all data
+    console.log("Clear all data");
+    dispatch(Reset());
+  };
+
   const renderControls = (zoomIn: () => void, zoomOut: () => void) => (
     <>
       <div className="flex space-x-2">
-        <Button onClick={undo} disabled={historyIndex === 0}>
+        <Button onClick={undoAction} disabled={historyIndex === 0}>
           <Undo className="h-4 w-4" />
         </Button>
-        <Button onClick={redo} disabled={historyIndex === history.length - 1}>
+        <Button
+          onClick={redoAction}
+          disabled={historyIndex === history.length - 1}
+        >
           <Redo className="h-4 w-4" />
         </Button>
-        <Button onClick={addPage}>
+        <Button ref={addButtonRef} onClick={addNewPage}>
           <Plus className="h-4 w-4" />
         </Button>
       </div>
@@ -307,63 +370,281 @@ export default function ResumePages({
     </>
   );
 
-
   const renderSkeleton = () => (
     <div className="flex flex-col items-center justify-start p-4">
-      <Skeleton 
+      <Skeleton
         className="mb-8"
         style={{
-          width: `${PAGE_FORMATS[pageFormat].width * MM_TO_PX}px`,
-          height: `${PAGE_FORMATS[pageFormat].height * MM_TO_PX}px`,
+          width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+          height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
         }}
       />
     </div>
   );
 
+  const router = useRouter();
 
   return (
     <div className="flex flex-col h-[calc(100vh-0px)]">
-      <div className="p-4 border-b border-border flex justify-between md:justify-center items-center bg-background">
-        {isPhoneView && (
-           <AnimatePresence>
-           {(
-             <motion.div
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               exit={{ opacity: 0 }}
-               transition={{ duration: 0.2 }}
-               className="z-50 md:hidden"
-             >
-               <Button
-                 variant="secondary"
-                 size="icon"
-                 onClick={() => setIsPanelOpen(!isPanelOpen)}
-                 className="rounded-md shadow-md bg-background border border-border"
-               >
-                 <Menu className="h-4 w-4" />
-               </Button>
-             </motion.div>
-           )}
-         </AnimatePresence>
-        )}
-        <div className="flex items-center space-x-3">
-          <ThemeAwareLogo />
-          <Separator orientation="vertical" className="h-6" />
-          <span className="font-semibold text-lg">{resumeName}</span>
-        </div>
-        {isPhoneView && (
-          <div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden fixed top-4 right-4 z-50 shadow-lg"
-            >
-              <Settings className="h-6 w-6" />
-            </Button>
+      {isPhoneView ? (
+        <div className="flex-col items-center justify-center">
+          <div className="p-2 border-b border-border flex justify-between md:justify-center items-center bg-background">
+            <AnimatePresence>
+              {
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="z-50 md:hidden"
+                >
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() => setIsPanelOpen(!isPanelOpen)}
+                    className="rounded-md shadow-md bg-background border border-border"
+                  >
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </motion.div>
+              }
+            </AnimatePresence>
+
+            <div className="flex items-center justify-center space-x-4">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="z-10">
+                          <LogOut className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure you want to exit?"
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Would you like to save your changes before exiting?
+                            Any unsaved changes will be lost.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogAction
+                            onClick={() => router.push("/home")}
+                          >
+                            Exit
+                          </AlertDialogAction>
+                          <AlertDialogAction onClick={handleSave}>
+                            Save
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Exit editor</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Import className="h-4 w-4" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Import from Profile
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to import data from your
+                            profile? This action cannot be undone and the
+                            current data will be overwritten.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleImport}>
+                            Import
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Import from profile</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Eraser className="h-4 w-4" />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Clear All Data</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to clear all data? This action
+                            cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleReset}>
+                            Clear
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Clear all</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="z-10"
+                      onClick={handleSave}
+                    >
+                      {saving ? (
+                        <Loader className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Save resume</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="shadow-lg"
+              >
+                <Settings className="h-10 w-10" />
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
+          <div className="flex w-full items-center justify-center">
+            <div className="flex items-center justify-center border border-border px-4 py-1 rounded-b-2xl border-t-0 space-x-2 h-8 relative">
+              <div className="absolute top-0 left-0 right-0 h-8">
+                <div
+                  className="bg-background h-full w-full"
+                  style={{
+                    clipPath:
+                      'path("M 0,0 C 0,20, 20,0, 50,0 C 80,0, 100,20, 100,0 L 100,8 L 0,8 Z")',
+                  }}
+                />
+              </div>
+              <div
+                className="hover:cursor-pointer"
+                onClick={() => router.push("/home")}
+              >
+                <ThemeAwareLogo className="w-4 h-4 z-10" />
+              </div>
+              <Separator
+                orientation="vertical"
+                className="h-4 w-[1px] bg-gray-300 mx-2 z-10 dark:bg-gray-400"
+              />
+
+              <span className="font-semibold text-xs text-foreground z-10">
+                {resumeName}
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="p-4 border-b border-border flex justify-between items-center bg-background">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="z-10">
+                      <LogOut className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you sure you want to exit?"
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Would you like to save your changes before exiting? Any
+                        unsaved changes will be lost.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => router.push("/home")}>
+                        Exit
+                      </AlertDialogAction>
+                      <AlertDialogAction onClick={handleSave}>
+                        Save
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Exit editor</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <div className="flex items-center space-x-3">
+            <div
+              className="hover:cursor-pointer"
+              onClick={() => router.push("/home")}
+            >
+              <ThemeAwareLogo className="w-4 h-4 z-10" />
+            </div>
+            <Separator orientation="vertical" className="h-6" />
+            <span className="font-semibold text-lg">{resumeName}</span>
+          </div>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="z-10"
+                  onClick={handleSave}
+                >
+                  {saving ? (
+                    <Loader className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Save resume</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      )}
+
       <ScrollArea className="flex-grow" ref={scrollAreaRef}>
         <div
           className={`p-4 pb-20 ${isPhoneView ? "flex justify-center" : ""}`}
@@ -402,6 +683,7 @@ export default function ResumePages({
                           <ResumePage
                             page={page}
                             pageNumber={index + 1}
+                            pageIndex={index}
                             pageFormat={pageFormat}
                             baseColor={baseColor}
                             fontSize={fontSize}
@@ -414,14 +696,15 @@ export default function ResumePages({
                               variant="destructive"
                               size="icon"
                               className="absolute top-2 right-1 z-10"
-                              onClick={() => deletePage(page.id)}
+                              onClick={() => deletePageById(page.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           )}
                         </motion.div>
                       ))}
-                    </AnimatePresence>)}
+                    </AnimatePresence>
+                  )}
                 </TransformComponent>
                 {isPhoneView && (
                   <motion.div

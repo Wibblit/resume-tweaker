@@ -1,73 +1,125 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Send } from "lucide-react"
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Lightbulb, Loader2 } from "lucide-react";
 
-export default function AIInterviewSkeleton() {
+interface AIInterviewSkeletonProps {
+  interviewType?: "comprehensive" | "adaptive" | "interview";
+}
+
+export default function AIInterviewSkeleton({
+  interviewType = "interview",
+}: AIInterviewSkeletonProps) {
+  const [currentTipIndex, setCurrentTipIndex] = useState(0);
+
+  const tips = {
+    comprehensive: [
+      "Prepare examples for common interview questions",
+      "Research the company thoroughly",
+      "Practice your responses out loud",
+      "Prepare questions for the interviewer",
+    ],
+    adaptive: [
+      "Stay flexible in your responses",
+      "Listen carefully to follow-up questions",
+      "Be ready to think on your feet",
+      "Demonstrate your problem-solving skills",
+    ],
+    interview: [
+      "Prepare examples for common interview questions",
+      "Research the company thoroughly",
+      "Practice your responses out loud",
+      "Prepare questions for the interviewer",
+      "Stay flexible in your responses",
+      "Listen carefully to follow-up questions",
+      "Be ready to think on your feet",
+      "Demonstrate your problem-solving skills",
+    ],
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTipIndex(
+        (prevIndex) => (prevIndex + 1) % tips[interviewType].length
+      );
+    }, 5000); // Change tip every 5 seconds
+
+    return () => clearInterval(timer);
+  }, [interviewType, tips]);
+
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      <main className="flex flex-1 flex-col overflow-hidden p-4 md:p-6">
-        <h1 className="mb-6 text-3xl font-bold">AI Interview Simulation</h1>
+    <div className="h-screen  overflow-hidden bg-background text-foreground flex flex-col">
+      <motion.h1
+        className="h-[10%] flex items-center justify-center text-2xl sm:text-3xl md:text-2xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        {interviewType.charAt(0).toUpperCase() + interviewType.slice(1)}{" "}
+        {interviewType !== "interview" && "Interview"} Simulation
+      </motion.h1>
 
+      <div className="h-[80%] flex flex-col justify-between px-4 sm:px-6 md:px-8">
         <motion.div
-          className="flex flex-col items-center justify-center flex-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="h-[30.33%]"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="w-full max-w-3xl">
-            <Label htmlFor="jd" className="text-lg font-semibold mb-2 block">
-              Job Description
-            </Label>
-            <Skeleton className="w-full h-[200px] mb-4" />
-            <Skeleton className="w-full h-12" />
-          </div>
+          <Skeleton className="w-full h-full rounded-lg" />
         </motion.div>
 
         <motion.div
-          className="flex flex-1 flex-col overflow-hidden rounded-lg border border-border bg-muted mt-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="h-[30.33%] flex items-center justify-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="flex-1 overflow-y-auto p-4">
-            <Skeleton className="w-3/4 h-16 mb-4" />
-            <Skeleton className="w-2/3 h-16 mb-4 ml-auto" />
-            <Skeleton className="w-3/4 h-16 mb-4" />
-            <Skeleton className="w-2/3 h-16 mb-4 ml-auto" />
-          </div>
-          <motion.div
-            className="border-t border-border bg-background p-4"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <div className="flex items-center gap-2">
-              <Skeleton className="flex-1 h-10" />
-              <Skeleton className="h-10 w-10" />
-            </div>
-          </motion.div>
+          <Skeleton className="w-full h-full rounded-lg" />
         </motion.div>
 
         <motion.div
-          className="fixed bottom-8 right-8 flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-primary-foreground shadow-lg"
-          initial={{ opacity: 0, y: 50 }}
+          className="h-[30.33%]"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <motion.div
-            className="h-3 w-3 rounded-full bg-primary-foreground"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut" }}
-          />
-          <span>Loading...</span>
+          <Skeleton className="w-full h-full rounded-lg" />
         </motion.div>
-      </main>
+      </div>
+
+      <motion.div
+        className="h-[10%] bg-card flex items-center justify-center px-4 sm:px-6 md:px-8 relative"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
+      >
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={currentTipIndex}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="text-sm sm:text-base mb-10 md:mb-0 md:text-md text-center max-w-2xl opacity-25 flex items-center justify-center"
+          >
+            <Lightbulb className="mr-2 text-yellow-500 " />
+            {tips[interviewType][currentTipIndex]}
+          </motion.p>
+        </AnimatePresence>
+
+        <motion.div
+          className="absolute bottom-4 right-4 flex items-center gap-2 bg-primary text-primary-foreground px-5 py-3 rounded-full shadow-lg"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1, duration: 0.3 }}
+        >
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="text-sm font-medium">Preparing your session...</span>
+        </motion.div>
+      </motion.div>
     </div>
-  )
+  );
 }

@@ -15,7 +15,7 @@ export function Particles() {
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
             animationDelay: `${Math.random() * 5}s`,
-            animationDuration: `${5 + Math.random() * 5}s`,
+            animationDuration: `${5 + Math.random() * 5}s`
           }}
         />
       ))}

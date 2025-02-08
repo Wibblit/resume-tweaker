@@ -6,12 +6,8 @@ import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { ResumeData, Basics } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
 import HTMLViewer from "@/components/HTMLViewer";
-import {
-  UpdateBaseColor,
-  UpdateFontSize,
-  UpdateLineHeight,
-  UpdateMargin,
-} from "@/slices/rightsidebarSlice";
+import Base64Image from "@/components/base64toPhoto";
+import { formatDate } from "@/utils/formatDate";
 
 interface TemplateProps {
   content: ResumeData;
@@ -20,6 +16,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -154,14 +151,19 @@ const Header: React.FC<{
 
   return (
     <div style={styles.container} className="flex items-center gap-4">
-      <Picture
-        src={
-          typeof basics?.picture === "string" && basics?.picture !== ""
-            ? basics?.picture
-            : "/placeholder-user.jpeg"
-        }
-        alt={basics?.name || "Profile picture"}
-      />
+      {basics.picture ? (
+        <img src={basics?.picture} alt={basics?.name} width={128} height={128} />
+      ) : (
+        <Picture
+          src={
+            typeof basics?.picture === "string" && basics?.picture !== ""
+              ? basics?.picture
+              : "/placeholder-user.jpeg"
+          }
+          alt={basics?.name || "Profile picture"}
+        />
+      )}
+
       <div style={styles.content}>
         <h2 style={styles.name}>{basics?.name}</h2>
         <p style={styles.headline}>{basics?.headLine}</p>
@@ -209,6 +211,7 @@ const Template3: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector(
@@ -217,6 +220,8 @@ const Template3: React.FC<TemplateProps> = ({
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
+
+    const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
 
   const styles = {
     container: {
@@ -297,7 +302,9 @@ const Template3: React.FC<TemplateProps> = ({
                         <div>{award.awarder}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{award.date}</div>
+                        <div className="font-bold">
+                          {award.date && formatDate(award.date, datetype)}
+                        </div>
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
@@ -332,7 +339,9 @@ const Template3: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{pub.date}</div>
+                        <div className="font-bold">
+                          {pub.date && formatDate(pub.date, datetype)}
+                        </div>
                       </div>
                     </div>
                     <div>{pub.publisher}</div>
@@ -362,9 +371,11 @@ const Template3: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${vol.startDate} ${
-                          vol.endDate && " - "
-                        } ${vol.endDate}`}</div>
+                        <div className="font-bold">
+                          {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
+                          {vol.endDate && " - "}{" "}
+                          {vol.endDate && formatDate(vol.endDate, datetype)}
+                        </div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -413,9 +424,11 @@ const Template3: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div>{`${exp.startDate} ${exp.endDate && " - "} ${
-                          exp.endDate
-                        }`}</div>
+                        <div>
+                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
+                          {exp.endDate && " - "}{" "}
+                          {exp.endDate && formatDate(exp.endDate, datetype)}
+                        </div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
@@ -439,15 +452,14 @@ const Template3: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section
               title="Skills"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
               <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
+                {content.skills.map((category, index) => (
                   <div key={index} className="space-y-2">
                     <div className="font-bold">{category.name}</div>
                     <div>
@@ -532,9 +544,11 @@ const Template3: React.FC<TemplateProps> = ({
                       <div>{edu.score}</div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div>{`${edu.startDate} ${edu.endDate && " - "} ${
-                        edu.endDate
-                      }`}</div>
+                      <div>
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}{" "}
+                      </div>
                       <div>{edu.degree}</div>
                     </div>
                   </div>
@@ -561,7 +575,7 @@ const Template3: React.FC<TemplateProps> = ({
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div>{cert.date}</div>
+                    <div>{cert.date && formatDate(cert.date, datetype)}</div>
                   </div>
                 ))}
               </div>
@@ -588,9 +602,13 @@ const Template3: React.FC<TemplateProps> = ({
                         className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div>{`${project.startDate} ${
-                          project.endDate && " - "
-                        } ${project.endDate}`}</div>
+                        <div>
+                          {project.startDate &&
+                            formatDate(project.startDate, datetype)}{" "}
+                          {project.endDate && " - "}{" "}
+                          {project.endDate &&
+                            formatDate(project.endDate, datetype)}
+                        </div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
@@ -622,7 +640,87 @@ const Template3: React.FC<TemplateProps> = ({
           )
         );
       default:
-        return null;
+         if (
+           !content ||
+           //@ts-ignore
+           !Array.isArray(content[sectionName]) ||
+           //@ts-ignore
+           !content[sectionName]?.length
+         )
+           return null;
+        return (
+          <div className="mb-6">
+            <h2>{sectionName}</h2>
+            {
+              //@ts-ignore
+              content[sectionName] &&
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex flex-col justify-between">
+                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                      <div className="flex items-center justify-between">
+                        {/* Left Section: Name, Location, Link */}
+                        <div className="flex items-center gap-2">
+                          {/* Name */}
+                          {sec.name && <h3>{sec.name}</h3>}
+
+                          {/* Location */}
+                          {sec.location && <p className="">, {sec.location}</p>}
+
+                          {/* URL Link */}
+                          {sec.url && (
+                            <a
+                              href={sec.url.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center mx-2"
+                            >
+                              <p>
+                                {sec.url.label && (
+                                  <span className="mx-1">|</span>
+                                )}
+                                {sec.url.label}
+                              </p>
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Right Section: Dates */}
+                        <div>
+                          {/* Start Date and End Date */}
+                          {sec.startDate && (
+                            <h3>
+                              {formatDate(sec.startDate, datetype)}
+                              {sec.endDate &&
+                                ` - ${formatDate(sec.endDate, datetype)}`}
+                            </h3>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-2">
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+            }
+          </div>
+        );
     }
   };
 
@@ -632,13 +730,19 @@ const Template3: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
+           p {
+          color:black
+          }
       `}</style>
       <div style={styles.mainContent}>
-        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections.length > 0 &&
+          sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
+            renderSection(sectionName)
+          )}
       </div>
       <div style={styles.sidebar}>
         <div style={styles.sidebarContent}>
-          {sectionOrder.column2.map((sectionName) =>
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
             renderSection(sectionName, true)
           )}
         </div>

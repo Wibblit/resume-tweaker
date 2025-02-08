@@ -2,7 +2,7 @@ import ProfileSetupContent from "@/components/profile/ProfileSetupContent";
 import { redirect } from "next/navigation";
 
 export default function ProfileSetupPage() {
-  return redirect("/");
+  // return redirect("/");
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto py-8">

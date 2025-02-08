@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ResumeData } from "@/types/types"
-import { DatePicker } from "@/components/DatePicker"
+import { CustomDatePicker as DatePicker } from "@/components/DatePicker"
 import { Plus, Trash } from "lucide-react"
 
 interface ProjectsExperienceTabProps {

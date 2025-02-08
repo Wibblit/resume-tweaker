@@ -53,6 +53,16 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {
@@ -61,9 +71,12 @@ const config: Config = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		fontFamily: {
-  			ltwave: ["LTWave", "sans-serif"]
+  			ltwave: [
+  				'LTWave',
+  				'sans-serif'
+  			]
   		},
-  		typography: '() => ({\n        customcolor : {\n          css: {\n            "--tw-prose-body": "var(--color-foreground)",\n            "--tw-prose-headings": "var(--color-foreground)",\n            "--tw-prose-lead": "var(--color-foreground)",\n            "--tw-prose-links": "var(--color-foreground)",\n            "--tw-prose-bold": "var(--color-foreground)",\n            "--tw-prose-counters": "var(--color-foreground)",\n            "--tw-prose-bullets": "var(--color-foreground)",\n            "--tw-prose-hr": "var(--color-foreground)",\n            "--tw-prose-quotes": "var(--color-foreground)",\n            "--tw-prose-quote-borders": "var(--color-foreground)",\n            "--tw-prose-captions": "var(--color-foreground)",\n            "--tw-prose-code": "var(--color-foreground)",\n            "--tw-prose-pre-code": "var(--color-foreground)",\n            "--tw-prose-pre-bg": "var(--color-background)",\n            "--tw-prose-th-borders": "var(--color-foreground)",\n            "--tw-prose-td-borders": "var(--color-foreground)",\n          },\n        },\n      })',
+  		typography: '() => ({\\\\\\\\n        customcolor : {\\\\\\\\n          css: {\\\\\\\\n            "--tw-prose-body": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-headings": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-lead": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-links": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-bold": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-counters": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-bullets": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-hr": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-quotes": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-quote-borders": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-captions": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-code": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-pre-code": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-pre-bg": "var(--color-background)",\\\\\\\\n            "--tw-prose-th-borders": "var(--color-foreground)",\\\\\\\\n            "--tw-prose-td-borders": "var(--color-foreground)",\\\\\\\\n          },\\\\\\\\n        },\\\\\\\\n      })',
   		keyframes: {
   			'accordion-down': {
   				from: {
@@ -128,6 +141,8 @@ const config: Config = {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
+  			pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+  			'spin-slow': 'spin 3s linear infinite',
 			"background-shine": "background-shine 2s linear infinite",
 			'fade-in-top-to-bottom': 'fade-in-top-to-bottom 0.3s ease-out forwards',
 			'fade-out-bottom-to-top': 'fade-out-bottom-to-top 0.3s ease-in forwards',

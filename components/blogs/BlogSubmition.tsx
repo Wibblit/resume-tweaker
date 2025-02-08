@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -59,6 +60,7 @@ export default function BlogForm() {
   const [slugError, setSlugError] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const editorRef = useRef<SunEditorCore>();
+  const {toast} = useToast()
   const { theme } = useTheme();
 
   const getSunEditorInstance = (sunEditor: SunEditorCore) => {
@@ -212,7 +214,7 @@ export default function BlogForm() {
         throw new Error("Please fill in all required fields");
       }
 
-      await createBlogPost(
+      const res = await createBlogPost(
         formData.title,
         formData.slug,
         formData.excerpt || null,
@@ -224,6 +226,15 @@ export default function BlogForm() {
         formData.tags,
         formData.isFeatured
       );
+
+      if (res.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        })
+        return;
+      }
 
       console.log("Blog post submitted successfully:", formData);
 

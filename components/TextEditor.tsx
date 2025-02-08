@@ -7,7 +7,6 @@ import {
   Code as CodeIcon,
   CodeBlock as CodeBlockIcon,
   HighlighterCircle,
-  Image as ImageIcon,
   KeyReturn,
   LinkSimple,
   ListBullets,
@@ -25,6 +24,7 @@ import {
   TextHTwo,
   TextItalic,
   TextStrikethrough,
+  Sparkle,
 } from "@phosphor-icons/react";
 import {
   Tooltip,
@@ -32,7 +32,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { PopoverTrigger } from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils";
 import { Highlight } from "@tiptap/extension-highlight";
 import { Image } from "@tiptap/extension-image";
@@ -40,13 +39,13 @@ import { Link } from "@tiptap/extension-link";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Underline } from "@tiptap/extension-underline";
 import {
-  Editor,
+  type Editor,
   EditorContent,
-  EditorContentProps,
+  type EditorContentProps,
   useEditor,
 } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
@@ -59,12 +58,19 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Popover, PopoverContent } from "./ui/popover";
 import { Skeleton } from "./ui/skeleton";
 import { Toggle } from "./ui/toggle";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
-import { Sparkles, Wand2 } from "lucide-react";
+import { Info, Wand2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import { useAppDispatch } from "@/hooks/hooks";
+import { updateCredits } from "@/slices/userAssets";
+import { creditList } from "@/utils/credits";
+import { useAppSelector } from "@/hooks/hooks";
+import { PremiumModal } from "./premium-modal";
+import { Loader } from "lucide-react";
 
 const InsertImageFormSchema = z.object({
   src: z.string().url("Please enter a valid URL"),
@@ -134,65 +140,173 @@ const InsertImageForm = ({ onInsert }: InsertImageProps) => {
 };
 
 interface AIPopoverProps {
+  isOpen: boolean;
+  onClose: () => void;
   onSuggestionApply: (suggestion: string) => void;
   section: string;
 }
 
-function AIPopover({ onSuggestionApply, section }: AIPopoverProps) {
-  const [isOpen, setIsOpen] = useState(false);
+function AIPopover({
+  isOpen,
+  onClose,
+  onSuggestionApply,
+  section,
+}: AIPopoverProps) {
   const [prompt, setPrompt] = useState("");
   const [suggestion, setSuggestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const [open, setOpen] = useState<boolean>(false);
+  const onCloseModal = () => {
+    setOpen(false);
+  };
+
+  const { toast } = useToast();
+  const credits = useAppSelector((state) => state?.assets?.credits);
+  const loading = useAppSelector((state) => state?.assets?.loading);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (credits < (creditList.get("aigenerate") ?? 0)) {
+      setOpen(true);
+      return;
+    }
     e.preventDefault();
     setIsLoading(true);
-    const response = await axios.post<{ content: string }>("/api/ai-assist/", {
+    const response = await axios.post<{
+      message: string;
+      statusCode: number;
+      content: string;
+    }>("/api/ai-assist/", {
       prompt,
       section,
     });
-    setSuggestion(response.data.content);
+    if (response.status === 429) {
+      toast({
+        title: "Whoa there! You've hit the rate limit.",
+        description: "Please slow down and try again in a few minutes.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (response.data.statusCode === 402) {
+      return toast({
+        title: "Insufficient Credits",
+        description: response?.data?.message,
+        variant: "destructive",
+      });
+    }
+
+    dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
+    console.log(`[${response?.data?.content}]`); // Check for extra spaces
+    if (response.data.content.trim() === "Invalid Input.") {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter meaningful text.",
+        variant: "destructive",
+      });
+    } else {
+      setSuggestion(response.data.content);
+    }
+
     setIsLoading(false);
   };
 
   const handleApply = () => {
     onSuggestionApply(suggestion);
-    setIsOpen(false);
+    onClose();
     setSuggestion("");
     setPrompt("");
   };
 
-  return (  
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="px-2">
-          <Sparkles className="h-4 w-4" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
+  const promptRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      promptRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  return (
+    <div className={`my-4 px-2 ${isOpen ? "block" : "hidden"}`}>
+      <div className="space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <h4 className="font-medium">AI Suggestion</h4>
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium">AI Suggestion</h4>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Info className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Enter a clear and meaningful prompt. Avoid gibberish or
+                offensive content.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
           <Input
+            ref={promptRef}
             placeholder="Enter your prompt..."
             value={prompt}
+            autoFocus
             onChange={(e) => setPrompt(e.target.value)}
           />
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Generating..." : "Generate"}
+            {isLoading ? (
+              <p className="flex items-center justify-center gap-1">
+                <Loader2 className="animate-spin" />
+                Generating...
+              </p>
+            ) : (
+              "Generate"
+            )}
           </Button>
         </form>
+
         {suggestion && (
           <div className="mt-4 space-y-2">
-            <Textarea value={suggestion} readOnly className="min-h-[100px]" />
-            <Button onClick={handleApply}>Apply Suggestion</Button>
+            <Textarea
+              value={suggestion}
+              readOnly
+              className="min-h-[100px] whitespace-pre-wrap"
+            />
+            <section className="flex items-center w-full justify-between mt-4">
+              <Button onClick={handleApply}>Apply Suggestion</Button>
+              <Button
+                onClick={onClose}
+                className="bg-destructive text-destructive-foreground"
+              >
+                Cancel
+              </Button>
+            </section>
           </div>
         )}
-      </PopoverContent>
-    </Popover>
+      </div>
+
+      <PremiumModal
+        credits={creditList.get("aigenerate") ?? 0}
+        name="AI Generate"
+        open={open}
+        onClose={onCloseModal}
+      />
+    </div>
   );
 }
 
 const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
+  const [isEnhanceLoading, setisEnhanceLoading] = useState<boolean>(false);
+  const [isAIPopoverOpen, setIsAIPopoverOpen] = useState(false);
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
+  const credits = useAppSelector((state) => state?.assets?.credits);
+  const loading = useAppSelector((state) => state?.assets?.loading);
+  const { toast } = useToast();
+
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes("link").href;
     const url = window.prompt("URL", previousUrl);
@@ -209,24 +323,60 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
     editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
   }, [editor]);
 
+  const onClose = () => {
+    setOpen(false);
+  };
+
   const handleEnhanceText = async () => {
-    const content = editor.getHTML().replace(/<[^>]*>?/gm, '');
+    if (credits < (creditList.get("aienhance") ?? 0)) {
+      setOpen(true);
+      return;
+    }
+
+    const content = editor.getHTML().replace(/<[^>]*>?/gm, "");
+
     if (!content.trim()) {
-      return alert("Please add some text to enhance.");
+      return;
     }
     try {
-      const response = await axios.post<{ content: string }>(
-        "/api/ai-assist/",
-        {
-          content,
-          action: "enhance",
-          section,
-        }
-      );
-      editor.commands.setContent(response.data.content);
+      setisEnhanceLoading(true);
+      const response = await axios.post<{
+        message: string;
+        statusCode: number;
+        content: string;
+      }>("/api/ai-assist/", {
+        content,
+        action: "enhance",
+        section,
+      });
+
+      if (response.data.statusCode === 402) {
+        return toast({
+          title: "Insufficient Credits",
+          description: response?.data?.message,
+          variant: "destructive",
+        });
+      }
+      dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
+      console.log(response?.data?.content);
+
+      if (response?.data?.content?.trim() === "Invalid Input.") {
+        toast({
+          title: "Invalid Input",
+          description: "Please enter a meaningful and appropriate prompt.",
+          variant: "destructive",
+        });
+      } else {
+        editor.commands.setContent("");
+        editor.commands.insertContent(response.data.content);
+      }
+
+      setisEnhanceLoading(false);
     } catch (error) {
+      setisEnhanceLoading(false);
       console.error("Error enhancing text:", error);
-      alert("Failed to enhance text. Please try again.");
+    } finally {
+      setisEnhanceLoading(false);
     }
   };
 
@@ -479,34 +629,84 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
             className="px-2"
             onClick={() => editor.chain().focus().redo().run()}
           >
-            
             <ArrowClockwise className="h-4 w-4" />
           </Button>
         </Tooltip>
 
-        <AIPopover
-          section={section}
-          onSuggestionApply={(suggestion) =>
-            editor.commands.insertContent(suggestion)
-          }
-        />
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loader className="w-4 h-4 animate-spin" />
+          </div>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={() => setIsAIPopoverOpen(!isAIPopoverOpen)}
+                variant="outline"
+                size="sm"
+                className="px-2"
+              >
+                <Sparkle className="h-3 w-3 opacity-80" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>AI Suggestions</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="sm"
-              variant="outline"
-              className="px-2"
-              onClick={handleEnhanceText}
-            >
-              <Wand2 className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Enhance text with AI</p>
-          </TooltipContent>
-        </Tooltip>
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loader className="w-4 h-4 animate-spin" />
+          </div>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="relative">
+                {isEnhanceLoading && (
+                  <Loader className="w-3 h-3 absolute animate-spin -right-1 -top-1" />
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={
+                    !editor
+                      .getHTML()
+                      .replace(/<[^>]*>?/gm, "")
+                      .trim() || isEnhanceLoading
+                  }
+                  className={`px-2 ${
+                    !editor
+                      .getHTML()
+                      .replace(/<[^>]*>?/gm, "")
+                      .trim() && "opacity-50 cursor-not-allowed"
+                  } ${isEnhanceLoading && "opacity-50"}`}
+                  onClick={handleEnhanceText}
+                >
+                  <Wand2 className="h-3 w-3" />
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Enhance text with AI</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
+      <AIPopover
+        isOpen={isAIPopoverOpen}
+        onClose={() => setIsAIPopoverOpen(false)}
+        section={section}
+        onSuggestionApply={(suggestion) =>
+          editor.commands.insertContent(suggestion)
+        }
+      />
+      <PremiumModal
+        credits={creditList.get("aienhance") ?? 0}
+        name="AI Enhance"
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </TooltipProvider>
   );
 };
@@ -617,15 +817,18 @@ export const RichInput = forwardRef<HTMLDivElement, RichInputProps>(
     return (
       <div className="custom-editor" ref={ref}>
         {!hideToolbar && <Toolbar editor={editor} section={section} />}
-
         <EditorContent
           editor={editor}
           className={cn(
-            "grid min-h-[160px] w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
+            "grid min-h-[160px] text-primary w-full rounded-sm border bg-transparent px-3 py-2 text-sm placeholder:opacity-80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50",
             hideToolbar && "pt-2",
-            className
+            className,
+            "text-primary"
           )}
-          style={{ fontWeight: "normal" }}
+          style={{
+            fontWeight: "normal",
+            background: "transparent",
+          }}
           {...props}
         />
       </div>
@@ -644,5 +847,11 @@ export default function Component({
   content: string;
   onContentChange: (content: string) => void;
 }) {
-  return <RichInput section={section} content={content} onContentChange={onContentChange} />;
+  return (
+    <RichInput
+      section={section}
+      content={content}
+      onContentChange={onContentChange}
+    />
+  );
 }

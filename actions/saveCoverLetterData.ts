@@ -2,21 +2,22 @@
 
 import { auth } from "@/auth";
 import { CoverLetterData, CoverLetterState } from "@/types/types";
-import { PrismaClient } from "@prisma/client";
 import { ResumeStyles as CoverStyle } from "@/types/types";
+import { prisma } from "@/prisma";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
 
-const prisma = new PrismaClient();
+export const savecoverData = asyncHandler(
+  async (
+    coverData: CoverLetterData,
+    coverStyles: CoverStyle,
+    coverId: string,
+  ) => {
+    console.log(coverStyles)
+    const session = await auth();
+    if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+    if (!coverData || !coverStyles || !coverId) throw ActionsError.badRequest;
 
-export async function savecoverData(
-  coverData: CoverLetterData,
-  coverStyles: CoverStyle,
-  coverId: string
-) {
-  const session = await auth();
-  console.log("Save data request reached...");
-  console.log(coverData);
-
-  try {
     const result = await prisma.coverletter.update({
       where: {
         id: coverId,
@@ -31,6 +32,7 @@ export async function savecoverData(
         keyAchievements: coverData.keyAchievements,
         opening: coverData.opening,
         professionalSummary: coverData.professionalSummary,
+        senderInfo: coverData.senderInfo,
         recipientInfo: coverData.recipientInfo,
         signOff: coverData.signOff,
         subject: coverData.subject,
@@ -38,24 +40,13 @@ export async function savecoverData(
       },
     });
 
+    if (!result) throw ActionsError.internalServerError;
+
     return {
       success: true,
       result: result,
       message: "Cover Letter updated successfully",
+      status: 200,
     };
-  } catch (error) {
-    let errorMessage = "An unknown error occurred";
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
-    return {
-      success: false,
-      message: "Failed to update resume details",
-      error: errorMessage,
-    };
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  },
+);

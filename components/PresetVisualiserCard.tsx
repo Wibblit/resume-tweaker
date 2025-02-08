@@ -124,6 +124,7 @@ function PresetVisualCard() {
   }, [selectedBundle, selectedBias])
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
+  // const COLORS = ["hsl(var(--chart-1))","hsl(84, 100%, 50%)","hsla(30,100%,55%,0.7)","hsl(330,90%,60%)"]
 
   return (
     <Card className="w-full">
@@ -171,7 +172,7 @@ function PresetVisualCard() {
                         outerRadius={80}
                         dataKey="value"
                         label={({ value }) => `${value} C`}
-                        stroke={"f00"}
+                        stroke={"000"}
                       >
                         {chartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

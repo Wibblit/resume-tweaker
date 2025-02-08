@@ -4,20 +4,21 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const ResumeAnimation = () => {
-  const [currentImage, setCurrentImage] = useState(0);
-  const resumeImages = [
-    "/templates/template1.png",
-    "/templates/template2.jpg",
-    "/templates/template3.jpg",
-  ];
+    const [currentImage, setCurrentImage] = useState(0);
+    const resumeImages = [
+      "/templates/template1.png",
+      "/templates/template2.jpg",
+      "/templates/template3.jpg",
+    ];
+    
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % resumeImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentImage((prev) => (prev + 1) % resumeImages.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }, []);
+  
   return (
     <motion.div
       className="mt-12 lg:mt-0 perspective-[2000px] relative"

@@ -32,8 +32,8 @@ export const ParallaxScroll = ({
       }
     };
     onResize();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
   }, []);
 
   const transformInitial = elementTop - clientHeight;
