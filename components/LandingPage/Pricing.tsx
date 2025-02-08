@@ -145,17 +145,16 @@ export default function Pricing() {
     {
       name: "Power",
       baseCredits: 1000,
-      price: " ",
-
+      price: "5005",
       popular: false,
-      productId: "",
+      productId: "pdt_zb4BYP93F63BbivznZiP0",
     },
     {
       name: "Super Saver",
       baseCredits: 2000,
-      price: " ",
+      price: "545454",
       popular: false,
-      productId: "",
+      productId: "pdt_UENj4gu83IALFsNB1y6HN",
     },
   ];
 
