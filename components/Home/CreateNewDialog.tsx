@@ -21,12 +21,13 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { useToast } from "@/hooks/use-toast";
 import { UpdateId } from "@/slices/rightsidebarSlice";
 import { createCover } from "@/actions/createCover";
-import { Coins, FileText, Loader, Loader2 } from "lucide-react";
+import { Coins, Loader, Sparkles } from "lucide-react";
 import axios from "axios";
 import { useAppSelector } from "@/hooks/hooks";
 import { PremiumModal } from "../premium-modal";
 import { creditList } from "@/utils/credits";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 import {
   updateCredits,
   updateCoverSlot,
@@ -185,36 +186,51 @@ export function CreateNewDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       {usedslots < availableslots ? (
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create New {type}</DialogTitle>
-            <DialogDescription>
-              Enter a name for your new {type.toLowerCase()}. Try to make it
-              descriptive!
+            <DialogTitle className="text-center text-xl font-semibold">
+              Create New {type}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              Give your {type.toLowerCase()} a descriptive name to help you identify it later
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+          
+          <div className="flex flex-col space-y-4 py-4">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/30 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm">
+                <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                <span className="font-medium text-amber-700 dark:text-amber-400">
+                  Slot {usedslots + 1} of {availableslots}
+                </span>
+              </div>
+            </div>
+            
+            <Separator className="my-2" />
+            
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
                 Name
               </Label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="col-span-3"
+                className="w-full"
+                placeholder={`Enter ${type.toLowerCase()} name`}
               />
             </div>
           </div>
-          <DialogFooter>
+
+          <DialogFooter className="sm:justify-center">
             <Button
-              type="submit"
               onClick={handleCreate}
               disabled={!name.trim() || loading}
+              className="w-full sm:w-auto"
             >
               {loading ? (
-                <div className="flex">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <div className="flex items-center justify-center">
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
                   Creating...
                 </div>
               ) : (
@@ -231,57 +247,44 @@ export function CreateNewDialog({
           open={open}
         />
       ) : (
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">
-              Buy {type === RESUME ? "Resume" : "Coverletter"} Slot
+            <DialogTitle className="text-center text-xl font-semibold">
+              Buy {type === RESUME ? "Resume" : "Cover Letter"} Slot
             </DialogTitle>
-            <DialogDescription className="text-base">
-              Spend{" "}
-              <span className="font-semibold text-primary">
-                {creditList.get(slot)} credits
-              </span>{" "}
-              to store one more {type === RESUME ? "resume" : "coverletter"}.
+            <DialogDescription className="text-center">
+              Expand your storage capacity with an additional slot
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center space-y-6 py-6">
-            <div className="relative flex items-center justify-center">
-              <FileText className="h-24 w-24 text-muted-foreground" />
-              <div className="absolute -bottom-4 -right-4 bg-background rounded-full p-2 shadow-md">
-                <Coins className="h-8 w-8 text-yellow-500" />
-              </div>
+
+          <div className="flex flex-col items-center space-y-4 py-4">
+            <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950/30 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm">
+              <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+              <span className="font-medium text-amber-700 dark:text-amber-400">
+                {creditList.get(slot)} Credits Required
+              </span>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-medium">
-                New {type === RESUME ? "Resume" : "Coverletter"} Slot
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Store an additional {type === RESUME ? "resume" : "coverletter"}
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="sm:justify-center">
+            
+            <Separator className="my-2" />
+            
             <Button
               onClick={handlePurchase}
               disabled={buyloading}
-              className={cn(
-                "w-full sm:w-auto transition-all duration-200 ease-in-out",
-                loading && "opacity-80"
-              )}
+              className="w-full"
             >
               {buyloading ? (
                 <div className="flex items-center justify-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
                 </div>
               ) : (
                 <>
                   <Coins className="mr-2 h-4 w-4" />
-                  Buy Slot for 50 Credits
+                  Purchase Slot
                 </>
               )}
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       )}
     </Dialog>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { AudioLines, Loader2, Volume2 } from "lucide-react";
+import { AudioLines, Loader, Volume2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TypeAnimation } from "react-type-animation";
 
@@ -128,7 +128,7 @@ export default function QuestionDisplay({
                 : ""
             }`}
           >
-            {isNextLoading && <Loader2 className="animate-spin mr-1" />}
+            {isNextLoading && <Loader className="animate-spin mr-1" />}
             Next Question
           </Button>
         )}

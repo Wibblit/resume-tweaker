@@ -8,7 +8,7 @@
     --grad-background: #ffffff;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 98% ;
+    --card: 0 0% 98%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -31,6 +31,11 @@
     --chart-3: 240 1% 58%;
     --chart-4: 240 1% 42%;
     --chart-5: 240 2% 26%;
+    --chart-gradient-1: 173 58% 39%;
+    --chart-gradient-2: 12 76% 61%;
+    --chart-gradient-3: 197 37% 24%;
+    --chart-gradient-4: 43 74% 66%;
+    --chart-gradient-5: 27 87% 67%;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -88,17 +93,17 @@
 /* Force the text color inside the editor content */
 /*  */
 
-.wysiwyg, .wysiwyg * {
+.wysiwyg,
+.wysiwyg * {
   color: inherit !important;
 }
-
 
 @layer base {
   * {
     @apply border-border;
   }
   body {
-    @apply bg-background ;
+    @apply bg-background;
   }
   .wysiwyg {
     @apply prose max-w-none prose-headings:mt-0 prose-headings:mb-2 prose-p:mt-0 prose-p:mb-2 prose-ul:mt-0 prose-ul:mb-2 prose-li:mt-0 prose-li:mb-2 prose-ol:mt-0 prose-ol:mb-2 prose-img:mt-0 prose-img:mb-2 prose-hr:mt-0 prose-hr:mb-2 prose-p:leading-normal prose-li:leading-normal prose-a:break-all;
@@ -106,7 +111,8 @@
 }
 
 @keyframes gradient-x {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -146,13 +152,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background ;
+    @apply bg-background;
   }
   .wysiwyg {
     @apply prose max-w-none prose-headings:mt-0 prose-headings:mb-2 prose-p:mt-0 prose-p:mb-2 prose-ul:mt-0 prose-ul:mb-2 prose-li:mt-0 prose-li:mb-2 prose-ol:mt-0 prose-ol:mb-2 prose-img:mt-0 prose-img:mb-2 prose-hr:mt-0 prose-hr:mb-2 prose-p:leading-normal prose-li:leading-normal prose-a:break-all;
     @apply bg-background text-foreground;
   }
 }
-
-
-

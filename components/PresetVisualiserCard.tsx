@@ -57,7 +57,7 @@ const BUNDLE_DESCRIPTIONS = {
   2000: "The Super Saver bundle delivers the highest value, offering a generous credit allocation to support extensive job search efforts. Perfect for ambitious candidates managing high application volumes or preparing for multiple rounds of interviews, this bundle ensures you can make the most of all features without worrying about running out of credits. It's the ultimate choice for thorough preparation at an unbeatable value.",
 }
 
-// Custom tooltip component (keep as it was)
+// Custom tooltip component
 const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null
 
@@ -83,7 +83,6 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
 }
 
 function ServicesTable() {
-  // Keep as it was
   return (
     <Table>
       <TableHeader>
@@ -123,9 +122,6 @@ function PresetVisualCard() {
     }))
   }, [selectedBundle, selectedBias])
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"]
-  // const COLORS = ["hsl(var(--chart-1))","hsl(84, 100%, 50%)","hsla(30,100%,55%,0.7)","hsl(330,90%,60%)"]
-
   return (
     <Card className="w-full">
       <CardHeader>
@@ -164,18 +160,41 @@ function PresetVisualCard() {
                 <div className="h-[350px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
+                      <defs>
+                        <linearGradient id="pieGradient0" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(220, 70%, 50%)" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(220, 70%, 30%)" stopOpacity={0.9} />
+                        </linearGradient>
+                        <linearGradient id="pieGradient1" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(280, 65%, 60%)" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(280, 65%, 40%)" stopOpacity={0.9} />
+                        </linearGradient>
+                        <linearGradient id="pieGradient2" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(340, 75%, 55%)" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(340, 75%, 35%)" stopOpacity={0.9} />
+                        </linearGradient>
+                        <linearGradient id="pieGradient3" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(160, 60%, 45%)" stopOpacity={0.9} />
+                          <stop offset="100%" stopColor="hsl(160, 60%, 25%)" stopOpacity={0.9} />
+                        </linearGradient>
+                      </defs>
                       <Pie
                         data={chartData}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        outerRadius={80}
+                        outerRadius={120}
+                        innerRadius={60}
                         dataKey="value"
-                        label={({ value }) => `${value} C`}
-                        stroke={"000"}
+                        label={({ value }) => `${value} Credits`}
+                        stroke="hsl(var(--background))"
+                        strokeWidth={1}
                       >
                         {chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={`url(#pieGradient${index})`}
+                          />
                         ))}
                       </Pie>
                       <Tooltip content={CustomTooltip} />
@@ -187,14 +206,14 @@ function PresetVisualCard() {
                   <TooltipProvider>
                     <UITooltip>
                       <TooltipTrigger asChild>
-                  <Info className="w-4 h-4 mr-1 inline-block" />
+                        <Info className="w-4 h-4 mr-1 inline-block" />
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Click the buttons below to see different credit allocations</p>
                       </TooltipContent>
                     </UITooltip>
-                  Feel free to bias the feature(s) you want to use the most.
                   </TooltipProvider>
+                  Feel free to bias the feature(s) you want to use the most.
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4 justify-center">
                   {BIAS_LABELS.map((label, index) => (
@@ -229,4 +248,3 @@ function PresetVisualCard() {
 }
 
 export default PresetVisualCard
-
