@@ -32,6 +32,8 @@ import {
   Trash2,
   Loader2,
   History,
+  Wallet,
+  Sparkles,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ResumeData, SkillCategory, Skill, URL } from "@/types/types";
@@ -396,7 +398,6 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     }
   };
 
-
   const renderEntryFields = (
     section: keyof ResumeData,
     entry: any,
@@ -662,44 +663,51 @@ export default function Profile({ profData }: { profData: ResumeData }) {
         <Skeleton className="h-[200px] w-full" />
       ) : (
         <>
-          <Card className="w-full">
-            <div className="flex items-center justify-between p-6">
-              <CardHeader className="p-0">
-                <CardTitle className="text-2xl font-bold">Credits</CardTitle>
-                <CardDescription>Your current credit balance</CardDescription>
-              </CardHeader>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsModalOpen(true)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <History className="h-5 w-5" />
-                <span className="sr-only">View payment history</span>
-              </Button>
-            </div>
+          <div className="py-6">
+            <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
+              <div className="p-6 bg-gradient-to-r from-primary/5 to-transparent">
+                <div className="flex items-center gap-y-4 flex-wrap justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/10 p-3 rounded-xl shadow-sm backdrop-blur-sm">
+                      <Wallet className="text-primary w-6 h-6" />
+                    </div>
+                    <div>
+                      <h1 className="text-xl font-semibold text-card-foreground">
+                        Credits Balance
+                      </h1>
+                      <p className="text-sm text-muted-foreground">
+                        Manage your available credits
+                      </p>
+                    </div>
+                  </div>
 
-            <CardContent className="pb-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold">{credits.current}</span>
-                  <span className="text-lg text-muted-foreground">
-                    credits available
-                  </span>
+                  <div className="flex flex-wrap sm:flex-nowrap items-center justify-start sm:justify-start gap-2">
+                    <div className="flex items-center gap-1 bg-secondary/50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[140px] justify-center">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span className="font-medium text-secondary-foreground">
+                        {credits.current} credits
+                      </span>
+                    </div>
+                    <Button
+                      onClick={() => setIsModalOpen(true)}
+                      variant="ghost"
+                      className="bg-secondary/50 hover:bg-secondary/70 text-muted-foreground hover:text-foreground flex items-center gap-1 px-4 py-2 rounded-md shadow-sm text-sm justify-center"
+                    >
+                      <History className="w-4 h-4" />
+                      <span className="font-medium">History</span>
+                    </Button>
+                    <Link href="/pricing" className="w-full sm:w-auto">
+                      <Button className="bg-primary/10 hover:bg-primary/20 text-primary flex items-center gap-1 px-4 py-2 rounded-md shadow-sm text-sm w-full justify-center">
+                        <CreditCard className="w-4 h-4" />
+                        <span className="font-medium">Buy</span>
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-                <Link href="/pricing" className="w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
-                  >
-                    <CreditCard className="mr-2 h-5 w-5" />
-                    Buy Credits
-                  </Button>
-                </Link>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           <PaymentHistoryModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
