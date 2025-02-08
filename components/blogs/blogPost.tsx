@@ -16,7 +16,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Breadcrumbs } from "@/components/blogs/BlogBreadCrumbs";
+import { Breadcrumbs } from "./BlogBreadCrumbs";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
@@ -24,7 +24,6 @@ import { deleteBlog } from "@/actions/deleteblog";
 import { Blog } from "@/types/types";
 import { Separator } from "@/components/ui/separator";
 import { ShareComponent } from "./ShareComponent";
-import { useToast } from "@/hooks/use-toast";
 
 interface BlogPostProps {
   data: Blog;
@@ -44,7 +43,7 @@ export default function BlogPost({ data }: BlogPostProps) {
   const [showAllToc, setShowAllToc] = useState<boolean>(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const {toast} = useToast();
+
   useEffect(() => {
     setLoading(true);
     const setData = async () => {
@@ -58,7 +57,7 @@ export default function BlogPost({ data }: BlogPostProps) {
         setViews(data.views);
 
         const sparkedBlogs = JSON.parse(
-          localStorage.getItem("sparkedBlogs") || "[]",
+          localStorage.getItem("sparkedBlogs") || "[]"
         );
         setHasSparked(sparkedBlogs.includes(data.id));
         setLoading(false);
@@ -130,7 +129,7 @@ export default function BlogPost({ data }: BlogPostProps) {
         });
         if (response.ok) {
           const sparkedBlogs = JSON.parse(
-            localStorage.getItem("sparkedBlogs") || "[]",
+            localStorage.getItem("sparkedBlogs") || "[]"
           );
           sparkedBlogs.push(blog.id);
           localStorage.setItem("sparkedBlogs", JSON.stringify(sparkedBlogs));
@@ -150,14 +149,6 @@ export default function BlogPost({ data }: BlogPostProps) {
     if (confirm("Are you sure you want to delete this blog post?")) {
       try {
         const result = await deleteBlog(blog?.slug || "");
-        if (result.status === 429) {
-          toast({
-            title: "Whoa there! You've hit the rate limit.",
-            description: "Please slow down and try again in a few minutes.",
-            variant: "destructive",
-          });
-          return;
-        }
         if (result.success) {
           router.push("/blogs");
         } else {
@@ -419,5 +410,3 @@ export default function BlogPost({ data }: BlogPostProps) {
     </article>
   );
 }
-
-

@@ -649,7 +649,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
           )}
           {section !== "basics" && section !== "summary" && (
             <Button onClick={() => addEntry(section)}>
-              Add {title.slice(0, -1)}
+              Add {title.endsWith('s') ? title.slice(0,-1) : title}
             </Button>
           )}
         </div>
