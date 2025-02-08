@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "./ui/badge";
 
 interface Payment {
   paymentId: string;
@@ -119,7 +120,7 @@ export function PaymentHistoryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] h-[90vh] flex flex-col bg-background text-foreground">
+      <DialogContent className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[1200px] h-[90vh] flex flex-col bg-background text-foreground">
         <DialogHeader className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div className="flex items-center justify-between w-full">
             <DialogTitle className="text-lg font-semibold">
@@ -152,7 +153,7 @@ export function PaymentHistoryModal({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[25%] md:w-[20%]">
+                  <TableHead className="w-[25%] md:w-[10%]">
                     Bundle Name
                   </TableHead>
                   <TableHead className="w-[25%] md:w-[25%]">
@@ -160,9 +161,9 @@ export function PaymentHistoryModal({
                   </TableHead>
                   <TableHead className="w-[10%] md:w-[10%]">Quantity</TableHead>
                   <TableHead className="w-[15%] md:w-[15%]">Total</TableHead>
-                  <TableHead className="w-[15%] md:w-[15%]">Credits</TableHead>
-                  <TableHead className="w-[10%] md:w-[15%]">Status</TableHead>
-                  <TableHead className="w-[15%] md:w-[15%]">
+                  <TableHead className="w-[15%] md:w-[10%]">Credits</TableHead>
+                  <TableHead className="w-[10%] md:w-[10%]">Status</TableHead>
+                  <TableHead className="w-[15%] md:w-[20%]">
                     Last Updated
                   </TableHead>
                 </TableRow>
@@ -196,18 +197,16 @@ export function PaymentHistoryModal({
                     <TableCell className="text-xs sm:text-sm md:text-base">
                       {payment.credits}
                     </TableCell>
-                    <TableCell
-                      className={`text-xs sm:text-sm md:text-base ${
-                        payment.status === "SUCCESS"
-                          ? "text-green-500"
-                          : payment.status === "PENDING"
-                          ? "text-yellow-500"
-                          : payment.status === "FAILED"
-                          ? "text-red-500"
-                          : "text-gray-500" // Default color for other statuses
-                      }`}
-                    >
+                    <TableCell><Badge variant={"outline"} className={`text-xs font-light sm:text-sm md:text-base ${
+                      payment.status === "succeeded"
+                        ? "text-green-500 border-green-200"
+                        : payment.status === "failed"
+                        ? "text-red-500 border-red-200"
+                        : "text-gray-500" // Default color for other statuses
+                    }`}>
+
                       {payment.status}
+                    </Badge>
                     </TableCell>
                     <TableCell className="text-xs sm:text-sm md:text-base">
                       {new Date(payment.updatedAt).toLocaleDateString("en-US", {year: "numeric", month: "long", day: "2-digit"})}

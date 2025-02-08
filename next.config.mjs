@@ -9,7 +9,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "images.unsplash.com",
+        protocol: "https",
+        hostname: "cdnresumetweaker.wibblit.com",
+        pathname: "/**", // Allow all paths under this hostname
       },
     ],
   },

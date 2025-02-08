@@ -151,7 +151,7 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
       }`}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black to-black opacity-70 z-10"/>
-      <Image
+      <img
         src={blog.thumbnail}
         alt={blog.title}
         width={800}

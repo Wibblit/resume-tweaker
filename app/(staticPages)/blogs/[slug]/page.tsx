@@ -54,7 +54,9 @@ export default async function BlogPostPage({
   params,
 }: {
   params: { slug: string };
+
 }) {
+  console.log("params",params.slug)
   let data = await fetchBlog(params.slug);
   if (!data) return notFound();
 
