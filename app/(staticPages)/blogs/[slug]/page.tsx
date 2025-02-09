@@ -54,36 +54,17 @@ export default async function BlogPostPage({
   params,
 }: {
   params: { slug: string };
-
 }) {
-  console.log("params",params.slug)
+  console.log("params", params.slug);
   let data = await fetchBlog(params.slug);
   if (!data) return notFound();
 
-  data.content = addIdToH2Tags(data?.content);
-  console.log(data, "blogs from slug/page.ts");
-
+  const HTMLcontent = await fetch(data.content);
+  data.content = await HTMLcontent.text();
   const tableOfContents = extractH2Content(data.content);
   const newData = { ...data, tableOfContents };
   console.log(tableOfContents);
   return <BlogPost data={newData!} />;
-}
-
-function addIdToH2Tags(htmlString: string) {
-  const $ = load(htmlString);
-
-  $("h2").each((_, h2) => {
-    const h2Content = $(h2).text().trim();
-    const id = h2Content
-    .toLowerCase()
-    .replace(/^\d+\.\s*/, "")        
-    .replace(/[^\w\s-]/g, "")       
-    .trim()
-    .replace(/\s+/g, "-"); 
-    $(h2).attr("id", id);
-  });
-
-  return $.html();
 }
 
 function extractH2Content(htmlStr: string) {

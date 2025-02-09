@@ -4,7 +4,6 @@ import { BackgroundBeams } from "./ui/background-beams";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { motion } from "framer-motion";
-import { submitEmail } from "@/actions/sendMail";
 import { useFormStatus } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -40,21 +39,7 @@ export function JoinHero() {
   }, []);
 
   async function handleSubmit(formData: FormData) {
-    formData.append("ip", userIp);
-    const result = await submitEmail(formData);
-    if (result.success) {
-      setEmail("");
-      toast({
-        title: "Joined waitlist successfully",
-        description: result.message,
-      });
-    } else {
-      toast({
-        title: "Unable to join waitlist",
-        description: result.message,
-        variant: "destructive",
-      });
-    }
+    
   }
 
   return (

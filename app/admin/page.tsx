@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/prisma"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DashboardTabs } from "./components/DashboardTabs"
-import { getUsers, getBlogs, getWaitlistMembers } from "@/actions/admin"
+import { getUsers, getBlogs } from "@/actions/admin"
 
 async function getDashboardData() {
   const [
@@ -11,19 +11,15 @@ async function getDashboardData() {
     resumeCount,
     coverLetterCount,
     blogCount,
-    waitlistCount,
     recentUsers,
     recentBlogs,
-    recentWaitlistMembers
   ] = await Promise.all([
     prisma.user.count(),
     prisma.resume.count(),
     prisma.coverletter.count(),
     prisma.blog.count(),
-    prisma.waitlist.count(),
     getUsers({ page: 1, pageSize: 5 }),
     getBlogs({ page: 1, pageSize: 5 }),
-    getWaitlistMembers({ page: 1, pageSize: 5 })
   ])
 
   return {
@@ -31,10 +27,8 @@ async function getDashboardData() {
     resumeCount,
     coverLetterCount,
     blogCount,
-    waitlistCount,
     recentUsers,
     recentBlogs,
-    recentWaitlistMembers
   }
 }
 
@@ -83,23 +77,14 @@ export default async function AdminDashboard() {
             <p className="text-4xl font-bold">{dashboardData.blogCount}</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Waitlist Members</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{dashboardData.waitlistCount}</p>
-          </CardContent>
-        </Card>
+
       </div>
 
       <DashboardTabs 
         initialUsers={dashboardData.recentUsers}
         initialBlogs={dashboardData.recentBlogs}
-        initialWaitlistMembers={dashboardData.recentWaitlistMembers}
         totalUsers={dashboardData.userCount}
         totalBlogs={dashboardData.blogCount}
-        totalWaitlistMembers={dashboardData.waitlistCount}
       />
     </div>
   )

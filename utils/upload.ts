@@ -30,3 +30,15 @@ export async function uploadFileToR2({
 
   return `https://cdnresumetweaker.wibblit.com/${bucketName}/${uniqueFileName}`;
 }
+
+export async function uploadHtmlToR2(slug: string, htmlContent: string) {
+  const command = new PutObjectCommand({
+    Bucket: process.env.R2_BUCKET_BLOGS,
+    Key: `${slug}.html`,
+    Body: htmlContent,
+    ContentType: "text/html",
+  });
+
+  await r2Client.send(command);
+  return `https://cdnresumetweaker.wibblit.com/${process.env.R2_BUCKET_BLOGS}/${slug}.html`;
+}

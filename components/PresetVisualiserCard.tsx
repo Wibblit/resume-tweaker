@@ -223,7 +223,7 @@ function PresetVisualCard() {
   }, [selectedBundle, selectedBias]);
 
   return (
-    <Card className="w-full">
+    <Card id="features" className="w-full">
       <CardHeader>
         <CardTitle className="text-3xl font-bold">
           What You Get With Each Bundle

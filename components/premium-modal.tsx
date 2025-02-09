@@ -54,7 +54,8 @@ export function PremiumModal({
             Unlock {name}
           </DialogTitle>
           <DialogDescription className="text-center">
-            Access premium interview features to enhance your job search experience
+            Access premium interview features to enhance your job search
+            experience
           </DialogDescription>
         </DialogHeader>
 
@@ -67,19 +68,11 @@ export function PremiumModal({
           </div>
           <Separator className="my-2" />
           <div className="flex w-full flex-col gap-2">
-            <Button
-              variant="default"
-              className="w-full"
-              asChild
-            >
+            <Button variant="default" className="w-full" asChild>
               <Link href="/pricing">Get Credits</Link>
             </Button>
-            <Button
-              variant="outline"
-              className="w-full"
-              asChild
-            >
-              <Link href="/features">Explore Features</Link>
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/pricing/#features">Explore Features</Link>
             </Button>
           </div>
         </div>

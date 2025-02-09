@@ -28,6 +28,10 @@ const nextConfig = {
             key: "Cross-Origin-Embedder-Policy",
             value: "unsafe-none", // Disable COEP for YouTube compatibility
           },
+          {
+            key: "Content-Security-Policy",
+            value: "frame-src 'self' https://cdnresumetweaker.wibblit.com;",
+          }
         ],
       },
     ];

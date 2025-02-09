@@ -26,13 +26,3 @@ export async function getBlogs({ page, pageSize }: PaginationParams) {
   })
   return blogs
 }
-
-export async function getWaitlistMembers({ page, pageSize }: PaginationParams) {
-  const waitlistMembers = await prisma.waitlist.findMany({
-    take: pageSize,
-    skip: (page - 1) * pageSize,
-    orderBy: { joinedAt: 'desc' },
-    select: { id: true, email: true, joinedAt: true }
-  })
-  return waitlistMembers
-}
