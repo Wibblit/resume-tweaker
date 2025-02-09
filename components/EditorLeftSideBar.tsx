@@ -596,7 +596,7 @@ export default function LeftSideBar({
                       section,
                       entry.id,
                       field,
-                      date ? date.toISOString() : ""
+                      date ? date instanceof Date ? date.toISOString() : date : ""
                     )
                   }
                 />

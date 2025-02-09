@@ -190,7 +190,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <div>
                       <h3 style={styles.subtitle}>
                         {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
-                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && edu.startDate && " - "}{" "}
                         {edu.endDate && formatDate(edu.endDate, datetype)}
                       </h3>
                     </div>
@@ -235,8 +235,35 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
                   </div>
                   <div className="w-full flex items-start justify-between">
-                    <p className="italic">{exp.role}</p>
-                    <p>{exp.location}</p>
+                    <p
+                      className="italic"
+                      style={{
+                        fontSize:
+                          typeof styles.subtitle?.fontSize === "string"
+                            ? `${
+                                parseFloat(
+                                  styles.subtitle.fontSize.replace("em", "")
+                                ) * 0.85
+                              }em`
+                            : typeof styles.subtitle?.fontSize === "number"
+                            ? styles.subtitle.fontSize * 0.8
+                            : undefined,
+                      }}
+                    >
+                      {exp.role}
+                    </p>
+                    <p style={{
+                        fontSize:
+                          typeof styles.subtitle?.fontSize === "string"
+                            ? `${
+                                parseFloat(
+                                  styles.subtitle.fontSize.replace("em", "")
+                                ) * 0.85
+                              }em`
+                            : typeof styles.subtitle?.fontSize === "number"
+                            ? styles.subtitle.fontSize * 0.8
+                            : undefined,
+                      }}>{exp.location}</p>
                   </div>
                 </div>
                 {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
@@ -258,16 +285,18 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                 <div className="flex flex-col justify-between items-center">
                   <div className="w-full flex items-center justify-between">
                     <div className="flex items-center">
-                      <h3 style={styles.subtitle}>{project.name}</h3>
+                      <h3 style={styles.subtitle} className="text-nowrap">
+                        {project.name}
+                      </h3>
                       {project.url && (
                         <a
                           href={project.url.href}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={styles.link}
-                          className="w-full text-left mt-1 inline-block"
+                          className="w-full text-left inline-block"
                         >
-                          <p style={styles.normal}>
+                          <p style={{ ...styles.normal, ...styles.link }}>
                             {project.url.label && (
                               <span className="mx-1">|</span>
                             )}
@@ -289,17 +318,28 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
                   </div>
                   {/* <p className="w-full text-left mt-1">{project.summary}</p> */}
+                  {(project.keywords.length !==0 && project.keywords[0] !== '') && (
+                    <div className="w-full flex flex-wrap items-center justify-start gap-x-2 space-x-1">
+                      <span style={styles.normal} className="font-medium">
+                        Skills:
+                      </span>
+                      {project.keywords.map((keyword, keywordIndex) => (
+                        <span
+                          key={keywordIndex}
+                          className="font-medium"
+                          style={styles.normal}
+                        >
+                          {keyword}
+                          {keywordIndex !== project.keywords.length - 1 && ", "}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <HTMLViewer
                     lineHeight={lineHeight}
                     content={project.summary}
                   />
-                  {project.keywords && (
-                    <div className="w-full flex flex-wrap items-start justify-start gap-2 mt-2">
-                      {project.keywords.map((keyword, keywordIndex) => (
-                        <p key={keywordIndex}>{keyword}</p>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             ))}

@@ -1,4 +1,4 @@
-import Interview from "@/components/Interview/InterviewPage";
+import Interview from "@/components/Interview/interviewPage";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/prisma";

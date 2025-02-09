@@ -173,15 +173,6 @@ const dateFormats = [
   { value: "MMM/YY", label: "MMM/YY (Jan/25)", countries: ["Various"] },
 ];
 
-function createAbbreviation(word: string): string {
-  // If the word has more than 5 characters, return the first 5 + '.'
-  if (word.length > 5) {
-    return word.slice(0, 5) + "."; // Example: "hobbies" -> "hobbi."
-  }
-  // If it's 5 characters or less, return as is
-  return word;
-}
-
 const abbrv: Record<SectionName, string> = {
   summary: "summary",
   experience: "exp.",
@@ -520,10 +511,10 @@ export default function EditorRightSideBar({
                                     >
                                       <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
                                       <span className="truncate text-xs md:text-sm">
-                                        {createAbbreviation(sectionName)
+                                        {sectionName
                                           .charAt(0)
                                           .toUpperCase() +
-                                          createAbbreviation(sectionName).slice(
+                                          sectionName.slice(
                                             1
                                           )}
                                       </span>
@@ -563,7 +554,7 @@ export default function EditorRightSideBar({
                           >
                             <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
                             <span className="truncate text-xs md:text-sm">
-                              {createAbbreviation(section)}
+                              {section}
                             </span>
                           </div>
                         )}

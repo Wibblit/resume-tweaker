@@ -46,7 +46,7 @@ import Template6 from "@/templates/Template6";
 import Template7 from "@/templates/Template7";
 import Template8 from "@/templates/Template8";
 import Template9 from "@/templates/Template9";
-import { LogOut } from "lucide-react";
+import { LogOut, FilePlus2 } from "lucide-react";
 import { saveResumeData } from "@/actions/saveResumeData";
 import { useToast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/hooks/hooks";
@@ -358,7 +358,8 @@ export default function ResumePages({
           <Redo className="h-4 w-4" />
         </Button>
         <Button ref={addButtonRef} onClick={addNewPage}>
-          <Plus className="h-4 w-4" />
+          <FilePlus2 className="h-4 w-4" />
+          <span className="hidden md:block">Add Page</span>
         </Button>
       </div>
       <div className="flex space-x-2">
@@ -437,8 +438,8 @@ export default function ResumePages({
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogAction onClick={handleSaveAndExit}>
-                                                 Save and Exit
-                                               </AlertDialogAction>
+                            Save and Exit
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -521,7 +522,9 @@ export default function ResumePages({
                       {saving ? (
                         <Loader className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Save className="h-4 w-4" />
+                        
+                          <Save className="h-4 w-4" />
+    
                       )}
                     </Button>
                   </TooltipTrigger>
@@ -579,7 +582,8 @@ export default function ResumePages({
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="sm" className="z-10">
-                      <LogOut className="h-4 w-4" />
+                        <LogOut className="h-4 w-4" />
+                        Exit
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -594,9 +598,9 @@ export default function ResumePages({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                     <AlertDialogAction onClick={handleSaveAndExit}>
-                                            Save and Exit
-                                          </AlertDialogAction>
+                      <AlertDialogAction onClick={handleSaveAndExit}>
+                        Save and Exit
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -630,7 +634,10 @@ export default function ResumePages({
                   {saving ? (
                     <Loader className="h-4 w-4 animate-spin" />
                   ) : (
-                    <Save className="h-4 w-4" />
+                        <>
+                          <Save className="h-4 w-4" />
+                          Save
+                          </>
                   )}
                 </Button>
               </TooltipTrigger>

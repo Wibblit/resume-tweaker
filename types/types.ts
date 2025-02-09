@@ -29,10 +29,9 @@ export interface Blog {
 }
 
 type Template = {
-    id: number;
-    name: string;
-  }
-
+  id: number;
+  name: string;
+};
 
 //RightSideBar
 // In your types file (e.g., @/types/types.ts)

@@ -324,7 +324,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     setIsSaving(true);
     try {
       let updatedProfileData = JSON.parse(JSON.stringify(profileData));
-      if (!imageFile && !isDelete) {
+      if (!imageFile && !isDelete && isImageChanged) {
         toast({
           title: "Error",
           description: "Cannot find the image",
@@ -350,7 +350,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
           }
         }
         setIsImageChanged(false);
-        setImageFile(null);
+        setImageFile(null)
         setImagePreview(null);
       }
 

@@ -6,6 +6,8 @@ export function formatDate(date: string | Date, formatType: string): string {
   };
 
   switch (formatType) {
+    case "Present":
+      return "Present";
     case "DD/MM/YYYY":
       return new Date(date).toLocaleDateString("en-GB"); // UK date format
     case "MM/DD/YYYY":
