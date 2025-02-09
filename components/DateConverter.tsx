@@ -7,11 +7,14 @@ interface DateConverterProps {
 }
 
 const DateConverter = (dateString: string) => {
-  console.log(dateString)
+  console.log(dateString);
   const formatDate = (date: string) => {
     // Safely parse the input date string
-    const dateObj = new Date(date);
+    if (date.trim() === "Present") {
+      return "Present";
+    }
 
+    const dateObj = new Date(date);
     // Check if date is valid
     if (isNaN(dateObj.getTime())) {
       return "Invalid date";
@@ -26,7 +29,7 @@ const DateConverter = (dateString: string) => {
     return `${day}, ${month}'${year}`; // Format: dd, MMM'yy
   };
 
-  return formatDate(dateString)
+  return formatDate(dateString);
 };
 
 export default DateConverter;

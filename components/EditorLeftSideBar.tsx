@@ -124,7 +124,7 @@ export default function LeftSideBar({
         description: "Cannot find the image",
         variant: "destructive",
       });
-      setIsUploading(false)
+      setIsUploading(false);
       return;
     }
     try {
@@ -138,13 +138,13 @@ export default function LeftSideBar({
         );
         dispatch(updateResumeImage(response?.data?.url));
         if (prev && profileData.basics) {
-           if (prev !== profileData.basics[0].picture) {
-             await axios.delete(
-               `/api/profile-file-ops?file=${encodeURIComponent(prev)}`
-             );
-           }
+          if (prev !== profileData.basics[0].picture) {
+            await axios.delete(
+              `/api/profile-file-ops?file=${encodeURIComponent(prev)}`
+            );
+          }
         }
-       
+
         toast({
           title: "Success",
           description: "Image upload success",
@@ -445,7 +445,7 @@ export default function LeftSideBar({
     return !!pattern.test(url);
   };
 
-    const router = useRouter();
+  const router = useRouter();
 
   const handleUrlChange = (
     section: keyof ResumeData | string,
@@ -596,7 +596,8 @@ export default function LeftSideBar({
                       section,
                       entry.id,
                       field,
-                      date ? date instanceof Date ? date.toISOString() : date : ""
+                      date ? (date.getTime() === new Date(1970, 0, 1).getTime() ? "Present" : date.toISOString()) : ""
+
                     )
                   }
                 />
@@ -1038,7 +1039,6 @@ export default function LeftSideBar({
                   : "flex-row space-x-4 p-4 justify-center"
               }`}
             >
-
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -1103,7 +1103,6 @@ export default function LeftSideBar({
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-             
             </div>
           </div>
           <div
