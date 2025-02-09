@@ -168,17 +168,6 @@ export default function CoverEditor() {
       await saveData();
     };
 
-    const originalPushState = window.history.pushState;
-    window.history.pushState = async function (state, title, url) {
-      await handleRouteChange();
-      originalPushState.apply(window.history, [state, title, url]);
-    };
-
-    const originalReplaceState = window.history.replaceState;
-    window.history.replaceState = async function (state, title, url) {
-      await handleRouteChange();
-      originalReplaceState.apply(window.history, [state, title, url]);
-    };
 
     window.addEventListener("popstate", handlePopState);
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -186,8 +175,6 @@ export default function CoverEditor() {
     return () => {
       window.removeEventListener("popstate", handlePopState);
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.history.pushState = originalPushState;
-      window.history.replaceState = originalReplaceState;
     };
   }, [CoverLetterData, ResumeAppearance, currCoverId]);
 

@@ -254,6 +254,11 @@ export default function ResumePages({
     }
   };
 
+    const handleSaveAndExit = async () => {
+      await handleSave();
+      router.push("/home");
+    };
+
   useEffect(() => {
     dispatch(
       updatePageVales({ pageSectionOrders, resumeData, templateNumber })
@@ -423,7 +428,7 @@ export default function ResumePages({
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            Are you sure you want to exit?"
+                            Are you sure you want to exit?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             Would you like to save your changes before exiting?
@@ -431,14 +436,9 @@ export default function ResumePages({
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogAction
-                            onClick={() => router.push("/home")}
-                          >
-                            Exit
-                          </AlertDialogAction>
-                          <AlertDialogAction onClick={handleSave}>
-                            Save
-                          </AlertDialogAction>
+                          <AlertDialogAction onClick={handleSaveAndExit}>
+                                                 Save and Exit
+                                               </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -585,7 +585,7 @@ export default function ResumePages({
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Are you sure you want to exit?"
+                        Are you sure you want to exit?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         Would you like to save your changes before exiting? Any
@@ -594,12 +594,9 @@ export default function ResumePages({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => router.push("/home")}>
-                        Exit
-                      </AlertDialogAction>
-                      <AlertDialogAction onClick={handleSave}>
-                        Save
-                      </AlertDialogAction>
+                     <AlertDialogAction onClick={handleSaveAndExit}>
+                                            Save and Exit
+                                          </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

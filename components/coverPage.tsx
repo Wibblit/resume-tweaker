@@ -225,6 +225,12 @@ export default function Component({
       });
     }
   };
+  
+  const handleSaveAndExit = async () => {
+    await handleSave()
+    router.push('/home')
+  }
+
 
   useEffect(() => {
     const updatedPages = pages.map((page) => ({
@@ -322,7 +328,7 @@ export default function Component({
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Are you sure you want to exit?"
+                        Are you sure you want to exit?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         Would you like to save your changes before exiting? Any
@@ -331,12 +337,10 @@ export default function Component({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => router.push("/home")}>
-                        Exit
+                      <AlertDialogAction onClick={handleSaveAndExit}>
+                        Save and Exit
                       </AlertDialogAction>
-                      <AlertDialogAction onClick={handleSave}>
-                        Save
-                      </AlertDialogAction>
+                      
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
