@@ -644,7 +644,7 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
                 onClick={() => setIsAIPopoverOpen(!isAIPopoverOpen)}
                 variant="outline"
                 size="sm"
-                className="px-2"
+                className="px-2 text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700"
               >
                 <Sparkle className="h-3 w-3 opacity-80" />
               </Button>
@@ -680,7 +680,9 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
                       .getHTML()
                       .replace(/<[^>]*>?/gm, "")
                       .trim() && "opacity-50 cursor-not-allowed"
-                  } ${isEnhanceLoading && "opacity-50"}`}
+                  } ${
+                    isEnhanceLoading && "opacity-50"
+                  } text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 border-purple-300 dark:border-purple-800`}
                   onClick={handleEnhanceText}
                 >
                   <Wand2 className="h-3 w-3" />

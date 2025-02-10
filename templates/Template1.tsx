@@ -20,7 +20,7 @@ type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
 
@@ -188,9 +188,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
-                      <h3 style={styles.subtitle}>
-                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
-                        {edu.endDate && edu.startDate && " - "}{" "}
+                      <h3 style={styles.normal}>
+                        {edu.startDate && formatDate(edu.startDate, datetype)}
+                        {edu.endDate && edu.startDate && " - "}
                         {edu.endDate && formatDate(edu.endDate, datetype)}
                       </h3>
                     </div>
@@ -227,9 +227,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
-                      <h3 style={styles.subtitle}>
-                        {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
-                        {exp.endDate && " - "}{" "}
+                      <h3 style={styles.normal}>
+                        {exp.startDate && formatDate(exp.startDate, datetype)}
+                        {exp.startDate && exp.endDate && " - "}
                         {exp.endDate && formatDate(exp.endDate, datetype)}
                       </h3>
                     </div>
@@ -252,7 +252,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     >
                       {exp.role}
                     </p>
-                    <p style={{
+                    <p
+                      style={{
                         fontSize:
                           typeof styles.subtitle?.fontSize === "string"
                             ? `${
@@ -263,7 +264,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                             : typeof styles.subtitle?.fontSize === "number"
                             ? styles.subtitle.fontSize * 0.8
                             : undefined,
-                      }}>{exp.location}</p>
+                      }}
+                    >
+                      {exp.location}
+                    </p>
                   </div>
                 </div>
                 {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
@@ -308,33 +312,35 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
 
                     <div>
-                      <h3 style={styles.subtitle}>
+                      <h3 style={styles.normal}>
                         {project.startDate &&
-                          formatDate(project.startDate, datetype)}{" "}
-                        {project.endDate && " - "}{" "}
+                          formatDate(project.startDate, datetype)}
+                        {project.startDate && project.endDate && " - "}
                         {project.endDate &&
                           formatDate(project.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
                   {/* <p className="w-full text-left mt-1">{project.summary}</p> */}
-                  {(project.keywords.length !==0 && project.keywords[0] !== '') && (
-                    <div className="w-full flex flex-wrap items-center justify-start gap-x-2 space-x-1">
-                      <span style={styles.normal} className="font-medium">
-                        Skills:
-                      </span>
-                      {project.keywords.map((keyword, keywordIndex) => (
-                        <span
-                          key={keywordIndex}
-                          className="font-medium"
-                          style={styles.normal}
-                        >
-                          {keyword}
-                          {keywordIndex !== project.keywords.length - 1 && ", "}
+                  {project.keywords.length !== 0 &&
+                    project.keywords[0] !== "" && (
+                      <div className="w-full flex flex-wrap items-center justify-start gap-x-2 space-x-1">
+                        <span style={styles.normal} className="font-medium">
+                          Skills:
                         </span>
-                      ))}
-                    </div>
-                  )}
+                        {project.keywords.map((keyword, keywordIndex) => (
+                          <span
+                            key={keywordIndex}
+                            className="font-medium"
+                            style={styles.normal}
+                          >
+                            {keyword}
+                            {keywordIndex !== project.keywords.length - 1 &&
+                              ", "}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                   <HTMLViewer
                     lineHeight={lineHeight}
@@ -357,7 +363,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{cert.name}</h3>
                     <div>
-                      <h3 style={styles.subtitle}>
+                      <h3 style={styles.normal}>
                         {cert.date && formatDate(cert.date, datetype)}
                       </h3>
                     </div>
@@ -371,7 +377,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         rel="noopener noreferrer"
                         style={styles.link}
                       >
-                        <p className="underline" style={styles.normal}>
+                        <p style={{ ...styles.normal, ...styles.link }}>
                           {cert.url.label}
                         </p>
                       </a>
@@ -438,42 +444,43 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>References</h2>
-            {content.references.map((ref, index) => (
-              <div key={index} className="mb-2">
-                <div className="w-full flex items-start justify-start space-x-4">
-                  <h3 style={styles.subtitle}>{ref.name}</h3>
+            <div className="space-y-1">
+              {content.references.map((ref, index) => (
+                <div key={index} className="flex justify-between">
+                  <h3 style={styles.subtitle} className="font-semibold">
+                    {ref.name}
+                  </h3>
                   <p>{ref.phone}</p>
                   <p>{ref.email}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
-      case "volunteerings":
+      case "volunteer":
         if (!content.volunteer?.length) return null;
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>Volunteer Experience</h2>
-            {content.volunteer.map((vol, index) => (
-              <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
+            <div className="space-y-2">
+              {content.volunteer.map((vol, index) => (
+                <div key={index} className="flex flex-col">
+                  <div className="flex justify-between">
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
-                    <div>
-                      <h3 style={styles.subtitle}>
-                        {vol.startDate && formatDate(vol.startDate, datetype)} -{" "}
-                        {vol.endDate && formatDate(vol.endDate, datetype)}
-                      </h3>
-                    </div>
+                    <p style={styles.normal}>
+                      {vol.startDate && formatDate(vol.startDate, datetype)}
+                      {vol.startDate && vol.endDate && " – "}
+                      {vol.endDate && formatDate(vol.endDate, datetype)}
+                    </p>
                   </div>
-                  <div className="w-full flex items-start justify-between">
+                  <div className="flex justify-between">
                     <p>{vol.role}</p>
                     <p>{vol.location}</p>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
@@ -496,14 +503,14 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                           style={styles.link}
                           className="flex items-center"
                         >
-                          <p style={styles.normal}>
+                          <p style={{ ...styles.normal, ...styles.link }}>
                             {pub.url.label && <span className="mx-1">|</span>}
                             {pub.url.label}
                           </p>
                         </a>
                       )}
                     </div>
-                    <h3 style={styles.subtitle}>
+                    <h3 style={styles.normal}>
                       {pub.date && formatDate(pub.date, datetype)}
                     </h3>
                   </div>
@@ -527,7 +534,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             {content.awards.map((award, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
+                  <div className="w-full flex items-center justify-between mb-0.5">
                     <div className="flex items-center">
                       <h3 style={styles.subtitle}>{award.title}</h3>
 
@@ -540,19 +547,20 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
 
                     <div>
-                      <h3 style={styles.subtitle}>
+                      <h3 style={styles.normal}>
                         {award.date && formatDate(award.date, datetype)}
                       </h3>
                     </div>
                   </div>
-
-                  {award.summary && (
-                    // <p className="w-full text-left mt-1">{award.summary}</p>
-                    <HTMLViewer
-                      lineHeight={lineHeight}
-                      content={award.summary}
-                    />
-                  )}
+                  <div className="w-full items-center justify-start">
+                    {award.summary && (
+                      // <p className="w-full text-left mt-1">{award.summary}</p>
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -573,65 +581,53 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             {content[sectionName] &&
               Array.isArray(content[sectionName]) &&
               //@ts-ignore
-              content[sectionName]?.map((sec: Custom, index: number) => (
+              content[sectionName].map((sec: Custom, index: number) => (
                 <div key={index} className="mb-4">
-                  <div className="flex flex-col justify-between">
+                  <div className="flex flex-col">
                     {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex justify-between">
                       {/* Left Section: Name, Location, Link */}
-                      <div className="flex items-center gap-2">
-                        {/* Name */}
+                      <div className="flex flex-wrap items-center">
                         {sec.name && (
                           <h3 style={styles.subtitle}>{sec.name}</h3>
                         )}
-
-                        {/* Location */}
                         {sec.location && (
-                          <p style={styles.subtitle} className="">
-                            , {sec.location}
-                          </p>
+                          <p style={styles.subtitle}>, {sec.location}</p>
                         )}
-
-                        {/* URL Link */}
                         {sec.url && (
                           <a
                             href={sec.url.href}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={styles.link}
-                            className="flex items-center mx-2"
+                            className="mx-2"
                           >
-                            <p style={styles.normal}>
-                              {sec.url.label && <span className="mx-1">|</span>}
-                              {sec.url.label}
-                            </p>
+                            <span className="mx-1">{sec.url.label && "|"}</span>{" "}
+                            {sec.url.label}
                           </a>
                         )}
                       </div>
 
                       {/* Right Section: Dates */}
-                      <div>
-                        {/* Start Date and End Date */}
-                        {sec.startDate && (
-                          <h3 style={styles.subtitle}>
-                            {formatDate(sec.startDate, datetype)}
-                            {sec.endDate &&
-                              ` - ${formatDate(sec.endDate, datetype)}`}
-                          </h3>
-                        )}
-                      </div>
+                      {sec.startDate && (
+                        <p style={styles.normal}>
+                          {formatDate(sec.startDate, datetype)}
+                          {sec.endDate && sec.startDate && " - "}
+                            {sec.endDate && formatDate(sec.endDate, datetype)}
+                        </p>
+                      )}
                     </div>
 
-                    {/* Description: Placed below the main row */}
+                    {/* Description */}
                     {sec.description && (
                       <p style={styles.normal} className="mt-1">
                         {sec.description}
                       </p>
                     )}
 
-                    {/* Summary: Placed below the description */}
+                    {/* Summary */}
                     {sec.summary && (
-                      <div className="mt-2">
+                      <div className="mt-1">
                         <HTMLViewer
                           lineHeight={lineHeight}
                           content={sec.summary}

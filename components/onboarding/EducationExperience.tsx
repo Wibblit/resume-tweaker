@@ -120,12 +120,16 @@ export default function EducationExperience({
               <div className="flex flex-col gap-y-2">
                 <Label className="py-1">Start Date</Label>
                 <CustomDatePicker
-                  date={edu.startDate ? new Date(edu.startDate) : undefined}
+                  date={edu.startDate === "Present" ? new Date(1970, 0, 1) : edu.startDate ? new Date(edu.startDate) : undefined}
                   onSelect={(date) =>
                     updateEducation(
                       index,
                       "startDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -133,12 +137,16 @@ export default function EducationExperience({
               <div className="flex flex-col gap-y-2">
                 <Label className="py-1">End Date</Label>
                 <CustomDatePicker
-                  date={edu.endDate ? new Date(edu.endDate) : undefined}
+                  date={edu.endDate === "Present" ? new Date(1970, 0, 1) : edu.endDate ? new Date(edu.endDate) : undefined}
                   onSelect={(date) =>
                     updateEducation(
                       index,
                       "endDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -187,12 +195,16 @@ export default function EducationExperience({
               <div className="flex flex-col gap-y-2">
                 <Label className="py-1">Start Date</Label>
                 <CustomDatePicker
-                  date={exp.startDate ? new Date(exp.startDate) : undefined}
+                  date={exp.startDate ? new Date(1970, 0, 1) : exp.startDate ? new Date(exp.startDate) : undefined}
                   onSelect={(date) =>
                     updateExperience(
                       index,
                       "startDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -200,12 +212,16 @@ export default function EducationExperience({
               <div className="flex flex-col gap-y-2">
                 <Label className="py-1">End Date</Label>
                 <CustomDatePicker
-                  date={exp.endDate ? new Date(exp.endDate) : undefined}
+                  date={exp.endDate === "Present" ? new Date(1970, 0, 1) : exp.endDate ? new Date(exp.endDate) : undefined}
                   onSelect={(date) =>
                     updateExperience(
                       index,
                       "endDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
