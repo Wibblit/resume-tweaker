@@ -20,7 +20,7 @@ export function Hero() {
             <Sparkles className="mr-2 h-4 w-4 text-secondary-foreground" />
             <span className="text-secondary-foreground">Supercharge your Job Search</span>
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+          <h1 className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
             Elevate your career with<br className="hidden sm:inline" />
             <WordRotate
               words={["Resumes", "Cover Letters", "Reviews", "Interviews"]}
