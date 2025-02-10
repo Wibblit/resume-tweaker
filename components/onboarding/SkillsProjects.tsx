@@ -267,7 +267,11 @@ export default function SkillsProjects({
                     updateProject(
                       index,
                       "startDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -280,7 +284,11 @@ export default function SkillsProjects({
                     updateProject(
                       index,
                       "endDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />

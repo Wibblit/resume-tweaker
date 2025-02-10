@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/badge";
+import { useMediaQuery } from "react-responsive";
 
 // Constants (keep as they were)
 const SERVICE_DETAILS = [
@@ -61,7 +62,7 @@ const SERVICE_DETAILS = [
     description: "Professional resume review and feedback",
     color: "text-purple-500 dark:text-purple-400",
     bgColor: "bg-purple-50 dark:bg-purple-950/30",
-    borderColor: "border-purple-200 dark:border-purple-800",
+    borderColor: "  ",
   },
   {
     name: "Comp. Interview",
@@ -204,6 +205,7 @@ function PresetVisualCard() {
   const [selectedBundle, setSelectedBundle] =
     useState<keyof typeof PRESET_ALLOCATIONS>(200);
   const [selectedBias, setSelectedBias] = useState(0);
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
   const chartData = useMemo(() => {
     const currentAllocation = PRESET_ALLOCATIONS[selectedBundle][selectedBias];
@@ -352,7 +354,7 @@ function PresetVisualCard() {
                         outerRadius={120}
                         innerRadius={60}
                         dataKey="value"
-                        label={({ value }) => `${value} Credits`}
+                        label={({ value }) => `${value} ${isMobile ? 'C' : 'Credits'}`}
                         stroke="hsl(var(--background))"
                         strokeWidth={1}
                       >

@@ -350,7 +350,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
           }
         }
         setIsImageChanged(false);
-        setImageFile(null)
+        setImageFile(null);
         setImagePreview(null);
       }
 
@@ -514,7 +514,11 @@ export default function Profile({ profData }: { profData: ResumeData }) {
                       section,
                       entry.id,
                       field,
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -649,7 +653,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
           )}
           {section !== "basics" && section !== "summary" && (
             <Button onClick={() => addEntry(section)}>
-              Add {title.endsWith('s') ? title.slice(0,-1) : title}
+              Add {title.endsWith("s") ? title.slice(0, -1) : title}
             </Button>
           )}
         </div>

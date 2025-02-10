@@ -596,8 +596,12 @@ export default function LeftSideBar({
                       section,
                       entry.id,
                       field,
-                      date ? (date.getTime() === new Date(1970, 0, 1).getTime() ? "Present" : date.toISOString()) : ""
-
+                      date
+                        ? date.toDateString() ===
+                          new Date(1970, 0, 1).toDateString()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />

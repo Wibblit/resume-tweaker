@@ -125,7 +125,11 @@ export default function EducationExperience({
                     updateEducation(
                       index,
                       "startDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -138,7 +142,11 @@ export default function EducationExperience({
                     updateEducation(
                       index,
                       "endDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -192,7 +200,11 @@ export default function EducationExperience({
                     updateExperience(
                       index,
                       "startDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
@@ -205,7 +217,11 @@ export default function EducationExperience({
                     updateExperience(
                       index,
                       "endDate",
-                      date ? date.toISOString() : ""
+                      date
+                        ? date.getTime() === new Date(1970, 0, 1).getTime()
+                          ? "Present"
+                          : date.toISOString()
+                        : ""
                     )
                   }
                 />
