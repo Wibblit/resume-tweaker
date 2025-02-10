@@ -19,7 +19,7 @@ type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
 
@@ -32,7 +32,6 @@ interface StanfordResumeTemplateProps {
   margin: number;
   pageIndex: number;
 }
-
 
 export default function Component({
   content,
@@ -52,11 +51,11 @@ export default function Component({
     dispatch(UpdateBaseColor(baseColor));
   }, [dispatch, baseColor]);
 
+  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
+  const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator);
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const color = useAppSelector((state) => state?.rightsidebar?.baseColor);
 
-
-    const isIcons = useAppSelector((state) => state?.rightsidebar?.icons)
-    const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator)
-      const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
   const styles = {
     container: {
       fontFamily,
@@ -75,14 +74,21 @@ export default function Component({
       fontSize: "1.1em",
       fontWeight: "bold",
       textTransform: "uppercase" as const,
-      borderTop: isSeperator && "2px solid #000",
+      borderTop: isSeperator && `2px solid ${baseColor}`,
       marginTop: "1rem",
       paddingTop: "0.5rem",
-      marginBottom: "1rem",
+      marginBottom: "0.5rem",
+      color: color,
     } as React.CSSProperties,
     dateRange: {
       fontWeight: "normal",
     } as React.CSSProperties,
+    linklabel: {
+      color : baseColor
+    },
+    text: {
+      fontSize : `${fontSize}px`
+    }
   };
 
   const renderSection = (sectionName: SectionName) => {
@@ -107,7 +113,7 @@ export default function Component({
                   <span>{basics.email}</span>
                 </>
               )}
-              {basics.url && (
+              {basics.url.label && (
                 <>
                   <span>•</span>
                   <a
@@ -144,13 +150,12 @@ export default function Component({
             {content.education.map((edu, index) => (
               <div key={index} className="mb-3 flex w-full">
                 <div
-                  className="flex-shrink-0 w-[160px] mr-4"
+                  className="flex-shrink-0 w-auto mr-4"
                   style={styles.dateRange}
                 >
-                  {edu.startDate &&
-                    formatDate(edu.startDate, datetype)}
-                  {edu.endDate &&
-                    ` - ${formatDate(edu.endDate, datetype)}`}
+                  {edu.startDate && formatDate(edu.startDate, datetype)}
+                  {edu.startDate && edu.endDate && " - "}
+                  {edu.endDate && formatDate(edu.endDate, datetype)}
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between">
@@ -158,10 +163,12 @@ export default function Component({
                       <span className="font-bold">{edu.institution}</span>
                     </div>
                   </div>
-                  <div className="ml-4">
-                    {edu.degree && <div>• {edu.degree}</div>}
-                    {edu.field && <div>• {edu.field}</div>}
-                    {edu.score && <div>• GPA - {edu.score}</div>}
+                  <div className="mt-1 flex flex-wrap items-center justify-start">
+                    {edu.degree && <div>{edu.degree}</div>}
+                    {((edu.degree && edu.field) || (edu.degree && edu.score)) && <span className="mx-1">|</span>}
+                    {edu.field && <div>{edu.field}</div>}
+                    {((edu.score && edu.field) || (edu.score && edu.degree)) && <span className="mx-1">|</span>}
+                    {edu.score && <div>{edu.score}</div>}
                   </div>
                 </div>
               </div>
@@ -179,24 +186,30 @@ export default function Component({
             {content.experience.map((exp, index) => (
               <div key={index} className="mb-3 flex w-full">
                 <div
-                  className="flex-shrink-0 w-[160px] mr-4"
+                  className="flex-shrink-0 w-auto mr-4"
                   style={styles.dateRange}
                 >
-                  {exp.startDate &&
-                    formatDate(exp.startDate, datetype)}
-                  {exp.endDate &&
-                    ` - ${formatDate(exp.endDate, datetype)}`}
+                  {exp.startDate && formatDate(exp.startDate, datetype)}
+                  {exp.startDate && exp.endDate && " - "}
+                  {exp.endDate && formatDate(exp.endDate, datetype)}
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between">
-                    <div>
+                    <div className="flex flex-wrap items-center gap-x-2">
                       <span className="font-bold">{exp.role}</span>
-                      {exp.organization && <span>, {exp.organization}</span>}
-                      {exp.location && <span>, {exp.location}</span>}
+                      {exp.role && exp.organization && (
+                        <span className="mx-1">|</span>
+                      )}
+                      {exp.organization && <span>{exp.organization}</span>}
+                      {exp.organization && exp.location && (
+                        <span className="mx-1">|</span>
+                      )}
+                      {exp.location && <span>{exp.location}</span>}
                     </div>
                   </div>
+
                   {exp.summary && (
-                    <div className="">
+                    <div className="mt-1">
                       <HTMLViewer
                         lineHeight={lineHeight}
                         content={exp.summary}
@@ -233,26 +246,33 @@ export default function Component({
             <h2 style={styles.sectionTitle as React.CSSProperties}>Projects</h2>
             {content.projects.map((project, index) => (
               <div key={index} className="mb-3 flex w-full">
-                <div className="w-[160px] flex-shrink-0 mr-4">
+                <div className="w-auto flex-shrink-0 mr-4">
                   <span style={styles.dateRange}>
                     {project.startDate &&
                       formatDate(project.startDate, datetype)}
+                    {project.startDate && project.endDate && " - "}
                     {project.endDate &&
-                      ` - ${
-                        formatDate(project.endDate, datetype
-                      )}`}
+                      formatDate(project.endDate, datetype)}
                   </span>
                 </div>
 
                 <div className="flex-grow">
-                  <div className="flex justify-between">
+                  <div className="flex justify-start">
                     <span className="font-bold">{project.name}</span>
+                    {project.name && project.url && <span className="mx-1">|</span>}
+                    {project.url.href && project.url.label && (
+                      <a href={project.url.href}>
+                        <span style={styles.linklabel}>{project.url.label}</span>
+                      </a>
+                    )}
                   </div>
                   {project.summary && (
-                    <HTMLViewer
-                      lineHeight={lineHeight}
-                      content={project.summary}
-                    />
+                    <div className="mt-1">
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={project.summary}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -267,17 +287,38 @@ export default function Component({
             <h2 style={styles.sectionTitle as React.CSSProperties}>
               Certifications
             </h2>
-            {content.certifications.map((cert, index) => (
-              <div key={index} className="mb-2">
-                <span className="font-bold">{cert.name}</span>
-                {cert.issuer && <span>, {cert.issuer}</span>}
-                {cert.date && (
-                  <span className="ml-2">
-                    ({formatDate(cert.date, datetype)})
-                  </span>
-                )}
-              </div>
-            ))}
+            <div className="space-y-2">
+              {content.certifications.map((cert, index) => (
+                <div key={index} className="flex flex-col">
+                  {/* First Row: Name & Issuer on Left | Date on Right */}
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="font-bold" style={styles.text}>
+                        {cert.name}
+                      </span>
+                      {cert.name && cert.issuer && <span className="mx-1">|</span>}
+                      {cert.issuer && <span>{cert.issuer}</span>}
+                      {cert.issuer && cert.url && <span className="mx-1">|</span>}
+                      {cert.url && (
+                        <a
+                          href={cert.url.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={styles.linklabel}
+                        >
+                          {cert.url.label}
+                        </a>
+                      )}
+                    </div>
+                    {cert.date && (
+                      <span className="text-sm">
+                        {formatDate(cert.date, datetype)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         );
 
@@ -314,7 +355,8 @@ export default function Component({
                   )}
                   <a
                     href={profile.url.href}
-                    className="text-black hover:underline ml-1"
+                    className=" hover:underline ml-1"
+                    style={styles.linklabel}
                   >
                     {profile.url.label}
                   </a>
@@ -331,17 +373,21 @@ export default function Component({
             <h2 style={styles.sectionTitle as React.CSSProperties}>
               References
             </h2>
-            {content.references.map((ref, index) => (
-              <div key={index} className="mb-2">
-                <div className="font-bold">{ref.name}</div>
-                <div>{ref.phone}</div>
-                <div>{ref.email}</div>
-              </div>
-            ))}
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+              {content.references.map((ref, index) => (
+                <div key={index} className="flex flex-col">
+                  <span className="font-bold" style={styles.text}>
+                    {ref.name}
+                  </span>
+                  <span style={styles.text}>{ref.phone}</span>
+                  <span style={styles.text}>{ref.email}</span>
+                </div>
+              ))}
+            </div>
           </section>
         );
 
-      case "volunteerings":
+      case "volunteer":
         if (!content.volunteer?.length) return null;
         return (
           <section className="mb-4">
@@ -356,12 +402,9 @@ export default function Component({
                     {vol.organization && <span>, {vol.organization}</span>}
                   </div>
                   <div style={styles.dateRange}>
-                    {vol.startDate &&
-                      formatDate(vol.startDate, datetype)}
-                    {vol.endDate &&
-                      ` - ${
-                        formatDate(vol.endDate, datetype)
-                      }`}
+                    {vol.startDate && formatDate(vol.startDate, datetype)}
+                    {vol.startDate && vol.endDate && " - "}
+                    {vol.endDate && formatDate(vol.endDate, datetype)}
                   </div>
                 </div>
               </div>
@@ -376,24 +419,40 @@ export default function Component({
             <h2 style={styles.sectionTitle as React.CSSProperties}>
               Publications
             </h2>
-            {content.publications.map((pub, index) => (
-              <div key={index} className="mb-2">
-                <div className="font-bold">{pub.name}</div>
-                <div>
-                  {pub.publisher}
-                  {pub.date && (
-                    <span>
-                      , {formatDate(pub.date, datetype)}
-                    </span>
-                  )}
+            <div className="space-y-2">
+              {content.publications.map((pub, index) => (
+                <div
+                  key={index}
+                  className="flex flex-wrap justify-between items-center"
+                >
+                  {/* Left Side: Name & Publisher */}
+                  <div className="flex items-center gap-x-2">
+                    <span className="font-bold" style={styles.text}>{pub.name}</span>
+                    {pub.name && pub.publisher && (
+                      <span className="mx-1">|</span>
+                    )}
+                    {pub.publisher && <span>{pub.publisher}</span>}
+                    {pub.publisher && pub.url && (
+                      <span className="mx-1">|</span>
+                    )}
+                    {pub.url && (
+                      <a
+                        href={pub.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                        style={styles.linklabel}
+                      >
+                        {pub.url.label}
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Right Side: Link */}
+                  {pub.date && <span>{formatDate(pub.date, datetype)}</span>}
                 </div>
-                {pub.url && (
-                  <a href={pub.url.href} className="text-black hover:underline">
-                    {pub.url.label}
-                  </a>
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
@@ -405,23 +464,28 @@ export default function Component({
             {content.awards.map((award, index) => (
               <div key={index} className="mb-2 flex w-full">
                 {/* Fixed width date container */}
-                <div className="basis-[160px] flex-shrink-0 mr-4">
+                <div className="width-auto flex-shrink-0 mr-4">
                   {award.date && (
-                    <span>
-                      {formatDate(award.date, datetype)}
-                    </span>
+                    <span>{formatDate(award.date, datetype)}</span>
                   )}
                 </div>
 
                 {/* Flexible content container */}
                 <div className="flex-grow">
-                  <div className="font-bold">{award.title}</div>
-                  <div>{award.awarder}</div>
+                  <div className="font-bold">
+                    {award.title}{" "}
+                    {award.title && award.awarder && (
+                      <span className="font-normal">|</span>
+                    )}{" "}
+                    {award.awarder}
+                  </div>
                   {award.summary && (
-                    <HTMLViewer
-                      lineHeight={lineHeight}
-                      content={award.summary}
-                    />
+                    <div className="mt-1">
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -439,76 +503,61 @@ export default function Component({
           return null;
 
         return (
-          <div className="mb-6">
-            <h2>{sectionName}</h2>
-            {
+          <div className="mb-4">
+            <h2 style={styles.sectionTitle as React.CSSProperties}>
+              {sectionName}
+            </h2>
+            {content[sectionName] &&
+              Array.isArray(content[sectionName]) &&
               //@ts-ignore
-              content[sectionName] &&
-                //@ts-ignore
-                Array.isArray(content[sectionName]) &&
-                //@ts-ignore
-                content[sectionName]?.map((sec: Custom, index: number) => (
-                  <div key={index} className="mb-4">
-                    <div className="flex flex-col justify-between">
-                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                      <div className="flex items-center justify-between">
-                        {/* Left Section: Name, Location, Link */}
-                        <div className="flex items-center gap-2">
-                          {/* Name */}
-                          {sec.name && <h3>{sec.name}</h3>}
-
-                          {/* Location */}
-                          {sec.location && <p className="">, {sec.location}</p>}
-
-                          {/* URL Link */}
-                          {sec.url && (
-                            <a
-                              href={sec.url.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center mx-2"
-                            >
-                              <p>
-                                {sec.url.label && (
-                                  <span className="mx-1">|</span>
-                                )}
-                                {sec.url.label}
-                              </p>
-                            </a>
-                          )}
-                        </div>
-
-                        {/* Right Section: Dates */}
-                        <div>
-                          {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
-                        </div>
+              content[sectionName]?.map((sec: Custom, index: number) => (
+                <div key={index} className="mb-4">
+                  <div className="flex flex-col space-y-1">
+                    {/* First Row: Name, Location, URL on the Left | Dates on the Right */}
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-wrap items-center gap-x-2">
+                        {sec.name && <h3>{sec.name}</h3>}
+                        {((sec.name && sec.location) || (sec.name && sec.url)) && <span className="mx-1">|</span>}
+                        {sec.location && <p>{sec.location}</p>}
+                        {((sec.url && sec.location) || (sec.url && sec.name)) && <span className="mx-1">|</span>}
+                        {sec.url && (
+                          <a
+                            href={sec.url.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm hover:underline"
+                            style={styles.linklabel}
+                          >
+                            {sec.url.label}
+                          </a>
+                        )}
                       </div>
 
-                      {/* Description: Placed below the main row */}
-                      {sec.description && (
-                        <p className="mt-1">{sec.description}</p>
-                      )}
-
-                      {/* Summary: Placed below the description */}
-                      {sec.summary && (
-                        <div className="mt-2">
-                          <HTMLViewer
-                            lineHeight={lineHeight}
-                            content={sec.summary}
-                          />
-                        </div>
+                      {sec.startDate && (
+                        <h3>
+                          {formatDate(sec.startDate, datetype)}
+                          {sec.startDate && sec.endDate && " - "}
+                          {sec.endDate &&
+                            formatDate(sec.endDate, datetype)}
+                        </h3>
                       )}
                     </div>
+
+                    {/* Second Row: Description */}
+                    {sec.description && <p>{sec.description}</p>}
+
+                    {/* Third Row: Summary */}
+                    {sec.summary && (
+                      <div>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={sec.summary}
+                        />
+                      </div>
+                    )}
                   </div>
-                ))
-            }
+                </div>
+              ))}
           </div>
         );
     }
