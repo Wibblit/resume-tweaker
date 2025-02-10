@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  format,
-  getYear,
-  setMonth,
-  setYear,
-  isValid,
-  addMonths,
-} from "date-fns";
+import { format, getYear, setMonth, setYear, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,9 +18,11 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
+const PRESENT_DATE = new Date(1970, 0, 1); // January 1, 1920
+
 interface CustomDatePickerProps {
-  date: Date | undefined | string;
-  onSelect: (date: Date | undefined | string) => void;
+  date: Date | undefined;
+  onSelect: (date: Date | undefined) => void;
   allowPresent?: boolean;
 }
 
@@ -36,17 +31,12 @@ export function CustomDatePicker({
   onSelect,
   allowPresent = true,
 }: CustomDatePickerProps) {
-  const [selectedDate, setSelectedDate] = React.useState<
-    Date | undefined | string
-  >(
-    date === "Present"
-      ? "Present"
-      : date && isValid(new Date(date))
-      ? new Date(date)
-      : undefined
+  const isDatePresent = date && isValid(date) && date.getTime() === PRESENT_DATE.getTime();
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
+    date && isValid(date) ? date : undefined
   );
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isPresent, setIsPresent] = React.useState(date === "Present");
+  const [isPresent, setIsPresent] = React.useState(isDatePresent);
 
   const months = [
     "January",
@@ -72,7 +62,7 @@ export function CustomDatePicker({
   );
 
   const [calendarDate, setCalendarDate] = React.useState<Date>(
-    selectedDate instanceof Date ? selectedDate : new Date()
+    selectedDate && isValid(selectedDate) ? selectedDate : new Date()
   );
 
   const handleSelect = (newDate: Date | undefined) => {
@@ -90,7 +80,7 @@ export function CustomDatePicker({
     const newDate = setMonth(calendarDate, newMonth);
     setCalendarDate(newDate);
 
-    if (selectedDate instanceof Date && isValid(selectedDate)) {
+    if (selectedDate && isValid(selectedDate)) {
       const updatedSelectedDate = setMonth(selectedDate, newMonth);
       if (isValid(updatedSelectedDate)) {
         setSelectedDate(updatedSelectedDate);
@@ -104,7 +94,7 @@ export function CustomDatePicker({
     const newDate = setYear(calendarDate, newYear);
     setCalendarDate(newDate);
 
-    if (selectedDate instanceof Date && isValid(selectedDate)) {
+    if (selectedDate && isValid(selectedDate)) {
       const updatedSelectedDate = setYear(selectedDate, newYear);
       if (isValid(updatedSelectedDate)) {
         setSelectedDate(updatedSelectedDate);
@@ -124,8 +114,8 @@ export function CustomDatePicker({
   const handlePresentToggle = (checked: boolean) => {
     setIsPresent(checked);
     if (checked) {
-      setSelectedDate("Present");
-      onSelect("Present");
+      setSelectedDate(PRESENT_DATE);
+      onSelect(PRESENT_DATE);
     } else {
       setSelectedDate(undefined);
       onSelect(undefined);
@@ -134,6 +124,13 @@ export function CustomDatePicker({
 
   const handleCalendarMonthChange = (month: Date) => {
     setCalendarDate(month);
+  };
+
+  const getDisplayDate = () => {
+    if (!selectedDate) return "Pick a date";
+    if (!isValid(selectedDate)) return "Invalid date";
+    if (selectedDate.getTime() === PRESENT_DATE.getTime()) return "Present";
+    return format(selectedDate, "PPP");
   };
 
   return (
@@ -149,13 +146,7 @@ export function CustomDatePicker({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {selectedDate === "Present" ? (
-            <span className="flex-1">Present</span>
-          ) : selectedDate instanceof Date ? (
-            <span className="flex-1">{format(selectedDate, "PPP")}</span>
-          ) : (
-            <span>Pick a date</span>
-          )}
+          <span className="flex-1">{getDisplayDate()}</span>
           {selectedDate && (
             <Button
               variant="ghost"
@@ -227,7 +218,7 @@ export function CustomDatePicker({
           </div>
           <Calendar
             mode="single"
-            selected={selectedDate instanceof Date ? selectedDate : undefined}
+            selected={selectedDate}
             onSelect={handleSelect}
             month={calendarDate}
             onMonthChange={handleCalendarMonthChange}
