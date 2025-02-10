@@ -261,7 +261,11 @@ export default function SkillsProjects({
                 <Label className="py-1">Start Date</Label>
                 <CustomDatePicker
                   date={
-                    project.startDate ? new Date(project.startDate) : undefined
+                    project.startDate === "Present"
+                      ? new Date(1970, 0, 1)
+                      : project.startDate
+                      ? new Date(project.startDate)
+                      : undefined
                   }
                   onSelect={(date) =>
                     updateProject(
@@ -279,7 +283,13 @@ export default function SkillsProjects({
               <div className="flex flex-col gap-y-2">
                 <Label className="py-1">End Date</Label>
                 <CustomDatePicker
-                  date={project.endDate ? new Date(project.endDate) : undefined}
+                  date={
+                    project.endDate === "Present"
+                      ? new Date(1970, 0, 1)
+                      : project.endDate
+                      ? new Date(project.endDate)
+                      : undefined
+                  }
                   onSelect={(date) =>
                     updateProject(
                       index,

@@ -234,7 +234,13 @@ export default function AdditionalInfo({
               <div>
                 <Label>Start Date</Label>
                 <CustomDatePicker
-                  date={vol.startDate ? new Date(vol.startDate) : undefined}
+                  date={
+                    vol.startDate === "Present"
+                      ? new Date(1970, 0, 1)
+                      : vol.startDate
+                      ? new Date(vol.startDate)
+                      : undefined
+                  }
                   onSelect={(date) =>
                     updateVolunteer(
                       index,
@@ -251,7 +257,13 @@ export default function AdditionalInfo({
               <div>
                 <Label>End Date</Label>
                 <CustomDatePicker
-                  date={vol.endDate ? new Date(vol.endDate) : undefined}
+                  date={
+                    vol.startDate === "Present"
+                      ? new Date(1970, 0, 1)
+                      : vol.endDate
+                      ? new Date(vol.endDate)
+                      : undefined
+                  }
                   onSelect={(date) =>
                     updateVolunteer(
                       index,
@@ -306,7 +318,7 @@ export default function AdditionalInfo({
               <div>
                 <Label>Date Received</Label>
                 <CustomDatePicker
-                  date={award.date ? new Date(award.date) : undefined}
+                  date={award.date === "Present" ? new Date(1970, 0, 1) : award.date ? new Date(award.date) : undefined}
                   onSelect={(date) =>
                     updateAward(
                       index,
@@ -371,7 +383,7 @@ export default function AdditionalInfo({
               <div>
                 <Label>Publication Date</Label>
                 <CustomDatePicker
-                  date={pub.date ? new Date(pub.date) : undefined}
+                  date={pub.date === "Present" ? new Date(1970, 0, 1) : pub.date ? new Date(pub.date) : undefined}
                   onSelect={(date) =>
                     updatePublication(
                       index,
@@ -437,7 +449,7 @@ export default function AdditionalInfo({
               <div>
                 <Label>Date Received</Label>
                 <CustomDatePicker
-                  date={cert.date ? new Date(cert.date) : undefined}
+                  date={cert.date ? new Date(1970, 0, 1) : cert.date ? new Date(cert.date) : undefined}
                   onSelect={(date) =>
                     updateCertification(
                       index,

@@ -590,7 +590,13 @@ export default function LeftSideBar({
                 field === "endDate" ||
                 field === "date" ? (
                 <CustomDatePicker
-                  date={entry[field] ? new Date(entry[field]) : undefined}
+                  date={
+                    entry[field] === "Present"
+                      ? new Date(1970, 0, 1)
+                      : entry[field]
+                      ? new Date(entry[field])
+                      : undefined
+                  }
                   onSelect={(date) =>
                     updateEntry(
                       section,
