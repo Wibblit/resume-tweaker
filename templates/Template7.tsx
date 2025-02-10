@@ -20,7 +20,7 @@ type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
 
@@ -82,21 +82,44 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
       marginBottom: "0.5em",
       textTransform: "uppercase",
       paddingBottom: "0.25em",
+      textAlign: "left",
     },
     subtitle: {
       fontSize: "1.2em",
       fontWeight: "bold",
       color: "#000",
+      textAlign: "left",
     },
     normal: {
       fontSize: "1.2em",
       color: "#000",
+      textAlign: "left",
+    },
+    undertitle: {
+      fontSize: "1.2em",
+      fontWeight: "semibold",
+      color: "#000",
+      textAlign: "left",
     },
     link: {
       color: baseColor,
       textDecoration: "none",
+      textAlign: "left",
+    },
+    divider: {
+      color: baseColor,
+      textAlign: "left",
     },
   };
+  function SectionTitle({ sectionName }: { sectionName: string }) {
+    return (
+      <div className="inline-block">
+        <div className="h-1 mb-1 w-full" style={{ backgroundColor: baseColor }}></div>
+        <h2 style={styles.sectionTitle}>{sectionName}</h2>
+      </div>
+    );
+  }
+
 
   const renderSection = (sectionName: SectionName) => {
     switch (sectionName) {
@@ -104,6 +127,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         const basics = content.basics?.[0];
         if (!basics) return null;
         return (
+          <div>
           <div className="flex flex-col items-left justify-center mb-3">
             <h1
               className="text-3xl font-bold uppercase mb-1 text-left"
@@ -111,19 +135,19 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
             >
               {basics.name}
             </h1>
-            <p className="text-lg text-center mb-2">{basics.headLine}</p>
-            <div className="flex items-left space-x-2">
+            <h2 className="text-left text-xl font-bold mb-2">{basics.headLine}</h2>
+            <div className="flex flex-wrap items-left space-x-2">
               <p>{basics.email}</p>
               {basics.phone && (
                 <p>
-                  <span className="mx-1">|</span>
+                  <span className="mr-2" style={styles.divider}>|</span>
                   {basics.phone}
                 </p>
               )}
               {basics.location && (
                 <p>
                   {" "}
-                  <span className="mx-1">|</span>
+                  <span className="mr-2" style={styles.divider}>|</span>
                   {basics.location}
                 </p>
               )}
@@ -135,29 +159,51 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                   style={styles.link}
                 >
                   <p>
-                    {basics.url.label && <span className="mx-1">|</span>}
+                    {basics.url.label && <span className="mr-2" style={styles.divider}>|</span>}
                     {basics.url.label}
                   </p>
                 </a>
               )}
             </div>
           </div>
+          <div className="mb-6">
+            <div className="flex flex-wrap space-x-4">
+              {content.profiles?.map((profile, index) => (
+                 <div className="flex items-center" key={index}>
+                 <a
+                   href={profile.url.href}
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="no-underline flex items-center gap-1"
+                 >
+                   {isIcons && profile.url.href !== "" && (
+                     <SocialIcon style={{ width: "24px", height: "24px" }} url={profile.url.href} />
+                   )}
+                   <span className="text-sm font-medium">{profile.url.label}</span>
+                 </a>
+               </div>
+              
+              ))}
+            </div>
+          </div>
+          </div>
+          
         );
 
       case "summary":
         if (!content.summary?.length) return null;
         return (
           <>
-            <section className="mb-6 text-black">
-              <div
-                className="py-1 mb-1 w-16"
-                style={{ backgroundColor: baseColor }}
-              ></div>
-              <h2 style={styles.sectionTitle}>Summary</h2>
-              <HTMLViewer
-                lineHeight={lineHeight}
-                content={content.summary[0].content}
-              />
+            <section className="mb-6 text-black " >
+              <div className="inline-block">
+                <SectionTitle sectionName={sectionName} />
+              </div>
+              <div style={styles.normal}>
+                <HTMLViewer
+                  lineHeight={lineHeight}
+                  content={content.summary[0].content}
+                />
+              </div>
             </section>
           </>
         );
@@ -166,30 +212,29 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (content.skills?.length === 0) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Skills</h2>
-            {content?.skills?.map((category, index) => (
-              <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
-                    <h3 className="py-1" style={styles.subtitle}>
-                      {category.name}
-                    </h3>
-                  </div>
-                  <div className="w-full flex flex-wrap items-start justify-start gap-2">
-                    {category.skills.map((skill, skillIndex) => (
-                      <p key={skillIndex}>
-                        {skill.name}{" "}
-                        {skillIndex !== category.skills.length - 1 && "|"}
-                      </p>
-                    ))}
+            <SectionTitle sectionName={sectionName} />
+            <div className="grid grid-cols-2">
+              {content?.skills?.map((category, index) => (
+                <div key={index} className="mb-4 mr-4">
+                  <div className="">
+                    <div className="w-full flex items-center justify-between">
+                      <h3 className="py-1" style={styles.subtitle}>
+                        {category.name}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-start justify-start gap-1">
+                      {category.skills.map((skill, skillIndex) => (
+                        <p key={skillIndex} style={styles.normal}>
+                          {skill.name}
+                          {skillIndex !== category.skills.length - 1 && <div style={styles.divider} className="inline-block ml-1">|</div>}
+                        </p>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
           </section>
         );
 
@@ -197,11 +242,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.education?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Education</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.education.map((edu, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
@@ -210,7 +251,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                     <div>
                       <h3 style={styles.subtitle}>
                         {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
-                        {edu.endDate && " - "}{" "}
+                        {edu.startDate && edu.endDate && " - "}
                         {edu.endDate && formatDate(edu.endDate, datetype)}
                       </h3>
                     </div>
@@ -223,7 +264,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                       </p>{" "}
                       {edu.specialization && (
                         <p style={styles.normal} className="flex items-center">
-                          |<span className="ml-2">{edu.specialization}</span>
+                          {edu.specialization && <div style={styles.divider} className="inline-block">|</div>}<span className="ml-2" >{edu.specialization}</span>
                         </p>
                       )}
                     </div>
@@ -240,32 +281,29 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.experience?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Experience</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.experience.map((exp, index) => (
               <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
+                <div className="flex flex-col justify-between items-center mb-1">
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
-                        {exp.endDate && " - "}{" "}
+                        {exp.startDate && formatDate(exp.startDate, datetype)}
+                        {exp.startDate && exp.endDate && " - "}
                         {exp.endDate && formatDate(exp.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
-                  <div className="w-full flex items-start justify-between">
-                    <p className="italic">{exp.role}</p>
-                    <p>{exp.location}</p>
+                  <div className="w-full flex items-start justify-between ">
+                    <h3 className="italic" style={styles.undertitle}>{exp.role}</h3>
+                    <h3 style={styles.undertitle}>{exp.location}</h3>
                   </div>
                 </div>
                 {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
-                {exp.summary && (
+                {exp.summary && (<div style={styles.normal}>
                   <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
+                </div>
                 )}
               </div>
             ))}
@@ -276,58 +314,60 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.projects?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Projects</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.projects.map((project, index) => (
               <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
+                <div className="flex flex-col justify-between">
                   <div className="w-full flex items-center justify-between">
-                    <div className="flex items-center">
+                    {/* Left Section: Name + URL */}
+                    <div className="flex items-center gap-2 text-nowrap">
                       <h3 style={styles.subtitle}>{project.name}</h3>
                       {project.url && (
-                        <a
-                          href={project.url.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={styles.link}
-                          className="w-full text-left mt-1 inline-block"
-                        >
-                          <p style={styles.normal}>
-                            {project.url.label && (
-                              <span className="mx-1">|</span>
-                            )}
-
-                            {project.url.label}
-                          </p>
-                        </a>
+                        <>
+                          {project.url.label && <span className="" style={styles.divider}>|</span>}
+                          <a
+                            href={project.url.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.link}
+                            className="text-left flex items-center"
+                          >
+                            <span style={styles.normal}>{project.url.label}</span>
+                          </a>
+                        </>
                       )}
                     </div>
 
-                    <div>
+                    {/* Right Section: Dates */}
+                    <div className="flex-shrink-0">
                       <h3 style={styles.subtitle}>
-                        {project.startDate &&
-                          formatDate(project.startDate, datetype)}{" "}
-                        {project.endDate && " - "}{" "}
-                        {project.endDate &&
-                          formatDate(project.endDate, datetype)}
+                        {project.startDate && formatDate(project.startDate, datetype)}{" "}
+                        {project.startDate && project.endDate && " - "}
+                        {project.endDate && formatDate(project.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
-                  {/* <p className="w-full text-left mt-1">{project.summary}</p> */}
-                  <HTMLViewer
-                    lineHeight={lineHeight}
-                    content={project.summary}
-                  />
-                  {project.keywords && (
-                    <div className="w-full flex flex-wrap items-start justify-start gap-2 mt-2">
-                      {project.keywords.map((keyword, keywordIndex) => (
-                        <p key={keywordIndex}>{keyword}</p>
-                      ))}
+                  {project.keywords[0] != '' && project.keywords && (
+                    <div className="w-full">
+                      <div className="flex flex-wrap mb-1">
+                        <h3 style={styles.subtitle}>Skills:</h3>
+                        <p className="text-nowrap">
+                          {project.keywords.map((keyword, keywordIndex) => (
+                            <span key={keywordIndex}>
+                              {keyword}{keywordIndex !== project.keywords.length - 1 ? ", " : undefined}
+                            </span>
+                          ))}
+                        </p>
+                      </div>
                     </div>
+
                   )}
+                  <div style={styles.normal}>
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={project.summary}
+                    />
+                  </div>
                 </div>
               </div>
             ))}
@@ -338,11 +378,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.certifications?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.certifications.map((cert, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
@@ -379,18 +415,14 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.languages?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Languages</h2>
-            <div className="flex flex-col flex-wrap justify-start">
+            <SectionTitle sectionName={sectionName} />
+            <div className="flex flex-row flex-wrap ">
               {content.languages.map((lang, index) => (
-                <div key={index} className="w-1/2 mb-2">
+                <div key={index} className="mb-2 flex items-center">
                   <span style={styles.subtitle}>
-                    {lang.name} {lang.level && " : "}
-                  </span>{" "}
-                  {lang.level}
+                    {lang.name}  {lang.level && " : "}
+                  </span>{" "}<div className="inline-block" style={styles.normal}>{lang.level}</div>
+                  {index !== (content.languages?.length ?? 0) - 1 && <span className="mx-1" style={styles.divider}>|</span>}
                 </div>
               ))}
             </div>
@@ -400,65 +432,33 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
       case "profiles":
         if (!content.profiles?.length) return null;
         return (
-          <section className="mb-6">
-            <div className="flex flex-wrap justify-center space-x-4">
-              {content.profiles.map((profile, index) => (
-                <div
-                  className="flex gap-1 items-center jsutify-center"
-                  key={index}
-                >
-                  {isIcons && profile.url.href !== "" && (
-                    <SocialIcon
-                      style={{ width: "16px", height: "16px" }}
-                      url={profile.url.href}
-                    />
-                  )}
-                  <a
-                    key={index}
-                    href={profile.url.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.link}
-                    className="flex items-center underline"
-                  >
-                    <span className="underline">{profile.url.label}</span>
-                  </a>
-                </div>
-              ))}
-            </div>
-          </section>
+          <div aria-hidden></div>
         );
 
       case "references":
         if (!content.references?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>References</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.references.map((ref, index) => (
               <div key={index} className="mb-2">
-                <div className="w-full flex items-start justify-start space-x-4">
-                  <h3 style={styles.subtitle}>{ref.name}</h3>
-                  <p>{ref.phone}</p>
-                  <p>{ref.email}</p>
+                <div className="flex items-center space-x-4">
+                  <p style={styles.subtitle}>{ref.name}</p>
+                  { ref.phone && <div style={styles.divider} className="inline-block">|</div>}
+                  <p style={styles.normal}>{ref.phone}</p>
+                  { ref.email && <div style={styles.divider} className="inline-block">|</div>}
+                  <p style={styles.normal}>{ref.email}</p>
                 </div>
               </div>
             ))}
           </section>
         );
 
-      case "volunteerings":
+      case "volunteer":
         if (!content.volunteer?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Volunteer Experience</h2>
+            <SectionTitle sectionName={sectionName + " experience"} />
             {content.volunteer.map((vol, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
@@ -466,14 +466,15 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {vol.startDate && formatDate(vol.startDate, datetype)} -{" "}
+                        {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
+                        {vol.startDate && vol.endDate && " - "}
                         {vol.endDate && formatDate(vol.endDate, datetype)}
                       </h3>
                     </div>
                   </div>
                   <div className="w-full flex items-start justify-between">
-                    <p>{vol.role}</p>
-                    <p>{vol.location}</p>
+                    <p style={styles.undertitle}>{vol.role}</p>
+                    <p style={styles.undertitle}>{vol.location}</p>
                   </div>
                 </div>
               </div>
@@ -485,30 +486,27 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.publications?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Publications</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.publications.map((pub, index) => (
               <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
+                <div className="flex flex-col justify-between items-center gap-1">
                   <div className="w-full items-center flex justify-between">
                     <div className="flex items-center">
                       <h3 style={styles.subtitle}>{pub.name}</h3>
                       {pub.url && (
+                        <div className="flex items-center">
+                        {pub.url.label && <span className="mx-1" style={styles.divider}>|</span>}
                         <a
                           href={pub.url.href}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={styles.link}
-                          className="flex items-center"
                         >
-                          <p style={styles.normal}>
-                            {pub.url.label && <span className="mx-1">|</span>}
+                          <div style={styles.normal}>
                             {pub.url.label}
-                          </p>
+                          </div>
                         </a>
+                        </div>
                       )}
                     </div>
                     <h3 style={styles.subtitle}>
@@ -531,23 +529,18 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         if (!content.awards?.length) return null;
         return (
           <section className="mb-6">
-            <div
-              className="py-1 mb-1 w-16"
-              style={{ backgroundColor: baseColor }}
-            ></div>
-            <h2 style={styles.sectionTitle}>Awards</h2>
+            <SectionTitle sectionName={sectionName} />
             {content.awards.map((award, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
+                  <div className="w-full flex items-center justify-between mb-1">
                     <div className="flex items-center">
                       <h3 style={styles.subtitle}>{award.title}</h3>
-
                       {award.awarder && (
-                        <p>
-                          <span className="mx-1">|</span>
-                          {award.awarder}
-                        </p>
+                        <>
+                          <span className="mx-1" style={styles.divider}>|</span>
+                          <span style={styles.normal}>{award.awarder}</span>
+                        </>
                       )}
                     </div>
 
@@ -560,10 +553,12 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
 
                   {award.summary && (
                     // <p className="w-full text-left mt-1">{award.summary}</p>
-                    <HTMLViewer
-                      lineHeight={lineHeight}
-                      content={award.summary}
-                    />
+                    <div style={styles.normal}>
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -572,83 +567,84 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
         );
 
       default:
-         if (
-           !content ||
-           !Array.isArray(content[sectionName]) ||
-           //@ts-ignore
-           !content[sectionName]?.length
-         )
-           return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
         return (
           <div className="mb-6">
-            <h2>{sectionName}</h2>
+            <SectionTitle sectionName={sectionName} />
             {
               //@ts-ignore
               content[sectionName] &&
-                //@ts-ignore
-                Array.isArray(content[sectionName]) &&
-                //@ts-ignore
-                content[sectionName]?.map((sec: Custom, index: number) => (
-                  <div key={index} className="mb-4">
-                    <div className="flex flex-col justify-between">
-                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                      <div className="flex items-center justify-between">
-                        {/* Left Section: Name, Location, Link */}
-                        <div className="flex items-center gap-2">
-                          {/* Name */}
-                          {sec.name && <h3>{sec.name}</h3>}
+              //@ts-ignore
+              Array.isArray(content[sectionName]) &&
+              //@ts-ignore
+              content[sectionName]?.map((sec: Custom, index: number) => (
+                <div key={index} className="mb-4">
+                  <div className="flex flex-col justify-between">
+                    {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                    <div className="flex items-center justify-between">
+                      {/* Left Section: Name, Location, Link */}
+                      <div className="flex items-center gap-2">
+                        {/* Name */}
+                        {sec.name && <h3 style={styles.subtitle}>{sec.name}</h3>}
+                        {/* Location */}
+                        {sec.location && <h3 style={styles.subtitle}><span className="mr-2" style={styles.divider}>|</span>{sec.location}</h3>}
 
-                          {/* Location */}
-                          {sec.location && <p className="">, {sec.location}</p>}
-
-                          {/* URL Link */}
-                          {sec.url && (
-                            <a
-                              href={sec.url.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center mx-2"
-                            >
-                              <p>
-                                {sec.url.label && (
-                                  <span className="mx-1">|</span>
-                                )}
-                                {sec.url.label}
-                              </p>
-                            </a>
-                          )}
-                        </div>
-
-                        {/* Right Section: Dates */}
-                        <div>
-                          {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Description: Placed below the main row */}
-                      {sec.description && (
-                        <p className="mt-1">{sec.description}</p>
-                      )}
-
-                      {/* Summary: Placed below the description */}
-                      {sec.summary && (
-                        <div className="mt-2">
-                          <HTMLViewer
-                            lineHeight={lineHeight}
-                            content={sec.summary}
-                          />
+                        {/* URL Link */}
+                        <div className="flex items-center">
+                      {sec.url && (
+                        <div className="flex items-center" >
+                        {sec.url.label && <span className="mx-1" style={styles.divider}>|</span>}
+                        <a
+                          href={sec.url.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={styles.link}
+                        >
+                          <div style={styles.normal}>
+                            {sec.url.label}
+                          </div>
+                        </a>
                         </div>
                       )}
                     </div>
+                      </div>
+
+                      {/* Right Section: Dates */}
+                      <div style={styles.subtitle}>
+                        {/* Start Date and End Date */}
+                        {sec.startDate && (
+                          <h3 style={styles.subtitle}>
+                          {sec.startDate && formatDate(sec.startDate, datetype)}{" "}
+                          {sec.startDate && sec.endDate && " - "}
+                          {sec.endDate && formatDate(sec.endDate, datetype)}
+                        </h3>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Description: Placed below the main row */}
+                    {sec.description && (
+                      <p className="mt-1" style={styles.normal}>{sec.description}</p>
+                    )}
+
+                    {/* Summary: Placed below the description */}
+                    {sec.summary && (
+                      <div className="mt-2" style={styles.normal}>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={sec.summary}
+                        />
+                      </div>
+                    )}
                   </div>
-                ))
+                </div>
+              ))
             }
           </div>
         );
