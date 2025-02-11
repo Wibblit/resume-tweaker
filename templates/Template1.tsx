@@ -341,11 +341,12 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         ))}
                       </div>
                     )}
-
-                  <HTMLViewer
-                    lineHeight={lineHeight}
-                    content={project.summary}
-                  />
+                  <div className="w-full items-start mt-1">
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={project.summary}
+                    />
+                  </div>
                 </div>
               </div>
             ))}
