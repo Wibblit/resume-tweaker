@@ -113,6 +113,18 @@ const CoverLetterPage: React.FC<CoverLetterPageProps> = ({
     }
   };
 
+  const renderSkeleton = () => (
+    <div className="flex flex-col items-center justify-start p-4">
+      <Skeleton
+        className="mb-8"
+        style={{
+          width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+          height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
+        }}
+      />
+    </div>
+  );
+
   return (
     <div
       id={`page-${page.id}`}
@@ -125,7 +137,7 @@ const CoverLetterPage: React.FC<CoverLetterPageProps> = ({
       }}
     >
       {isLoading ? (
-        <Skeleton className="w-full h-full" />
+        renderSkeleton()
       ) : (
         renderTemplate(page)
       )}
@@ -230,7 +242,6 @@ export default function Component({
     await handleSave()
     router.push('/home')
   }
-
 
   useEffect(() => {
     const updatedPages = pages.map((page) => ({
@@ -410,32 +421,42 @@ export default function Component({
                   wrapperClass="!w-full !h-full"
                   contentClass="flex flex-col items-center justify-start"
                 >
-                  <AnimatePresence>
-                    {pages.map((page, index) => (
-                      <motion.div
-                        key={page.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="relative"
-                        onMouseEnter={() => setIsHovering(true)}
-                        onMouseLeave={() => setIsHovering(false)}
-                      >
-                        <CoverLetterPage
-                          page={page}
-                          pageNumber={index + 1}
-                          pageFormat={pageFormat}
-                          baseColor={baseColor}
-                          fontSize={fontSize}
-                          fontFamily={fontFamily}
-                          lineHeight={lineHeight}
-                          margin={margin}
-                          isLoading={isLoading}
-                        />
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                  {isLoading ? (
+                    <Skeleton
+                      className="mb-8"
+                      style={{
+                        width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+                        height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
+                      }}
+                    />
+                  ) : (
+                    <AnimatePresence>
+                      {pages.map((page, index) => (
+                        <motion.div
+                          key={page.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className="relative"
+                          onMouseEnter={() => setIsHovering(true)}
+                          onMouseLeave={() => setIsHovering(false)}
+                        >
+                          <CoverLetterPage
+                            page={page}
+                            pageNumber={index + 1}
+                            pageFormat={pageFormat}
+                            baseColor={baseColor}
+                            fontSize={fontSize}
+                            fontFamily={fontFamily}
+                            lineHeight={lineHeight}
+                            margin={margin}
+                            isLoading={isLoading}
+                          />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  )}
                 </TransformComponent>
                 {isPhoneView && (
                   <motion.div
