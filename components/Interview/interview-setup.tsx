@@ -217,8 +217,10 @@ export default function InterviewSetup({
 
     setLoading(true);
     const numberOfQuestions = Math.ceil(formData.duration / 2);
-    const userSelectedResume = userResumes?.find((resume) => resume.resumeName === selectedResume);
-    console.log('selected resume', JSON.stringify(userSelectedResume));
+    const userSelectedResume = userResumes?.find(
+      (resume) => resume.resumeName === selectedResume
+    );
+    console.log("selected resume", JSON.stringify(userSelectedResume));
     try {
       const queryParams = new URLSearchParams({
         job: formData.job,
@@ -228,7 +230,10 @@ export default function InterviewSetup({
         numberOfQuestions: numberOfQuestions.toString(),
         interviewType: formData.interviewType,
         duration: formData.duration.toString(),
-        resumeText: resumeOption === "select" ? JSON.stringify(userSelectedResume) : resumeText,
+        resumeText:
+          resumeOption === "select"
+            ? JSON.stringify(userSelectedResume)
+            : resumeText,
         interviewerPosition: formData.interviewerPosition,
         resumeOption,
         selectedResume,
@@ -260,8 +265,8 @@ export default function InterviewSetup({
           {!ttsModelDownloaded && (
             <div className="mb-6">
               <Label>
-                Downloading Text-to-Speech model. This process is done only
-                once.
+                Downloading Text-to-Speech model.{" "}
+                <b>This process is done only once.</b>
               </Label>
               <Progress value={ttsDownloadProgress} className="mt-2" />
               <p className="text-sm text-muted-foreground mt-1">
