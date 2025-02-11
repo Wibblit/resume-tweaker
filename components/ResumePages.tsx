@@ -102,7 +102,7 @@ interface ResumePagesProps {
   isLoading: boolean;
 }
 
-const MM_TO_PX = 3.78;
+const MM_TO_PX = 3.7795275591;
 
 const ResumePage: React.FC<{
   page: Page;
@@ -164,16 +164,14 @@ const ResumePage: React.FC<{
     <div
       id={`page-${page.id}`}
       data-page={pageNumber}
-      className="relative bg-white text-foreground shadow-2xl mb-8"
+      className="relative bg-white text-foreground shadow-2xl"
       style={{
         fontFamily,
         width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
-        minHeight: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
+        height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
       }}
     >
-      <div className="absolute -top-7 left-0 font-sans font-semibold text-white">
-        Page {pageNumber}
-      </div>
+      
       {renderTemplate(page, pageIndex)}
       <div
         className="absolute inset-x-0 border-b border-dashed"
@@ -391,7 +389,7 @@ export default function ResumePages({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col h-[calc(100vh-0px)]">
+    <div className="flex flex-col h-[calc(100vh-32px)]">
       {isPhoneView ? (
         <div className="flex-col items-center justify-center">
           <div className="p-2 border-b border-border flex justify-between md:justify-center items-center bg-background">
@@ -667,7 +665,7 @@ export default function ResumePages({
               <>
                 <TransformComponent
                   wrapperClass="!w-full !h-full"
-                  contentClass="flex flex-col items-center justify-start"
+                  contentClass="flex flex-col items-center justify-start gap-8"
                 >
                   {isLoading ? (
                     renderSkeleton()
@@ -696,14 +694,19 @@ export default function ResumePages({
                             margin={margin}
                           />
                           {pages.length > 1 && (
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-2 right-1 z-10"
-                              onClick={() => deletePageById(page.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <div className="">
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-0 -right-10 z-10"
+                                onClick={() => deletePageById(page.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                              <div className="absolute -top-7 -left-0 font-sans font-semibold text-primary">
+                                Page {index + 1}
+                              </div>
+                            </div>
                           )}
                         </motion.div>
                       ))}
