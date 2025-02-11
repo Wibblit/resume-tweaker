@@ -7,6 +7,7 @@ import { ResumeData } from "@/types/types";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
 import { formatDate } from "@/utils/formatDate";
+import { PAGE_FORMATS } from "@/components/coverPage";
 
 interface TemplateProps {
   content: ResumeData;
@@ -29,7 +30,7 @@ export type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
 
@@ -73,6 +74,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
     (state) => state.rightsidebar.sectionOrder
   );
   const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const paperformat = useAppSelector(
+    (state) => state?.rightsidebar?.paperFormat
+  );
   const styles = {
     container: {
       fontFamily: fontFamily,
@@ -82,6 +86,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       padding: `${margin}mm`,
       height: "100%",
     },
+    linklabel: {
+      color : baseColor
+    }
   };
 
   const renderSection = (sectionName: SectionName) => {
@@ -298,7 +305,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             </Section>
           )
         );
-      case "volunteerings":
+      case "volunteer":
         return (
           content.volunteer &&
           content.volunteer.length > 0 && (
@@ -381,13 +388,13 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           )
         );
       default:
-         if (
-           !content ||
-           !Array.isArray(content[sectionName]) ||
-           //@ts-ignore
-           !content[sectionName]?.length
-         )
-           return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
         return (
           <div className="mb-6">
             <h2>{sectionName}</h2>
@@ -467,29 +474,38 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
 
   return (
-    <div style={styles.container} className="flex flex-col resume-content">
+    <div
+      style={styles.container}
+      className="flex flex-col resume-content px-6 py-4"
+    >
       <style>{`
-        .resume-content, .resume-content * {
-          font-family: ${fontFamily}, sans-serif !important;
-        }
-           p {
-          color:black
-          }
-      `}</style>
+      .resume-content, .resume-content * {
+        font-family: ${fontFamily}, sans-serif !important;
+      }
+      p {
+        color: black;
+      }
+    `}</style>
+
+      {/* Header Section */}
       {content.basics && (
-        <div className="mb-4 flex items-start">
-          <div className="w-3/4 ">
-            <div className="md:mb-0">
-              <h1 style={{ color: baseColor }} className="text-3xl font-bold">
-                {content?.basics[0].name}
-              </h1>
-              <p className="text-base mb-1 text-gray-700 whitespace-pre-wrap">
-                {content?.basics[0].headLine}
-              </p>
-            </div>
+        <div className="mb-6 flex flex-col md:flex-row md:items-start justify-between">
+          {/* Left: Name & Headline */}
+          <div className="w-full md:w-3/4">
+            <h1
+              style={{ color: baseColor }}
+              className="text-3xl font-bold mb-1"
+            >
+              {content?.basics[0].name}
+            </h1>
+            <p className="text-base text-gray-700 mb-2">
+              {content?.basics[0].headLine}
+            </p>
+
+            {/* Social Profiles */}
             <div className="flex flex-wrap gap-2">
               {content?.profiles?.map((profile, index) => (
-                <div className="flex gap-2 items-center" key={index}>
+                <div className="flex items-center gap-2" key={index}>
                   {isIcons && profile.url.href !== "" && (
                     <SocialIcon
                       style={{ width: "16px", height: "16px" }}
@@ -500,7 +516,8 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     href={profile.url.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline text-sm"
+                    style={styles.linklabel}
+                    className="underline text-sm  "
                   >
                     {profile.url.label}
                   </a>
@@ -509,15 +526,22 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-col items-start justify-start">
-            <p className="text-xs break-words">{content?.basics[0].location}</p>
-            <p className="text-xs break-words">
-              <a href={`tel:${content?.basics[0].phone}`}>
+          {/* Right: Contact Info */}
+          <div className="mt-4 md:mt-0 text-sm text-gray-800">
+            <p className="break-words">{content?.basics[0].location}</p>
+            <p className="break-words">
+              <a
+                href={`tel:${content?.basics[0].phone}`}
+                className="hover:underline"
+              >
                 {content?.basics[0].phone}
               </a>
             </p>
-            <p className="text-xs break-words">
-              <a href={`mailto:${content?.basics[0].email}`}>
+            <p className="break-words">
+              <a
+                href={`mailto:${content?.basics[0].email}`}
+                className="hover:underline"
+              >
                 {content?.basics[0].email}
               </a>
             </p>
@@ -526,31 +550,37 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 href={content?.basics[0].url.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline"
+                className="text-blue-600 hover:underline"
               >
-                <p className="text-xs underline break-words">
-                  {content?.basics[0].url.label}
-                </p>
+                {content?.basics[0].url.label}
               </a>
             )}
           </div>
         </div>
       )}
 
-      <div className="flex flex-row">
-        <div
-          className={`w-3/5 ${
-            sectionOrder.sections[pageIndex].column1.length !== 0 && "pr-8"
-          }`}
-        >
-          {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
-            renderSection(sectionName as SectionName)
-          )}
+      {/* Two-Column Layout */}
+      <div className="flex flex-col md:flex-row w-full gap-6">
+        {/* Left Column (60%) */}
+        <div className="md:w-[60%] w-full">
+          {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => {
+            if (sectionName !== "basics" && sectionName !== "profiles") {
+              return renderSection(sectionName as SectionName);
+            } else {
+              return null;
+            }
+          })}
         </div>
-        <div className="min-w-2/5">
-          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
-            renderSection(sectionName as SectionName)
-          )}
+
+        {/* Right Column (40%) */}
+        <div className="md:w-[40%] w-full">
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) => {
+            if (sectionName !== "basics" && sectionName !== "profiles") {
+              return renderSection(sectionName as SectionName);
+            } else {
+              return null;
+            }
+          })}
         </div>
       </div>
     </div>
