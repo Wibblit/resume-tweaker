@@ -730,9 +730,6 @@ const Template3: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
-           p {
-          color:black
-          }
       `}</style>
       <div style={styles.mainContent}>
         {sectionOrder.sections.length > 0 &&

@@ -230,7 +230,7 @@ export default function Component({
             <h2 style={styles.sectionTitle as React.CSSProperties}>Skills</h2>
             {content.skills.map((category, index) => (
               <div key={index} className="mb-2">
-                <span className="font-bold">{category.name}: </span>
+                {category.name && <span className="font-bold">{category.name}: </span>}
                 <span>
                   {category.skills.map((skill) => skill.name).join(", ")}
                 </span>

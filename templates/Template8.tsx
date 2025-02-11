@@ -191,7 +191,7 @@ const Header: React.FC<{
   );
 };
 
-const Template3: React.FC<TemplateProps> = ({
+const Template8: React.FC<TemplateProps> = ({
   content,
   baseColor,
   fontSize,
@@ -217,6 +217,7 @@ const Template3: React.FC<TemplateProps> = ({
       minHeight: "100vh",
       height: "100%",
       display: "flex",
+      overflow: "hidden",
     },
     body: {
       fontSize: `${1.1 * (fontSize / 16)}rem`,
@@ -224,17 +225,19 @@ const Template3: React.FC<TemplateProps> = ({
     },
     sidebar: {
       backgroundColor: baseColor,
-      width: "40%",
       color: "white",
-      padding: `${margin}mm`,
-    },
-    sidebarContent: {
-      padding: `${margin}mm`,
-      height: "100%",
+      padding: `${margin}mm 5mm ${margin}mm ${margin}mm`,
+      width: "40%",
+      maxHeight: "100%",
+      display: "flex",
+      flexDirection: "column" as "column",
     },
     mainContent: {
+      padding: `${margin}mm ${margin}mm  ${margin}mm 5mm`,
       width: "60%",
-      padding: `${margin}mm`,
+      maxHeight: "100%",
+      display: "flex",
+      flexDirection: "column" as "column",
     },
   };
   const renderSection = (
@@ -713,25 +716,26 @@ const Template3: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
-           p {
-          color:black
-          }
       `}</style>
 
-      <div className="w-4/12" style={styles.sidebar}>
-        {sectionOrder.sections.length > 0 &&
-          sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
-            renderSection(sectionName)
-          )}
-      </div>
+        <div className="" style={styles.sidebar}>
+          <div className="overflow-hidden" >
+              {sectionOrder.sections.length > 0 &&
+                sectionOrder?.sections[pageIndex]?.column1.map((sectionName: string) =>
+                  renderSection(sectionName)
+                )}
+          </div>
+        </div>
 
-      <div style={styles.mainContent}>
-        {sectionOrder.sections[pageIndex]?.column2.map((sectionName) =>
-          renderSection(sectionName, true)
-        )}
+      <div className="" style={styles.mainContent}>
+        <div className="overflow-hidden">
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName: string) =>
+            renderSection(sectionName, true)
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default Template3;
+export default Template8;

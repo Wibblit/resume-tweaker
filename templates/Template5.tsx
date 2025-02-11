@@ -724,9 +724,6 @@ const Template5: React.FC<TemplateProps> = ({
         .resume-content, .resume-content * {
           font-family: ${fontFamily}, sans-serif !important;
         }
-           p {
-          color:black
-          }
       `}</style>
       <div>
         {content.basics && content?.basics[0] && (

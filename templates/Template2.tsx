@@ -687,9 +687,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
         .resume-content * {
           font-family: ${fontFamily}, sans-serif;
         }
-          p {
-          color:black
-          }
       `}</style>
       <div style={styles.col1Content} className="resume-content">
         {sectionOrder.sections[pageIndex]?.column1.map((sectionName) =>
