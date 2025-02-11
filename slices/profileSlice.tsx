@@ -1,9 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ResumeData } from "@/types/types";
+import { merge } from "lodash";
+import { v4 as uuidv4 } from "uuid";
 
 export const initialState: ResumeData = {
   basics: [
     {
+      id: uuidv4(),
       name: "",
       email: "",
       phone: "",
@@ -23,6 +26,7 @@ export const initialState: ResumeData = {
   ],
   profiles: [
     {
+      id: uuidv4(),
       url: {
         href: "",
         label: "",
@@ -38,6 +42,7 @@ export const initialState: ResumeData = {
   ],
   projects: [
     {
+      id: uuidv4(),
       name: "",
       summary: "",
       startDate: "",
@@ -51,6 +56,7 @@ export const initialState: ResumeData = {
   ],
   education: [
     {
+      id: uuidv4(),
       institution: "",
       degree: "",
       field: "",
@@ -62,6 +68,7 @@ export const initialState: ResumeData = {
   ],
   experience: [
     {
+      id: uuidv4(),
       organization: "",
       role: "",
       startDate: "",
@@ -72,12 +79,14 @@ export const initialState: ResumeData = {
   ],
   languages: [
     {
+      id: uuidv4(),
       name: "",
       level: "",
     },
   ],
   volunteer: [
     {
+      id: uuidv4(),
       organization: "",
       role: "",
       startDate: "",
@@ -87,6 +96,7 @@ export const initialState: ResumeData = {
   ],
   awards: [
     {
+      id: uuidv4(),
       title: "",
       awarder: "",
       date: "",
@@ -95,6 +105,7 @@ export const initialState: ResumeData = {
   ],
   publications: [
     {
+      id: uuidv4(),
       name: "",
       publisher: "",
       publishedIn: "",
@@ -107,6 +118,7 @@ export const initialState: ResumeData = {
   ],
   certifications: [
     {
+      id: uuidv4(),
       name: "",
       issuer: "",
       date: "",
@@ -118,6 +130,7 @@ export const initialState: ResumeData = {
   ],
   references: [
     {
+      id: uuidv4(),
       name: "",
       phone: "",
       email: "",
@@ -133,13 +146,13 @@ const profileSlice = createSlice({
       state,
       action: PayloadAction<Partial<ResumeData>>
     ) {
-      return { ...state, ...action.payload };
+      return merge({}, state, action.payload);
     },
     UpdateProfileData(state, action: PayloadAction<ResumeData>) {
       return { ...action.payload };
     },
     setFullProfileData(state, action: PayloadAction<ResumeData>) {
-      return { ...action.payload };
+      return structuredClone(action.payload);
     },
     Reset() {
       return { ...initialState };
@@ -155,6 +168,6 @@ export const {
   Reset,
   setFullProfileData,
   updatePartialProfileData,
-  updateProfileImage
+  updateProfileImage,
 } = profileSlice.actions;
 export default profileSlice.reducer;

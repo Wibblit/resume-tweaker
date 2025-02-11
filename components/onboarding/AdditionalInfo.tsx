@@ -8,6 +8,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { ResumeData } from "@/types/types";
 import { CustomDatePicker } from "@/components/DatePicker";
 import React from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface AdditionalInfoProps {
   updateFormData: (data: Partial<ResumeData>) => void;
@@ -26,7 +27,7 @@ export default function AdditionalInfo({
   const references = formData.references || [];
 
   const addLanguage = (): void => {
-    updateFormData({ languages: [...languages, { name: "", level: "" }] });
+    updateFormData({ languages: [...languages, {  id: uuidv4(),name: "", level: "" }] });
   };
 
   const updateLanguage = (
@@ -48,6 +49,7 @@ export default function AdditionalInfo({
       volunteer: [
         ...volunteer,
         {
+          id: uuidv4(),
           organization: "",
           role: "",
           startDate: "",
@@ -74,7 +76,7 @@ export default function AdditionalInfo({
 
   const addAward = (): void => {
     updateFormData({
-      awards: [...awards, { title: "", awarder: "", date: "", summary: "" }],
+      awards: [...awards, {  id: uuidv4(), title: "", awarder: "", date: "", summary: "" }],
     });
   };
 
@@ -93,6 +95,7 @@ export default function AdditionalInfo({
       publications: [
         ...publications,
         {
+          id: uuidv4(),
           name: "",
           publisher: "",
           publishedIn: "",
@@ -133,7 +136,7 @@ export default function AdditionalInfo({
     updateFormData({
       certifications: [
         ...certifications,
-        { name: "", issuer: "", date: "", url: { href: "", label: "" } },
+        {  id: uuidv4(), name: "", issuer: "", date: "", url: { href: "", label: "" } },
       ],
     });
   };
@@ -166,7 +169,7 @@ export default function AdditionalInfo({
 
   const addReference = (): void => {
     updateFormData({
-      references: [...references, { name: "", phone: "", email: "" }],
+      references: [...references, {  id: uuidv4(), name: "", phone: "", email: "" }],
     });
   };
 

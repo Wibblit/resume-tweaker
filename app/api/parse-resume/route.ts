@@ -25,6 +25,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   {
     "basics": [
       {
+        "id": "UNIQUE_UUID",
         "name": "",
         "email": "",
         "phone": "",
@@ -44,6 +45,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "profiles": [
       {
+        "id": "UNIQUE_UUID",
         "url": {
           "href": "",
           "label": ""
@@ -52,7 +54,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "skills": [
       {
-        "id": "",
+       "id": "UNIQUE_UUID",
         "name": "",
         "skills": [
           {
@@ -64,6 +66,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "projects": [
       {
+        "id": "UNIQUE_UUID",
         "name": "",
         "summary": "",
         "startDate": "",
@@ -77,6 +80,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "education": [
       {
+        "id": "UNIQUE_UUID",
         "institution": "",
         "degree": "",
         "field": "",
@@ -88,6 +92,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "experience": [
       {
+        "id": "UNIQUE_UUID",
         "organization": "",
         "role": "",
         "startDate": "",
@@ -98,12 +103,14 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "languages": [
       {
+        "id": "UNIQUE_UUID",
         "name": "",
         "level": ""
       }
     ],
     "volunteer": [
       {
+        "id": "UNIQUE_UUID",
         "organization": "",
         "role": "",
         "startDate": "",
@@ -113,6 +120,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "awards": [
       {
+        "id": "UNIQUE_UUID",
         "title": "",
         "awarder": "",
         "date": "",
@@ -121,6 +129,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "publications": [
       {
+        "id": "UNIQUE_UUID",
         "name": "",
         "publisher": "",
         "publishedIn": "",
@@ -133,6 +142,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "certifications": [
       {
+        "id": "UNIQUE_UUID",
         "name": "",
         "issuer": "",
         "date": "",
@@ -144,6 +154,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     ],
     "references": [
       {
+        "id": "UNIQUE_UUID",
         "name": "",
         "phone": "",
         "email": ""
@@ -166,6 +177,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
       "email": ""
     }
   ]
+  - Make sure to generate unique uuid in place of <UNIQUE_UUID>
   `.trim();
 
   const result = await model.generateContent(prompt);

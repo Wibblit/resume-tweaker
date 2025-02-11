@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { ResumeData, SkillCategory, Skill, Project } from "@/types/types";
 import { CustomDatePicker } from "../DatePicker";
+import { v4 as uuidv4 } from "uuid";
 
 interface SkillsProjectsProps {
   updateFormData: (data: Partial<ResumeData>) => void;
@@ -107,6 +108,7 @@ export default function SkillsProjects({
 
   const addProject = (): void => {
     const newProject: Project = {
+      id: uuidv4(),
       name: "",
       summary: "",
       startDate: "",

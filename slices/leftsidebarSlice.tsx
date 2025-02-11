@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ResumeData, ResumeSection } from "@/types/types";
+import { v4 as uuidv4 } from "uuid";
 
 export const initialState: ResumeData = {
   basics: [
     {
+      id: uuidv4(),
       name: "",
       email: "",
       phone: "",
@@ -23,6 +25,7 @@ export const initialState: ResumeData = {
   ],
   profiles: [
     {
+      id: uuidv4(),
       url: {
         href: "",
         label: "",
@@ -38,6 +41,7 @@ export const initialState: ResumeData = {
   ],
   projects: [
     {
+      id: uuidv4(),
       name: "",
       summary: "",
       startDate: "",
@@ -51,6 +55,7 @@ export const initialState: ResumeData = {
   ],
   education: [
     {
+      id: uuidv4(),
       institution: "",
       degree: "",
       field: "",
@@ -62,6 +67,7 @@ export const initialState: ResumeData = {
   ],
   experience: [
     {
+      id: uuidv4(),
       organization: "",
       role: "",
       startDate: "",
@@ -72,12 +78,14 @@ export const initialState: ResumeData = {
   ],
   languages: [
     {
+      id: uuidv4(),
       name: "",
       level: "",
     },
   ],
   volunteer: [
     {
+      id: uuidv4(),
       organization: "",
       role: "",
       startDate: "",
@@ -87,6 +95,7 @@ export const initialState: ResumeData = {
   ],
   awards: [
     {
+      id: uuidv4(),
       title: "",
       awarder: "",
       date: "",
@@ -95,6 +104,7 @@ export const initialState: ResumeData = {
   ],
   publications: [
     {
+      id: uuidv4(),
       name: "",
       publisher: "",
       publishedIn: "",
@@ -107,6 +117,7 @@ export const initialState: ResumeData = {
   ],
   certifications: [
     {
+      id: uuidv4(),
       name: "",
       issuer: "",
       date: "",
@@ -118,6 +129,7 @@ export const initialState: ResumeData = {
   ],
   references: [
     {
+      id: uuidv4(),
       name: "",
       phone: "",
       email: "",
@@ -176,7 +188,7 @@ export const {
   AddCustomSection,
   DeleteCustomSection,
   RenameCustomSection,
-  updateResumeImage
+  updateResumeImage,
 } = leftsidebarSlice.actions;
 
 export default leftsidebarSlice.reducer;

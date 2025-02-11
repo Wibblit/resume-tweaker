@@ -8,6 +8,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { ResumeData } from "@/types/types";
 import React from "react";
 import { CustomDatePicker } from "../DatePicker";
+import { v4 as uuidv4 } from "uuid";
 
 interface EducationExperienceProps {
   updateFormData: (data: Partial<ResumeData>) => void;
@@ -26,6 +27,7 @@ export default function EducationExperience({
       education: [
         ...education,
         {
+          id: uuidv4(),
           institution: "",
           degree: "",
           field: "",
@@ -57,6 +59,7 @@ export default function EducationExperience({
       experience: [
         ...experience,
         {
+          id: uuidv4(),
           organization: "",
           role: "",
           startDate: "",

@@ -385,14 +385,30 @@ export default function LeftSideBar({
     field: string,
     value: any
   ) => {
+    console.log(field, "field from updateEntry");
+  
     const updatedResumeData = { ...resumeData };
+  
+    if (!Array.isArray(updatedResumeData[section as keyof ResumeData])) {
+      console.error(`Section ${section} is not an array or does not exist.`);
+      return;
+    }
+  
+    console.log(
+      JSON.stringify(updatedResumeData[section as keyof ResumeData]),
+      "from updateEntry stringify"
+    );
+  
     updatedResumeData[section as keyof ResumeData] = updatedResumeData[
       section as keyof ResumeData
-    ]?.map((entry: any) =>
-      entry.id === id ? { ...entry, [field]: value } : entry
-    );
+    ]!.map((entry: any) => {
+      console.log("entry from nested updateEntry:", entry);
+      return entry.id === id ? { ...entry, [field]: value } : entry;
+    });
+  
     dispatch(UpdateLeftBarData(updatedResumeData));
   };
+  
 
   const deleteEntry = (section: keyof ResumeData | string, id: string) => {
     const updatedResumeData = { ...resumeData };
@@ -735,7 +751,6 @@ export default function LeftSideBar({
     const sectionEntries =
       (resumeData[section as keyof ResumeData] as any[]) || [];
 
-    console.log(sectionEntries);
 
     return (
       <div className="flex flex-col h-full">

@@ -100,6 +100,7 @@ export interface SkillCategory {
 }
 
 export interface Basics {
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -114,10 +115,12 @@ export interface Summary {
 }
 
 export interface Profile {
+  id: string;
   url: URL;
 }
 
 export interface Project {
+  id: string;
   name: string;
   summary: string;
   startDate: string;
@@ -127,6 +130,7 @@ export interface Project {
 }
 
 export interface Education {
+  id: string;
   institution: string;
   degree: string;
   field: string;
@@ -137,6 +141,7 @@ export interface Education {
 }
 
 export interface Experience {
+  id: string;
   organization: string;
   role: string;
   startDate: string;
@@ -146,11 +151,13 @@ export interface Experience {
 }
 
 export interface Language {
+  id: string;
   name: string;
   level: string;
 }
 
 export interface Volunteer {
+  id: string;
   organization: string;
   role: string;
   startDate: string;
@@ -159,6 +166,7 @@ export interface Volunteer {
 }
 
 export interface Award {
+  id: string;
   title: string;
   awarder: string;
   date: string;
@@ -166,6 +174,7 @@ export interface Award {
 }
 
 export interface Publication {
+  id: string;
   name: string;
   publisher: string;
   publishedIn: string;
@@ -174,6 +183,7 @@ export interface Publication {
 }
 
 export interface Certification {
+  id: string;
   name: string;
   issuer: string;
   date: string;
@@ -181,6 +191,7 @@ export interface Certification {
 }
 
 export interface Reference {
+  id: string;
   name: string;
   phone: string;
   email: string;

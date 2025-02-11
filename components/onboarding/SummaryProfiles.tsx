@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, Trash2 } from 'lucide-react'
 import { ResumeData } from "@/types/types"
 import React from 'react'
+import { v4 as uuidv4 } from "uuid"
 
 interface SummaryProfilesProps {
   updateFormData: (data: Partial<ResumeData>) => void
@@ -31,7 +32,7 @@ export default function SummaryProfiles({ updateFormData, formData }: SummaryPro
   }
 
   const addProfile = (): void => {
-    updateFormData({ profiles: [...profiles, { url: { href: '', label: '' } }] })
+    updateFormData({ profiles: [...profiles, {  id: uuidv4(),  url: { href: '', label: '' } }] })
   }
 
   const removeProfile = (index: number): void => {
