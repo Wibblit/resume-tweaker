@@ -111,11 +111,14 @@ export default function AdditionalInfo({
     field: string,
     value: string
   ): void => {
-    const updatedPublications = [...publications];
+    let updatedPublications = [...publications];
     if (field.startsWith("url.")) {
-      updatedPublications[index].url = {
-        ...updatedPublications[index].url,
-        [field.split(".")[1]]: value,
+      updatedPublications[index] = {
+        ...updatedPublications[index],
+        url: {
+          ...Object(updatedPublications[index].url), // Convert URL to plain object
+          [field.split(".")[1]]: value,
+        },
       };
     } else {
       updatedPublications[index] = {
@@ -146,12 +149,16 @@ export default function AdditionalInfo({
     field: string,
     value: string
   ): void => {
-    const updatedCertifications = [...certifications];
+    let updatedCertifications = [...certifications];
     if (field.startsWith("url.")) {
-      updatedCertifications[index].url = {
-        ...updatedCertifications[index].url,
-        [field.split(".")[1]]: value,
+      updatedCertifications[index] = {
+        ...updatedCertifications[index],
+        url: {
+          ...Object(updatedCertifications[index].url), // Convert URL to plain object
+          [field.split(".")[1]]: value,
+        },
       };
+      
     } else {
       updatedCertifications[index] = {
         ...updatedCertifications[index],

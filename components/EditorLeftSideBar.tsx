@@ -531,15 +531,12 @@ export default function LeftSideBar({
               ) : field === "keywords" ? (
                 <Input
                   id={`${field}-${entry.id}`}
-                  value={(entry[field] || []).join(", ")}
-                  onChange={(e) =>
-                    updateEntry(
-                      section,
-                      entry.id,
-                      field,
-                      e.target.value.split(",").map((item) => item.trim())
-                    )
-                  }
+                  value={entry[field] ? entry[field].join(",") : ""} // Removed space after comma
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const newArray = value ? value.split(",") : [];
+                    updateEntry(section, entry.id, field, newArray);
+                  }}
                   placeholder={`Enter ${field} (comma-separated)`}
                 />
               ) : field === "url" ? (

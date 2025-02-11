@@ -32,6 +32,7 @@ import { updateCoverLetter } from "@/slices/coverletterSlice";
 import { RichInput } from "./TextEditor";
 import LeftSidePanel from "./LeftSidePanel";
 import { CoverLetterData } from "@/types/types";
+import { CustomDatePicker } from "./DatePicker";
 
 interface CoverLeftSideBarProps {
   activeSection: keyof CoverLetterData | string;
@@ -201,11 +202,25 @@ export default function CoverLeftSideBar({
           <div className="space-y-4">
             <Label htmlFor={section}>{sectionData?.title}</Label>
             {section === "date" ? (
-              <Input
-                id={section}
-                type="date"
-                value={coverLetterData[section]}
-                onChange={(e) => updateCoverLetterData(section, e.target.value)}
+              <CustomDatePicker
+                date={
+                  coverLetterData[section] === "Present"
+                    ? new Date(1970, 0, 1)
+                    : coverLetterData[section]
+                    ? new Date(coverLetterData[section])
+                    : undefined
+                }
+                onSelect={(date) =>
+                  updateCoverLetterData(
+                    section,
+                    date
+                      ? date.toDateString() ===
+                        new Date(1970, 0, 1).toDateString()
+                        ? "Present"
+                        : date.toISOString()
+                      : ""
+                  )
+                }
               />
             ) : richInputSections.includes(section) ? (
               <RichInput

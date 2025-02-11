@@ -658,8 +658,13 @@ export default function Profile({ profData }: { profData: ResumeData }) {
             renderEntryFields(section, entry, index)
           )}
           {section !== "basics" && section !== "summary" && (
-            <Button onClick={() => addEntry(section)}>
-              Add {title.endsWith("s") ? title.slice(0, -1) : title}
+            <Button
+              size={"sm"}
+              variant={"outline"}
+              onClick={() => addEntry(section)}
+            >
+              <Plus className="h-4 w-4 mr-2" /> Add{" "}
+              {title.endsWith("s") ? title.slice(0, -1) : title}
             </Button>
           )}
         </div>
