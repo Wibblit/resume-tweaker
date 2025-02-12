@@ -9,6 +9,7 @@ export class SpeechService {
   private currentAudio: HTMLAudioElement | null = null;
   private setPlayingState: SetPlayingState | null = null;
   private setLoadingState: SetLoadingState | null = null;
+  private isChrome: boolean = false;
 
   constructor(
     setPlayingState?: SetPlayingState,
@@ -17,13 +18,23 @@ export class SpeechService {
     this.synthesis = window.speechSynthesis;
     this.setPlayingState = setPlayingState || null;
     this.setLoadingState = setLoadingState || null;
-    this.initializeVoice();
+    this.isChrome =
+      navigator.userAgent.toLowerCase().includes("chrome") &&
+      !!window.chrome &&
+      (!!window.chrome.webstore || !!window.chrome.runtime);
+
+    if (this.isChrome) {
+      this.initializeVoice();
+    }
   }
 
   private async initializeVoice() {
     if (!this.isSpeechSupported()) return;
 
-    // Wait for voices to be loaded
+    setTimeout(() => this.selectVoice(), 2000);
+  }
+
+  private async selectVoice() {
     if (speechSynthesis.getVoices().length === 0) {
       await new Promise<void>((resolve) => {
         speechSynthesis.addEventListener("voiceschanged", () => resolve(), {
@@ -32,19 +43,18 @@ export class SpeechService {
       });
     }
 
-    // Select an English male voice if available
     const voices = speechSynthesis.getVoices();
     this.voice =
       voices.find(
         (voice) =>
           voice.lang.startsWith("en") &&
-          voice.name.toLowerCase().includes("male")
+          voice.name.toLowerCase().includes("female")
       ) ||
       voices.find((voice) => voice.lang.startsWith("en")) ||
       voices[0];
   }
 
-  private isSpeechSupported(): boolean {
+  public isSpeechSupported(): boolean {
     return "speechSynthesis" in window;
   }
 
@@ -54,12 +64,10 @@ export class SpeechService {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = this.voice;
 
-    // Update playing state to true when speech starts
     utterance.onstart = () => {
       this.setPlayingState?.(true);
     };
 
-    // Update playing state to false when speech ends
     utterance.onend = () => {
       this.setPlayingState?.(false);
     };
@@ -68,7 +76,6 @@ export class SpeechService {
   }
 
   private async ttsSpeak(text: string): Promise<void> {
-    // Set loading state to true while generating the WAV file
     this.setLoadingState?.(true);
 
     try {
@@ -78,17 +85,13 @@ export class SpeechService {
       });
 
       const audioUrl = URL.createObjectURL(wav);
-
-      // Create an audio element and play it
       this.currentAudio = new Audio(audioUrl);
 
-      // Update playing state to true when audio starts playing
       this.currentAudio.onplay = () => {
         this.setPlayingState?.(true);
-        this.setLoadingState?.(false); // Loading is complete
+        this.setLoadingState?.(false);
       };
 
-      // Update playing state to false when audio ends
       this.currentAudio.onended = () => {
         this.setPlayingState?.(false);
       };
@@ -96,17 +99,16 @@ export class SpeechService {
       this.currentAudio.play();
     } catch (error) {
       console.error("Error generating or playing audio:", error);
-      this.setLoadingState?.(false); // Ensure loading state is reset on error
+      this.setLoadingState?.(false);
     }
   }
 
   public async speak(text: string): Promise<void> {
-    // Stop any ongoing audio before starting new speech
     if (this.isPlaying()) {
       this.stop();
     }
 
-    if (this.isSpeechSupported()) {
+    if (this.isChrome && this.isSpeechSupported()) {
       this.webSpeechSpeak(text);
     } else {
       await this.ttsSpeak(text);
@@ -114,7 +116,7 @@ export class SpeechService {
   }
 
   public pause(): void {
-    if (this.isSpeechSupported()) {
+    if (this.isChrome && this.isSpeechSupported()) {
       this.synthesis.pause();
     } else if (this.currentAudio) {
       this.currentAudio.pause();
@@ -122,7 +124,7 @@ export class SpeechService {
   }
 
   public resume(): void {
-    if (this.isSpeechSupported()) {
+    if (this.isChrome && this.isSpeechSupported()) {
       this.synthesis.resume();
     } else if (this.currentAudio) {
       this.currentAudio.play();
@@ -130,16 +132,15 @@ export class SpeechService {
   }
 
   public stop(): void {
-    if (this.isSpeechSupported()) {
+    if (this.isChrome && this.isSpeechSupported()) {
       this.synthesis.cancel();
     } else if (this.currentAudio) {
       this.currentAudio.pause();
       this.currentAudio.currentTime = 0;
     }
 
-    // Update playing state to false when audio is stopped
     this.setPlayingState?.(false);
-    this.setLoadingState?.(false); // Ensure loading state is reset
+    this.setLoadingState?.(false);
   }
 
   public cancel(): void {
@@ -147,7 +148,7 @@ export class SpeechService {
   }
 
   public isPlaying(): boolean {
-    if (this.isSpeechSupported()) {
+    if (this.isChrome && this.isSpeechSupported()) {
       return this.synthesis.speaking || this.synthesis.paused;
     } else if (this.currentAudio) {
       return !this.currentAudio.paused && this.currentAudio.currentTime > 0;
