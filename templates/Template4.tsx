@@ -106,18 +106,6 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 
   const renderSection = (sectionName: SectionName) => {
     switch (sectionName) {
-      case "summary":
-        return (
-          content.summary &&
-          content.summary.length > 0 && (
-            <Section title="Summary" baseColor={baseColor}>
-              <HTMLViewer
-                lineHeight={lineHeight}
-                content={content.summary[0].content}
-              />
-            </Section>
-          )
-        );
       case "experience":
         return (
           content.experience &&
@@ -129,7 +117,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     <h3 style={styles.subtitle} className="mr-2">
                       {exp.organization}
                     </h3>
-                    <span style={styles.text} className=" text-gray-600">
+                    <span style={styles.text}>
                       {exp.startDate && formatDate(exp.startDate, datetype)} -{" "}
                       {exp.endDate && formatDate(exp.endDate, datetype)}
                     </span>
@@ -163,7 +151,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {edu.institution} |{" "}
                       <span style={styles.subsidetitle}>{edu.degree}</span>
                     </h3>
-                    <span style={styles.text} className=" text-gray-600">
+                    <span style={styles.text} >
                       {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
                       {edu.endDate && edu.startDate && " - "}{" "}
                       {edu.endDate && formatDate(edu.endDate, datetype)}
@@ -171,7 +159,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
                     <span style={styles.text} className=" mr-2">
-                      {edu.field} {edu.field && edu.specialization && "|"}
+                      {edu.field} {edu.field && edu.specialization && <span className="mx-1">|</span>}
                       {edu.specialization}
                     </span>
                     {edu.score && <p style={styles.text}  className=" mt-1">{edu.score}</p>}
@@ -229,7 +217,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                         </>
                       )}
                     </h3>
-                    <p className="text-xs text-gray-600">
+                    <p style={styles.text}>
                       {project.startDate &&
                         formatDate(project.startDate, datetype)}
                       {project.endDate && " - "}
@@ -284,15 +272,17 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.languages.length > 0 && (
             <Section title="Languages" baseColor={baseColor}>
               <div className="flex flex-col items-start justify-start">
-                {content.languages.map((lang, index) => (
+                {(content.languages || []).map((lang, index) => (
                   <div
                     key={index}
-                    className="flex justify-between items-baseline w-full"
+                    className="flex justify-start items-baseline w-full mt-1"
                   >
-                    <span className="text-sm font-semibold mr-2">
-                      {lang.name}
+                    <span style={styles.text} className="font-semibold mr-2">
+                      {lang.name || "Unknown"}
                     </span>
-                    <span className="text-xs text-gray-600">{lang.level}</span>
+                    <span style={styles.text}>
+                      ({lang.level || "N/A"})
+                    </span>
                   </div>
                 ))}
               </div>
@@ -329,14 +319,16 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                     <h3 className="text-base font-semibold mr-2">
                       {vol.organization}
                     </h3>
-                    <span className="text-xs text-gray-600">
-                      {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
-                      {vol.endDate && " - "}
+                    <span style={styles.text}>
+                      {vol.startDate && formatDate(vol.startDate, datetype)}
+                      {vol.endDate && vol.startDate && " - "}
                       {vol.endDate && formatDate(vol.endDate, datetype)}
                     </span>
                   </div>
-                  <p className="text-sm italic mb-1">{vol.role}</p>
-                  <p className="text-xs text-gray-600">{vol.location}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm italic">{vol.role}</p>
+                    <p className="text-xs">{vol.location}</p>
+                  </div>
                 </div>
               ))}
             </Section>
@@ -502,71 +494,82 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 
       {/* Header Section */}
       {content.basics && (
-        <div className="mb-6 flex flex-col md:flex-row md:items-start justify-between">
-          {/* Left: Name & Headline */}
-          <div className="w-full md:w-3/4">
-            <h1
-              style={{ color: baseColor }}
-              className="text-3xl font-bold mb-1"
-            >
-              {content?.basics[0].name}
-            </h1>
-            <p className="text-base text-gray-700 mb-2">
-              {content?.basics[0].headLine}
-            </p>
+        <div>
+          <div className="mb-6 flex flex-col md:flex-row md:items-start justify-between">
+            {/* Left: Name & Headline */}
+            <div className="w-full md:w-3/4">
+              <h1
+                style={{ color: baseColor }}
+                className="text-3xl font-bold mb-0.5"
+              >
+                {content?.basics[0].name}
+              </h1>
+              <p className="text-base text-gray-700 mb-0.5">
+                {content?.basics[0].headLine}
+              </p>
 
-            {/* Social Profiles */}
-            <div className="flex flex-wrap gap-2">
-              {content?.profiles?.map((profile, index) => (
-                <div className="flex items-center gap-2" key={index}>
-                  {isIcons && profile.url.href !== "" && (
-                    <SocialIcon
-                      style={{ width: "16px", height: "16px" }}
-                      url={profile.url.href}
-                    />
-                  )}
-                  <a
-                    href={profile.url.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.linklabel}
-                    className="underline text-sm  "
-                  >
-                    {profile.url.label}
-                  </a>
-                </div>
-              ))}
+              {/* Social Profiles */}
+              <div className="flex flex-wrap gap-1">
+                {content?.profiles?.map((profile, index) => (
+                  <div className="flex items-center gap-1" key={index}>
+                    {isIcons && profile.url.href !== "" && (
+                      <SocialIcon
+                        style={{ width: "16px", height: "16px" }}
+                        url={profile.url.href}
+                      />
+                    )}
+                    <a
+                      href={profile.url.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={styles.linklabel}
+                      className="underline text-sm  "
+                    >
+                      {profile.url.label}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Contact Info */}
+            <div style={styles.text} className="mt-4 md:mt-0 flex flex-col items-end gap-1">
+              <p className="break-words">{content?.basics[0].location}</p>
+              <p className="break-words">
+                <a
+                  href={`tel:${content?.basics[0].phone}`}
+                  className="hover:underline"
+                >
+                  {content?.basics[0].phone}
+                </a>
+              </p>
+              <p className="break-words">
+                <a
+                  href={`mailto:${content?.basics[0].email}`}
+                  className="hover:underline"
+                >
+                  {content?.basics[0].email}
+                </a>
+              </p>
+              {content?.basics[0].url && (
+                <a
+                  href={content?.basics[0].url.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  {content?.basics[0].url.label}
+                </a>
+              )}
             </div>
           </div>
 
-          {/* Right: Contact Info */}
-          <div className="mt-4 md:mt-0 text-sm text-gray-800">
-            <p className="break-words">{content?.basics[0].location}</p>
-            <p className="break-words">
-              <a
-                href={`tel:${content?.basics[0].phone}`}
-                className="hover:underline"
-              >
-                {content?.basics[0].phone}
-              </a>
-            </p>
-            <p className="break-words">
-              <a
-                href={`mailto:${content?.basics[0].email}`}
-                className="hover:underline"
-              >
-                {content?.basics[0].email}
-              </a>
-            </p>
-            {content?.basics[0].url && (
-              <a
-                href={content?.basics[0].url.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline"
-              >
-                {content?.basics[0].url.label}
-              </a>
+          <div className="mt-4">
+            {content.summary && content.summary[0].content && (
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content!}
+              />
             )}
           </div>
         </div>
@@ -575,9 +578,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       {/* Two-Column Layout */}
       <div className="flex flex-col md:flex-row w-full gap-6">
         {/* Left Column (60%) */}
-        <div className="md:w-[60%] w-full">
+        <div className="md:w-[70%] w-full">
           {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => {
-            if (sectionName !== "basics" && sectionName !== "profiles") {
+            if (sectionName !== "basics" && sectionName !== "profiles" && sectionName !== "summary") {
               return renderSection(sectionName as SectionName);
             } else {
               return null;
@@ -586,9 +589,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
         </div>
 
         {/* Right Column (40%) */}
-        <div className="md:w-[40%] w-full">
+        <div className="md:w-[30%] w-full">
           {sectionOrder.sections[pageIndex]?.column2.map((sectionName) => {
-            if (sectionName !== "basics" && sectionName !== "profiles") {
+            if (sectionName !== "basics" && sectionName !== "profiles" && sectionName !== "summary") {
               return renderSection(sectionName as SectionName);
             } else {
               return null;
