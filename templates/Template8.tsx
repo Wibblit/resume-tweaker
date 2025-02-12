@@ -57,15 +57,21 @@ const LinkedEntity: React.FC<{
   className?: string;
 }> = ({ name, url, separateLinks, className }) => {
   return !separateLinks && isUrl(url.href) ? (
-    <Link
-      url={url}
-      label={name}
-      icon={
-        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
-      }
-      iconOnRight={true}
-      className={className}
-    />
+    <div className="flex gap-1 items-center flex-wrap">
+      <div className={className}>{name}</div>
+      <div className="flex items-center gap-1">
+        {url.label ? "|" : ""}
+        <Link
+          url={url}
+          label={url.label}
+          icon={
+            <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+          }
+          iconOnRight={true}
+          className={`text-baseline`+className}
+        />
+      </div>
+    </div>
   ) : (
     <div className={className}>{name}</div>
   );
@@ -92,12 +98,12 @@ const Section: React.FC<{
           : undefined
       }
     >
-      <h4
+      <h3
         className="mb-2 text-base font-bold uppercase"
         style={{ color: isRightColumn ? baseColor : "white"  }}
       >
         {title}
-      </h4>
+      </h3>
       <div>{children}</div>
     </section>
   );
@@ -208,7 +214,7 @@ const Template8: React.FC<TemplateProps> = ({
     (state) => state?.rightsidebar?.icons
   );
   const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
-  const styles = {
+  const styles :Record<string, React.CSSProperties>= {
     container: {
       fontFamily: fontFamily,
       fontSize: `${fontSize}px`,
@@ -239,6 +245,29 @@ const Template8: React.FC<TemplateProps> = ({
       display: "flex",
       flexDirection: "column" as "column",
     },
+    subtitle: {
+      fontWeight: "bold",
+      textAlign: "left",
+    },
+    normal: {
+      textAlign: "left",
+    },
+    undertitle: {
+      fontWeight: "semibold",
+      textAlign: "left",
+    },
+    link: {
+      color: baseColor,
+      textDecoration: "none",
+      textAlign: "left",
+    },
+    divider: {
+      color: baseColor,
+      textAlign: "left",
+    },
+    smallColumn: {
+      fontSize: "0.8em"
+    }
   };
   const renderSection = (
     sectionName: string,
@@ -261,10 +290,12 @@ const Template8: React.FC<TemplateProps> = ({
                 style={sectionStyle}
                 className="text-justify"
               /> */}
-              <HTMLViewer
-                lineHeight={lineHeight}
-                content={content.summary[0].content}
-              />
+              <div className="" style={styles.normal}>
+                <HTMLViewer
+                  lineHeight={lineHeight}
+                  content={content.summary[0].content}
+                />
+              </div>
             </Section>
           )
         );
@@ -314,7 +345,7 @@ const Template8: React.FC<TemplateProps> = ({
             >
               <div className="space-y-4">
                 {content.publications.map((pub, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="flex flex-col gap-2">
                     <div className="flex items-start justify-between">
                       <LinkedEntity
                         name={pub.name}
@@ -328,15 +359,20 @@ const Template8: React.FC<TemplateProps> = ({
                         </div>
                       </div>
                     </div>
-                    <div>{pub.publisher}</div>
-                    <div>{pub.publishedIn}</div>
+                    <div className="flex items-center flex-wrap gap-1">
+                      <div>{pub.publisher}</div>
+                      <div className="flex items-center gap-1">
+                        <div className="">{pub.publishedIn ? "|" : ""}</div>
+                        <div className="flex items-center">{pub.publishedIn}</div>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             </Section>
           )
         );
-      case "volunteerings":
+      case "volunteer":
         console.log(content.volunteer);
         return (
           content.volunteer &&
@@ -355,11 +391,10 @@ const Template8: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">
-                          {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
-                          {vol.endDate && " - "}{" "}
-                          {vol.endDate && formatDate(vol.endDate, datetype)}
-                        </div>
+                      <div className={`flex font-semibold flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`}>
+                      {vol.startDate && <div>{formatDate(vol.startDate, datetype)}</div>}
+                      {vol.endDate && <div className="flex items-center"><div className="mx-1">{(vol.startDate && vol.endDate) ? "-": ""}</div> {formatDate(vol.endDate, datetype)}</div>}
+                      </div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -380,9 +415,11 @@ const Template8: React.FC<TemplateProps> = ({
             >
               <div className="space-y-4">
                 {content.references.map((ref, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="flex flex-wrap gap-1">
                     <div className="font-bold">{ref.name}</div>
+                    {ref.phone? <div className="">|</div> : ""}
                     <div>{ref.phone}</div>
+                    {ref.email? <div className="">|</div> : ""}
                     <div>{ref.email}</div>
                   </div>
                 ))}
@@ -407,13 +444,12 @@ const Template8: React.FC<TemplateProps> = ({
                         <div className="font-bold">{exp.organization}</div>
                         <div>{exp.role}</div>
                       </div>
-                      <div className="shrink-0 text-right">
-                        <div>
-                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
-                          {exp.endDate && " - "}{" "}
-                          {exp.endDate && formatDate(exp.endDate, datetype)}
-                        </div>
-                        <div>{exp.location}</div>
+                      <div className=" text-right">
+                      <div style={styles.subtitle} className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`}>
+                      {exp.startDate && <div>{formatDate(exp.startDate, datetype)}</div>}
+                      {exp.endDate && <div className="flex items-center"><div className="mx-1">{(exp.startDate && exp.endDate) ? "-": ""}</div> {formatDate(exp.endDate, datetype)}</div>}
+                      </div>
+                        <div style={styles.undertitle}>{exp.location}</div>
                       </div>
                     </div>
                     {exp.summary && !isEmptyString(exp.summary) && (
@@ -477,7 +513,7 @@ const Template8: React.FC<TemplateProps> = ({
                       href={profile.url.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline text-sm"
+                      className="no-underline text-sm"
                     >
                       {profile.url.label}
                     </a>
@@ -523,17 +559,22 @@ const Template8: React.FC<TemplateProps> = ({
                 {content.education.map((edu, index) => (
                   <div key={index} className="flex items-start justify-between">
                     <div>
-                      <div className="font-bold">{edu.institution}</div>
-                      <div>{edu.field}</div>
-                      <div>{edu.score}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div>
-                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
-                        {edu.endDate && " - "}{" "}
-                        {edu.endDate && formatDate(edu.endDate, datetype)}{" "}
+                      <div className="mb-1 text-wrap" style={styles.subtitle}>{edu.institution}</div>
+                      <div className="flex items-center gap-1 flex-wrap text-nowrap">
+                        <div>{edu.degree}</div>
+                        {edu.field ? "|" : ""}
+                        <div className="">{edu.field}</div>
+                        {edu.specialization ? "|" : ""}
+                        <div className="">{edu.specialization}</div>
                       </div>
-                      <div>{edu.degree}</div>
+                    </div>
+                    
+                    <div className="flex flex-col gap-1">
+                      <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end items-center whitespace-nowrap`}>
+                        {edu.startDate && <div>{formatDate(edu.startDate, datetype)}</div>}
+                        {edu.endDate && <div className="flex items-center"><div className="">{(edu.startDate && edu.endDate) ? "-": ""}</div> {formatDate(edu.endDate, datetype)}</div>}
+                      </div>
+                      <div className="text-right">{edu.score}</div>
                     </div>
                   </div>
                 ))}
@@ -552,14 +593,14 @@ const Template8: React.FC<TemplateProps> = ({
             >
               <div className="space-y-2">
                 {content.certifications.map((cert, index) => (
-                  <div key={index}>
+                  <div key={index} className={`flex flex-wrap justify-between ${isRightColumn ? "" : "relative"}`}>
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div>{cert.date && formatDate(cert.date, datetype)}</div>
+                    <div className={`${isRightColumn ? "" : "absolute right-0 bottom-0"}`}>{cert.date && formatDate(cert.date, datetype)}</div>
                   </div>
                 ))}
               </div>
@@ -577,7 +618,7 @@ const Template8: React.FC<TemplateProps> = ({
             >
               <div className="space-y-4">
                 {content.projects.map((project, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="space-y-1">
                     <div className="flex items-start justify-between">
                       <LinkedEntity
                         name={project.name}
@@ -585,27 +626,31 @@ const Template8: React.FC<TemplateProps> = ({
                         separateLinks={false}
                         className="font-bold"
                       />
-                      <div className="shrink-0 text-right">
-                        <div>
-                          {project.startDate &&
-                            formatDate(project.startDate, datetype)}{" "}
-                          {project.endDate && " - "}{" "}
-                          {project.endDate &&
-                            formatDate(project.endDate, datetype)}
-                        </div>
+                      <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`}>
+                      {project.startDate && <div>{formatDate(project.startDate, datetype)}</div>}
+                      {project.endDate && <div className="flex items-center"><div className="mx-1">{(project.startDate && project.endDate) ? "-": ""}</div> {formatDate(project.endDate, datetype)}</div>}
                       </div>
                     </div>
-                    {project.summary && !isEmptyString(project.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={project.summary}
-                      />
-                    )}
+                    <div className="">
+                      {(project.keywords.length -1 > 0 && project.keywords[0] != '') ?
+                       (<div className="flex flex-wrap">
+                        <p className="mr-1 font-medium" style={styles.subtitle}>Skills:</p>
+                        {project.keywords.map((keyword, keywordIndex) => (
+                            <span key={keywordIndex}>
+                              {keyword}{keywordIndex !== project.keywords.length - 1 ? ", " : undefined}
+                            </span>
+                          ))}
+                       </div>) 
+                       : ""}
+                    </div>
+                    <div className="">
+                      {project.summary && !isEmptyString(project.summary) && (
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={project.summary}
+                        />
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -633,8 +678,11 @@ const Template8: React.FC<TemplateProps> = ({
          )
            return null;
         return (
-          <div className="mb-6">
-            <h2>{sectionName}</h2>
+            <Section
+              title={sectionName.toUpperCase()}
+              baseColor={baseColor}
+              isRightColumn={isRightColumn}
+            >
             {
               //@ts-ignore
               content[sectionName] &&
@@ -647,48 +695,33 @@ const Template8: React.FC<TemplateProps> = ({
                       {/* Main Row: Name, Location, Link on the left; Dates on the right */}
                       <div className="flex items-center justify-between">
                         {/* Left Section: Name, Location, Link */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center flex-wrap">
                           {/* Name */}
-                          {sec.name && <h3>{sec.name}</h3>}
-
-                          {/* Location */}
-                          {sec.location && <p className="">, {sec.location}</p>}
-
+                          {sec.name && <p style={styles.subtitle}>{sec.name}</p>}
+                          {sec.location && <span className="" style={styles.undertitle}>, {sec.location}</span>}
                           {/* URL Link */}
                           {sec.url && (
-                            <a
-                              href={sec.url.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center mx-2"
-                            >
-                              <p>
-                                {sec.url.label && (
-                                  <span className="mx-1">|</span>
-                                )}
-                                {sec.url.label}
-                              </p>
-                            </a>
+                            <LinkedEntity
+                            name={""}
+                            url={sec.url}
+                            separateLinks={false}
+                            className="font-bold"
+                          />
                           )}
                         </div>
 
                         {/* Right Section: Dates */}
-                        <div>
+                        <div className="">
                           {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
+                          <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`} style={styles.subtitle}>
+                            {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
+                            {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-": ""}</div> {formatDate(sec.endDate, datetype)}</div>}
+                          </div>
                         </div>
                       </div>
 
                       {/* Description: Placed below the main row */}
-                      {sec.description && (
-                        <p className="mt-1">{sec.description}</p>
-                      )}
+                      {sec.description && (<p className="mt-1">{sec.description}</p>)}
 
                       {/* Summary: Placed below the description */}
                       {sec.summary && (
@@ -702,8 +735,8 @@ const Template8: React.FC<TemplateProps> = ({
                     </div>
                   </div>
                 ))
-            }
-          </div>
+              }
+              </Section>
         );
     }
   };

@@ -349,15 +349,15 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                   </div>
                   {project.keywords[0] != '' && project.keywords && (
                     <div className="w-full">
-                      <div className="flex flex-wrap mb-1">
-                        <h3 style={styles.subtitle}>Skills:</h3>
-                        <p className="text-nowrap">
+                      <div className="flex flex-wrap mb-1 items-center">
+                        <p className="mr-1 font-medium" style={styles.subtitle}>Skills:</p>
+                        <div className="text-nowrap">
                           {project.keywords.map((keyword, keywordIndex) => (
-                            <span key={keywordIndex}>
+                            <span key={keywordIndex} style={styles.normal}>
                               {keyword}{keywordIndex !== project.keywords.length - 1 ? ", " : undefined}
                             </span>
                           ))}
-                        </p>
+                        </div>
                       </div>
                     </div>
 
