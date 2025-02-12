@@ -2,6 +2,7 @@ import * as tts from "@diffusionstudio/vits-web";
 
 type SetPlayingState = React.Dispatch<React.SetStateAction<boolean>>;
 type SetLoadingState = React.Dispatch<React.SetStateAction<boolean>>;
+type VoiceReadyCallback = () => void;
 
 export class SpeechService {
   private synthesis: SpeechSynthesis;
@@ -10,10 +11,12 @@ export class SpeechService {
   private setPlayingState: SetPlayingState | null = null;
   private setLoadingState: SetLoadingState | null = null;
   private isChrome: boolean = false;
+  private voiceReadyCallback: VoiceReadyCallback | null = null;
 
   constructor(
     setPlayingState?: SetPlayingState,
-    setLoadingState?: SetLoadingState
+    setLoadingState?: SetLoadingState,
+    voiceReadyCallback?: VoiceReadyCallback
   ) {
     this.synthesis = window.speechSynthesis;
     this.setPlayingState = setPlayingState || null;
@@ -22,27 +25,30 @@ export class SpeechService {
       navigator.userAgent.toLowerCase().includes("chrome") &&
       !!window.chrome &&
       (!!window.chrome.webstore || !!window.chrome.runtime);
+    this.voiceReadyCallback = voiceReadyCallback || null;
+  }
 
-    if (this.isChrome) {
-      this.initializeVoice();
+  public async initialize(): Promise<void> {
+    if (this.isChrome && this.isSpeechSupported()) {
+      await this.selectVoice();
     }
   }
 
-  private async initializeVoice() {
-    if (!this.isSpeechSupported()) return;
-
-    setTimeout(() => this.selectVoice(), 2000);
+  private async selectVoice(): Promise<void> {
+    return new Promise(async (resolve) => {
+      if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.addEventListener(
+          "voiceschanged",
+          () => this.handleVoicesLoaded(resolve),
+          { once: true }
+        );
+      } else {
+        await this.handleVoicesLoaded(resolve);
+      }
+    });
   }
 
-  private async selectVoice() {
-    if (speechSynthesis.getVoices().length === 0) {
-      await new Promise<void>((resolve) => {
-        speechSynthesis.addEventListener("voiceschanged", () => resolve(), {
-          once: true,
-        });
-      });
-    }
-
+  private async handleVoicesLoaded(resolve: () => void): Promise<void> {
     const voices = speechSynthesis.getVoices();
     this.voice =
       voices.find(
@@ -52,6 +58,9 @@ export class SpeechService {
       ) ||
       voices.find((voice) => voice.lang.startsWith("en")) ||
       voices[0];
+
+    this.voiceReadyCallback?.();
+    resolve();
   }
 
   public isSpeechSupported(): boolean {
@@ -61,14 +70,28 @@ export class SpeechService {
   private webSpeechSpeak(text: string): void {
     if (!this.isSpeechSupported() || !this.voice) return;
 
+    // Cancel any ongoing speech
+    this.synthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.voice = this.voice;
+    utterance.lang = this.voice.lang;
+
+    // Add error handling
+    utterance.onerror = (event) => {
+      console.error("Speech synthesis error:", event.error);
+      this.setPlayingState?.(false);
+    };
 
     utterance.onstart = () => {
       this.setPlayingState?.(true);
     };
 
     utterance.onend = () => {
+      this.setPlayingState?.(false);
+    };
+
+    utterance.onpause = () => {
       this.setPlayingState?.(false);
     };
 
