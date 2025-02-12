@@ -12,7 +12,7 @@ interface AudioRecorderProps {
 
 export default function AudioRecorder({
   isRecording,
-  setIsRecording,
+  setIsRecording, 
   setAudioBlob,
   mediaRecorderRef,
   audioBlob,

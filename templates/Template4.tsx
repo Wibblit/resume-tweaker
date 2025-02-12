@@ -8,6 +8,7 @@ import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
 import { formatDate } from "@/utils/formatDate";
 import { PAGE_FORMATS } from "@/components/coverPage";
+import { number } from "prop-types";
 
 interface TemplateProps {
   content: ResumeData;
@@ -87,7 +88,19 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       height: "100%",
     },
     linklabel: {
-      color : baseColor
+      color: baseColor,
+      fontWeight : 300
+    },
+    subtitle: {
+      fontWeight: 600,
+      fontSize: `${fontSize + Math.floor(fontSize * 0.4)}px`,
+    },
+    subsidetitle: {
+      fontWeight: 500,
+      fontSize: `${fontSize + Math.floor(fontSize * 0.1)}px`,
+    },
+    text: {
+      fontSize : `${fontSize}px`
     }
   };
 
@@ -111,19 +124,19 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.experience.length > 0 && (
             <Section title="Experience" baseColor={baseColor}>
               {content.experience.map((exp, index) => (
-                <div key={index} className="mb-3">
+                <div  key={index} className="mb-3">
                   <div className="flex flex-wrap justify-between items-baseline">
-                    <h3 className="text-base font-semibold mr-2">
+                    <h3 style={styles.subtitle} className="mr-2">
                       {exp.organization}
                     </h3>
-                    <span className="text-xs text-gray-600">
+                    <span style={styles.text} className=" text-gray-600">
                       {exp.startDate && formatDate(exp.startDate, datetype)} -{" "}
                       {exp.endDate && formatDate(exp.endDate, datetype)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
-                    <em className="text-sm mr-2">{exp.role}</em>
-                    <span className="text-xs text-gray-600">
+                    <em style={styles.subsidetitle} className="mt-1 mr-2">{exp.role}</em>
+                    <span style={styles.text} className=" text-gray-600">
                       {exp.location}
                     </span>
                   </div>
@@ -146,22 +159,22 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
               {content.education.map((edu, index) => (
                 <div key={index} className="mb-3">
                   <div className="flex flex-wrap justify-between items-baseline">
-                    <h3 className="text-base font-semibold mr-2">
-                      {edu.institution}
+                    <h3 style={styles.subtitle} className="mr-2">
+                      {edu.institution} |{" "}
+                      <span style={styles.subsidetitle}>{edu.degree}</span>
                     </h3>
-                    <span className="text-xs text-gray-600">
+                    <span style={styles.text} className=" text-gray-600">
                       {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
-                      {edu.endDate && " - "}{" "}
+                      {edu.endDate && edu.startDate && " - "}{" "}
                       {edu.endDate && formatDate(edu.endDate, datetype)}
                     </span>
                   </div>
                   <div className="flex flex-wrap justify-between items-baseline mb-1">
-                    <span className="text-sm mr-2">
-                      {edu.degree} {edu.field && "in"} {edu.field}
-                      {edu.specialization &&
-                        ` with specialization in ${edu.specialization}`}
+                    <span style={styles.text} className=" mr-2">
+                      {edu.field} {edu.field && edu.specialization && "|"}
+                      {edu.specialization}
                     </span>
-                    {edu.score && <p className="text-xs mt-1">{edu.score}</p>}
+                    {edu.score && <p style={styles.text}  className=" mt-1">{edu.score}</p>}
                   </div>
                 </div>
               ))}
@@ -175,10 +188,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Skills" baseColor={baseColor}>
               {content.skills.map((category, index) => (
                 <div key={index} className="mb-2">
-                  <h3 className="text-sm font-semibold mb-1">
+                  <h3 style={styles.subtitle} className=" mb-1">
                     {category.name}
                   </h3>
-                  <p className="text-xs leading-snug break-words whitespace-pre-wrap">
+                  <p style={styles.text} className=" leading-snug break-words whitespace-pre-wrap">
                     {category.skills.map((skill) => skill.name).join(", ")}
                   </p>
                 </div>
@@ -199,16 +212,16 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       {project.url.href && (
                         <>
                           {" "}
-                          <p className="mr-1 ml-1"> - </p>
+                          {project.name && project.url.label && (
+                            <p className="mr-1 ml-1"> | </p>
+                          )}
                           <a
                             href={project.url.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-blue-600 flex items-center break-words"
+                            className="flex items-center break-words"
                           >
-                            <p
-                              style={{ color: `${baseColor}` }}
-                              className="underline font-medium"
+                            <p style={styles.linklabel}
                             >
                               {project.url.label}
                             </p>
