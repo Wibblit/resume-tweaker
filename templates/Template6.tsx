@@ -221,31 +221,31 @@ export default function Component({
         if (!content.skills?.length) return null;
 
         // Get all skills in a flat array
-        const allSkills = content.skills.flatMap(category => category.skills);
-        
+        const allSkills = content.skills.flatMap((category) => category.skills);
+
         // Calculate how many rows we need (5 items per row)
         const rowCount = Math.ceil(allSkills.length / 5);
-        
+
         // Create chunks of 5 skills for each column
         const columns = [];
         for (let i = 0; i < rowCount; i++) {
           columns.push(allSkills.slice(i * 5, (i + 1) * 5));
-        }      
+        }
         return (
           <section className="mb-6">
-          <h2 style={styles.sectionTitle}>Skills</h2>
-          <div className="grid grid-cols-4 gap-4">
-            {columns.map((column, colIndex) => (
-              <div key={colIndex} className="flex flex-col">
-                {column.map((skill, index) => (
-                  <p key={index} className="mb-1 text-gray-600">
-                    • {skill.name}
-                  </p>
-                ))}
-              </div>
-            ))}
-          </div>
-        </section>
+            <h2 style={styles.sectionTitle}>Skills</h2>
+            <div className="grid grid-cols-4 gap-4">
+              {columns.map((column, colIndex) => (
+                <div key={colIndex} className="flex flex-col">
+                  {column.map((skill, index) => (
+                    <p key={index} className="mb-1 text-gray-600">
+                      • {skill.name}
+                    </p>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </section>
         );
 
       case "projects":
@@ -497,80 +497,65 @@ export default function Component({
           !Array.isArray(content[sectionName]) ||
           //@ts-ignore
           !content[sectionName]?.length
-        )
+        ) {
           return null;
+        }
+
         return (
-          <div className="mb-6">
-            <h2>{sectionName}</h2>
-            {
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>{sectionName}</h2>
+            {content[sectionName]
               //@ts-ignore
-              content[sectionName] &&
-                //@ts-ignore
-                Array.isArray(content[sectionName]) &&
-                //@ts-ignore
-                content[sectionName]?.map((sec: Custom, index: number) => (
-                  <div key={index} className="mb-4">
-                    <div className="flex flex-col justify-between">
-                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                      <div className="flex items-center justify-between">
-                        {/* Left Section: Name, Location, Link */}
-                        <div className="flex items-center gap-2">
-                          {/* Name */}
-                          {sec.name && <h3>{sec.name}</h3>}
-
-                          {/* Location */}
-                          {sec.location && <p className="">, {sec.location}</p>}
-
-                          {/* URL Link */}
-                          {sec.url && (
-                            <a
-                              href={sec.url.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center mx-2"
-                            >
-                              <p>
-                                {sec.url.label && (
-                                  <span className="mx-1">|</span>
-                                )}
-                                {sec.url.label}
-                              </p>
-                            </a>
-                          )}
-                        </div>
-
-                        {/* Right Section: Dates */}
-                        <div>
-                          {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Description: Placed below the main row */}
-                      {sec.description && (
-                        <p className="mt-1">{sec.description}</p>
-                      )}
-
-                      {/* Summary: Placed below the description */}
-                      {sec.summary && (
-                        <div className="mt-2">
-                          <HTMLViewer
-                            lineHeight={lineHeight}
-                            content={sec.summary}
-                          />
-                        </div>
-                      )}
-                    </div>
+              .map((item, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    {/* Left column content */}
+                    <h3 className="font-bold">{item.name}</h3>
+                    {item.location && (
+                      <p className="text-gray-600 italic">{item.location}</p>
+                    )}
+                    {item.url && (
+                      <a
+                        href={item.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:text-gray-800"
+                      >
+                        {item.url.label}
+                      </a>
+                    )}
                   </div>
-                ))
-            }
-          </div>
+
+                  {/* Right column content */}
+                  <div className="text-right">
+                    {item.startDate && (
+                      <p className="font-bold">
+                        {formatDate(item.startDate, datetype)}
+                        {item.endDate && " - "}
+                        {item.endDate && formatDate(item.endDate, datetype)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Description section */}
+                {item.description && (
+                  <p className="text-gray-600 mt-1">{item.description}</p>
+                )}
+
+                {/* Summary section */}
+                {item.summary && (
+                  <div className="mt-2">
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={item.summary}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
         );
     }
   };
