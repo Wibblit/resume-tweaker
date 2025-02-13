@@ -543,11 +543,11 @@ export default function LeftSideBar({
                 <div className="space-y-2">
                   <Input
                     id={`${field}-href-${entry.id}`}
-                    value={(entry[field] as URL)?.href || ""}
+                    value={(entry[field] as URL)?.href || "https://"}
                     onChange={(e) =>
                       handleUrlChange(section, entry.id, field, e.target.value)
                     }
-                    placeholder="Enter URL"
+                    placeholder="https://"
                     type="url"
                   />
                   {urlErrors[`${section}-${entry.id}-${field}`] && (

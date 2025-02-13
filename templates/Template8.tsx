@@ -136,10 +136,10 @@ const Header: React.FC<{
       width: contentWidth,
     },
     name: {
-      fontSize: `${Math.max(2, imageSize / 38) * scaleFactor}rem`,
+      fontSize: `${Math.max(2, imageSize / 38) * scaleFactor}em`,
       fontWeight: "bold",
       marginBottom: "",
-      lineHeight: 1.2,
+      lineHeight: 1,
     },
     headline: {
       fontSize: `${Math.max(1.2, imageSize / 64) * scaleFactor}rem`,
@@ -220,7 +220,6 @@ const Template8: React.FC<TemplateProps> = ({
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
       color: "black",
-      minHeight: "100vh",
       height: "100%",
       display: "flex",
       overflow: "hidden",
@@ -483,7 +482,13 @@ const Template8: React.FC<TemplateProps> = ({
                   <div key={index} className="space-y-2">
                     <div className="font-bold">{category.name}</div>
                     <div>
-                      {category.skills.map((skill) => skill.name).join(", ")}
+                      {category.skills
+                        .map((skill) =>
+                          skill.level && skill.level.trim() !== ""
+                            ? `${skill.name} (${skill.level})`
+                            : skill.name
+                        )
+                        .join(", ")}
                     </div>
                   </div>
                 ))}
@@ -626,7 +631,7 @@ const Template8: React.FC<TemplateProps> = ({
                         separateLinks={false}
                         className="font-bold"
                       />
-                      <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`}>
+                      <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`} style={styles.subtitle}>
                       {project.startDate && <div>{formatDate(project.startDate, datetype)}</div>}
                       {project.endDate && <div className="flex items-center"><div className="mx-1">{(project.startDate && project.endDate) ? "-": ""}</div> {formatDate(project.endDate, datetype)}</div>}
                       </div>

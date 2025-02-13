@@ -164,7 +164,7 @@ const ResumePage: React.FC<{
     <div
       id={`page-${page.id}`}
       data-page={pageNumber}
-      className="relative bg-white text-foreground shadow-2xl"
+      className="relative bg-white text-foreground shadow-2xl overflow-hidden"
       style={{
         fontFamily,
         width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,

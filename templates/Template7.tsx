@@ -214,26 +214,31 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
           <section className="mb-6">
             <SectionTitle sectionName={sectionName} />
             <div className="grid grid-cols-2">
-              {content?.skills?.map((category, index) => (
-                <div key={index} className="mb-4 mr-4">
-                  <div className="">
-                    <div className="w-full flex items-center justify-between">
-                      <h3 className="py-1" style={styles.subtitle}>
-                        {category.name}
-                      </h3>
-                    </div>
-                    <div className="flex flex-wrap items-start justify-start gap-1">
-                      {category.skills.map((skill, skillIndex) => (
-                        <p key={skillIndex} style={styles.normal}>
-                          {skill.name}
-                          {skillIndex !== category.skills.length - 1 && <div style={styles.divider} className="inline-block ml-1">|</div>}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+  {content?.skills?.map((category, index) => (
+    <div key={index} className="mb-4 mr-4">
+      <div className="">
+        <div className="w-full flex items-center justify-between">
+          <h3 className="py-1" style={styles.subtitle}>
+            {category.name}
+          </h3>
+        </div>
+        <div className="flex flex-wrap items-start justify-start gap-1">
+          {category.skills.map((skill, skillIndex) => (
+            <p key={skillIndex} style={styles.normal} className="flex items-center">
+              {skill.level && skill.level.trim() !== "" 
+                ? `${skill.name} (${skill.level})` 
+                : skill.name}
+              {skillIndex !== category.skills.length - 1 && (
+                <div style={styles.divider} className="inline-block ml-1">|</div>
+              )}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
 
           </section>
         );
@@ -421,7 +426,7 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                 <div key={index} className="mb-2 flex items-center">
                   <span style={styles.subtitle}>
                     {lang.name}  {lang.level && " : "}
-                  </span>{" "}<div className="inline-block" style={styles.normal}>{lang.level}</div>
+                  </span><div className="inline-block ml-1" style={styles.normal}>{lang.level}</div>
                   {index !== (content.languages?.length ?? 0) - 1 && <span className="mx-1" style={styles.divider}>|</span>}
                 </div>
               ))}
