@@ -54,20 +54,25 @@ const LinkedEntity: React.FC<{
   separateLinks: boolean;
   className?: string;
 }> = ({ name, url, separateLinks, className }) => {
-  return !separateLinks && isUrl(url.href) ? (
-    <Link
-      url={url}
-      label={name}
-      icon={
-        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
-      }
-      iconOnRight={true}
-      className={className}
-    />
-  ) : (
-    <div className={className}>{name}</div>
+  const baseColor = useAppSelector(state => state?.rightsidebar?.baseColor)
+  return (
+    <div className={className}>
+      <span style={{fontWeight : 600}} className="bold">{name}</span>
+      {name && url.label && " | "}
+      {url.label && (
+        <a
+          href={url.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: baseColor }}
+        >
+          {url.label}
+        </a>
+      )}
+    </div>
   );
 };
+
 
 const Section: React.FC<{
   title: string;
@@ -79,10 +84,10 @@ const Section: React.FC<{
   );
   return (
     <section
-      className="mt-4 pt-4"
+      className="mt-2 pt-2"
       style={isSeparator ? { borderTop: `1px solid ${baseColor}` } : {}}
     >
-      <h4 className="mb-2 text-base font-bold" style={{ color: baseColor }}>
+      <h4 className="mb-1 text-base font-bold" style={{ color: baseColor }}>
         {title}
       </h4>
       <div>{children}</div>
@@ -126,7 +131,7 @@ const Header: React.FC<{
       <p className="text-white" style={styles.headline}>
         {basics?.headLine}
       </p>
-      <hr style={{ borderColor: "white", opacity: 0.5, margin: "1rem 0" }} />
+      {(basics.location || basics.phone || basics.email || basics.url.label) && <hr style={{ borderColor: "white", opacity: 0.5, margin: "1rem 0" }} />}
       <div
         style={styles.details}
         className="flex flex-wrap items-center gap-x-2 gap-y-0.5"
@@ -243,31 +248,35 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Experience" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.experience.map((exp, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
+                  <div key={index} className="space-y-0.5">
+                    {/* First Row: Organization | Dates */}
+                    <div className="flex flex-wrap justify-between items-center">
+                      <div className="font-bold">{exp.organization}</div>
                       <div>
-                        <div className="font-bold">{exp.organization}</div>
-                        <div>{exp.role}</div>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">
-                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
-                          {exp.endDate && " - "}{" "}
-                          {exp.endDate && formatDate(exp.endDate, datetype)}
-                        </div>
-                        <div>{exp.location}</div>
+                        {exp.startDate && formatDate(exp.startDate, datetype)}
+                        {exp.endDate && exp.startDate && (
+                          <span className="mx-1">-</span>
+                        )}
+                        {exp.endDate && formatDate(exp.endDate, datetype)}
                       </div>
                     </div>
+
+                    {/* Second Row: Role | Location */}
+                    <div className="flex justify-between">
+                      <div >{exp.role}</div>
+                      <div >
+                        {exp.location}
+                      </div>
+                    </div>
+
+                    {/* Third Row: Summary (if exists) */}
                     {exp.summary && !isEmptyString(exp.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      //   style={styles.body}
-                      //   className="text-justify"
-                      // />
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={exp.summary}
-                      />
+                      <div >
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={exp.summary}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -293,7 +302,10 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                             ...styles.body,
                           }}
                         >
-                          <h5>{skill.name}</h5>
+                          <h5>
+                            <span style={{color : baseColor}} className="mr-1">&#9679;</span>
+                            {skill.name}
+                          </h5>
                           <div
                             style={{ background: `${baseColor}30` }}
                             className="w-full h-2 rounded-md"
@@ -346,19 +358,27 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Education" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.education.map((edu, index) => (
-                  <div key={index} className="flex items-start justify-between">
-                    <div>
-                      <div className="font-bold">{edu.institution}</div>
-                      <div>{edu.field}</div>
-                      <div>{edu.score}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
+                  <div key={index} className="w-full">
+                    {/* First Row */}
+                    <div className="flex flex-wrap justify-between items-center">
                       <div className="font-bold">
+                        {edu.institution} {edu.degree && edu.institution && <span className="mx-1">|</span> }<span className="font-normal">{edu.degree}</span>
+                      </div>
+                      <div >
                         {edu.startDate && formatDate(edu.startDate, datetype)}
-                        {edu.endDate && " - "}
+                        {edu.endDate && edu.startDate && (
+                          <span className="mx-1">-</span>
+                        )}
                         {edu.endDate && formatDate(edu.endDate, datetype)}
                       </div>
-                      <div>{edu.degree}</div>
+                    </div>
+
+                    {/* Second Row */}
+                    <div className="flex justify-between">
+                      <div>{edu.field}</div>
+                      <div className="  font-medium">
+                        {edu.score}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -375,13 +395,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 {content.certifications.map((cert, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between"
+                    className="flex flex-wrap items-center justify-between"
                   >
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
                       separateLinks={false}
-                      className="font-bold"
                     />
                     <div>{cert.date && formatDate(cert.date, datetype)}</div>
                   </div>
@@ -397,45 +416,39 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Projects" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.projects.map((project, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="space-y-1">
                     <div className="flex items-start justify-between">
                       <LinkedEntity
                         name={project.name}
                         url={project.url}
                         separateLinks={false}
-                        className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">
+                        <div>
                           {project.startDate &&
                             formatDate(project.startDate, datetype)}{" "}
-                          {project.endDate && " - "}{" "}
+                          {project.endDate && project.startDate &&  <span className="mx-0.5">-</span>}{" "}
                           {project.endDate &&
                             formatDate(project.endDate, datetype)}
                         </div>
                       </div>
                     </div>
                     {project.summary && !isEmptyString(project.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
-                      //   style={styles.body}
-                      //   className="text-justify"
-                      // />
                       <HTMLViewer
                         lineHeight={lineHeight}
                         content={project.summary}
                       />
                     )}
                     {project.keywords && project.keywords.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1">
                         {project.keywords.map((keyword, keywordIndex) => (
                           <span
                             key={keywordIndex}
-                            className="rounded-full px-2 py-1"
+                            className="rounded-lg px-2 py-0 text-[9px] font-medium leading-tight"
                             style={{
-                              ...styles.body,
-                              backgroundColor: `${baseColor}20`,
+                              backgroundColor: `${baseColor}20`, // Subtle background
                               color: baseColor,
+                              border: `1px solid ${baseColor}60`, // Slightly visible border
                             }}
                           >
                             {keyword}
@@ -449,31 +462,38 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             </Section>
           )
         );
-      case "volunteerings":
+      case "volunteer":
         console.log(content.volunteer);
         return (
           content.volunteer &&
           content.volunteer.length > 0 && (
             <Section title="Volunteer Experience" baseColor={baseColor}>
               <div className="space-y-4">
-                {content.volunteer.map((vol, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
+
+                  {content.volunteer.map((vol, index) => (
+                    <div key={index} className="space-y-1">
+                      {/* First Row: Organization | Dates */}
+                      <div className="flex flex-wrap justify-between items-center">
                         <div className="font-bold">{vol.organization}</div>
-                        <div>{vol.role}</div>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">
-                          {vol.startDate && formatDate(vol.startDate, datetype)}{" "}
-                          {vol.endDate && " - "}{" "}
+                        <div >
+                          {vol.startDate && formatDate(vol.startDate, datetype)}
+                          {vol.endDate && vol.startDate && (
+                            <span className="mx-0.5">-</span>
+                          )}
                           {vol.endDate && formatDate(vol.endDate, datetype)}
                         </div>
-                        <div>{vol.location}</div>
+                      </div>
+
+                      {/* Second Row: Role | Location */}
+                      <div className="flex justify-between">
+                        <div >{vol.role}</div>
+                        <div >
+                          {vol.location}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+            
               </div>
             </Section>
           )
@@ -485,14 +505,15 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Awards" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.awards.map((award, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
+                  <div key={index} className="space-y-1">
+                    <div className="flex flex-wrap items-start justify-between">
+                      <div className="flex flex-wrap">
                         <div className="font-bold">{award.title}</div>
+                        {award.title && award.awarder && <span className="mx-1">|</span>}
                         <div>{award.awarder}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">
+                        <div>
                           {award.date && formatDate(award.date, datetype)}
                         </div>
                       </div>
@@ -516,22 +537,21 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Publications" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.publications.map((pub, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="space-y-1">
                     <div className="flex items-start justify-between">
                       <LinkedEntity
                         name={pub.name}
                         url={pub.url}
                         separateLinks={false}
-                        className="font-bold"
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">
-                          {pub.date && formatDate(pub.date, datetype)}
-                        </div>
+                        <div>{pub.date && formatDate(pub.date, datetype)}</div>
                       </div>
                     </div>
-                    <div>{pub.publisher}</div>
-                    <div>{pub.publishedIn}</div>
+                    <div className="flex items-center justify-between flex-wrap w-full">
+                      <div>{pub.publisher}</div>
+                      <div>{pub.publishedIn}</div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -543,12 +563,17 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
           content.references &&
           content.references.length > 0 && (
             <Section title="References" baseColor={baseColor}>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.references.map((ref, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="space-y-1">
+                    {/* First Row: Name (bold) */}
                     <div className="font-bold">{ref.name}</div>
-                    <div>{ref.phone}</div>
-                    <div>{ref.email}</div>
+
+                    {/* Second Row: Phone | Email */}
+                    <div className="flex flex-wrap   justify-between ">
+                      <div>{ref.phone}</div>
+                      <div>{ref.email}</div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -605,9 +630,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
          )
            return null;
         return (
-          <div className="mb-6">
-            <h2>{sectionName}</h2>
-
+          <Section title={sectionName} baseColor={baseColor}>
             {
               //@ts-ignore
               content[sectionName] &&
@@ -616,56 +639,53 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 //@ts-ignore
                 content[sectionName]?.map((sec: Custom, index: number) => (
                   <div key={index} className="mb-4">
-                    <div className="flex flex-col justify-between">
-                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                      <div className="flex items-center justify-between">
+                    <div className="flex flex-col space-y-1">
+                      {/* First Row: Name, Location, URL (Left) | Dates (Right) */}
+                      <div className="flex flex-wrap items-center justify-between">
                         {/* Left Section: Name, Location, Link */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center">
                           {/* Name */}
-                          {sec.name && <h3>{sec.name}</h3>}
-
-                          {/* Location */}
-                          {sec.location && <p className="">, {sec.location}</p>}
-
+                          {sec.name && (
+                            <h3 className="font-bold">{sec.name}</h3>
+                          )}
+                          {((sec.name && sec.location) || (sec.name && sec.url.label)) && <span className="mx-1">|</span>}
+                          {sec.location && (
+                            <span >
+                              {sec.location}
+                            </span>
+                          )}
+                          {((sec.location && sec.url.label) || (sec.location && sec.name)) && <span className="mx-1">|</span>}
                           {/* URL Link */}
-                          {sec.url && (
+                          {sec.url?.label && (
                             <a
                               href={sec.url.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center mx-2"
+                              style={{color : baseColor}}
                             >
-                              <p>
-                                {sec.url.label && (
-                                  <span className="mx-1">|</span>
-                                )}
-                                {sec.url.label}
-                              </p>
+                              {sec.url.label}
                             </a>
                           )}
                         </div>
 
                         {/* Right Section: Dates */}
-                        <div>
-                          {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
-                        </div>
+                        {sec.startDate && (
+                          <div >
+                            {formatDate(sec.startDate, datetype)}
+                            {sec.endDate && sec.startDate && <span className="mx-0.5">-</span>}
+                              {formatDate(sec.endDate, datetype)}
+                          </div>
+                        )}
                       </div>
 
-                      {/* Description: Placed below the main row */}
+                      {/* Second Row: Description (if exists) */}
                       {sec.description && (
-                        <p className="mt-1">{sec.description}</p>
+                        <p >{sec.description}</p>
                       )}
 
-                      {/* Summary: Placed below the description */}
+                      {/* Third Row: Summary (if exists) */}
                       {sec.summary && (
-                        <div className="mt-2">
+                        <div className="mt-1 ">
                           <HTMLViewer
                             lineHeight={lineHeight}
                             content={sec.summary}
@@ -676,13 +696,13 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                   </div>
                 ))
             }
-          </div>
+          </Section>
         );
     }
   };
 
   return (
-    <div style={styles.container} className="flex gap-4">
+    <div style={styles.container} className="flex gap-8">
       <style>{`
         .resume-content * {
           font-family: ${fontFamily}, sans-serif;
