@@ -84,7 +84,7 @@ const Section: React.FC<{
   );
   return (
     <section
-      className="mt-2 pt-2"
+      className="mt-2 pt-1"
       style={isSeparator ? { borderTop: `1px solid ${baseColor}` } : {}}
     >
       <h4 className="mb-1 text-base font-bold" style={{ color: baseColor }}>
@@ -106,7 +106,7 @@ const Header: React.FC<{
     container: {
       backgroundColor: baseColor,
       borderRadius: "8px",
-      padding: "1.5rem",
+      padding: "1em",
       color: "white",
       fontSize: `${fontSize}px`,
       lineHeight: lineHeight,
@@ -158,7 +158,7 @@ const Header: React.FC<{
         )}
         {basics?.email && (
           <>
-            <div className="mr-2 flex items-center gap-x-1.5">
+            <div className="mr-2 flex items-center gap-x-1.5 ">
               <i className="ph ph-bold ph-at" />
               <a
                 href={`mailto:${basics?.email}`}
@@ -395,14 +395,15 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                 {content.certifications.map((cert, index) => (
                   <div
                     key={index}
-                    className="flex flex-wrap items-center justify-between"
+                    className="flex  items-start justify-between"
                   >
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
                       separateLinks={false}
+                      className="flex flex-wrap"
                     />
-                    <div>{cert.date && formatDate(cert.date, datetype)}</div>
+                    <div className="flex shrink-0">{cert.date && formatDate(cert.date, datetype)}</div>
                   </div>
                 ))}
               </div>
@@ -609,7 +610,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                       href={profile.url.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="underline text-sm"
+                      className="no-underline text-sm"
                     >
                       {profile.url.label}
                     </a>
