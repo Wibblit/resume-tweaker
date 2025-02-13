@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimiter } from "@/lib/rateLimiter";

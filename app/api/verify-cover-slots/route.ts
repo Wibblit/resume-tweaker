@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { NextRequest, NextResponse } from "next/server";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
