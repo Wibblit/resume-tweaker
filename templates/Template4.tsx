@@ -617,7 +617,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
   return (
     <div
       style={styles.container}
-      className="flex flex-col resume-content px-6 py-4"
+      className="flex flex-col px-6 py-4"
     >
       <style>{`
       .resume-content, .resume-content * {
@@ -631,7 +631,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       {/* Header Section */}
       {content.basics && (
         <div>
-          <div className="mb-6 flex flex-col md:flex-row md:items-start justify-between">
+          <div className="mb-6 flex-row flex items-start justify-between">
             {/* Left: Name & Headline */}
             <div className="w-full md:w-3/4">
               <h1
@@ -669,7 +669,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             </div>
 
             {/* Right: Contact Info */}
-            <div style={styles.text} className="mt-4 md:mt-0 flex flex-col items-end gap-1">
+            <div style={styles.text} className="md:mt-0 flex flex-col items-end">
               <p className="break-words">{content?.basics[0].location}</p>
               <p className="break-words">
                 <a
@@ -712,7 +712,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       )}
 
       {/* Two-Column Layout */}
-      <div className="flex flex-col md:flex-row w-full gap-6">
+      <div className="flex flex-row w-full gap-6">
         {/* Left Column (60%) */}
         <div className="md:w-[70%] w-full">
           {sectionOrder.sections[pageIndex]?.column1.map((sectionName) => {
