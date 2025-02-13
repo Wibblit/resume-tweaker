@@ -47,13 +47,13 @@ export default function Component({
   );
   const dispatch = useAppDispatch();
   const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
-  const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator)
+  const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator);
 
   React.useEffect(() => {
     dispatch(UpdateBaseColor(baseColor));
   }, [dispatch, baseColor]);
 
-    const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -75,16 +75,15 @@ export default function Component({
       flex: 1,
       padding: `${margin}mm`,
     },
-sectionTitle: {
-  color: baseColor,
-  fontSize: "1.4em",
-  fontWeight: "bold",
-  marginBottom: "1em",
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  borderBottom: isSeperator ? `2px solid ${baseColor}` : "none", // Conditional border
-}
-,
+    sectionTitle: {
+      color: baseColor,
+      fontSize: "1.4em",
+      fontWeight: "bold",
+      marginBottom: "1em",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      borderBottom: isSeperator ? `2px solid ${baseColor}` : "none", // Conditional border
+    },
     subtitle: {
       fontSize: "1.2em",
       fontWeight: "bold",
@@ -106,7 +105,7 @@ sectionTitle: {
         const basics = content.basics?.[0];
         if (!basics) return null;
         return (
-          <div className="mb-8">
+          <div className="mb-6">
             <h1
               className="text-6xl font-bold tracking-tight mb-4"
               style={{ fontSize: "3rem" }}
@@ -147,7 +146,7 @@ sectionTitle: {
       case "summary":
         if (!content.summary?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <HTMLViewer
               lineHeight={lineHeight}
               content={content.summary[0].content}
@@ -158,7 +157,7 @@ sectionTitle: {
       case "experience":
         if (!content.experience?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Experience</h2>
             {content.experience.map((exp, index) => (
               <div key={index} className="mb-6">
@@ -187,7 +186,7 @@ sectionTitle: {
       case "education":
         if (!content.education?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Education</h2>
             {content.education.map((edu, index) => (
               <div key={index} className="mb-4">
@@ -220,15 +219,26 @@ sectionTitle: {
 
       case "skills":
         if (!content.skills?.length) return null;
+
+        // Get all skills in a flat array
+        const allSkills = content.skills.flatMap((category) => category.skills);
+
+        // Calculate how many rows we need (5 items per row)
+        const rowCount = Math.ceil(allSkills.length / 5);
+
+        // Create chunks of 5 skills for each column
+        const columns = [];
+        for (let i = 0; i < rowCount; i++) {
+          columns.push(allSkills.slice(i * 5, (i + 1) * 5));
+        }
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Skills</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {content.skills.map((category, index) => (
-                <div key={index}>
-                  <p className="font-bold">{category.name}</p>
-                  {category.skills.map((skill, skillIndex) => (
-                    <p key={skillIndex} className="mb-1 text-gray-600">
+            <div className="grid grid-cols-4 gap-4">
+              {columns.map((column, colIndex) => (
+                <div key={colIndex} className="flex flex-col">
+                  {column.map((skill, index) => (
+                    <p key={index} className="mb-1 text-gray-600">
                       • {skill.name}
                     </p>
                   ))}
@@ -241,7 +251,7 @@ sectionTitle: {
       case "projects":
         if (!content.projects?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Projects</h2>
             {content.projects.map((project, index) => (
               <div key={index} className="mb-6">
@@ -290,7 +300,7 @@ sectionTitle: {
       case "certifications":
         if (!content.certifications?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
             {content.certifications.map((cert, index) => (
               <div key={index} className="mb-4">
@@ -324,9 +334,9 @@ sectionTitle: {
       case "languages":
         if (!content.languages?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Languages</h2>
-            <div className="grid grid-cols-2 gap-x-4">
+            <div className="grid grid-cols-4 gap-x-4">
               {content.languages.map((lang, index) => (
                 <div key={index} className="mb-2">
                   <span className="font-bold">{lang.name}</span>
@@ -342,7 +352,7 @@ sectionTitle: {
       case "profiles":
         if (!content.profiles?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Profiles</h2>
             <div className="flex flex-wrap gap-4">
               {content.profiles.map((profile, index) => (
@@ -371,7 +381,7 @@ sectionTitle: {
       case "references":
         if (!content.references?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>References</h2>
             <div className="flex flex-wrap gap-4">
               {content.references.map((ref, index) => (
@@ -388,7 +398,7 @@ sectionTitle: {
       case "volunteerings":
         if (!content.volunteer?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Volunteer Experience</h2>
             {content.volunteer.map((vol, index) => (
               <div key={index} className="mb-6">
@@ -414,7 +424,7 @@ sectionTitle: {
       case "publications":
         if (!content.publications?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Publications</h2>
             {content.publications.map((pub, index) => (
               <div key={index} className="mb-6">
@@ -453,7 +463,7 @@ sectionTitle: {
       case "awards":
         if (!content.awards?.length) return null;
         return (
-          <section className="mb-8">
+          <section className="mb-6">
             <h2 style={styles.sectionTitle}>Awards</h2>
             {content.awards.map((award, index) => (
               <div key={index} className="mb-6">
@@ -487,80 +497,65 @@ sectionTitle: {
           !Array.isArray(content[sectionName]) ||
           //@ts-ignore
           !content[sectionName]?.length
-        )
+        ) {
           return null;
+        }
+
         return (
-          <div className="mb-6">
-            <h2>{sectionName}</h2>
-            {
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>{sectionName}</h2>
+            {content[sectionName]
               //@ts-ignore
-              content[sectionName] &&
-                //@ts-ignore
-                Array.isArray(content[sectionName]) &&
-                //@ts-ignore
-                content[sectionName]?.map((sec: Custom, index: number) => (
-                  <div key={index} className="mb-4">
-                    <div className="flex flex-col justify-between">
-                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                      <div className="flex items-center justify-between">
-                        {/* Left Section: Name, Location, Link */}
-                        <div className="flex items-center gap-2">
-                          {/* Name */}
-                          {sec.name && <h3>{sec.name}</h3>}
-
-                          {/* Location */}
-                          {sec.location && <p className="">, {sec.location}</p>}
-
-                          {/* URL Link */}
-                          {sec.url && (
-                            <a
-                              href={sec.url.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center mx-2"
-                            >
-                              <p>
-                                {sec.url.label && (
-                                  <span className="mx-1">|</span>
-                                )}
-                                {sec.url.label}
-                              </p>
-                            </a>
-                          )}
-                        </div>
-
-                        {/* Right Section: Dates */}
-                        <div>
-                          {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Description: Placed below the main row */}
-                      {sec.description && (
-                        <p className="mt-1">{sec.description}</p>
-                      )}
-
-                      {/* Summary: Placed below the description */}
-                      {sec.summary && (
-                        <div className="mt-2">
-                          <HTMLViewer
-                            lineHeight={lineHeight}
-                            content={sec.summary}
-                          />
-                        </div>
-                      )}
-                    </div>
+              .map((item, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    {/* Left column content */}
+                    <h3 className="font-bold">{item.name}</h3>
+                    {item.location && (
+                      <p className="text-gray-600 italic">{item.location}</p>
+                    )}
+                    {item.url && (
+                      <a
+                        href={item.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:text-gray-800"
+                      >
+                        {item.url.label}
+                      </a>
+                    )}
                   </div>
-                ))
-            }
-          </div>
+
+                  {/* Right column content */}
+                  <div className="text-right">
+                    {item.startDate && (
+                      <p className="font-bold">
+                        {formatDate(item.startDate, datetype)}
+                        {item.endDate && " - "}
+                        {item.endDate && formatDate(item.endDate, datetype)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Description section */}
+                {item.description && (
+                  <p className="text-gray-600 mt-1">{item.description}</p>
+                )}
+
+                {/* Summary section */}
+                {item.summary && (
+                  <div className="mt-2">
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={item.summary}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
         );
     }
   };
