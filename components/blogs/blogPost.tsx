@@ -190,9 +190,8 @@ export default function BlogPost({ data }: BlogPostProps) {
 
     return (
       <div
-        className={`my-4 md:my-0 border rounded-lg p-4 bg-background ${
-          isMobile ? "lg:hidden" : "hidden lg:block"
-        }`}
+        className={`my-4 md:my-0 border rounded-lg p-4 bg-background ${isMobile ? "lg:hidden" : "hidden lg:block"
+          }`}
       >
         <h3 className="font-semibold mb-4">Table of Contents</h3>
         <nav className="space-y-2">
@@ -208,11 +207,10 @@ export default function BlogPost({ data }: BlogPostProps) {
                 key={sanitizedId}
                 href={`#${sanitizedId}`}
                 onClick={(e) => scrollToSection(e, `#${sanitizedId}`)}
-                className={`block text-sm text-muted-foreground hover:text-foreground transition-colors ${
-                  activeSection === sanitizedId
+                className={`block text-sm text-muted-foreground hover:text-foreground transition-colors ${activeSection === sanitizedId
                     ? "text-foreground font-medium"
                     : ""
-                }`}
+                  }`}
               >
                 {item}
               </a>
@@ -330,14 +328,12 @@ export default function BlogPost({ data }: BlogPostProps) {
                   variant="outline"
                   onClick={handleSparkClick}
                   disabled={hasSparked}
-                  className={`relative w-full xs:w-auto ${
-                    hasSparked ? "bg-yellow-100 dark:bg-yellow-900" : ""
-                  }`}
+                  className={`relative w-full xs:w-auto ${hasSparked ? "bg-yellow-100 dark:bg-yellow-900" : ""
+                    }`}
                 >
                   <Zap
-                    className={`h-5 w-5 mr-2 ${
-                      hasSparked ? "text-yellow-400" : ""
-                    }`}
+                    className={`h-5 w-5 mr-2 ${hasSparked ? "text-yellow-400" : ""
+                      }`}
                   />
                   Spark {sparkCount > 0 && `(${sparkCount})`}
                   <AnimatePresence>

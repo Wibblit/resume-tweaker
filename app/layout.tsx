@@ -111,19 +111,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
       <GoogleAnalytics gaId="G-2SNY7ETV6E" />
-        <script
-          id="schema-org-script"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: "resumetweaker",
-              alternateName: ["ResumeTweaker"],
-              url: "https://resumetweaker.wibblit.com/",
-            }),
-          }}
-        />
+        
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.className)}>
         <ThemeProvider
