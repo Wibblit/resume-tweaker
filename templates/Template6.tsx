@@ -19,7 +19,7 @@ type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
 
@@ -234,17 +234,22 @@ export default function Component({
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>Skills</h2>
-            <div className="grid grid-cols-4 gap-4">
-              {columns.map((column, colIndex) => (
-                <div key={colIndex} className="flex flex-col">
-                  {column.map((skill, index) => (
-                    <p key={index} className="mb-1 text-gray-600">
-                      • {skill.name}
-                    </p>
-                  ))}
-                </div>
-              ))}
-            </div>
+            <div className="space-y-4">
+                {content.skills.map((category, index) => (
+                  <div key={index} className="space-y-2">
+                    <div className="font-bold">{category.name}</div>
+                    <div>
+                      {category.skills
+                        .map((skill) =>
+                          skill.level && skill.level.trim() !== ""
+                            ? `${skill.name} (${skill.level})`
+                            : skill.name
+                        )
+                        .join(", ")}
+                    </div>
+                  </div>
+                ))}
+              </div>
           </section>
         );
 
@@ -336,9 +341,9 @@ export default function Component({
         return (
           <section className="mb-6">
             <h2 style={styles.sectionTitle}>Languages</h2>
-            <div className="grid grid-cols-4 gap-x-4">
+            <div className="flex gap-4 flex-wrap">
               {content.languages.map((lang, index) => (
-                <div key={index} className="mb-2">
+                <div key={index} className="mb-2 flex-nowrap">
                   <span className="font-bold">{lang.name}</span>
                   {lang.level && (
                     <span className="ml-2 text-gray-600">: {lang.level}</span>
@@ -395,7 +400,7 @@ export default function Component({
           </section>
         );
 
-      case "volunteerings":
+      case "volunteer":
         if (!content.volunteer?.length) return null;
         return (
           <section className="mb-6">
@@ -430,7 +435,7 @@ export default function Component({
               <div key={index} className="mb-6">
                 <div className="flex justify-between items-start mb-1">
                   <div className="flex items-center">
-                    <h3 className="font-bold">{pub.name}</h3>
+                    <p className="font-bold">{pub.name}</p>
                     {pub.url && (
                       <a
                         href={pub.url.href}
@@ -515,6 +520,20 @@ export default function Component({
                     {item.location && (
                       <p className="text-gray-600 italic">{item.location}</p>
                     )}
+                    
+                  </div>
+
+                  {/* Right column content */}
+                  <div className="flex flex-col">
+                    <div className="text-right">
+                      {(item.endDate || item.startDate) && (
+                        <p className="font-bold">
+                          {formatDate(item.startDate, datetype)}
+                          {(item.endDate && item.startDate )&& " - "}
+                          {item.endDate && formatDate(item.endDate, datetype)}
+                        </p>
+                      )}
+                    </div>
                     {item.url && (
                       <a
                         href={item.url.href}
@@ -526,17 +545,6 @@ export default function Component({
                       </a>
                     )}
                   </div>
-
-                  {/* Right column content */}
-                  <div className="text-right">
-                    {item.startDate && (
-                      <p className="font-bold">
-                        {formatDate(item.startDate, datetype)}
-                        {item.endDate && " - "}
-                        {item.endDate && formatDate(item.endDate, datetype)}
-                      </p>
-                    )}
-                  </div>
                 </div>
 
                 {/* Description section */}
@@ -546,7 +554,7 @@ export default function Component({
 
                 {/* Summary section */}
                 {item.summary && (
-                  <div className="mt-2">
+                  <div className="mt-1">
                     <HTMLViewer
                       lineHeight={lineHeight}
                       content={item.summary}
