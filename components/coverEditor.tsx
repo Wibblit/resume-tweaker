@@ -35,7 +35,7 @@ export default function CoverEditor() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const CoverLetterData = useAppSelector((state) => state.coverletter);
-  const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
+  const ResumeAppearance = useAppSelector((state) => state.rightsidebar) as any;
   const { currCoverId } = useAppSelector((state) => state.currentCoverLetter);
   const { toast } = useToast();
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
@@ -114,6 +114,8 @@ export default function CoverEditor() {
           signOff,
         } = coverData;
         localStorage.setItem("currCoverId", id);
+        document.title = coverName ? `${coverName}-CoverLetter-ResumeTweaker` : "ResumeTweaker";
+
         dispatch(
           setCurrentCover({
             currCoverId: coverData.id,

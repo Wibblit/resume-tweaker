@@ -43,7 +43,6 @@ export default function Editor() {
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
-
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const dispatch = useAppDispatch();
@@ -73,6 +72,7 @@ export default function Editor() {
         console.log(resumeData);
         const { id, styles, resumeName, userId, ...leftSidebBarContent } =
           resumeData;
+        document.title = resumeName ? `${resumeName}-Resume-ResumeTweaker` : "ResumeTweaker";
         const updatedLeftsidebardata = { ...leftSidebBarContent };
         if (
           //@ts-ignore
