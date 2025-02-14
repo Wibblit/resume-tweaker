@@ -256,6 +256,9 @@ export default function ResumePages({
       await handleSave();
       router.push("/home");
     };
+    const handleExit = async () => {
+      router.push("/home")
+    }
 
   useEffect(() => {
     dispatch(
@@ -596,6 +599,9 @@ export default function ResumePages({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleExit}>
+                            Don't save
+                      </AlertDialogAction>
                       <AlertDialogAction onClick={handleSaveAndExit}>
                         Save and Exit
                       </AlertDialogAction>

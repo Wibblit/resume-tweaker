@@ -129,11 +129,11 @@ const CoverLetterPage: React.FC<CoverLetterPageProps> = ({
     <div
       id={`page-${page.id}`}
       data-page={pageNumber}
-      className="relative bg-white text-primary shadow-2xl mb-8"
+      className="relative bg-white text-primary shadow-2xl mb-8 overflow-hidden"
       style={{
         fontFamily,
         width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
-        minHeight: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
+        height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
       }}
     >
       {isLoading ? (
@@ -242,7 +242,10 @@ export default function Component({
     await handleSave()
     router.push('/home')
   }
-
+  
+  const handleExit = async () => {
+    router.push("/home")
+  }
   useEffect(() => {
     const updatedPages = pages.map((page) => ({
       ...page,
@@ -348,6 +351,9 @@ export default function Component({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleExit}>
+                                                  Don't save
+                                            </AlertDialogAction>
                       <AlertDialogAction onClick={handleSaveAndExit}>
                         Save and Exit
                       </AlertDialogAction>
