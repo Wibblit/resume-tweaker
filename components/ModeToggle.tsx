@@ -1,15 +1,16 @@
 "use client"
 
 import * as React from "react"
-import { MoonIcon, SunIcon, DesktopIcon } from "@radix-ui/react-icons"
+// import { MoonIcon, SunIcon, DesktopIcon } from "@radix-ui/react-icons"
+import { Sun, Moon, Laptop } from "lucide-react"
 import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
 const themes = [
-  { name: "Light", icon: <SunIcon className="h-[1.2rem] w-[1.2rem]" /> },
-  { name: "Dark", icon: <MoonIcon className="h-[1.2rem] w-[1.2rem]" /> },
-  { name: "System", icon: <DesktopIcon className="h-[1.2rem] w-[1.2rem]" /> },
+  { name: "Light", icon: <Sun className="h-[1.2rem] w-[1.2rem]" /> },
+  { name: "Dark", icon: <Moon className="h-[1.2rem] w-[1.2rem]" /> },
+  { name: "System", icon: <Laptop className="h-[1.2rem] w-[1.2rem]" /> },
 ]
 
 export function ModeToggle() {
@@ -40,8 +41,8 @@ export function ModeToggle() {
   return (
     <div className="relative inline-block text-left" ref={toggleRef}>
       <Button variant="outline" size="icon" onClick={toggleDropdown} className={`${isOpen ? "opacity-0" : ""} md:opacity-100 transition-all duration-300 `}>
-        <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         <span className="sr-only">Toggle theme</span>
       </Button>
       <AnimatePresence>
