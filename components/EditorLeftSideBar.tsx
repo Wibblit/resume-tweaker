@@ -1107,7 +1107,7 @@ export default function LeftSideBar({
                         <AlertDialogHeader>
                           <AlertDialogTitle>Clear All Data</AlertDialogTitle>
                           <AlertDialogDescription>
-                            This action will clear all your resume data. Are you
+                            This action will clear all your resume data, <strong className="font-bold">Custom Sections cannot be retrieved once cleared.</strong> Are you
                             sure you want to continue?
                           </AlertDialogDescription>
                         </AlertDialogHeader>
