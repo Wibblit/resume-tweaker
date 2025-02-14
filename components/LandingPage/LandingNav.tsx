@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import Logo from "../Logo";
 import { Button } from "../ui/button";
 import { NavItems } from "./NavItems";
-
+import { useSession } from "next-auth/react";
 
 export function LandingNav() {
   const pathname = usePathname();
@@ -19,7 +19,7 @@ export function LandingNav() {
 
   // Toggle the menu visibility
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
+  const {data:session} = useSession();
   // Effect to close the menu if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -73,9 +73,9 @@ export function LandingNav() {
               </div>
               <div className="flex items-center">
                 <ModeToggle />
-                <Link href={"/login"} className="px-3">
+                <Link href={session?.user ? "/home" : "/login"} className="px-3">
                 <Button variant={"silver"}>
-                Login
+                {session?.user ? "Home" : "Login"}
                 </Button>
                 </Link>
               </div>

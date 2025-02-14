@@ -1,5 +1,4 @@
 import { Hero } from "@/components/LandingPage/Hero";
-import { JoinHero } from "@/components/Hero";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { FeaturesSection } from "@/components/LandingPage/Features";
@@ -12,6 +11,7 @@ import Link from "next/link";
 import { ImageMarquee } from "@/components/ui/marquee";
 import Footer from "@/components/LandingPage/Footer";
 import { LandingNav } from "@/components/LandingPage/LandingNav";
+import { redirect } from "next/navigation";
 
 
 export const metadata: Metadata = {
@@ -46,7 +46,7 @@ export default async function Home() {
   const session = await auth();
 
   if (session?.user) {
-    // return redirect("/home");
+    return redirect("/home");
   }
 
   const faqData = [

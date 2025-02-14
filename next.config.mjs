@@ -30,7 +30,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "frame-src 'self' https://cdnresumetweaker.wibblit.com;",
+            value: "frame-src 'self' https://cdnresumetweaker.wibblit.com https://www.youtube.com/ https://youtube.com/;",
           }
         ],
       },
