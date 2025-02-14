@@ -50,7 +50,7 @@ export default function Editor() {
 
   const isSave = useAppSelector((state) => state?.currentResume?.isSave);
 
-  console.log(isSave);
+  //console.log(isSave);
 
   const currentRoute = usePathname();
 
@@ -74,7 +74,7 @@ export default function Editor() {
           return;
         }
         const resumeData = response.data.resumeData;
-        console.log(resumeData);
+        //console.log(resumeData);
         const { id, styles, resumeName, userId, ...leftSidebBarContent } =
           resumeData;
         document.title = resumeName
@@ -99,7 +99,7 @@ export default function Editor() {
           delete updatedLeftsidebardata.custom;
         }
 
-        console.log("Updated Left Sidebar Data:", updatedLeftsidebardata);
+        //console.log("Updated Left Sidebar Data:", updatedLeftsidebardata);
 
         dispatch(
           setCurrentResume({
@@ -107,14 +107,14 @@ export default function Editor() {
             currResumeName: resumeData.resumeName,
           })
         );
-        console.log(styles.baseColor);
+        //console.log(styles.baseColor);
 
         if (styles.id) {
           dispatch(UpdateId(styles.id));
         }
 
         if (leftSidebBarContent.basics?.length !== 0) {
-          console.log(leftSidebBarContent);
+          //console.log(leftSidebBarContent);
           dispatch(UpdateLeftBarData(updatedLeftsidebardata));
         } else {
           dispatch(UpdateLeftBarData(initialState));
@@ -175,7 +175,7 @@ export default function Editor() {
         }
 
         const { profileData } = response.data;
-        console.log(profileData);
+        //console.log(profileData);
 
         if (profileData) {
           const parsedData = {
@@ -208,7 +208,7 @@ export default function Editor() {
     if (!isSave) return;
 
     try {
-      console.log(resumeStyles);
+      //console.log(resumeStyles);
       const res = await saveResumeData(ResumeData, resumeStyles, currResumeId);
       if (res.status === 429) {
         toast({
@@ -218,7 +218,7 @@ export default function Editor() {
         });
         return;
       }
-      console.log("Reusme Update suceess");
+      //console.log("Reusme Update suceess");
       toast({
         title: "Success",
         description: "The resume has been saved successfully.",

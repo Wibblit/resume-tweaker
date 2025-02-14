@@ -208,7 +208,7 @@ export default function AIReview({
         logger: (message) => {
           if ("progress" in message) {
             setOcrProgress(message.progress);
-            console.log(message.progress === 1 ? "Done" : message.status);
+            //console.log(message.progress === 1 ? "Done" : message.status);
           }
         },
       });
@@ -303,14 +303,14 @@ export default function AIReview({
     }
 
     setResumeText(ocrText);
-    console.log(ocrText);
+    //console.log(ocrText);
     setIsOcrInProgress(false);
     setOcrProgress(1);
   };
 
   const handleResumeSelect = (value: string) => {
     if (!resuLoading || funcdisabler) {
-      console.log("Now you called master!!");
+      //console.log("Now you called master!!");
       setSelectedResume(value);
       setResumeOption("select");
       setFile(null);
@@ -326,7 +326,7 @@ export default function AIReview({
     setIsLoading(true);
     setAiSuggestions(null);
     try {
-      console.log(reviewType);
+      //console.log(reviewType);
 
       const response = await axios.post(`/api/get-resume-review`, {
         resumeId: selectedResume,
@@ -335,7 +335,7 @@ export default function AIReview({
         jd: jd,
         reviewType: reviewType,
       });
-      console.log(reviewType);
+      //console.log(reviewType);
 
       if (response?.data?.statusCode === 402) {
         return toast({
@@ -364,7 +364,7 @@ export default function AIReview({
         )
       );
     } catch (error) {
-      console.log(error);
+      //console.log(error);
     } finally {
       setIsLoading(false);
     }

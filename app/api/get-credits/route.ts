@@ -22,13 +22,13 @@ export const GET = asyncHandler(
         { status: 429 }
       );
     }
-    console.log("yos", session?.user?.id);
+    //console.log("yos", session?.user?.id);
     const response = await prisma.userAssets.findUnique({
       where: {
         userId: session?.user?.id,
       },
     });
-    console.log(`profile : ${response}`);
+    //console.log(`profile : ${response}`);
     return NextResponse.json({
       Credits: response,
       message: "Credits fetched successfully",

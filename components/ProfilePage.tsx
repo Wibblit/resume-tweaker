@@ -90,7 +90,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
     const hasChanges =
       JSON.stringify(initialData) !== JSON.stringify(profileData);
     setIsChanged(hasChanges);
-    console.log("Changes detected:", hasChanges);
+    //console.log("Changes detected:", hasChanges);
   }, [profileData]);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
       setIsCreditsLoading(true);
       try {
         // const paymentId = searchParams.get("payment_id");
-        // console.log("searcheParams, paymentId", searchParams, paymentId)
+        // //console.log("searcheParams, paymentId", searchParams, paymentId)
         // if (paymentId) {
         //   const response = await getPaymentStatus(paymentId);
         // }
@@ -112,7 +112,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
           return;
         }
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         setCredits((prev) => ({ ...prev, current: data?.Credits?.credits }));
       } catch (error) {
         console.error("Error fetching blog:", error);
@@ -126,7 +126,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log("Iam  in here");
+    //console.log("Iam  in here");
     if (file) {
       setImageFile(file);
       const reader = new FileReader();
@@ -341,7 +341,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
           const response = await axios.post("/api/profile-file-ops", formData);
           if (updatedProfileData.basics)
             updatedProfileData.basics[0].picture = response?.data?.url;
-          console.log(updatedProfileData);
+          //console.log(updatedProfileData);
           dispatch(updateProfileImage(response?.data?.url));
           if (prev) {
             await axios.delete(
@@ -373,7 +373,7 @@ export default function Profile({ profData }: { profData: ResumeData }) {
       if (result.success) {
         setInitialData(profileData);
         setIsChanged(false);
-        console.log(result.message);
+        //console.log(result.message);
         toast({
           title: "Success",
           description: "Profile has been saved successfully.",

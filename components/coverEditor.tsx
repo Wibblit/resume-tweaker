@@ -96,10 +96,10 @@ export default function CoverEditor() {
           });
           return;
         }
-        console.log(response);
+        //console.log(response);
         const coverData = response.data.coverData;
-        console.log(coverData);
-        console.log("Hello This is to show that the response has received.");
+        //console.log(coverData);
+        //console.log("Hello This is to show that the response has received.");
         const {
           id,
           styles,

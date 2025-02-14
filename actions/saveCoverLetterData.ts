@@ -11,9 +11,9 @@ export const savecoverData = asyncHandler(
   async (
     coverData: CoverLetterData,
     coverStyles: CoverStyle,
-    coverId: string,
+    coverId: string
   ) => {
-    console.log(coverStyles)
+    //console.log(coverStyles)
     const session = await auth();
     if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
     if (!coverData || !coverStyles || !coverId) throw ActionsError.badRequest;
@@ -48,5 +48,5 @@ export const savecoverData = asyncHandler(
       message: "Cover Letter updated successfully",
       status: 200,
     };
-  },
+  }
 );

@@ -10,7 +10,7 @@
 //   const coverId = params.coverId;
 //   const session = await auth();
 //     let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
-//     ip = ip === "::1" ? "127.0.0.1" : ip;  
+//     ip = ip === "::1" ? "127.0.0.1" : ip;
 //   let result = null;
 //   try {
 //     if (rateLimiter(session?.user?.id, ip)) {
@@ -18,7 +18,7 @@
 //         { message: "Rate limit exceeded." },
 //         { status: 429 }
 //       );
-//     } 
+//     }
 //     result = await prisma.coverletter.findUnique({
 //       where: {
 //         id: coverId,
@@ -32,14 +32,13 @@
 //     prisma.$disconnect();
 //   }
 
-//   console.log(`Fetched data : ${result}`);
+//   //console.log(`Fetched data : ${result}`);
 
 //   return NextResponse.json({
 //     coverData: result,
 //     message: `Resume data for ID: ${coverId}`,
 //   });
 // }
-
 
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -80,7 +79,7 @@ export const GET = asyncHandler(
       throw ApiError.resourceNotFound;
     }
 
-    console.log(`Fetched data: ${result}`);
+    //console.log(`Fetched data: ${result}`);
 
     return NextResponse.json({
       coverData: result,

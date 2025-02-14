@@ -11,8 +11,8 @@ export async function GET(
   // const session = await auth();
   const { slug } = params;
 
-  const id = slug.split('-')
-  console.log(id)
+  const id = slug.split("-");
+  //console.log(id)
 
   // let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
   // ip = ip === "::1" ? "127.0.0.1" : ip;
@@ -23,9 +23,9 @@ export async function GET(
     //     { status: 429 }
     //   );
     // }
-    
+
     const blog = await prisma.blog.findUnique({
-      where: { id : id[id.length-1] },
+      where: { id: id[id.length - 1] },
     });
 
     if (!blog) {

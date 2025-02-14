@@ -13,7 +13,7 @@ export const updateBlogPost = asyncHandler(async (formData: FormData) => {
     if (!session?.user?.id) throw ActionsError.userNotAuthenticated;
 
     // Log incoming data for debugging
-    console.log("Received form data:", Object.fromEntries(formData.entries()));
+    //console.log("Received form data:", Object.fromEntries(formData.entries()));
 
     // Extract and validate all required fields
     const id = formData.get("id");

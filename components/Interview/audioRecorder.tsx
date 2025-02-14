@@ -12,7 +12,7 @@ interface AudioRecorderProps {
 
 export default function AudioRecorder({
   isRecording,
-  setIsRecording, 
+  setIsRecording,
   setAudioBlob,
   mediaRecorderRef,
   audioBlob,
@@ -23,7 +23,7 @@ export default function AudioRecorder({
   const dataArrayRef = useRef<Uint8Array | null>(null);
 
   if (audioBlob === null) {
-    console.log("Clearing");
+    //console.log("Clearing");
     chunksRef.current = [];
   }
 

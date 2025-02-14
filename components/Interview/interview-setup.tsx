@@ -112,7 +112,7 @@ export default function InterviewSetup({
         logger: (message) => {
           if ("progress" in message) {
             setOcrProgress(message.progress);
-            console.log(message.progress === 1 ? "Done" : message.status);
+            //console.log(message.progress === 1 ? "Done" : message.status);
           }
         },
       });
@@ -220,7 +220,7 @@ export default function InterviewSetup({
     const userSelectedResume = userResumes?.find(
       (resume) => resume.resumeName === selectedResume
     );
-    console.log("selected resume", JSON.stringify(userSelectedResume));
+    //console.log("selected resume", JSON.stringify(userSelectedResume));
     try {
       const queryParams = new URLSearchParams({
         job: formData.job,

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     await webhook.verify(rawBody, webhookHeaders);
     const payload = JSON.parse(rawBody) as WebhookPayload;
-    console.log("Payload:", JSON.stringify(payload, null, 2));
+    //console.log("Payload:", JSON.stringify(payload, null, 2));
     if (!payload.data?.customer?.email) {
       return NextResponse.json(
         { error: "Missing customer email in payload" },
@@ -31,11 +31,11 @@ export async function POST(request: NextRequest) {
       payload.data.payload_type === "Payment" &&
       !payload.data.subscription_id
     ) {
-      console.log(
-        "Webhook payload and customer email",
-        email,
-        JSON.stringify(payload, null, 2)
-      );
+      //console.log(
+      //   "Webhook payload and customer email",
+      //   email,
+      //   JSON.stringify(payload, null, 2)
+      // );
       const response = await paymentUpdate(payload);
     }
 

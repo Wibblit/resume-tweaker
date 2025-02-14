@@ -5,11 +5,11 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { uploadFileToR2, uploadHtmlToR2 } from "@/utils/upload";
 
-export async function createBlogPost(formData : FormData) {
+export async function createBlogPost(formData: FormData) {
   try {
     const session = await auth();
     const ip = headers().get("x-forwarded-for");
-    console.log(ip, "this is ip");
+    //console.log(ip, "this is ip");
     // Ensure user is authenticated
     if (!session || !session.user || !session.user.id) {
       return {

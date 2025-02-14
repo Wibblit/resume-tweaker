@@ -199,7 +199,7 @@ function AIPopover({
     }
 
     dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
-    console.log(`[${response?.data?.content}]`); // Check for extra spaces
+    //console.log(`[${response?.data?.content}]`); // Check for extra spaces
     if (response.data.content.trim() === "Invalid Input.") {
       toast({
         title: "Invalid Input",
@@ -358,7 +358,7 @@ const Toolbar = ({ editor, section }: { editor: Editor; section: string }) => {
         });
       }
       dispatch(updateCredits(credits - (creditList.get("aienhance") ?? 0)));
-      console.log(response?.data?.content);
+      //console.log(response?.data?.content);
 
       if (response?.data?.content?.trim() === "Invalid Input.") {
         toast({

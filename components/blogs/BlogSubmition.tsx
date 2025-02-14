@@ -148,7 +148,7 @@ export default function BlogForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    //console.log(name, value);
     if (name === "title") {
       const newTitle = value;
       const newSlug = generateSlug(newTitle);
@@ -219,7 +219,7 @@ export default function BlogForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log(formData);
+    //console.log(formData);
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -252,10 +252,9 @@ export default function BlogForm() {
         throw new Error("Please fill in all required fields");
       }
 
-      const res = await createBlogPost(formDataToSend
-      );
+      const res = await createBlogPost(formDataToSend);
 
-      console.log("Blog post submitted successfully:", formData);
+      //console.log("Blog post submitted successfully:", formData);
 
       router.refresh();
       router.push("/blogs");

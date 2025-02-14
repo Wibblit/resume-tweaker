@@ -385,7 +385,7 @@ export default function LeftSideBar({
     field: string,
     value: any
   ) => {
-    console.log(field, "field from updateEntry");
+    //console.log(field, "field from updateEntry");
   
     const updatedResumeData = { ...resumeData };
   
@@ -394,15 +394,15 @@ export default function LeftSideBar({
       return;
     }
   
-    console.log(
-      JSON.stringify(updatedResumeData[section as keyof ResumeData]),
-      "from updateEntry stringify"
-    );
+    //console.log(
+    //   JSON.stringify(updatedResumeData[section as keyof ResumeData]),
+    //   "from updateEntry stringify"
+    // );
   
     updatedResumeData[section as keyof ResumeData] = updatedResumeData[
       section as keyof ResumeData
     ]!.map((entry: any) => {
-      console.log("entry from nested updateEntry:", entry);
+      //console.log("entry from nested updateEntry:", entry);
       return entry.id === id ? { ...entry, [field]: value } : entry;
     });
   
@@ -744,7 +744,7 @@ export default function LeftSideBar({
   const renderSheetContent = (section: keyof ResumeData | string) => {
     if (section === "createdOn" || section === "updatedOn")
       return <React.Fragment></React.Fragment>;
-    console.log(section);
+    //console.log(section);
     const sectionEntries =
       (resumeData[section as keyof ResumeData] as any[]) || [];
 
@@ -776,7 +776,7 @@ export default function LeftSideBar({
   const profileData = useAppSelector((state) => state?.profile);
 
   const handleImport = () => {
-    console.log("Import from profile");
+    //console.log("Import from profile");
     dispatch(UpdateLeftBarData(profileData));
   };
 
@@ -794,7 +794,7 @@ export default function LeftSideBar({
   };
 
   const handleReset = () => {
-    console.log("Clear all data");
+    //console.log("Clear all data");
     dispatch(Reset());
   };
 
@@ -820,7 +820,7 @@ export default function LeftSideBar({
     }
   };
 
-  console.log(resumeSections);
+  //console.log(resumeSections);
 
   return (
     <>

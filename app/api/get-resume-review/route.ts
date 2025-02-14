@@ -20,7 +20,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   }
   const data = await request.json();
   const { resumeId, jd, resumeOption, resumeText, reviewType } = data;
-  console.log(data);
+  //console.log(data);
   const prompt = jd ? jdTailoredPrompt : genericPrompt;
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
@@ -35,7 +35,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   });
   const requiredCredits = creditList.get(reviewType) ?? 0;
 
-  console.log(requiredCredits, results);
+  //console.log(requiredCredits, results);
 
   if (results?.credits === undefined || results.credits < requiredCredits) {
     return NextResponse.json({

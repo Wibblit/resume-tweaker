@@ -65,7 +65,10 @@ const LinkedEntity: React.FC<{
           url={url}
           label={url.label}
           icon={
-            <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+            <i
+              className="ph ph-bold ph-globe"
+              style={{ color: "currentColor" }}
+            />
           }
           iconOnRight={true}
           className={`text-baseline` + className}
@@ -85,22 +88,22 @@ const Section: React.FC<{
   const isSeparator = useAppSelector((state) => state?.rightsidebar?.separator);
   const styles = {
     divider: {
-      color: baseColor
-    }
-  }
+      color: baseColor,
+    },
+  };
   return (
-    <section
-      className="mt-2"
-    >
+    <section className="mt-2">
       <div className="relative mb-2">
         <h4
           className=" text-base font-bold uppercase text-black"
-          style={isSeparator ? { borderBottom: `1px solid ${baseColor}` } : undefined}
+          style={
+            isSeparator ? { borderBottom: `1px solid ${baseColor}` } : undefined
+          }
         >
           {title}
         </h4>
       </div>
-      <div className="text-black" >{children}</div>
+      <div className="text-black">{children}</div>
     </section>
   );
 };
@@ -150,24 +153,25 @@ const Profiles: React.FC<{
       style={styles.container}
       className="flex flex-wrap justify-center space-x-4 py-2"
     >
-      {Array.isArray(profiles) && profiles.map((profile, index) => (
-        <div className="flex gap-2 items-center" key={index}>
-          {isIcons && profile.url.href !== "" && (
-            <SocialIcon
-              style={{ width: "16px", height: "16px" }}
-              url={profile.url.href}
-            />
-          )}
-          <a
-            href={profile.url.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="no-underline text-sm"
-          >
-            {profile.url.label}
-          </a>
-        </div>
-      ))}
+      {Array.isArray(profiles) &&
+        profiles.map((profile, index) => (
+          <div className="flex gap-2 items-center" key={index}>
+            {isIcons && profile.url.href !== "" && (
+              <SocialIcon
+                style={{ width: "16px", height: "16px" }}
+                url={profile.url.href}
+              />
+            )}
+            <a
+              href={profile.url.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="no-underline text-sm"
+            >
+              {profile.url.label}
+            </a>
+          </div>
+        ))}
     </div>
   );
 };
@@ -326,7 +330,6 @@ const Template5: React.FC<TemplateProps> = ({
       display: "flex",
 
       flexDirection: "column" as "column",
-
     },
     subtitle: {
       fontWeight: "bold",
@@ -347,9 +350,7 @@ const Template5: React.FC<TemplateProps> = ({
     },
   };
 
-  const renderSection = (
-    sectionName: string,
-  ) => {
+  const renderSection = (sectionName: string) => {
     const sectionStyle = styles.body;
 
     switch (sectionName) {
@@ -357,10 +358,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.summary &&
           content.summary.length > 0 && (
-            <Section
-              title="Summary"
-              baseColor={baseColor}
-            >
+            <Section title="Summary" baseColor={baseColor}>
               <div className="" style={styles.normal}>
                 <HTMLViewer
                   lineHeight={lineHeight}
@@ -374,10 +372,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.publications &&
           content.publications.length > 0 && (
-            <Section
-              title="PUBLICATIONS"
-              baseColor={baseColor}
-            >
+            <Section title="PUBLICATIONS" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.publications.map((pub, index) => (
                   <div key={index} className="flex flex-col gap-2">
@@ -398,7 +393,9 @@ const Template5: React.FC<TemplateProps> = ({
                       <div>{pub.publisher}</div>
                       <div className="flex items-center gap-1">
                         <div className="">{pub.publishedIn ? "|" : ""}</div>
-                        <div className="flex items-center">{pub.publishedIn}</div>
+                        <div className="flex items-center">
+                          {pub.publishedIn}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -408,14 +405,11 @@ const Template5: React.FC<TemplateProps> = ({
           )
         );
       case "volunteer":
-        console.log(content.volunteer);
+        //console.log(content.volunteer);
         return (
           content.volunteer &&
           content.volunteer.length > 0 && (
-            <Section
-              title="Volunteer Experience"
-              baseColor={baseColor}
-            >
+            <Section title="Volunteer Experience" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.volunteer.map((vol, index) => (
                   <div key={index} className="space-y-2">
@@ -425,9 +419,20 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                          {vol.startDate && <div>{formatDate(vol.startDate, datetype)}</div>}
-                          {vol.endDate && <div className="flex items-center"><div className="mx-1">{(vol.startDate && vol.endDate) ? "-" : ""}</div> {formatDate(vol.endDate, datetype)}</div>}
+                        <div
+                          className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {vol.startDate && (
+                            <div>{formatDate(vol.startDate, datetype)}</div>
+                          )}
+                          {vol.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {vol.startDate && vol.endDate ? "-" : ""}
+                              </div>{" "}
+                              {formatDate(vol.endDate, datetype)}
+                            </div>
+                          )}
                         </div>
                         <div>{vol.location}</div>
                       </div>
@@ -442,10 +447,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.references &&
           content.references.length > 0 && (
-            <Section
-              title="References"
-              baseColor={baseColor}
-            >
+            <Section title="References" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.references.map((ref, index) => (
                   <div key={index} className="flex flex-wrap gap-1">
@@ -464,10 +466,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.awards &&
           content.awards.length > 0 && (
-            <Section
-              title="Awards"
-              baseColor={baseColor}
-            >
+            <Section title="Awards" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.awards.map((award, index) => (
                   <div key={index} className="space-y-2">
@@ -500,10 +499,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.experience &&
           content.experience.length > 0 && (
-            <Section
-              title="Experience"
-              baseColor={baseColor}
-            >
+            <Section title="Experience" baseColor={baseColor}>
               <div className="space-y-2">
                 {content.experience.map((exp, index) => (
                   <div key={index} className="space-y-2">
@@ -513,9 +509,21 @@ const Template5: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className=" text-right">
-                        <div style={styles.subtitle} className={`flex flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                          {exp.startDate && <div>{formatDate(exp.startDate, datetype)}</div>}
-                          {exp.endDate && <div className="flex items-center"><div className="mx-1">{(exp.startDate && exp.endDate) ? "-" : ""}</div> {formatDate(exp.endDate, datetype)}</div>}
+                        <div
+                          style={styles.subtitle}
+                          className={`flex flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {exp.startDate && (
+                            <div>{formatDate(exp.startDate, datetype)}</div>
+                          )}
+                          {exp.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {exp.startDate && exp.endDate ? "-" : ""}
+                              </div>{" "}
+                              {formatDate(exp.endDate, datetype)}
+                            </div>
+                          )}
                         </div>
                         <div style={styles.undertitle}>{exp.location}</div>
                       </div>
@@ -543,10 +551,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.skills &&
           content.skills.length > 0 && (
-            <Section
-              title="Skills"
-              baseColor={baseColor}
-            >
+            <Section title="Skills" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.skills.map((category, index) => (
                   <div key={index} className="space-y-2">
@@ -570,10 +575,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.languages &&
           content.languages.length > 0 && (
-            <Section
-              title="Languages"
-              baseColor={baseColor}
-            >
+            <Section title="Languages" baseColor={baseColor}>
               <div className="space-y-2">
                 {content.languages.map((lang, index) => (
                   <div
@@ -592,15 +594,14 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.education &&
           content.education.length > 0 && (
-            <Section
-              title="Education"
-              baseColor={baseColor}
-            >
+            <Section title="Education" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.education.map((edu, index) => (
                   <div key={index} className="flex items-start justify-between">
                     <div>
-                      <div className="mb-1 text-wrap" style={styles.subtitle}>{edu.institution}</div>
+                      <div className="mb-1 text-wrap" style={styles.subtitle}>
+                        {edu.institution}
+                      </div>
                       <div className="flex items-center gap-1 flex-wrap text-nowrap">
                         <div>{edu.degree}</div>
                         {edu.field ? "|" : ""}
@@ -611,9 +612,24 @@ const Template5: React.FC<TemplateProps> = ({
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <div className={`flex flex-nowrap  justify-end items-center whitespace-nowrap`}>
-                        {edu.startDate && <div>{formatDate(edu.startDate, datetype)}</div>}
-                        {edu.endDate && <div className="flex items-center"><div className="">{(edu.startDate && edu.endDate) ? <div className="mx-1">-</div> : ""}</div> {formatDate(edu.endDate, datetype)}</div>}
+                      <div
+                        className={`flex flex-nowrap  justify-end items-center whitespace-nowrap`}
+                      >
+                        {edu.startDate && (
+                          <div>{formatDate(edu.startDate, datetype)}</div>
+                        )}
+                        {edu.endDate && (
+                          <div className="flex items-center">
+                            <div className="">
+                              {edu.startDate && edu.endDate ? (
+                                <div className="mx-1">-</div>
+                              ) : (
+                                ""
+                              )}
+                            </div>{" "}
+                            {formatDate(edu.endDate, datetype)}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">{edu.score}</div>
                     </div>
@@ -627,20 +643,20 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.certifications &&
           content.certifications.length > 0 && (
-            <Section
-              title="Certifications"
-              baseColor={baseColor}
-            >
+            <Section title="Certifications" baseColor={baseColor}>
               <div className="space-y-2">
                 {content.certifications.map((cert, index) => (
-                  <div key={index} className={`flex flex-wrap justify-between `}>
+                  <div
+                    key={index}
+                    className={`flex flex-wrap justify-between `}
+                  >
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div >{cert.date && formatDate(cert.date, datetype)}</div>
+                    <div>{cert.date && formatDate(cert.date, datetype)}</div>
                   </div>
                 ))}
               </div>
@@ -651,10 +667,7 @@ const Template5: React.FC<TemplateProps> = ({
         return (
           content.projects &&
           content.projects.length > 0 && (
-            <Section
-              title="Projects"
-              baseColor={baseColor}
-            >
+            <Section title="Projects" baseColor={baseColor}>
               <div className="space-y-4">
                 {content.projects.map((project, index) => (
                   <div key={index} className="space-y-1">
@@ -665,22 +678,45 @@ const Template5: React.FC<TemplateProps> = ({
                         separateLinks={false}
                         className="font-bold"
                       />
-                      <div className={`flex flex-wrap justify-end gap-0 items-center whitespace-nowrap`} style={styles.subtitle}>
-                        {project.startDate && <div>{formatDate(project.startDate, datetype)}</div>}
-                        {project.endDate && <div className="flex items-center"><div className="mx-1">{(project.startDate && project.endDate) ? "-" : ""}</div> {formatDate(project.endDate, datetype)}</div>}
+                      <div
+                        className={`flex flex-wrap justify-end gap-0 items-center whitespace-nowrap`}
+                        style={styles.subtitle}
+                      >
+                        {project.startDate && (
+                          <div>{formatDate(project.startDate, datetype)}</div>
+                        )}
+                        {project.endDate && (
+                          <div className="flex items-center">
+                            <div className="mx-1">
+                              {project.startDate && project.endDate ? "-" : ""}
+                            </div>{" "}
+                            {formatDate(project.endDate, datetype)}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="">
-                      {(project.keywords.length - 1 > 0 && project.keywords[0] != '') ?
-                        (<div className="flex flex-wrap">
-                          <p className="mr-1 font-medium" style={styles.subtitle}>Skills:</p>
+                      {project.keywords.length - 1 > 0 &&
+                      project.keywords[0] != "" ? (
+                        <div className="flex flex-wrap">
+                          <p
+                            className="mr-1 font-medium"
+                            style={styles.subtitle}
+                          >
+                            Skills:
+                          </p>
                           {project.keywords.map((keyword, keywordIndex) => (
                             <span key={keywordIndex}>
-                              {keyword}{keywordIndex !== project.keywords.length - 1 ? ", " : undefined}
+                              {keyword}
+                              {keywordIndex !== project.keywords.length - 1
+                                ? ", "
+                                : undefined}
                             </span>
                           ))}
-                        </div>)
-                        : ""}
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                     <div className="">
                       {project.summary && !isEmptyString(project.summary) && (
@@ -700,10 +736,8 @@ const Template5: React.FC<TemplateProps> = ({
         );
       case "basics":
       case "profiles":
-        return (
-          <div></div>
-        )
-        break
+        return <div></div>;
+        break;
       default:
         if (
           !content ||
@@ -714,66 +748,81 @@ const Template5: React.FC<TemplateProps> = ({
         )
           return null;
         return (
-            <Section
-              title={sectionName}
-              baseColor={baseColor}
-            >
-
+          <Section title={sectionName} baseColor={baseColor}>
             {
               //@ts-ignore
               content[sectionName] &&
-              //@ts-ignore
-              Array.isArray(content[sectionName]) &&
-              //@ts-ignore
-              content[sectionName]?.map((sec: Custom, index: number) => (
-                <div key={index} className="mb-4">
-                  <div className="flex flex-col justify-between">
-                    {/* Main Row: Name, Location, Link on the left; Dates on the right */}
-                    <div className="flex items-center justify-between">
-                      {/* Left Section: Name, Location, Link */}
-                      <div className="flex items-center flex-wrap">
-                        {/* Name */}
-                        {sec.name && <p style={styles.subtitle}>{sec.name}</p>}
-                        {sec.location && <span className="" style={styles.undertitle}>, {sec.location}</span>}
-                        {/* URL Link */}
-                        {sec.url && (
-                          <LinkedEntity
-                            name={""}
-                            url={sec.url}
-                            separateLinks={false}
-                            className="font-bold"
-                          />
-                        )}
-                      </div>
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex flex-col justify-between">
+                      {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                      <div className="flex items-center justify-between">
+                        {/* Left Section: Name, Location, Link */}
+                        <div className="flex items-center flex-wrap">
+                          {/* Name */}
+                          {sec.name && (
+                            <p style={styles.subtitle}>{sec.name}</p>
+                          )}
+                          {sec.location && (
+                            <span className="" style={styles.undertitle}>
+                              , {sec.location}
+                            </span>
+                          )}
+                          {/* URL Link */}
+                          {sec.url && (
+                            <LinkedEntity
+                              name={""}
+                              url={sec.url}
+                              separateLinks={false}
+                              className="font-bold"
+                            />
+                          )}
+                        </div>
 
-                      {/* Right Section: Dates */}
-                      <div className="">
-                        {/* Start Date and End Date */}
-                        <div className={`flex flex-wrap  justify-end gap-0 items-center whitespace-nowrap`} style={styles.subtitle}>
-                          {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
-                          {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-" : ""}</div> {formatDate(sec.endDate, datetype)}</div>}
+                        {/* Right Section: Dates */}
+                        <div className="">
+                          {/* Start Date and End Date */}
+                          <div
+                            className={`flex flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                            style={styles.subtitle}
+                          >
+                            {sec.startDate && (
+                              <div>{formatDate(sec.startDate, datetype)}</div>
+                            )}
+                            {sec.endDate && (
+                              <div className="flex items-center">
+                                <div className="mx-1">
+                                  {sec.startDate && sec.endDate ? "-" : ""}
+                                </div>{" "}
+                                {formatDate(sec.endDate, datetype)}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-2" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
                     </div>
-
-                    {/* Description: Placed below the main row */}
-                    {sec.description && (<p className="mt-1">{sec.description}</p>)}
-
-                    {/* Summary: Placed below the description */}
-                    {sec.summary && (
-                      <div className="mt-2" style={styles.normal}>
-                        <HTMLViewer
-                          lineHeight={lineHeight}
-                          content={sec.summary}
-                        />
-                      </div>
-                    )}
                   </div>
-                </div>
-              ))
+                ))
             }
-            </Section>
-
+          </Section>
         );
     }
   };
@@ -804,19 +853,22 @@ const Template5: React.FC<TemplateProps> = ({
               lineHeight={lineHeight}
             />
           </div>
-          <div className="flex flex-1 overflow-hidden" style={{ maxHeight: "80%" }}>
+          <div
+            className="flex flex-1 overflow-hidden"
+            style={{ maxHeight: "80%" }}
+          >
             <div className="" style={styles.sidebar}>
-              <div className="overflow-hidden" >
+              <div className="overflow-hidden">
                 {sectionOrder.sections.length > 0 &&
-                  sectionOrder?.sections[pageIndex]?.column1.map((sectionName: string) =>
-                    renderSection(sectionName)
+                  sectionOrder?.sections[pageIndex]?.column1.map(
+                    (sectionName: string) => renderSection(sectionName)
                   )}
               </div>
             </div>
             <div className="" style={styles.mainContent}>
               <div className="overflow-hidden">
-                {sectionOrder.sections[pageIndex]?.column2.map((sectionName: string) =>
-                  renderSection(sectionName)
+                {sectionOrder.sections[pageIndex]?.column2.map(
+                  (sectionName: string) => renderSection(sectionName)
                 )}
               </div>
             </div>
@@ -824,9 +876,7 @@ const Template5: React.FC<TemplateProps> = ({
         </div>
       </div>
     );
-  }
-  else {
-
+  } else {
     return (
       <div className="resume-content h-full">
         <style>{`
@@ -838,18 +888,18 @@ const Template5: React.FC<TemplateProps> = ({
       `}</style>
         <div style={styles.secondcontainer}>
           <div className="" style={styles.sidebar}>
-            <div className="overflow-hidden" >
+            <div className="overflow-hidden">
               {sectionOrder.sections.length > 0 &&
-                sectionOrder?.sections[pageIndex]?.column1.map((sectionName: string) =>
-                  renderSection(sectionName)
+                sectionOrder?.sections[pageIndex]?.column1.map(
+                  (sectionName: string) => renderSection(sectionName)
                 )}
             </div>
           </div>
 
           <div className="" style={styles.mainContent}>
             <div className="overflow-hidden">
-              {sectionOrder.sections[pageIndex]?.column2.map((sectionName: string) =>
-                renderSection(sectionName)
+              {sectionOrder.sections[pageIndex]?.column2.map(
+                (sectionName: string) => renderSection(sectionName)
               )}
             </div>
           </div>

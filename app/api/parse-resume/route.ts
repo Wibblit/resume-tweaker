@@ -187,13 +187,13 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     .replace(/\bNaN\b/g, "null")
     .replace(/```json\s*|\s*```/g, "")
     .trim();
-  console.log("json string", jsonString);
+  //console.log("json string", jsonString);
   const cleanedData = JSON.parse(jsonString);
 
-  console.log(
-    "Gemini response for resume parsing:",
-    JSON.stringify(cleanedData, null, 2)
-  );
+  //console.log(
+  //   "Gemini response for resume parsing:",
+  //   JSON.stringify(cleanedData, null, 2)
+  // );
 
   return NextResponse.json({ cleanedData });
 });

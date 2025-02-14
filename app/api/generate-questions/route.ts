@@ -24,11 +24,11 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   let ip = req.ip || req.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
 
-  console.log(
-    "Interviewer Position and totalduration: ",
-    interviewerPosition,
-    totalDuration
-  );
+  //console.log(
+  //   "Interviewer Position and totalduration: ",
+  //   interviewerPosition,
+  //   totalDuration
+  // );
 
   if (!session || !session.user?.id) throw ApiError.userNotAuthenticated;
 
@@ -63,7 +63,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
   const questions = JSON.parse(cleanedText);
 
-  console.log("Gemini response for question generation:", response);
+  //console.log("Gemini response for question generation:", response);
 
   return NextResponse.json({ questions });
 });

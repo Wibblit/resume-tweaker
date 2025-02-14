@@ -8,11 +8,11 @@ const OnBoarding = async () => {
   const session = await auth();
   const status = await prisma.user.findUnique({
     where: { id: session?.user.id },
-    select: { isOnboarded: true }
-  })
-  console.log("onboarding status", status?.isOnboarded)
+    select: { isOnboarded: true },
+  });
+  //console.log("onboarding status", status?.isOnboarded)
   if (status?.isOnboarded) {
-    return redirect("/home")
+    return redirect("/home");
   }
   return <Onboarding />;
 };

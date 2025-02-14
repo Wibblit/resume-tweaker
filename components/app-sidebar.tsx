@@ -89,12 +89,12 @@ export function AppSidebar({ session }: { session: Session }) {
         const response = await axios.get("/api/get-credits", {
           withCredentials: true,
         });
-        console.log(response?.data?.Credits?.credits);
+        //console.log(response?.data?.Credits?.credits);
         dispatch(updateCredits(response?.data?.Credits?.credits));
         dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
         dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
       } catch (error) {
-        console.log(error);
+        //console.log(error);
         toast({
           title: "Failed to Load Credits",
           description: "Unable to fetch your credits. Please try again.",
@@ -113,7 +113,7 @@ export function AppSidebar({ session }: { session: Session }) {
           <div className="flex justify-between w-full">
             {!isCollapsed && (
               <Link href="/" className="flex items-center gap-2 font-semibold">
-                  <Logo />
+                <Logo />
               </Link>
             )}
             <SidebarTrigger />
@@ -143,8 +143,9 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-          className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"
-            }`}
+          className={`p-3 bg-background/80 rounded-md ${
+            isCollapsed && "flex items-center justify-center"
+          }`}
         >
           <Tooltip>
             <TooltipTrigger asChild>

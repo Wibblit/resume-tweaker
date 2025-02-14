@@ -30,13 +30,13 @@ export async function GET(req: NextRequest) {
     } finally {
       prisma.$disconnect();
     }
-    console.log(`profile : ${result}`);
+    //console.log(`profile : ${result}`);
     return NextResponse.json({
       History: result,
       message: "Transaction history fetched successfully",
     });
   }
-  console.log(`History : ${result}`);
+  //console.log(`History : ${result}`);
   return NextResponse.json({
     History: result,
     message: "Transaction history fetched successfully",

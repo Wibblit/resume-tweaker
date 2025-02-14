@@ -31,7 +31,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
       : getAISuggestionPrompt(prompt, section);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result = await model.generateContent(detailedPrompt);
-  console.log("result: ", result);
+  //console.log("result: ", result);
   const response = result.response;
   const text = response.text();
 

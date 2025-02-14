@@ -7,7 +7,7 @@ interface DateConverterProps {
 }
 
 const DateConverter = (dateString: string) => {
-  console.log(dateString);
+  //console.log(dateString);
   const formatDate = (date: string) => {
     // Safely parse the input date string
     if (date.trim() === "Present") {

@@ -319,7 +319,7 @@ export default function ComprehensiveInterview({
     setIsLoading(true);
     try {
       const base64Audio = await blobToBase64(audioBlob);
-      console.log("base64", base64Audio);
+      //console.log("base64", base64Audio);
       const response = await fetch("/api/generate-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -338,7 +338,7 @@ export default function ComprehensiveInterview({
           }
           setCurrRetryNumber(attempt + 1);
           if (response && response.status >= 400) {
-            console.log(`retrying, attempt number ${attempt + 1}`);
+            //console.log(`retrying, attempt number ${attempt + 1}`);
             return true;
           }
           return false;
@@ -472,21 +472,24 @@ export default function ComprehensiveInterview({
               timeLeft > (duration * 60) / 2
                 ? "white"
                 : `rgb(
-                    ${127 +
-                Math.floor(
-                  (255 - 127) * (timeLeft / ((duration * 60) / 2))
-                )
-                },
-                    ${29 +
-                Math.floor(
-                  (255 - 29) * (timeLeft / ((duration * 60) / 2))
-                )
-                },
-                    ${29 +
-                Math.floor(
-                  (255 - 29) * (timeLeft / ((duration * 60) / 2))
-                )
-                }
+                    ${
+                      127 +
+                      Math.floor(
+                        (255 - 127) * (timeLeft / ((duration * 60) / 2))
+                      )
+                    },
+                    ${
+                      29 +
+                      Math.floor(
+                        (255 - 29) * (timeLeft / ((duration * 60) / 2))
+                      )
+                    },
+                    ${
+                      29 +
+                      Math.floor(
+                        (255 - 29) * (timeLeft / ((duration * 60) / 2))
+                      )
+                    }
                   )`,
             color: timeLeft < duration * 60 * 0.18 ? "white" : "black",
           }}
@@ -602,7 +605,7 @@ export default function ComprehensiveInterview({
               >
                 {isNextLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                 {currentQuestionIndex === questions.length - 1 ||
-                  timeLeft === 0 ? (
+                timeLeft === 0 ? (
                   <span className="flex gap-2 items-center">
                     Get report <ClipboardCheck className="w-4 h-4" />
                   </span>

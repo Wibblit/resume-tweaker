@@ -68,8 +68,8 @@ export default function ResumeUpload({ onResumeData }: ResumeUploadProps) {
           ocrText += " " + response.data.text;
         }
       }
-        
-        console.log(ocrText, 'ocr text')
+
+      //console.log(ocrText, 'ocr text')
 
       // Send OCR text to API for parsing
       const response = await fetch("/api/parse-resume", {
@@ -86,14 +86,13 @@ export default function ResumeUpload({ onResumeData }: ResumeUploadProps) {
       }
 
       const parsedData = await response.json();
-      console.log("parsed data: ", parsedData)
+      //console.log("parsed data: ", parsedData)
       onResumeData(parsedData.cleanedData);
     } catch (error) {
       console.error("Error processing resume:", error);
     } finally {
       setIsOcrInProgress(false);
       setOcrProgress(1);
-
     }
   };
 

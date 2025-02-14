@@ -67,11 +67,11 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   let result;
 
-  console.log(
-    currentQuestionIndex,
-    Math.floor(numberOfQuestions / 2),
-    isdetected
-  );
+  //console.log(
+  //   currentQuestionIndex,
+  //   Math.floor(numberOfQuestions / 2),
+  //   isdetected
+  // );
   if (currentQuestionIndex >= Math.floor(numberOfQuestions / 2)) {
     if (!isdetected) {
       await prisma.userAssets.update({
@@ -117,7 +117,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     );
   } else {
     if (base64Audio) {
-      console.log("base64Audio is given");
+      //console.log("base64Audio is given");
       const transcribeText = await model.generateContent([
         {
           inlineData: {
@@ -144,17 +144,17 @@ export const POST = asyncHandler(async (req: NextRequest) => {
           ],
         },
       ];
-      console.log(
-        "Transcribed text",
-        JSON.stringify(
-          transcribeText.response
-            .text()
-            .replace(/```json\s*|\s*```/g, "")
-            .trim(),
-          null,
-          2
-        )
-      );
+      //console.log(
+      //   "Transcribed text",
+      //   JSON.stringify(
+      //     transcribeText.response
+      //       .text()
+      //       .replace(/```json\s*|\s*```/g, "")
+      //       .trim(),
+      //     null,
+      //     2
+      //   )
+      // );
 
       result = await model.generateContent([
         {
@@ -206,13 +206,13 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   ); // Ensure response is valid JSON
 
   const lastMessage = chat[chat.length - 1]?.parts[0]?.text || "";
-  console.log("Gemini response for adaptive:", result);
-  console.log(
-    "After Chat History: ",
-    JSON.stringify([...chatHistory, ...chat], null, 2)
-  );
+  //console.log("Gemini response for adaptive:", result);
+  //console.log(
+  //   "After Chat History: ",
+  //   JSON.stringify([...chatHistory, ...chat], null, 2)
+  // );
 
-  console.log("Detected", isdetected);
+  //console.log("Detected", isdetected);
   return NextResponse.json({
     isdetected: isdetected,
     question: lastMessage,

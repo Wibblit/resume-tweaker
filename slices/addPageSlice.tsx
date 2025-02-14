@@ -56,9 +56,9 @@ export const pageSlice = createSlice({
       state.historyIndex = state.history.length - 1;
     },
     deletePage: (state, action: PayloadAction<number>) => {
-      console.log(action.payload, "index came \n", state.pages.length, "length")
+      //console.log(action.payload, "index came \n", state.pages.length, "length")
       if (state.pages.length > 1) {
-        state.pages = state.pages.filter((page) => page.id !== action.payload)
+        state.pages = state.pages.filter((page) => page.id !== action.payload);
         state.history = [
           ...state.history.slice(0, state.historyIndex + 1),
           [...state.pages],
@@ -98,10 +98,10 @@ export const pageSlice = createSlice({
     //   column2: SectionName[];
     // }], resumeData: ResumeData
     // }>) => {
-    //   console.log(action.payload.pageSectionOrders, "ye toh deklete na moork")
+    //   //console.log(action.payload.pageSectionOrders, "ye toh deklete na moork")
     //   state.pages.map((page, idx) => {
     //     const cols = { ...action.payload.pageSectionOrders[idx].column1, ...action.payload.pageSectionOrders[idx].column2 }
-    //     console.log(cols, "yoji cols h bhai!")
+    //     //console.log(cols, "yoji cols h bhai!")
     //     page.content = "";
     //   })
     //   // state.pages[action.payload.indx].content = action.payload.content;
@@ -117,7 +117,11 @@ export const pageSlice = createSlice({
     ) => {
       const { resumeData, pageSectionOrders, templateNumber } = action.payload;
       if (pageSectionOrders?.length !== state.pages.length) {
-        for (let i = 0; i < pageSectionOrders?.length - state.pages.length; i++) {
+        for (
+          let i = 0;
+          i < pageSectionOrders?.length - state.pages.length;
+          i++
+        ) {
           const newPage = {
             id: state.pages.length + 1,
             template: templateNumber,
@@ -128,7 +132,8 @@ export const pageSlice = createSlice({
       }
       state.pages.forEach((page, idx) => {
         if (idx < action.payload.pageSectionOrders?.length) {
-          const { column1 = [], column2 = [] } = action.payload.pageSectionOrders[idx];
+          const { column1 = [], column2 = [] } =
+            action.payload.pageSectionOrders[idx];
           const cols = [...column1, ...column2];
           cols.forEach((sec) => {
             //@ts-ignore
@@ -143,7 +148,7 @@ export const pageSlice = createSlice({
     builder.addCase(UpdateId, (state, action: PayloadAction<number>) => {
       state.pages = state.pages.map((page) => ({
         ...page,
-        template: action.payload, 
+        template: action.payload,
       }));
       state.history = [
         ...state.history.slice(0, state.historyIndex + 1),
@@ -151,7 +156,7 @@ export const pageSlice = createSlice({
       ];
       state.historyIndex = state.history.length - 1;
     });
-  }
+  },
 });
 
 export const { addPage, deletePage, updatePages, undo, redo, updatePageVales } =

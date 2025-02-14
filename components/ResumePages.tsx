@@ -223,12 +223,12 @@ export default function ResumePages({
   const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
   const [saving, setSaving] = useState<boolean>(false);
-  console.log(useAppSelector((state) => state?.currentResume?.isSave));
+  //console.log(useAppSelector((state) => state?.currentResume?.isSave));
 
   const handleSave = async () => {
     try {
       setSaving(true);
-      console.log(resumeStyles);
+      //console.log(resumeStyles);
       const res = await saveResumeData(ResumeDatas, resumeStyles, currResumeId);
       if (res.status === 429) {
         toast({
@@ -238,7 +238,7 @@ export default function ResumePages({
         });
         return;
       }
-      console.log("Reusme Update suceess");
+      //console.log("Reusme Update suceess");
       toast({
         title: "Success",
         description: "The resume has been saved successfully.",
@@ -265,7 +265,6 @@ export default function ResumePages({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     router.push("/home");
   };
-
 
   useEffect(() => {
     dispatch(
@@ -317,7 +316,7 @@ export default function ResumePages({
   }
 
   const deletePageById = (id: number) => {
-    console.log("delete page id yo", id);
+    //console.log("delete page id yo", id);
     dispatch(deletePage(id));
   };
 
@@ -342,14 +341,14 @@ export default function ResumePages({
 
   const handleImport = () => {
     // Function to handle importing from profile
-    console.log("Import from profile");
+    //console.log("Import from profile");
     //@ts-ignore
     dispatch(UpdateLeftBarData(profileData));
   };
 
   const handleReset = () => {
     // Function to handle clearing all data
-    console.log("Clear all data");
+    //console.log("Clear all data");
     dispatch(Reset());
   };
 

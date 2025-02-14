@@ -12,7 +12,7 @@ export async function generateStaticParams() {
 
 const fetchBlog = cache(async (slug: string) => {
   const id = slug.split("-");
-  console.log(id);
+  //console.log(id);
 
   try {
     const blog = await prisma.blog.findUnique({
@@ -55,7 +55,7 @@ export default async function BlogPostPage({
 }: {
   params: { slug: string };
 }) {
-  console.log("params", params.slug);
+  //console.log("params", params.slug);
   let data = await fetchBlog(params.slug);
   if (!data) return notFound();
 
@@ -63,7 +63,7 @@ export default async function BlogPostPage({
   data.content = await HTMLcontent.text();
   const tableOfContents = extractH2Content(data.content);
   const newData = { ...data, tableOfContents };
-  console.log(tableOfContents);
+  //console.log(tableOfContents);
   return <BlogPost data={newData!} />;
 }
 

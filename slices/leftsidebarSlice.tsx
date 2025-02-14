@@ -156,7 +156,7 @@ const leftsidebarSlice = createSlice({
     },
     DeleteCustomSection(state, action: PayloadAction<string>) {
       const sectionName = action.payload.toLowerCase();
-      console.log(sectionName);
+      //console.log(sectionName);
       //@ts-ignore
       const { [sectionName]: deletedSection, ...restState } = state;
       return restState as ResumeData;

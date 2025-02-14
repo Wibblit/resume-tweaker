@@ -73,7 +73,7 @@ export default function EditBlogPost({ blog }: { blog: Blog }) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isImageChanged, setIsImageChanged] = useState<boolean>(false);
 
-  console.log(slug);
+  //console.log(slug);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -157,7 +157,7 @@ export default function EditBlogPost({ blog }: { blog: Blog }) {
       .replace(/(^-|-$)+/g, "");
   };
 
-  console.log(blogData);
+  //console.log(blogData);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -195,7 +195,7 @@ export default function EditBlogPost({ blog }: { blog: Blog }) {
 
       // Log the FormData for debugging
       for (let pair of formDataToSend.entries()) {
-        console.log(pair[0] + ": " + pair[1]);
+        //console.log(pair[0] + ": " + pair[1]);
       }
 
       const result = await updateBlogPost(formDataToSend);
@@ -209,7 +209,7 @@ export default function EditBlogPost({ blog }: { blog: Blog }) {
       }
 
       if (result.success) {
-        console.log("Blog post updated successfully:", result.blogPost);
+        //console.log("Blog post updated successfully:", result.blogPost);
         router.push("/blogs");
       } else {
         throw new Error(result.message || "Failed to update blog post");

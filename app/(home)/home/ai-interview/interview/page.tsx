@@ -105,7 +105,7 @@ export default function InterviewPage() {
   useEffect(() => {
     const fetchQuestions = async () => {
       if (interviewData.interviewType !== "adaptive" && interviewData.job) {
-        console.log("interviewer position:", interviewData.interviewerPosition);
+        //console.log("interviewer position:", interviewData.interviewerPosition);
         setIsLoading(true);
 
         const response = await fetch("/api/generate-questions", {
@@ -128,7 +128,7 @@ export default function InterviewPage() {
               return false;
             }
             if (response && response.status >= 400) {
-              console.log(`retrying, attempt number ${attempt + 1}`);
+              //console.log(`retrying, attempt number ${attempt + 1}`);
               return true;
             }
             return false;

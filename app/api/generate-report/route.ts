@@ -31,16 +31,16 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     const { questions, base64Audio, timeSpent, intervieweeSkippedQuestions } =
       await request.json();
 
-    console.log(
-      "Questions",
-      questions,
-      "Time spent: ",
-      timeSpent,
-      "Audio length:",
-      base64Audio.length,
-      "interviewee skipped questions",
-      intervieweeSkippedQuestions
-    );
+    //console.log(
+    //   "Questions",
+    //   questions,
+    //   "Time spent: ",
+    //   timeSpent,
+    //   "Audio length:",
+    //   base64Audio.length,
+    //   "interviewee skipped questions",
+    //   intervieweeSkippedQuestions
+    // );
 
     if (!questions || !base64Audio || !timeSpent) {
       throw ApiError.invalidRequest; // Throw an error if any necessary data is missing
@@ -69,16 +69,16 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     const response = await result.response;
     const text = response.text();
     const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
-    console.log("Gemini response for report generation:", response);
-    console.log(
-      "prompt: ",
-      `Context\nQuestions:${JSON.stringify(
-        questions
-      )}\n${reportGenerationPrompt(
-        "comprehensive",
-        intervieweeSkippedQuestions
-      )}`
-    );
+    //console.log("Gemini response for report generation:", response);
+    //console.log(
+    //   "prompt: ",
+    //   `Context\nQuestions:${JSON.stringify(
+    //     questions
+    //   )}\n${reportGenerationPrompt(
+    //     "comprehensive",
+    //     intervieweeSkippedQuestions
+    //   )}`
+    // );
 
     await prisma.userAssets.update({
       where: {

@@ -94,7 +94,7 @@ const Section: React.FC<{
 
   const fontSize = useAppSelector((state) => state?.rightsidebar?.fontSize);
 
-  console.log(title, isRightColumn);
+  //console.log(title, isRightColumn);
 
   return (
     <section
@@ -197,8 +197,8 @@ const Header: React.FC<{
               {((basics.location && basics.email) ||
                 (basics.location && basics.phone) ||
                 (basics.location && basics.url.label)) && (
-                  <span className="mx-1">|</span>
-                )}
+                <span className="mx-1">|</span>
+              )}
             </div>
           )}
           {basics?.phone && (
@@ -210,8 +210,8 @@ const Header: React.FC<{
               {((basics.phone && basics.email) ||
                 (basics.phone && basics.location) ||
                 (basics.phone && basics.url.label)) && (
-                  <span className="mx-1">|</span>
-                )}
+                <span className="mx-1">|</span>
+              )}
             </div>
           )}
           {basics?.email && (
@@ -227,8 +227,8 @@ const Header: React.FC<{
               {((basics.email && basics.phone) ||
                 (basics.email && basics.location) ||
                 (basics.email && basics.url.label)) && (
-                  <span className="mx-1">|</span>
-                )}
+                <span className="mx-1">|</span>
+              )}
             </div>
           )}
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
@@ -237,21 +237,23 @@ const Header: React.FC<{
           {
             //@ts-ignore
             content.profiles.map((profile, index) => (
-                <a
-                  key={index}
-                  href={profile.url.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2"
-                >
-                  {isIcons && profile.url.href !== "" && (
-                    <SocialIcon
-                      style={{ width: "16px", height: "16px" }}
-                      url={profile.url.href}
-                    />
-                  )}
-                  <span className="no-underline text-base">{profile.url.label}</span>
-                </a>
+              <a
+                key={index}
+                href={profile.url.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                {isIcons && profile.url.href !== "" && (
+                  <SocialIcon
+                    style={{ width: "16px", height: "16px" }}
+                    url={profile.url.href}
+                  />
+                )}
+                <span className="no-underline text-base">
+                  {profile.url.label}
+                </span>
+              </a>
             ))
           }
         </div>
@@ -305,15 +307,15 @@ const Template3: React.FC<TemplateProps> = ({
     sidebarContent: {
       padding: `${margin}mm`,
       height: "100%",
-      overflow: "hidden"
+      overflow: "hidden",
     },
     mainContent: {
       padding: `${margin}mm`,
       width: "65%",
     },
-    normal : {
-      fontSize: "1.1em"
-    }
+    normal: {
+      fontSize: "1.1em",
+    },
   };
   const renderSection = (
     sectionName: string,
@@ -420,7 +422,7 @@ const Template3: React.FC<TemplateProps> = ({
           )
         );
       case "volunteer":
-        console.log(content.volunteer);
+        //console.log(content.volunteer);
         return (
           content.volunteer &&
           content.volunteer.length > 0 && (
@@ -750,73 +752,73 @@ const Template3: React.FC<TemplateProps> = ({
               {
                 //@ts-ignore
                 content[sectionName] &&
-                //@ts-ignore
-                Array.isArray(content[sectionName]) &&
-                //@ts-ignore
-                content[sectionName]?.map((sec: Custom, index: number) => (
-                  <div key={index} className="mb-2">
-                    <div className="flex flex-col justify-between">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          {sec.name && (
-                            <h3
-                              style={{
-                                fontSize:
-                                  fontSize + Math.floor(fontSize * 0.1),
-                              }}
-                              className="font-bold"
-                            >
-                              {sec.name}
-                            </h3>
-                          )}
+                  //@ts-ignore
+                  Array.isArray(content[sectionName]) &&
+                  //@ts-ignore
+                  content[sectionName]?.map((sec: Custom, index: number) => (
+                    <div key={index} className="mb-2">
+                      <div className="flex flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            {sec.name && (
+                              <h3
+                                style={{
+                                  fontSize:
+                                    fontSize + Math.floor(fontSize * 0.1),
+                                }}
+                                className="font-bold"
+                              >
+                                {sec.name}
+                              </h3>
+                            )}
 
-                          {sec.name && sec.url.label && (
-                            <span className="mx-1">|</span>
-                          )}
-                          {sec.location && <p>{sec.location}</p>}
-                          {sec.url.label && <span className="mx-1">|</span>}
-                          {sec.url && (
-                            <a
-                              href={sec.url.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center"
-                            >
-                              <p style={{ color: baseColor }}>
-                                {sec.url.label}
-                              </p>
-                            </a>
-                          )}
+                            {sec.name && sec.url.label && (
+                              <span className="mx-1">|</span>
+                            )}
+                            {sec.location && <p>{sec.location}</p>}
+                            {sec.url.label && <span className="mx-1">|</span>}
+                            {sec.url && (
+                              <a
+                                href={sec.url.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <p style={{ color: baseColor }}>
+                                  {sec.url.label}
+                                </p>
+                              </a>
+                            )}
+                          </div>
+
+                          {/* Right Section: Dates */}
+                          <div>
+                            {/* Start Date and End Date */}
+                            {sec.startDate && (
+                              <h3>
+                                {formatDate(sec.startDate, datetype)}
+                                {sec.endDate &&
+                                  ` - ${formatDate(sec.endDate, datetype)}`}
+                              </h3>
+                            )}
+                          </div>
                         </div>
 
-                        {/* Right Section: Dates */}
-                        <div>
-                          {/* Start Date and End Date */}
-                          {sec.startDate && (
-                            <h3>
-                              {formatDate(sec.startDate, datetype)}
-                              {sec.endDate &&
-                                ` - ${formatDate(sec.endDate, datetype)}`}
-                            </h3>
-                          )}
-                        </div>
+                        {/* Description: Placed below the main row */}
+                        {sec.description && <p>{sec.description}</p>}
+
+                        {/* Summary: Placed below the description */}
+                        {sec.summary && (
+                          <div className="mt-1" style={styles.normal}>
+                            <HTMLViewer
+                              lineHeight={lineHeight}
+                              content={sec.summary}
+                            />
+                          </div>
+                        )}
                       </div>
-
-                      {/* Description: Placed below the main row */}
-                      {sec.description && <p>{sec.description}</p>}
-
-                      {/* Summary: Placed below the description */}
-                      {sec.summary && (
-                        <div className="mt-1" style={styles.normal}>
-                          <HTMLViewer
-                            lineHeight={lineHeight}
-                            content={sec.summary}
-                          />
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))
+                  ))
               }
             </div>
           </Section>

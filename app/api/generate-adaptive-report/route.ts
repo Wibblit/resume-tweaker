@@ -24,18 +24,19 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     throw ApiError.rateLimitExceeded;
   }
 
-  console.log("Chat History ", JSON.stringify(chatHistory, null, 2));
+  //console.log("Chat History ", JSON.stringify(chatHistory, null, 2));
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  
 
   const result = await model.generateContent(
-    `Context\nchathistory:${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt("adaptive")}`
+    `Context\nchathistory:${JSON.stringify(
+      chatHistory
+    )} \n ${reportGenerationPrompt("adaptive")}`
   );
-  console.log(`prompt: \nContext\nchathistory:${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt("adaptive")}`)
+  //console.log(`prompt: \nContext\nchathistory:${JSON.stringify(chatHistory)} \n ${reportGenerationPrompt("adaptive")}`)
   const response = result.response;
   const text = response.text();
   const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
-  console.log("Gemini response for report generation:", response);
+  //console.log("Gemini response for report generation:", response);
 
   return NextResponse.json({ report: cleanedText });
 });

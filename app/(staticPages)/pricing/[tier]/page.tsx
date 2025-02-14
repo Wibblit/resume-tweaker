@@ -56,7 +56,7 @@ export default function PricingTierPage() {
     //       tier: params.tier,
     //       paymentMethod: selectedPayment,
     //     });
-    //     console.log("OrderId", result);
+    //     //console.log("OrderId", result);
     //     const { orderId } = result.response;
 
     //     if (!result.success) {
@@ -108,9 +108,9 @@ export default function PricingTierPage() {
 
   const handlePayment = () => {
     // Implement payment logic here
-    console.log(
-      `Processing ${selectedPayment} payment for ${params.tier} plan`
-    );
+    //console.log(
+    //   `Processing ${selectedPayment} payment for ${params.tier} plan`
+    // );
 
     razorpayBuy();
   };

@@ -3,12 +3,12 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/prisma";
 import { Metadata } from "next";
-export const metadata : Metadata = {
-  title: "AI Interview"
-}
+export const metadata: Metadata = {
+  title: "AI Interview",
+};
 export default async function AIInterviewPage() {
   const session = await auth();
-  console.log("session:KJDSKJGFJSHDF",session)
+  //console.log("session:KJDSKJGFJSHDF",session)
   if (!session?.user) return redirect("/login?callbackUrl=/home/ai-interview");
 
   const result = await prisma.resume.findMany({

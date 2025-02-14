@@ -10,9 +10,9 @@ export const saveResumeData = asyncHandler(
   async (
     resumeData: ResumeData,
     resumeStyles: ResumeStyles,
-    resumeId: string,
+    resumeId: string
   ) => {
-    console.log(resumeStyles)
+    //console.log(resumeStyles)
     const session = await auth();
     if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
     if (!resumeData || !resumeStyles || !resumeId)
@@ -22,33 +22,33 @@ export const saveResumeData = asyncHandler(
     const parsedBasics = JSON.parse(JSON.stringify(resumeData.basics || []));
     const parsedSummary = JSON.parse(JSON.stringify(resumeData.summary || []));
     const parsedProfiles = JSON.parse(
-      JSON.stringify(resumeData.profiles || []),
+      JSON.stringify(resumeData.profiles || [])
     );
     const parsedSkills = JSON.parse(JSON.stringify(resumeData.skills || []));
     const parsedExperience = JSON.parse(
-      JSON.stringify(resumeData.experience || []),
+      JSON.stringify(resumeData.experience || [])
     );
     const parsedProjects = JSON.parse(
-      JSON.stringify(resumeData.projects || []),
+      JSON.stringify(resumeData.projects || [])
     );
     const parsedCertifications = JSON.parse(
-      JSON.stringify(resumeData.certifications || []),
+      JSON.stringify(resumeData.certifications || [])
     );
     const parsedEducation = JSON.parse(
-      JSON.stringify(resumeData.education || []),
+      JSON.stringify(resumeData.education || [])
     );
     const parsedAwards = JSON.parse(JSON.stringify(resumeData.awards || []));
     const parsedReferences = JSON.parse(
-      JSON.stringify(resumeData.references || []),
+      JSON.stringify(resumeData.references || [])
     );
     const parsedLanguages = JSON.parse(
-      JSON.stringify(resumeData.languages || []),
+      JSON.stringify(resumeData.languages || [])
     );
     const parsedPublications = JSON.parse(
-      JSON.stringify(resumeData.publications || []),
+      JSON.stringify(resumeData.publications || [])
     );
     const parsedVolunteer = JSON.parse(
-      JSON.stringify(resumeData.volunteer || []),
+      JSON.stringify(resumeData.volunteer || [])
     );
 
     // Handle custom sections dynamically
@@ -107,5 +107,5 @@ export const saveResumeData = asyncHandler(
       message: "Resume updated successfully",
       status: 200,
     };
-  },
+  }
 );

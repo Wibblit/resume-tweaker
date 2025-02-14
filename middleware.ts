@@ -60,7 +60,7 @@ export default auth(async function middleware(req: NextRequest) {
         Cookie: req.headers.get("cookie") || "",
       },
     });
-    console.log("Session fetch response status:", sessionRes.status);
+    //console.log("Session fetch response status:", sessionRes.status);
 
     if (!sessionRes.ok) {
       const errorText = await sessionRes.text();
@@ -86,7 +86,7 @@ export default auth(async function middleware(req: NextRequest) {
 
   if (session) {
     if (rateLimiter(session?.user?.id, ip)) {
-      console.log("Rate limit hit");
+      //console.log("Rate limit hit");
       return NextResponse.redirect(new URL("/rate-limit-error", req.url));
     }
   }

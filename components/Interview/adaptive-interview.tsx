@@ -167,7 +167,7 @@ export default function AdaptiveInterview({
           }
           setCurrRetryNumber(attempt + 1);
           if (response && response.status >= 400) {
-            console.log(`retrying, attempt number ${attempt + 1}`);
+            //console.log(`retrying, attempt number ${attempt + 1}`);
             return true;
           }
           return false;
@@ -182,7 +182,7 @@ export default function AdaptiveInterview({
         });
         return;
       }
-      console.log("This is data", data);
+      //console.log("This is data", data);
       setChatHistory(data.chatHistory);
       setIsDetected(data.isdetected);
       if (data?.isdetected) {
@@ -252,7 +252,7 @@ export default function AdaptiveInterview({
             isdetected: isdetected,
           }),
           retryOn: (attempt, error, response) => {
-            console.log(error);
+            //console.log(error);
             if (attempt >= 3) {
               setShowErrorMessage(true);
               setIsRetrying(false);
@@ -260,15 +260,15 @@ export default function AdaptiveInterview({
             }
             setCurrRetryNumber(attempt + 1);
             if (response && response.status >= 400) {
-              console.log(`retrying, attempt number ${attempt + 1}`);
+              //console.log(`retrying, attempt number ${attempt + 1}`);
               return true;
             }
             return false;
           },
         });
         const data = await result.json();
-        console.log(result?.ok);
-        console.log(data);
+        //console.log(result?.ok);
+        //console.log(data);
         if (!result.ok) {
           toast({
             title: `Error ${result.status}`,
@@ -277,7 +277,7 @@ export default function AdaptiveInterview({
           });
           return;
         }
-        console.log("This is also data", data);
+        //console.log("This is also data", data);
         setChatHistory(data.chatHistory);
         setIsDetected(data.isdetected);
         if (data?.isdetected && !stopper) {
@@ -289,7 +289,7 @@ export default function AdaptiveInterview({
         setAudioBlob(null);
         generateAudio(data.question);
       } else {
-        console.log("Yo i got you bro");
+        //console.log("Yo i got you bro");
         setIsInterviewComplete(true);
 
         if (!isdetected) {
@@ -370,7 +370,7 @@ export default function AdaptiveInterview({
           }
           setCurrRetryNumber(attempt + 1);
           if (response && response.status >= 400) {
-            console.log(`retrying, attempt number ${attempt + 1}`);
+            //console.log(`retrying, attempt number ${attempt + 1}`);
             return true;
           }
           return false;
@@ -420,7 +420,7 @@ export default function AdaptiveInterview({
     setIsInterviewComplete(true);
     setIsTimerPaused(true);
     if (audioBlob || currentQuestionIndex >= numberOfQuestions - 1) {
-      console.log("Interview complete, preparing to send audio blob");
+      //console.log("Interview complete, preparing to send audio blob");
       await generateReport();
     } else {
       console.error("No audio blob available at the end of the interview");
@@ -430,7 +430,7 @@ export default function AdaptiveInterview({
 
   const generateReport = async () => {
     try {
-      console.log("Starting report generation process");
+      //console.log("Starting report generation process");
       setIsLoading(true);
       const response = await fetch("/api/generate-adaptive-report", {
         method: "POST",
@@ -450,14 +450,14 @@ export default function AdaptiveInterview({
           setCurrRetryNumber(attempt + 1);
           if (response && response.status)
             if (error !== null || response.status >= 400) {
-              console.log(`retrying, attempt number ${attempt + 1}`);
+              //console.log(`retrying, attempt number ${attempt + 1}`);
               return true;
             }
           return false;
         },
       });
 
-      console.log("Request sent, status:", response.status);
+      //console.log("Request sent, status:", response.status);
 
       const data = await response.json();
       if (!response.ok) {
@@ -471,7 +471,7 @@ export default function AdaptiveInterview({
       } else {
         setShowErrorMessage(false);
       }
-      console.log("Report data received:", data);
+      //console.log("Report data received:", data);
       setReport(JSON.parse(data.report));
       setShowReport(true);
     } catch (error) {

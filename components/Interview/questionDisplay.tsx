@@ -76,8 +76,6 @@ export default function QuestionDisplay({
     setIsNextLoading(false);
   };
 
-  isNextLoading && console.log("Ho bahai");
-
   return (
     <div className="mb-4 space-y-4">
       {!audioUrl ? (

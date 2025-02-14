@@ -10,7 +10,7 @@
 //   const resumeId = params.resumeId;
 //   const session = await auth();
 //    let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
-//    ip = ip === "::1" ? "127.0.0.1" : ip;  
+//    ip = ip === "::1" ? "127.0.0.1" : ip;
 //   let result = null;
 //   try {
 //      if (rateLimiter(session?.user?.id, ip)) {
@@ -18,7 +18,7 @@
 //          { message: "Rate limit exceeded." },
 //          { status: 429 }
 //        );
-//      } 
+//      }
 //     result = await prisma.resume.findUnique({
 //       where: {
 //         id: resumeId,
@@ -32,14 +32,13 @@
 //     prisma.$disconnect();
 //   }
 
-//   console.log(`Fetched data : ${result}`);
+//   //console.log(`Fetched data : ${result}`);
 
 //   return NextResponse.json({
 //     resumeData: result,
 //     message: `Resume data for ID: ${resumeId}`,
 //   });
 // }
-
 
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";

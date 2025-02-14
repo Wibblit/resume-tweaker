@@ -75,7 +75,7 @@ const rightsidebarSlice = createSlice({
       state.id = action.payload;
     },
     NewSection(state, action) {
-      console.log(state.sectionOrder);
+      //console.log(state.sectionOrder);
       state.sectionOrder?.column3.push(action.payload.toLowerCase());
       state.sections.push(action.payload);
     },
@@ -84,7 +84,7 @@ const rightsidebarSlice = createSlice({
     },
     CustomSectionRename(state, action) {
       const { oldName, newName } = action.payload;
-      console.log(oldName, newName);
+      //console.log(oldName, newName);
       const replacer = (arr: string[]): string[] => {
         const newArray = arr.map((item) =>
           item === oldName ? newName.toLowerCase() : item
@@ -95,7 +95,7 @@ const rightsidebarSlice = createSlice({
       if (state.sections.includes(oldName))
         state.sections = replacer(state.sections);
 
-      console.log(state.sections);
+      //console.log(state.sections);
 
       if (state.sectionOrder.column3.includes(oldName))
         state.sectionOrder.column3 = replacer(state.sectionOrder.column3);
@@ -138,7 +138,7 @@ const rightsidebarSlice = createSlice({
     },
 
     ResetStyle(state, action) {
-      console.log(state.id);
+      //console.log(state.id);
       if (action.payload === "Resume") {
         state.baseColor = Defaults[state.id - 1].baseColor;
         state.font = Defaults[state.id - 1].font;
@@ -336,7 +336,7 @@ export const {
   addSection,
   removeSection,
   UpdateSections,
-  updateDateType
+  updateDateType,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

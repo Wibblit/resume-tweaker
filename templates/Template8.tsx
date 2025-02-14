@@ -65,10 +65,13 @@ const LinkedEntity: React.FC<{
           url={url}
           label={url.label}
           icon={
-            <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
+            <i
+              className="ph ph-bold ph-globe"
+              style={{ color: "currentColor" }}
+            />
           }
           iconOnRight={true}
-          className={`text-baseline`+className}
+          className={`text-baseline` + className}
         />
       </div>
     </div>
@@ -87,20 +90,20 @@ const Section: React.FC<{
     (state) => state.rightsidebar.separator
   );
 
-  console.log(title, isRightColumn);
+  //console.log(title, isRightColumn);
 
   return (
     <section
       className="mb-4  pt-4 "
       style={
         isSeparator
-          ? { borderTop: `1px solid ${isRightColumn ? baseColor : "white" }` }
+          ? { borderTop: `1px solid ${isRightColumn ? baseColor : "white"}` }
           : undefined
       }
     >
       <h3
         className="mb-2 text-base font-bold uppercase"
-        style={{ color: isRightColumn ? baseColor : "white"  }}
+        style={{ color: isRightColumn ? baseColor : "white" }}
       >
         {title}
       </h3>
@@ -145,7 +148,7 @@ const Header: React.FC<{
       fontSize: `${Math.max(1.2, imageSize / 64) * scaleFactor}rem`,
       marginBottom: "",
       lineHeight: 1.4,
-      color : "inherit"
+      color: "inherit",
     },
     details: {
       fontSize: `${Math.max(1, imageSize / 128) * scaleFactor}rem`,
@@ -214,7 +217,7 @@ const Template8: React.FC<TemplateProps> = ({
     (state) => state?.rightsidebar?.icons
   );
   const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
-  const styles :Record<string, React.CSSProperties>= {
+  const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily: fontFamily,
       fontSize: `${fontSize}px`,
@@ -265,8 +268,8 @@ const Template8: React.FC<TemplateProps> = ({
       textAlign: "left",
     },
     smallColumn: {
-      fontSize: "0.8em"
-    }
+      fontSize: "0.8em",
+    },
   };
   const renderSection = (
     sectionName: string,
@@ -362,7 +365,9 @@ const Template8: React.FC<TemplateProps> = ({
                       <div>{pub.publisher}</div>
                       <div className="flex items-center gap-1">
                         <div className="">{pub.publishedIn ? "|" : ""}</div>
-                        <div className="flex items-center">{pub.publishedIn}</div>
+                        <div className="flex items-center">
+                          {pub.publishedIn}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -372,7 +377,7 @@ const Template8: React.FC<TemplateProps> = ({
           )
         );
       case "volunteer":
-        console.log(content.volunteer);
+        //console.log(content.volunteer);
         return (
           content.volunteer &&
           content.volunteer.length > 0 && (
@@ -390,10 +395,23 @@ const Template8: React.FC<TemplateProps> = ({
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                      <div className={`flex font-semibold flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`}>
-                      {vol.startDate && <div>{formatDate(vol.startDate, datetype)}</div>}
-                      {vol.endDate && <div className="flex items-center"><div className="mx-1">{(vol.startDate && vol.endDate) ? "-": ""}</div> {formatDate(vol.endDate, datetype)}</div>}
-                      </div>
+                        <div
+                          className={`flex font-semibold flex-wrap ${
+                            isRightColumn ? "" : "text-[0.8em]"
+                          } justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {vol.startDate && (
+                            <div>{formatDate(vol.startDate, datetype)}</div>
+                          )}
+                          {vol.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {vol.startDate && vol.endDate ? "-" : ""}
+                              </div>{" "}
+                              {formatDate(vol.endDate, datetype)}
+                            </div>
+                          )}
+                        </div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -416,9 +434,9 @@ const Template8: React.FC<TemplateProps> = ({
                 {content.references.map((ref, index) => (
                   <div key={index} className="flex flex-wrap gap-1">
                     <div className="font-bold">{ref.name}</div>
-                    {ref.phone? <div className="">|</div> : ""}
+                    {ref.phone ? <div className="">|</div> : ""}
                     <div>{ref.phone}</div>
-                    {ref.email? <div className="">|</div> : ""}
+                    {ref.email ? <div className="">|</div> : ""}
                     <div>{ref.email}</div>
                   </div>
                 ))}
@@ -444,10 +462,24 @@ const Template8: React.FC<TemplateProps> = ({
                         <div>{exp.role}</div>
                       </div>
                       <div className=" text-right">
-                      <div style={styles.subtitle} className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`}>
-                      {exp.startDate && <div>{formatDate(exp.startDate, datetype)}</div>}
-                      {exp.endDate && <div className="flex items-center"><div className="mx-1">{(exp.startDate && exp.endDate) ? "-": ""}</div> {formatDate(exp.endDate, datetype)}</div>}
-                      </div>
+                        <div
+                          style={styles.subtitle}
+                          className={`flex flex-wrap ${
+                            isRightColumn ? "" : "text-[0.8em]"
+                          } justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {exp.startDate && (
+                            <div>{formatDate(exp.startDate, datetype)}</div>
+                          )}
+                          {exp.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {exp.startDate && exp.endDate ? "-" : ""}
+                              </div>{" "}
+                              {formatDate(exp.endDate, datetype)}
+                            </div>
+                          )}
+                        </div>
                         <div style={styles.undertitle}>{exp.location}</div>
                       </div>
                     </div>
@@ -564,7 +596,9 @@ const Template8: React.FC<TemplateProps> = ({
                 {content.education.map((edu, index) => (
                   <div key={index} className="flex items-start justify-between">
                     <div>
-                      <div className="mb-1 text-wrap" style={styles.subtitle}>{edu.institution}</div>
+                      <div className="mb-1 text-wrap" style={styles.subtitle}>
+                        {edu.institution}
+                      </div>
                       <div className="flex items-center gap-1 flex-wrap text-nowrap">
                         <div>{edu.degree}</div>
                         {edu.field ? "|" : ""}
@@ -573,11 +607,24 @@ const Template8: React.FC<TemplateProps> = ({
                         <div className="">{edu.specialization}</div>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col gap-1">
-                      <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end items-center whitespace-nowrap`}>
-                        {edu.startDate && <div>{formatDate(edu.startDate, datetype)}</div>}
-                        {edu.endDate && <div className="flex items-center"><div className="">{(edu.startDate && edu.endDate) ? "-": ""}</div> {formatDate(edu.endDate, datetype)}</div>}
+                      <div
+                        className={`flex flex-wrap ${
+                          isRightColumn ? "" : "text-[0.8em]"
+                        } justify-end items-center whitespace-nowrap`}
+                      >
+                        {edu.startDate && (
+                          <div>{formatDate(edu.startDate, datetype)}</div>
+                        )}
+                        {edu.endDate && (
+                          <div className="flex items-center">
+                            <div className="">
+                              {edu.startDate && edu.endDate ? "-" : ""}
+                            </div>{" "}
+                            {formatDate(edu.endDate, datetype)}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">{edu.score}</div>
                     </div>
@@ -598,14 +645,25 @@ const Template8: React.FC<TemplateProps> = ({
             >
               <div className="space-y-2">
                 {content.certifications.map((cert, index) => (
-                  <div key={index} className={`flex flex-wrap justify-between ${isRightColumn ? "" : "relative"}`}>
+                  <div
+                    key={index}
+                    className={`flex flex-wrap justify-between ${
+                      isRightColumn ? "" : "relative"
+                    }`}
+                  >
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
                       separateLinks={false}
                       className="font-bold"
                     />
-                    <div className={`${isRightColumn ? "" : "absolute right-0 bottom-0"}`}>{cert.date && formatDate(cert.date, datetype)}</div>
+                    <div
+                      className={`${
+                        isRightColumn ? "" : "absolute right-0 bottom-0"
+                      }`}
+                    >
+                      {cert.date && formatDate(cert.date, datetype)}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -631,22 +689,47 @@ const Template8: React.FC<TemplateProps> = ({
                         separateLinks={false}
                         className="font-bold"
                       />
-                      <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`} style={styles.subtitle}>
-                      {project.startDate && <div>{formatDate(project.startDate, datetype)}</div>}
-                      {project.endDate && <div className="flex items-center"><div className="mx-1">{(project.startDate && project.endDate) ? "-": ""}</div> {formatDate(project.endDate, datetype)}</div>}
+                      <div
+                        className={`flex flex-wrap ${
+                          isRightColumn ? "" : "text-[0.8em]"
+                        } justify-end gap-0 items-center whitespace-nowrap`}
+                        style={styles.subtitle}
+                      >
+                        {project.startDate && (
+                          <div>{formatDate(project.startDate, datetype)}</div>
+                        )}
+                        {project.endDate && (
+                          <div className="flex items-center">
+                            <div className="mx-1">
+                              {project.startDate && project.endDate ? "-" : ""}
+                            </div>{" "}
+                            {formatDate(project.endDate, datetype)}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="">
-                      {(project.keywords.length -1 > 0 && project.keywords[0] != '') ?
-                       (<div className="flex flex-wrap">
-                        <p className="mr-1 font-medium" style={styles.subtitle}>Skills:</p>
-                        {project.keywords.map((keyword, keywordIndex) => (
+                      {project.keywords.length - 1 > 0 &&
+                      project.keywords[0] != "" ? (
+                        <div className="flex flex-wrap">
+                          <p
+                            className="mr-1 font-medium"
+                            style={styles.subtitle}
+                          >
+                            Skills:
+                          </p>
+                          {project.keywords.map((keyword, keywordIndex) => (
                             <span key={keywordIndex}>
-                              {keyword}{keywordIndex !== project.keywords.length - 1 ? ", " : undefined}
+                              {keyword}
+                              {keywordIndex !== project.keywords.length - 1
+                                ? ", "
+                                : undefined}
                             </span>
                           ))}
-                       </div>) 
-                       : ""}
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                     <div className="">
                       {project.summary && !isEmptyString(project.summary) && (
@@ -674,20 +757,20 @@ const Template8: React.FC<TemplateProps> = ({
           )
         );
       default:
-         if (
-           !content ||
-           //@ts-ignore
-           !Array.isArray(content[sectionName]) ||
-           //@ts-ignore
-           !content[sectionName]?.length
-         )
-           return null;
+        if (
+          !content ||
+          //@ts-ignore
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
         return (
-            <Section
-              title={sectionName.toUpperCase()}
-              baseColor={baseColor}
-              isRightColumn={isRightColumn}
-            >
+          <Section
+            title={sectionName.toUpperCase()}
+            baseColor={baseColor}
+            isRightColumn={isRightColumn}
+          >
             {
               //@ts-ignore
               content[sectionName] &&
@@ -702,31 +785,53 @@ const Template8: React.FC<TemplateProps> = ({
                         {/* Left Section: Name, Location, Link */}
                         <div className="flex items-center flex-wrap">
                           {/* Name */}
-                          {sec.name && <p style={styles.subtitle}>{sec.name}</p>}
-                          {sec.location && <span className="" style={styles.undertitle}>, {sec.location}</span>}
+                          {sec.name && (
+                            <p style={styles.subtitle}>{sec.name}</p>
+                          )}
+                          {sec.location && (
+                            <span className="" style={styles.undertitle}>
+                              , {sec.location}
+                            </span>
+                          )}
                           {/* URL Link */}
                           {sec.url && (
                             <LinkedEntity
-                            name={""}
-                            url={sec.url}
-                            separateLinks={false}
-                            className="font-bold"
-                          />
+                              name={""}
+                              url={sec.url}
+                              separateLinks={false}
+                              className="font-bold"
+                            />
                           )}
                         </div>
 
                         {/* Right Section: Dates */}
                         <div className="">
                           {/* Start Date and End Date */}
-                          <div className={`flex flex-wrap ${isRightColumn ? "" :"text-[0.8em]"} justify-end gap-0 items-center whitespace-nowrap`} style={styles.subtitle}>
-                            {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
-                            {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-": ""}</div> {formatDate(sec.endDate, datetype)}</div>}
+                          <div
+                            className={`flex flex-wrap ${
+                              isRightColumn ? "" : "text-[0.8em]"
+                            } justify-end gap-0 items-center whitespace-nowrap`}
+                            style={styles.subtitle}
+                          >
+                            {sec.startDate && (
+                              <div>{formatDate(sec.startDate, datetype)}</div>
+                            )}
+                            {sec.endDate && (
+                              <div className="flex items-center">
+                                <div className="mx-1">
+                                  {sec.startDate && sec.endDate ? "-" : ""}
+                                </div>{" "}
+                                {formatDate(sec.endDate, datetype)}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
 
                       {/* Description: Placed below the main row */}
-                      {sec.description && (<p className="mt-1">{sec.description}</p>)}
+                      {sec.description && (
+                        <p className="mt-1">{sec.description}</p>
+                      )}
 
                       {/* Summary: Placed below the description */}
                       {sec.summary && (
@@ -740,13 +845,13 @@ const Template8: React.FC<TemplateProps> = ({
                     </div>
                   </div>
                 ))
-              }
-              </Section>
+            }
+          </Section>
         );
     }
   };
 
-  console.log(sectionOrder.sections[0].column1)
+  //console.log(sectionOrder.sections[0].column1)
 
   return (
     <div className="resume-content" style={styles.container}>
@@ -756,19 +861,19 @@ const Template8: React.FC<TemplateProps> = ({
         }
       `}</style>
 
-        <div className="" style={styles.sidebar}>
-          <div className="overflow-hidden" >
-              {sectionOrder.sections.length > 0 &&
-                sectionOrder?.sections[pageIndex]?.column1.map((sectionName: string) =>
-                  renderSection(sectionName)
-                )}
-          </div>
+      <div className="" style={styles.sidebar}>
+        <div className="overflow-hidden">
+          {sectionOrder.sections.length > 0 &&
+            sectionOrder?.sections[pageIndex]?.column1.map(
+              (sectionName: string) => renderSection(sectionName)
+            )}
         </div>
+      </div>
 
       <div className="" style={styles.mainContent}>
         <div className="overflow-hidden">
-          {sectionOrder.sections[pageIndex]?.column2.map((sectionName: string) =>
-            renderSection(sectionName, true)
+          {sectionOrder.sections[pageIndex]?.column2.map(
+            (sectionName: string) => renderSection(sectionName, true)
           )}
         </div>
       </div>

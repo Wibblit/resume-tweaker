@@ -123,24 +123,93 @@ interface RightSideBarProps {
 }
 
 const templates = [
-  { id: 1, name: "Classic Charm", image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp" },
-  { id: 2, name: "Artistic Flair", image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp" },
-  { id: 3, name: "Executive Edge", image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp" },
-  { id: 4, name: "Fresh Start", image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp" },
-  { id: 5, name: "Eco Essence", image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp" },
-  { id: 6, name: "Naval Professional", image: "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp" },
-  { id: 7, name: "Classic Centered", image: "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp" },
-  { id: 8, name: "Split Modern", image: "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp" },
-  { id: 9, name: "Stanford Minimalist", image: "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp" },
+  {
+    id: 1,
+    name: "Classic Charm",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp",
+  },
+  {
+    id: 2,
+    name: "Artistic Flair",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp",
+  },
+  {
+    id: 3,
+    name: "Executive Edge",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp",
+  },
+  {
+    id: 4,
+    name: "Fresh Start",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp",
+  },
+  {
+    id: 5,
+    name: "Eco Essence",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp",
+  },
+  {
+    id: 6,
+    name: "Naval Professional",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp",
+  },
+  {
+    id: 7,
+    name: "Classic Centered",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp",
+  },
+  {
+    id: 8,
+    name: "Split Modern",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp",
+  },
+  {
+    id: 9,
+    name: "Stanford Minimalist",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp",
+  },
 ];
 
 const covertemplate = [
-  { id: 1, name: "Classic Professional", image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp" },
-  { id: 2, name: "Modern Header", image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp" },
-  { id: 3, name: "Classic Framed", image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp" },
-  { id: 4, name: "Bold Sidebar", image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp" },
-  { id: 5, name: "Minimalist Centered", image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp" },
-
+  {
+    id: 1,
+    name: "Classic Professional",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp",
+  },
+  {
+    id: 2,
+    name: "Modern Header",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp",
+  },
+  {
+    id: 3,
+    name: "Classic Framed",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp",
+  },
+  {
+    id: 4,
+    name: "Bold Sidebar",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp",
+  },
+  {
+    id: 5,
+    name: "Minimalist Centered",
+    image:
+      "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp",
+  },
 ];
 
 const dateFormats = [
@@ -225,7 +294,7 @@ export default function EditorRightSideBar({
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(datetype);
-  console.log(value)
+  //console.log(value)
   const [search, setSearch] = useState("");
 
   const filteredFormats = useMemo(() => {
@@ -239,7 +308,7 @@ export default function EditorRightSideBar({
         )
     );
   }, [search]);
-  console.log(CoverData, ResumeData);
+  //console.log(CoverData, ResumeData);
 
   const [segment, setSegment] = useState("");
 
@@ -273,7 +342,7 @@ export default function EditorRightSideBar({
       | "column3"
       | undefined;
 
-    console.log(sourceColumn, "- source col, ", sourceIndex, "- source indx");
+    //console.log(sourceColumn, "- source col, ", sourceIndex, "- source indx");
 
     if (!sourceColumn || !destColumn) {
       console.error("Invalid source or destination column");
@@ -418,55 +487,55 @@ export default function EditorRightSideBar({
                 <div className="grid grid-cols-2 gap-4 pr-4">
                   {!show
                     ? covertemplate.map((template) => (
-                      <SheetClose asChild key={template.id}>
-                        <Button
-                          variant="outline"
-                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                          onClick={() => {
-                            setSelectedTemplate(template.name);
-                            dispatch(UpdateId(template.id));
-                          }}
-                        >
-                          <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
-                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                            <Image
-                              src={template.image}
-                              alt={`${template.name} template`}
-                              fill
-                              className="absolute inset-0 w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                          </div>
-                          <div className="p-2 text-center font-medium">
-                            {template.name}
-                          </div>
-                        </Button>
-                      </SheetClose>
-                    ))
+                        <SheetClose asChild key={template.id}>
+                          <Button
+                            variant="outline"
+                            className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            onClick={() => {
+                              setSelectedTemplate(template.name);
+                              dispatch(UpdateId(template.id));
+                            }}
+                          >
+                            <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
+                              <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
+                              <Image
+                                src={template.image}
+                                alt={`${template.name} template`}
+                                fill
+                                className="absolute inset-0 w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            </div>
+                            <div className="p-2 text-center font-medium">
+                              {template.name}
+                            </div>
+                          </Button>
+                        </SheetClose>
+                      ))
                     : templates.map((template) => (
-                      <SheetClose asChild key={template.id}>
-                        <Button
-                          variant="outline"
-                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                          onClick={() => {
-                            setSelectedTemplate(template.name);
-                            dispatch(UpdateId(template.id));
-                          }}
-                        >
-                          <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
-                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                            <img
-                              src={template.image}
-                              alt={`${template.name} template`}
-                              className="absolute inset-0 w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="p-2 text-center font-medium">
-                            {template.name}
-                          </div>
-                        </Button>
-                      </SheetClose>
-                    ))}
+                        <SheetClose asChild key={template.id}>
+                          <Button
+                            variant="outline"
+                            className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            onClick={() => {
+                              setSelectedTemplate(template.name);
+                              dispatch(UpdateId(template.id));
+                            }}
+                          >
+                            <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
+                              <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
+                              <img
+                                src={template.image}
+                                alt={`${template.name} template`}
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="p-2 text-center font-medium">
+                              {template.name}
+                            </div>
+                          </Button>
+                        </SheetClose>
+                      ))}
                 </div>
               </div>
             </SheetContent>
@@ -512,12 +581,8 @@ export default function EditorRightSideBar({
                                     >
                                       <GripVertical className="h-3 w-3 md:w-4 md:h-4 text-primary-foreground/85 mr-2" />
                                       <span className="truncate text-xs md:text-sm">
-                                        {sectionName
-                                          .charAt(0)
-                                          .toUpperCase() +
-                                          sectionName.slice(
-                                            1
-                                          )}
+                                        {sectionName.charAt(0).toUpperCase() +
+                                          sectionName.slice(1)}
                                       </span>
                                     </div>
                                   )}
@@ -721,7 +786,7 @@ export default function EditorRightSideBar({
                         onSelect={(currentValue) => {
                           setValue(currentValue);
                           dispatch(updateDateType(currentValue));
-                          console.log(currentValue);
+                          //console.log(currentValue);
                           setOpen(false);
                           // Here you would dispatch an action to update Redux
                           // For example: dispatch(updateDateFormat(currentValue))
@@ -873,8 +938,9 @@ export default function EditorRightSideBar({
               const url = URL.createObjectURL(blob); // Generate a download URL
               const link = document.createElement("a"); // Create a hidden <a> element
               link.href = url;
-              link.download = `${segment === "editor" ? "resume.json" : "coverletter.json"
-                }`; // Set the filename
+              link.download = `${
+                segment === "editor" ? "resume.json" : "coverletter.json"
+              }`; // Set the filename
               link.click(); // Trigger download
               URL.revokeObjectURL(url); // Clean up the URL after download
             }}

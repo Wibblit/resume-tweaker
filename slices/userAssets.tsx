@@ -23,7 +23,7 @@ const userAssets = createSlice({
   initialState,
   reducers: {
     updateCredits(state, action) {
-      console.log(action.payload);
+      //console.log(action.payload);
       state.credits = action.payload;
     },
     updateResumeSlot(state, action) {

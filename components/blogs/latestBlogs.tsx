@@ -58,7 +58,7 @@
 //       try {
 //         const response = await fetch("/api/get-blogs");
 //         const data: Blog[] = await response.json();
-//         console.log(data)
+//         //console.log(data)
 //         setBlogs(data ? data : []);
 //       } catch (error) {
 //         console.error("Error fetching blogs:", error);
@@ -213,7 +213,7 @@ export default function LatestBlogs() {
       try {
         const response = await fetch("/api/get-blogs");
         const data: Blog[] = await response.json();
-        console.log(data)
+        //console.log(data)
         setBlogs(data ? data : []);
       } catch (error) {
         console.error("Error fetching blogs:", error);
@@ -232,19 +232,18 @@ export default function LatestBlogs() {
           Latest Blogs
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {isLoading
-            ? Array(6)
+          {isLoading ? (
+            Array(6)
               .fill(0)
               .map((_, index) => <SkeletonBlogCard key={index} />)
-            : blogs.length === 0 ? <div className="md:col-span-3">
+          ) : blogs.length === 0 ? (
+            <div className="md:col-span-3">
               <h2 className="text-xl font-semibold">No Blogs Yet</h2>
               <p>Check back later for latest blog posts.</p>
-            </div> : blogs.map((blog) => (
-              <Link
-                href={`blogs/${blog.slug}`}
-                key={blog.id}
-                className="group"
-              >
+            </div>
+          ) : (
+            blogs.map((blog) => (
+              <Link href={`blogs/${blog.slug}`} key={blog.id} className="group">
                 <Card className="cursor-pointer h-full overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
                   <CardHeader className="p-0">
                     <div className="overflow-hidden">
@@ -281,7 +280,8 @@ export default function LatestBlogs() {
                   </div>
                 </Card>
               </Link>
-            ))}
+            ))
+          )}
         </div>
       </div>
     </section>

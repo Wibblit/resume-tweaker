@@ -17,7 +17,7 @@ export function MicroPhone({ recognizer, loading }: MicroPhoneProps) {
   const [muted, setMuted] = useState(true);
 
   const startRecording = useCallback(async () => {
-    console.log("reached")
+    //console.log("reached")
     if (!recognizer) return;
 
     if (!muted) {
@@ -25,14 +25,12 @@ export function MicroPhone({ recognizer, loading }: MicroPhoneProps) {
       return;
     }
 
-
     if (recognizer) {
       setMuted(false);
 
       if (!micStream) {
         let mediaStream = null;
         try {
-
           mediaStream = await navigator.mediaDevices.getUserMedia({
             video: false,
             audio: {
@@ -47,7 +45,9 @@ export function MicroPhone({ recognizer, loading }: MicroPhoneProps) {
           });
           micStream.setStream(mediaStream);
 
-          micStream.on("data", (chunk:any) => recognizer.acceptWaveform(chunk));
+          micStream.on("data", (chunk: any) =>
+            recognizer.acceptWaveform(chunk)
+          );
         } catch (error) {
           console.error("error: ", error);
         }

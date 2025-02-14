@@ -13,9 +13,9 @@ const DataExport = () => {
   const handleJSONExport = async () => {
     try {
       const { resumes, coverLetters } = await getUserData();
-      console.log("resumes:", resumes); // Already an array
-      console.log("coverLetters:", coverLetters); // Already an array
-  
+      //console.log("resumes:", resumes); // Already an array
+      //console.log("coverLetters:", coverLetters); // Already an array
+
       const exportData = {
         resumes: resumes, // No need to parse, already an array
         coverLetters: coverLetters, // No need to parse, already an array
@@ -28,7 +28,7 @@ const DataExport = () => {
           day: "numeric",
         }),
       };
-  
+
       // Create and download file
       const blob = new Blob([JSON.stringify(exportData, null, 2)], {
         type: "application/json",
@@ -58,7 +58,7 @@ const DataExport = () => {
       });
     }
   };
-  
+
   const handleCSVExport = async () => {
     try {
       const { resumes, coverLetters } = await getUserData();
@@ -94,11 +94,13 @@ const DataExport = () => {
             "Profile",
             profileData.id || "N/A",
             profileData.name || "N/A",
-            new Date(profileData.createdAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-            }).replace(/\//g, "-") || "N/A", // No creation date for profile
+            new Date(profileData.createdAt)
+              .toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })
+              .replace(/\//g, "-") || "N/A", // No creation date for profile
             "N/A", // No update date for profile
           ].join(",")
         );
