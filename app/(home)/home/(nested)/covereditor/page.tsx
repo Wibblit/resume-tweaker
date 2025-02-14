@@ -1,6 +1,11 @@
 import CoverEditor from "@/components/coverEditor";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata : Metadata = {
+  title: "Cover Editor"
+}
 
 export default async function CoverBuilder() {
   const session = await auth();

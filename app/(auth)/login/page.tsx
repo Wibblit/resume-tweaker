@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { prisma } from "@/prisma";
 
 export const metadata: Metadata = {
-  title: "Login | ResumeTweaker",
+  title: "Login",
   description:
     "Login to Resumetweaker, Supercharge your job search with AI resume builder, review, and personalised interviews.",
   alternates: {

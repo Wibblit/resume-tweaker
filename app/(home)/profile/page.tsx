@@ -4,7 +4,10 @@ import { auth } from "@/auth";
 import { cache } from "react";
 import { ResumeData } from "@/types/types";
 // import { getPaymentStatus } from "@/actions/payments/getPaymentStatus";
-
+import { Metadata } from "next";
+export const metadata : Metadata = {
+  title: "Profile"
+}
 export async function generateStaticParams() {
   // Fetch the profile data for the authenticated user
   const profileData = (await getProfileData()) as ResumeData;

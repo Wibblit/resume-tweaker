@@ -3,6 +3,11 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/prisma";
 
+import { Metadata } from "next";
+export const metadata : Metadata = {
+  title: "AI Review"
+}
+
 export default async function AIReviewPage() {
   const session = await auth();
   if (!session?.user) return redirect("/login?callbackUrl=/home/ai-review");

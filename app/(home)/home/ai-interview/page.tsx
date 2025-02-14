@@ -2,7 +2,10 @@ import Interview from "@/components/Interview/interviewPage";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/prisma";
-
+import { Metadata } from "next";
+export const metadata : Metadata = {
+  title: "AI Interview"
+}
 export default async function AIInterviewPage() {
   const session = await auth();
   console.log("session:KJDSKJGFJSHDF",session)
