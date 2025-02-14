@@ -43,30 +43,30 @@ export default function Pricing() {
     {
       name: "Starter",
       baseCredits: 200,
-      price: "299",
+      price: "$1.8",
       popular: false,
-      productId: "pdt_DyYl9HeGUDa1yPqwLnx4Q",
+      productId: "pdt_gsNpgeKNizV1AeiZrGsaX",
     },
     {
       name: "Essential",
       baseCredits: 400,
-      price: "458",
+      price: "$4.8",
       popular: true,
-      productId: "pdt_xDPkyF0HvKOsJ0TsWVQ90",
+      productId: "pdt_L8BbmP4uUpQZgzVmYO2aU",
     },
     {
       name: "Power",
       baseCredits: 1000,
-      price: " ",
+      price: "$9.6",
       popular: false,
-      productId: "",
+      productId: "pdt_XNk13NQTdOsnpO3PyirKL",
     },
     {
       name: "Super Saver",
       baseCredits: 2000,
-      price: " ",
+      price: "$18",
       popular: false,
-      productId: "",
+      productId: "pdt_Ei4A7ub9Ng6238xLpi33h",
     },
   ];
 
@@ -79,7 +79,7 @@ export default function Pricing() {
     setQuantity(newQuantity);
     if (selectedPlan) {
       router.push(
-        `https://test.checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=https://resume-tweaker-development.vercel.app/profile&email=${session?.user.email}&metadata_user_id=${session?.user.id}&metadata_packname=${selectedPlan.name}&metadata_credits=${selectedPlan.baseCredits}&disableEmail=true`
+        `https://checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=https://resumetweaker.wibblit.com/profile&email=${session?.user.email}&metadata_user_id=${session?.user.id}&metadata_packname=${selectedPlan.name}&metadata_credits=${selectedPlan.baseCredits}&disableEmail=true`
       );
     }
   };
@@ -93,19 +93,13 @@ export default function Pricing() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            <GradientText>
-              Simple, Transparent Pricing
-            </GradientText>
+            <GradientText>Simple, Transparent Pricing</GradientText>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Choose the perfect plan for your career growth. All plans include
-            {" "}
-            <span className="text-primary font-semibold">
-              full access
-            </span> to our AI-powered tools. We accept {" "}
-            <span className="text-primary font-semibold">
-              100+
-            </span> currencies.
+            Choose the perfect plan for your career growth. All plans include{" "}
+            <span className="text-primary font-semibold">full access</span> to
+            our AI-powered tools. We accept{" "}
+            <span className="text-primary font-semibold">100+</span> currencies.
           </p>
         </div>
 
@@ -113,13 +107,15 @@ export default function Pricing() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col pb-4 ${plan.popular ? "border-primary shadow-lg scale-105" : ""
-                }`}
+              className={`relative flex flex-col pb-4 ${
+                plan.popular ? "border-primary shadow-lg scale-105" : ""
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <span className="bg-primary text-primary-foreground text-sm font-medium md:px-3 px-2 py-1 rounded-full flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-background" /> <span className="text-nowrap">Most Popular</span>
+                    <Star className="w-4 h-4 fill-background" />{" "}
+                    <span className="text-nowrap">Most Popular</span>
                   </span>
                 </div>
               )}
@@ -153,9 +149,9 @@ export default function Pricing() {
                   className="w-full"
                   onClick={() => {
                     if (!session) {
-                      return router.push("/login")
+                      return router.push("/login");
                     }
-                    handleGetStarted(plan)
+                    handleGetStarted(plan);
                   }}
                   variant={plan.popular ? "default" : "outline"}
                 >
@@ -172,8 +168,9 @@ export default function Pricing() {
             onClose={() => setIsDialogOpen(false)}
             onConfirm={handleConfirmQuantity}
             title={`Purchase ${selectedPlan.name} Credits`}
-            description={`Each ${selectedPlan.name
-              } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
+            description={`Each ${
+              selectedPlan.name
+            } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
             initialQuantity={1}
             maxQuantity={10}
             baseCredits={selectedPlan.baseCredits}
