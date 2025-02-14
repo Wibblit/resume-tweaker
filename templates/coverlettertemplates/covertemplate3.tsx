@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch,useAppSelector } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { PAGE_FORMATS } from "@/components/coverPage";
@@ -18,7 +18,7 @@ interface CoverLetterTemplateProps {
   pageFormat: "a4" | "letter";
 }
 
-const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
+const CoverTemplate3: React.FC<CoverLetterTemplateProps> = ({
   content,
   baseColor,
   fontSize,
@@ -86,7 +86,6 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
           }
           .cover-letter p {
             // color: black;
-            font-size: ${1.3 * fontSize}px;
             line-height: ${1.6 * fontSize}px;
             white-space: pre-wrap; 
             word-wrap: break-word; 
@@ -100,12 +99,12 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
       </div>
       {/* Cover Letter Content */}
       <div style={{ padding: `${margin}mm`, position: "relative", zIndex: 1 }}>
-        <div style={styles.section}>
-          {content.date && <p>{formatDate(content.date, datetype)}</p>}
-        </div>
-
-        <div style={styles.section}>
-          <p style={{ textAlign: "right" }}>{content.recipientInfo}</p>
+        <div className="flex justify-between" style={styles.section}>
+          <div className="">
+            <p >{content.senderInfo}</p>
+            {content.date && <p>{formatDate(content.date, datetype)}</p>}
+          </div>
+          <p>{content.recipientInfo}</p>
         </div>
 
         <div style={styles.section}>
@@ -156,4 +155,4 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
   );
 };
 
-export default CoverTemplate1;
+export default CoverTemplate3;

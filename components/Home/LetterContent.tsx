@@ -57,7 +57,7 @@ export default function LetterContent({
       image: "/templates/ctemplate1.avif",
     },
     { id: 2, name: "Modern Header", image: "/templates/ctemplate2.avif" },
-    { id: 3, name: "Blue Framed", image: "/templates/ctemplate3.avif" },
+    { id: 3, name: "Classic Framed", image: "/templates/ctemplate3.avif" },
     { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.avif" },
     { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
   ];

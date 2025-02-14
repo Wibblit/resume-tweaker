@@ -16,7 +16,7 @@ interface CoverLetterTemplateProps {
   margin: number;
 }
 
-export default function Component({
+export default function CoverTemplate5({
   content,
   baseColor,
   fontSize,
@@ -33,8 +33,7 @@ export default function Component({
       lineHeight: `${lineHeight}`,
       color: "#000",
       padding: `${margin}mm`,
-      maxWidth: "210mm", // A4 width
-      margin: "0 auto",
+      height: "100%",
       backgroundColor: "#fff",
     },
     section: {
@@ -74,52 +73,46 @@ export default function Component({
           }
         `}
       </style>
-      <div style={styles.section}>
-        <p style={styles.subject}>{content.subject}</p>{" "}
-        {/* Updated to use new styles */}
-      </div>
-      <div style={styles.header}>
-        {content.date && <p>{formatDate(content.date, datetype)}</p>}
-        <p>{content.senderInfo}</p>
-        <p>{content.recipientInfo}</p>
-      </div>
-
-      <div style={styles.section}>
-        <p>{content.salutation}</p>
-      </div>
-
-      <div style={styles.section}>
-        <HTMLViewer lineHeight={lineHeight} content={content.opening} />
-      </div>
-
-      <div style={styles.section}>
-        <HTMLViewer
-          lineHeight={lineHeight}
-          content={content.interestInPosition}
-        />
-      </div>
-
-      <div style={styles.section}>
-        <HTMLViewer
-          lineHeight={lineHeight}
-          content={content.professionalSummary}
-        />
-      </div>
-
-      <div style={styles.section}>
-        <HTMLViewer lineHeight={lineHeight} content={content.keyAchievements} />
-      </div>
-
-      <div style={styles.section}>
-        <HTMLViewer lineHeight={lineHeight} content={content.culturalFit} />
-      </div>
-
-      <div style={styles.section}>
-        <HTMLViewer lineHeight={lineHeight} content={content.closing} />
-      </div>
-
-      <div style={styles.footer}>
-        <p>{content.signOff}</p>
+      <div className="h-full overflow-hidden">
+        <div style={styles.section}>
+          <p style={styles.subject}>{content.subject}</p>{" "}
+          {/* Updated to use new styles */}
+        </div>
+        <div style={styles.header}>
+          {content.date && <p>{formatDate(content.date, datetype)}</p>}
+          <p>{content.senderInfo}</p>
+          <p>{content.recipientInfo}</p>
+        </div>
+        <div style={styles.section}>
+          <p>{content.salutation}</p>
+        </div>
+        <div style={styles.section}>
+          <HTMLViewer lineHeight={lineHeight} content={content.opening} />
+        </div>
+        <div style={styles.section}>
+          <HTMLViewer
+            lineHeight={lineHeight}
+            content={content.interestInPosition}
+          />
+        </div>
+        <div style={styles.section}>
+          <HTMLViewer
+            lineHeight={lineHeight}
+            content={content.professionalSummary}
+          />
+        </div>
+        <div style={styles.section}>
+          <HTMLViewer lineHeight={lineHeight} content={content.keyAchievements} />
+        </div>
+        <div style={styles.section}>
+          <HTMLViewer lineHeight={lineHeight} content={content.culturalFit} />
+        </div>
+        <div style={styles.section}>
+          <HTMLViewer lineHeight={lineHeight} content={content.closing} />
+        </div>
+        <div style={styles.footer}>
+          <p>{content.signOff}</p>
+        </div>
       </div>
     </div>
   );

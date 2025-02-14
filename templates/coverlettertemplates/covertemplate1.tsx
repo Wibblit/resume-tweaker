@@ -35,9 +35,10 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
     },
     section: {
       marginBottom: "1em",
+      fontSize: `${fontSize}px`,
     },
     heading: {
-      fontSize: "1.2em",
+      fontSize: "1em",
       fontWeight: "bold",
       marginBottom: "0.5em",
     },
@@ -54,7 +55,6 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
           }
           .cover-letter p {
             // color: black;
-            font-size: ${1.3 * fontSize}px;
             line-height: ${1.6 * fontSize}px;
             white-space: pre-wrap; 
             word-wrap: break-word; 
@@ -66,6 +66,10 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
 
       <div style={styles.section}>
         {content.date && <p>{formatDate(content.date, datetype)}</p>}
+      </div>
+      
+      <div style={styles.section}>
+        <p>{content.senderInfo}</p>
       </div>
 
       <div style={styles.section}>
@@ -88,6 +92,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
         <HTMLViewer
           lineHeight={lineHeight}
           content={content.interestInPosition}
+          
         />
       </div>
 
