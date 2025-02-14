@@ -1,553 +1,599 @@
-import React, { useEffect } from "react";
-import { cn, isEmptyString, isUrl } from "@/lib/utils";
-import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import { ResumeData } from "@/types/types";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { MapPin, Mail, Phone, Globe, Linkedin, Github } from "lucide-react";
+"use client";
 
-interface TemplateProps {
+import React from "react";
+import { ResumeData } from "@/types/types";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
+import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
+import HTMLViewer from "@/components/HTMLViewer";
+import { SocialIcon } from "react-social-icons";
+import { formatDate } from "@/utils/formatDate";
+
+type SectionName =
+  | "summary"
+  | "experience"
+  | "education"
+  | "skills"
+  | "projects"
+  | "certifications"
+  | "languages"
+  | "profiles"
+  | "basics"
+  | "references"
+  | "volunteer"
+  | "publications"
+  | "awards";
+
+interface ModernResumeTemplateProps {
   content: ResumeData;
   baseColor: string;
   fontSize: number;
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
-const Link: React.FC<{
-  url: { href: string; label: string };
-  icon?: React.ReactNode;
-  iconOnRight?: boolean;
-  label?: string;
-  className?: string;
-}> = ({ url, icon, iconOnRight, label, className }) => {
-  if (!isUrl(url?.href)) return null;
-
-  return (
-    <div className="flex items-center gap-x-1.5">
-      {!iconOnRight &&
-        (icon ?? (
-          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
-        ))}
-      <a
-        href={url.href}
-        target="_blank"
-        rel="noreferrer noopener nofollow"
-        className={cn("inline-block", className)}
-        style={{ color: "currentColor" }}
-      >
-        {label ?? (url.label || url.href)}
-      </a>
-      {iconOnRight &&
-        (icon ?? (
-          <i className="ph ph-bold ph-link" style={{ color: "currentColor" }} />
-        ))}
-    </div>
-  );
-};
-
-const LinkedEntity: React.FC<{
-  name: string;
-  url: { href: string; label: string };
-  separateLinks: boolean;
-  className?: string;
-}> = ({ name, url, separateLinks, className }) => {
-  return !separateLinks && isUrl(url.href) ? (
-    <Link
-      url={url}
-      label={name}
-      icon={
-        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
-      }
-      iconOnRight={true}
-      className={className}
-    />
-  ) : (
-    <div className={className}>{name}</div>
-  );
-};
-
-const Section: React.FC<{
-  title: string;
-  children: React.ReactNode;
-  baseColor: string;
-}> = ({ title, children, baseColor }) => {
-  return (
-    <section
-      className="mt-4 pt-4"
-      style={{ borderTop: `1px solid ${baseColor}` }}
-    >
-      <h4 className="mb-2 text-base font-bold" style={{ color: baseColor }}>
-        {title}
-      </h4>
-      <div>{children}</div>
-    </section>
-  );
-};
-
-const Header: React.FC<{
-  basics: any;
-  baseColor: string;
-  fontSize: number;
-  lineHeight: number;
-}> = ({ basics, baseColor, fontSize, lineHeight }) => {
-  const scaleFactor = fontSize / 16;
-  const styles = {
-    container: {
-      backgroundColor: baseColor,
-      borderRadius: "8px",
-      padding: "1.5rem",
-      color: "white",
-      fontSize: `${fontSize}px`,
-      lineHeight: lineHeight,
-    },
-    name: {
-      fontSize: `${2 * scaleFactor}rem`,
-      fontWeight: "bold",
-      marginBottom: "0.5rem",
-    },
-    headline: {
-      fontSize: `${1.2 * scaleFactor}rem`,
-      marginBottom: "1rem",
-    },
-    details: {
-      fontSize: `${scaleFactor}rem`,
-    },
-  };
-
-  return (
-    <div style={styles.container}>
-      <h2 style={styles.name}>{basics?.name}</h2>
-      <p className="text-white" style={styles.headline}>
-        {basics?.headLine}
-      </p>
-      <hr style={{ borderColor: "white", opacity: 0.5, margin: "1rem 0" }} />
-      <div
-        style={styles.details}
-        className="flex flex-wrap items-center gap-x-2 gap-y-0.5"
-      >
-        {basics?.location && (
-          <>
-            <div className="mr-2 flex items-center gap-x-1.5">
-              <i className="ph ph-bold ph-map-pin" />
-              <div>{basics?.location}</div>
-            </div>
-            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
-          </>
-        )}
-        {basics?.phone && (
-          <>
-            <div className="mr-2 flex items-center gap-x-1.5">
-              <i className="ph ph-bold ph-phone" />
-              <a href={`tel:${basics?.phone}`} target="_blank" rel="noreferrer">
-                {basics?.phone}
-              </a>
-            </div>
-            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
-          </>
-        )}
-        {basics?.email && (
-          <>
-            <div className="mr-2 flex items-center gap-x-1.5">
-              <i className="ph ph-bold ph-at" />
-              <a
-                href={`mailto:${basics?.email}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {basics?.email}
-              </a>
-            </div>
-            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
-          </>
-        )}
-        {isUrl(basics?.url?.href) && (
-          <>
-            <Link url={basics?.url} />
-            <div className="size-1 rounded-full bg-white opacity-50 last:hidden" />
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const ResumeTemplate: React.FC<TemplateProps> = ({
+export default function Component({
   content,
   baseColor,
   fontSize,
   fontFamily,
   lineHeight,
   margin,
-}) => {
-  const dispatch = useAppDispatch();
+  pageIndex,
+}: ModernResumeTemplateProps) {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
   );
-  console.log(sectionOrder);
-  const scaleFactor = fontSize / 16;
+  const dispatch = useAppDispatch();
+  const isIcons = useAppSelector((state) => state?.rightsidebar?.icons);
+  const isSeperator = useAppSelector((state) => state?.rightsidebar?.separator);
 
-  useEffect(() => {
-    dispatch(UpdateBaseColor("#ca8a04"));
-  }, [dispatch]);
+  React.useEffect(() => {
+    dispatch(UpdateBaseColor(baseColor));
+  }, [dispatch, baseColor]);
 
-  const styles = {
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+
+  const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,
       fontSize: `${fontSize}px`,
       lineHeight: `${lineHeight}`,
-      color: "black",
-      padding: `${margin}mm`,
-      height: "100%",
+      color: "#000",
+      padding: 0,
+      display: "flex",
+      minHeight: "1122.66px",
     },
-    body: {
-      fontSize: `${1.1 * scaleFactor}rem`,
-      color: "black",
+    ribbon: {
+      width: "50px",
+      backgroundColor: baseColor,
+      flexShrink: 0,
+      minHeight: "1122.66px",
+    },
+    content: {
+      flex: 1,
+      padding: `${margin}mm`,
+    },
+    sectionTitle: {
+      color: baseColor,
+      fontSize: "1.4em",
+      fontWeight: "bold",
+      marginBottom: "1em",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+      borderBottom: isSeperator ? `2px solid ${baseColor}` : "none", // Conditional border
+    },
+    subtitle: {
+      fontSize: "1.2em",
+      fontWeight: "bold",
+      color: "#000",
+    },
+    normal: {
+      fontSize: "1.2em",
+      color: "#000",
+    },
+    link: {
+      color: baseColor,
+      textDecoration: "none",
     },
   };
 
-  const renderSection = (sectionName: string) => {
+  const renderSection = (sectionName: SectionName) => {
     switch (sectionName) {
-      case "summary":
+      case "basics":
+        const basics = content.basics?.[0];
+        if (!basics) return null;
         return (
-          content.summary &&
-          content.summary.length > 0 && (
-            <Section title="Summary" baseColor={baseColor}>
-              <div
-                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-                style={styles.body}
-                className="text-justify"
-              />
-            </Section>
-          )
+          <div className="mb-6">
+            <h1
+              className="text-6xl font-bold tracking-tight mb-4"
+              style={{ fontSize: "3rem" }}
+            >
+              {basics.name}
+            </h1>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              {basics.location && <span>{basics.location}</span>}
+              {basics.phone && (
+                <>
+                  <span>|</span>
+                  <span>{basics.phone}</span>
+                </>
+              )}
+              {basics.email && (
+                <>
+                  <span>|</span>
+                  <span>{basics.email}</span>
+                </>
+              )}
+              {basics.url && (
+                <>
+                  <span>|</span>
+                  <a
+                    href={basics.url.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {basics.url.label}
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
         );
-      case "experience":
+
+      case "summary":
+        if (!content.summary?.length) return null;
         return (
-          content.experience &&
-          content.experience.length > 0 && (
-            <Section title="Experience" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.experience.map((exp, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-bold">{exp.organization}</div>
-                        <div>{exp.role}</div>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${exp.startDate} - ${exp.endDate}`}</div>
-                        <div>{exp.location}</div>
-                      </div>
-                    </div>
-                    {exp.summary && !isEmptyString(exp.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: exp.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
+          <section className="mb-6">
+            <HTMLViewer
+              lineHeight={lineHeight}
+              content={content.summary[0].content}
+            />
+          </section>
+        );
+
+      case "experience":
+        if (!content.experience?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Experience</h2>
+            {content.experience.map((exp, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <h3 className="font-bold">{exp.organization}</h3>
+                    <p className="text-gray-600 italic">{exp.role}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">
+                      {exp.startDate && formatDate(exp.startDate, datetype)}
+                      {exp.endDate && " - "}
+                      {exp.endDate && formatDate(exp.endDate, datetype)}
+                    </p>
+                    <p className="text-gray-600">{exp.location}</p>
+                  </div>
+                </div>
+                {exp.summary && (
+                  <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
+                )}
+              </div>
+            ))}
+          </section>
+        );
+
+      case "education":
+        if (!content.education?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Education</h2>
+            {content.education.map((edu, index) => (
+              <div key={index} className="mb-4">
+                <div className="flex-col justify-between items-start mb-1">
+                  <div className="text-right flex items-center justify-between">
+                    <h3 className="font-bold">{edu.institution}</h3>
+                    <p className="font-bold">
+                      {edu.startDate && formatDate(edu.startDate, datetype)}
+                      {edu.endDate && " - "}
+                      {edu.endDate && formatDate(edu.endDate, datetype)}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between w-full">
+                    <p className="text-gray-600">
+                      {edu.degree}
+                      {edu.field && `, ${edu.field}`}
+                    </p>
+                    {edu.score && (
+                      <p className="text-gray-600">
+                        GPA: <span className="font-bold">{edu.score}</span>
+                      </p>
                     )}
                   </div>
-                ))}
+                </div>
               </div>
-            </Section>
-          )
+            ))}
+          </section>
         );
+
       case "skills":
+        if (!content.skills?.length) return null;
+
+        // Get all skills in a flat array
+        const allSkills = content.skills.flatMap((category) => category.skills);
+
+        // Calculate how many rows we need (5 items per row)
+        const rowCount = Math.ceil(allSkills.length / 5);
+
+        // Create chunks of 5 skills for each column
+        const columns = [];
+        for (let i = 0; i < rowCount; i++) {
+          columns.push(allSkills.slice(i * 5, (i + 1) * 5));
+        }
         return (
-          content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
-            <Section title="Skills" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Skills</h2>
+            <div className="space-y-4">
+                {content.skills.map((category, index) => (
                   <div key={index} className="space-y-2">
                     <div className="font-bold">{category.name}</div>
-                    <div className="flex flex-wrap gap-2">
-                      {category.skills.map((skill, skillIndex) => (
-                        <span
-                          key={skillIndex}
-                          className="rounded-full px-3 py-1"
-                          style={{
-                            ...styles.body,
-                            backgroundColor: `${baseColor}20`,
-                            color: baseColor,
-                          }}
-                        >
-                          {skill.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )
-        );
-      case "languages":
-        return (
-          content.languages &&
-          content.languages.length > 0 && (
-            <Section title="Languages" baseColor={baseColor}>
-              <div className="space-y-2">
-                {content.languages.map((lang, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="font-bold">{lang.name}</span>
-                    <span>{lang.level}</span>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )
-        );
-      case "education":
-        return (
-          content.education &&
-          content.education.length > 0 && (
-            <Section title="Education" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.education.map((edu, index) => (
-                  <div key={index} className="flex items-start justify-between">
                     <div>
-                      <div className="font-bold">{edu.institution}</div>
-                      <div>{edu.field}</div>
-                      <div>{edu.score}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div className="font-bold">{`${edu.startDate} - ${edu.endDate}`}</div>
-                      <div>{edu.degree}</div>
+                      {category.skills
+                        .map((skill) =>
+                          skill.level && skill.level.trim() !== ""
+                            ? `${skill.name} (${skill.level})`
+                            : skill.name
+                        )
+                        .join(", ")}
                     </div>
                   </div>
                 ))}
               </div>
-            </Section>
-          )
+          </section>
         );
-      case "certifications":
-        return (
-          content.certifications &&
-          content.certifications.length > 0 && (
-            <Section title="Certifications" baseColor={baseColor}>
-              <div className="space-y-2">
-                {content.certifications.map((cert, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between"
-                  >
-                    <LinkedEntity
-                      name={cert.name}
-                      url={cert.url}
-                      separateLinks={false}
-                      className="font-bold"
-                    />
-                    <div>{cert.date}</div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )
-        );
+
       case "projects":
+        if (!content.projects?.length) return null;
         return (
-          content.projects &&
-          content.projects.length > 0 && (
-            <Section title="Projects" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.projects.map((project, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <LinkedEntity
-                        name={project.name}
-                        url={project.url}
-                        separateLinks={false}
-                        className="font-bold"
-                      />
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${project.startDate} - ${project.endDate}`}</div>
-                      </div>
-                    </div>
-                    {project.summary && !isEmptyString(project.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: project.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
-                    )}
-                    {project.keywords && project.keywords.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        {project.keywords.map((keyword, keywordIndex) => (
-                          <span
-                            key={keywordIndex}
-                            className="rounded-full px-3 py-1"
-                            style={{
-                              ...styles.body,
-                              backgroundColor: `${baseColor}20`,
-                              color: baseColor,
-                            }}
-                          >
-                            {keyword}
-                          </span>
-                        ))}
-                      </div>
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Projects</h2>
+            {content.projects.map((project, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div className="flex items-center">
+                    <h3 className="font-bold">{project.name}</h3>
+                    {project.url && (
+                      <a
+                        href={project.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.link}
+                        className="text-xs ml-2"
+                      >
+                        {project.url.label}
+                      </a>
                     )}
                   </div>
-                ))}
-              </div>
-            </Section>
-          )
-        );
-      case "volunteerings":
-        console.log(content.volunteer);
-        return (
-          content.volunteer &&
-          content.volunteer.length > 0 && (
-            <Section title="Volunteer Experience" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.volunteer.map((vol, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-bold">{vol.organization}</div>
-                        <div>{vol.role}</div>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${vol.startDate} - ${vol.endDate}`}</div>
-                        <div>{vol.location}</div>
-                      </div>
-                    </div>
+                  <div className="text-right">
+                    <p className="font-bold">
+                      {project.startDate &&
+                        formatDate(project.startDate, datetype)}
+                      {project.endDate && " - "}
+                      {project.endDate && formatDate(project.endDate, datetype)}
+                    </p>
                   </div>
-                ))}
+                </div>
+                <HTMLViewer lineHeight={lineHeight} content={project.summary} />
+                {project.keywords && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {project.keywords.map((keyword, keywordIndex) => (
+                      <span
+                        key={keywordIndex}
+                        className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded"
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            </Section>
-          )
+            ))}
+          </section>
         );
-      case "awards":
+
+      case "certifications":
+        if (!content.certifications?.length) return null;
         return (
-          content.awards &&
-          content.awards.length > 0 && (
-            <Section title="Awards" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.awards.map((award, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-bold">{award.title}</div>
-                        <div>{award.awarder}</div>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">{award.date}</div>
-                      </div>
-                    </div>
-                    {award.summary && !isEmptyString(award.summary) && (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: award.summary }}
-                        style={styles.body}
-                        className="text-justify"
-                      />
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
+            {content.certifications.map((cert, index) => (
+              <div key={index} className="mb-4">
+                <div className="flex-col justify-between items-start mb-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold">{cert.name}</h3>
+                    <p className="font-bold">
+                      {cert.date && formatDate(cert.date, datetype)}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-gray-600">{cert.issuer}</p>
+                    {cert.url && (
+                      <a
+                        href={cert.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.link}
+                        className="text-xs"
+                      >
+                        {cert.url.label}
+                      </a>
                     )}
                   </div>
-                ))}
+                </div>
               </div>
-            </Section>
-          )
+            ))}
+          </section>
         );
-      case "publications":
+
+      case "languages":
+        if (!content.languages?.length) return null;
         return (
-          content.publications &&
-          content.publications.length > 0 && (
-            <Section title="Publications" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.publications.map((pub, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
-                      <LinkedEntity
-                        name={pub.name}
-                        url={pub.url}
-                        separateLinks={false}
-                        className="font-bold"
-                      />
-                      <div className="shrink-0 text-right">
-                        <div className="font-bold">{pub.date}</div>
-                      </div>
-                    </div>
-                    <div>{pub.publisher}</div>
-                    <div>{pub.publishedIn}</div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Languages</h2>
+            <div className="flex gap-4 flex-wrap">
+              {content.languages.map((lang, index) => (
+                <div key={index} className="mb-2 flex-nowrap">
+                  <span className="font-bold">{lang.name}</span>
+                  {lang.level && (
+                    <span className="ml-2 text-gray-600">: {lang.level}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
         );
-      case "references":
-        return (
-          content.references &&
-          content.references.length > 0 && (
-            <Section title="References" baseColor={baseColor}>
-              <div className="space-y-4">
-                {content.references.map((ref, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="font-bold">{ref.name}</div>
-                    <div>{ref.phone}</div>
-                    <div>{ref.email}</div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )
-        );
-      case "basics":
-        return (
-          content.basics && (
-            <Header
-              basics={content.basics[0]}
-              baseColor={baseColor}
-              fontSize={fontSize}
-              lineHeight={lineHeight}
-            />
-          )
-        );
+
       case "profiles":
+        if (!content.profiles?.length) return null;
         return (
-          content.profiles &&
-          content.profiles.length > 0 && (
-            <Section title="Profiles" baseColor={baseColor}>
-              <div className="flex space-x-4">
-                {content.profiles.map((profile, index) => (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Profiles</h2>
+            <div className="flex flex-wrap gap-4">
+              {content.profiles.map((profile, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  {isIcons && profile.url.href !== "" && (
+                    <SocialIcon
+                      style={{ width: "24px", height: "24px" }}
+                      url={profile.url.href}
+                    />
+                  )}
                   <a
-                    key={index}
                     href={profile.url.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
+                    style={styles.link}
+                    className="text-sm"
                   >
                     {profile.url.label}
                   </a>
-                ))}
-              </div>
-            </Section>
-          )
+                </div>
+              ))}
+            </div>
+          </section>
         );
+
+      case "references":
+        if (!content.references?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>References</h2>
+            <div className="flex flex-wrap gap-4">
+              {content.references.map((ref, index) => (
+                <div key={index} className="mb-4">
+                  <h3 className="font-bold">{ref.name}</h3>
+                  <p className="text-gray-600">{ref.phone}</p>
+                  <p className="text-gray-600">{ref.email}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+
+      case "volunteer":
+        if (!content.volunteer?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Volunteer Experience</h2>
+            {content.volunteer.map((vol, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    <h3 className="font-bold">{vol.organization}</h3>
+                    <p className="text-gray-600 italic">{vol.role}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">
+                      {vol.startDate && formatDate(vol.startDate, datetype)}
+                      {vol.endDate && " - "}
+                      {vol.endDate && formatDate(vol.endDate, datetype)}
+                    </p>
+                    <p className="text-gray-600">{vol.location}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </section>
+        );
+
+      case "publications":
+        if (!content.publications?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Publications</h2>
+            {content.publications.map((pub, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div className="flex items-center">
+                    <p className="font-bold">{pub.name}</p>
+                    {pub.url && (
+                      <a
+                        href={pub.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.link}
+                        className="text-xs ml-2"
+                      >
+                        {pub.url.label}
+                      </a>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">
+                      {pub.date && formatDate(pub.date, datetype)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-600">{pub.publisher}</p>
+                  {pub.publishedIn && (
+                    <p className="text-gray-600">{pub.publishedIn}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </section>
+        );
+
+      case "awards":
+        if (!content.awards?.length) return null;
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>Awards</h2>
+            {content.awards.map((award, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between  items-start mb-1">
+                  <div className="flex items-center">
+                    <h3 className="font-bold">{award.title}</h3>
+                    {award.awarder && (
+                      <p className="text-gray-600">
+                        <span className="mx-1">by</span>
+                        <span className="font-bold">{award.awarder}</span>
+                      </p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold">
+                      {award.date && formatDate(award.date, datetype)}
+                    </p>
+                  </div>
+                </div>
+                {award.summary && (
+                  <HTMLViewer lineHeight={lineHeight} content={award.summary} />
+                )}
+              </div>
+            ))}
+          </section>
+        );
+
       default:
-        return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        ) {
+          return null;
+        }
+
+        return (
+          <section className="mb-6">
+            <h2 style={styles.sectionTitle}>{sectionName}</h2>
+            {content[sectionName]
+              //@ts-ignore
+              .map((item, index) => (
+              <div key={index} className="mb-6">
+                <div className="flex justify-between items-start mb-1">
+                  <div>
+                    {/* Left column content */}
+                    <h3 className="font-bold">{item.name}</h3>
+                    {item.location && (
+                      <p className="text-gray-600 italic">{item.location}</p>
+                    )}
+                    
+                  </div>
+
+                  {/* Right column content */}
+                  <div className="flex flex-col">
+                    <div className="text-right">
+                      {(item.endDate || item.startDate) && (
+                        <p className="font-bold">
+                          {formatDate(item.startDate, datetype)}
+                          {(item.endDate && item.startDate )&& " - "}
+                          {item.endDate && formatDate(item.endDate, datetype)}
+                        </p>
+                      )}
+                    </div>
+                    {item.url && (
+                      <a
+                        href={item.url.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:text-gray-800"
+                      >
+                        {item.url.label}
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Description section */}
+                {item.description && (
+                  <p className="text-gray-600 mt-1">{item.description}</p>
+                )}
+
+                {/* Summary section */}
+                {item.summary && (
+                  <div className="mt-1">
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={item.summary}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
+        );
     }
   };
 
   return (
-    <div style={styles.container} className="p-custom grid grid-cols-2 gap-6">
-      <div className="main col-span-2 space-y-4">
-        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
-      </div>
-      <div className="sidebar col-span-1 space-y-4">
-        {sectionOrder.column2.map((sectionName) => renderSection(sectionName))}
+    <div className="no-ltwave" style={styles.container}>
+      <div style={styles.ribbon} />
+      <div style={styles.content}>
+        <style>
+          {`
+            .no-ltwave * {
+              font-family: inherit;
+            }
+            .no-ltwave p {
+              color: inherit;
+              font-size: ${fontSize}px;
+              line-height: ${lineHeight};
+              white-space: pre-wrap; 
+              word-wrap: break-word; 
+              overflow-wrap: break-word;
+            }
+            .no-ltwave li {
+              color: inherit;
+            }
+          `}
+        </style>
+        {sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
+          renderSection(sectionName as SectionName)
+        )}
       </div>
     </div>
   );
-};
-
-export default ResumeTemplate;
+}

@@ -1,25 +1,25 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
+import { prisma } from "@/prisma";
 
-const prisma = new PrismaClient();
-
-export async function deleteBlog(slug: string) {
-  console.log("reached delete");
+export const deleteBlog = asyncHandler(async (slug: string) => {
   const session = await auth();
-  try {
-    await prisma.blog.deleteMany({
-      where: {
-        slug: slug,
-      },
-    });
-    revalidatePath('/', "layout")
-    return { success: true, message: "Successfully deleted the resume" };
-  } catch (error) {
-    console.error("Error deleting resume:", error);
-    throw new Error("Error deleting the resume");
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+  if (!slug) throw ActionsError.badRequest;
+  if (session.user.email !== process.env.ADMIN_EMAIL)
+    throw ActionsError.unauthorizedAction;
+  await prisma.blog.deleteMany({
+    where: {
+      slug: slug,
+    },
+  });
+  revalidatePath('/', "layout")
+  return {
+    success: true,
+    message: "Successfully deleted the resume",
+    status: 200,
+  };
+});

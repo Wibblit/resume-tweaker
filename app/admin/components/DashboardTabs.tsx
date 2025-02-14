@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { getUsers, getBlogs, getWaitlistMembers } from '@/actions/admin'
+import { getUsers, getBlogs} from '@/actions/admin'
 
 type User = {
   id: string
@@ -31,23 +31,18 @@ type WaitlistMember = {
 type DashboardTabsProps = {
   initialUsers: User[]
   initialBlogs: Blog[]
-  initialWaitlistMembers: WaitlistMember[]
   totalUsers: number
   totalBlogs: number
-  totalWaitlistMembers: number
 }
 
 export function DashboardTabs({
   initialUsers,
   initialBlogs,
-  initialWaitlistMembers,
   totalUsers,
   totalBlogs,
-  totalWaitlistMembers
 }: DashboardTabsProps) {
   const [users, setUsers] = useState(initialUsers)
   const [blogs, setBlogs] = useState(initialBlogs)
-  const [waitlistMembers, setWaitlistMembers] = useState(initialWaitlistMembers)
   const [currentPage, setCurrentPage] = useState({ users: 1, blogs: 1, waitlist: 1 })
   const [isLoading, setIsLoading] = useState({ users: false, blogs: false, waitlist: false })
   const pageSize = 5
@@ -65,10 +60,6 @@ export function DashboardTabs({
       case 'blogs':
         newData = await getBlogs({ page: nextPage, pageSize })
         setBlogs([...blogs, ...newData])
-        break
-      case 'waitlist':
-        newData = await getWaitlistMembers({ page: nextPage, pageSize })
-        setWaitlistMembers([...waitlistMembers, ...newData])
         break
     }
 
@@ -88,10 +79,6 @@ export function DashboardTabs({
       case 'blogs':
         allData = await getBlogs({ page: 1, pageSize: totalBlogs })
         setBlogs(allData)
-        break
-      case 'waitlist':
-        allData = await getWaitlistMembers({ page: 1, pageSize: totalWaitlistMembers })
-        setWaitlistMembers(allData)
         break
     }
 
@@ -177,39 +164,7 @@ export function DashboardTabs({
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="waitlist">
-        <Card>
-          <CardHeader>
-            <CardTitle>Waitlist Members</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Joined At</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {waitlistMembers.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell>{member.email}</TableCell>
-                    <TableCell>{new Date(member.joinedAt).toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <div className="mt-4 flex justify-between">
-              <Button onClick={() => loadMore('waitlist')} disabled={isLoading.waitlist || waitlistMembers.length >= totalWaitlistMembers}>
-                {isLoading.waitlist ? 'Loading...' : 'Load More'}
-              </Button>
-              <Button onClick={() => seeAll('waitlist')} disabled={isLoading.waitlist || waitlistMembers.length >= totalWaitlistMembers}>
-                See All
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
+
     </Tabs>
   )
 }

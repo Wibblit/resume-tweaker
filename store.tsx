@@ -9,7 +9,10 @@ import leftsidebarReducer from "./slices/leftsidebarSlice";
 import interviewReducer from "./slices/interviewSlice";
 import coverletterReducer from "./slices/coverletterSlice";
 import currentResumeReducer from "./slices/currentResumeSlices";
-import currentCoverLetterReducer from "./slices/currentCoverSlice"
+import currentCoverLetterReducer from "./slices/currentCoverSlice";
+import profileReducer from "./slices/profileSlice";
+import pageReducer from "./slices/addPageSlice";
+import userAssets from "./slices/userAssets";
 
 const store = configureStore({
   reducer: {
@@ -18,7 +21,10 @@ const store = configureStore({
     interview: interviewReducer,
     coverletter: coverletterReducer,
     currentResume: currentResumeReducer,
-    currentCoverLetter : currentCoverLetterReducer
+    currentCoverLetter: currentCoverLetterReducer,
+    profile: profileReducer,
+    page: pageReducer,
+    assets: userAssets,
   },
   middleware: (getDefaultMiddleware: GetDefaultMiddleware) =>
     getDefaultMiddleware().concat(logger),

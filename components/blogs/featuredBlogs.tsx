@@ -1,11 +1,13 @@
-'use client'
 
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { CalendarIcon, ClockIcon, ArrowRightIcon } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { CalendarIcon, ClockIcon, ArrowRightIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
 interface Blog {
   id: string
@@ -43,15 +45,24 @@ function calculateReadTime(content: string): string {
 }
 
 export default function BentoGrid() {
-  const [blogs, setBlogs] = useState<Blog[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast()
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("/api/get-featured-blogs")
-        const data = await response.json()
+        const response = await fetch("/api/get-featured-blogs");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
+        const data = await response.json();
         if (Array.isArray(data)) {
           setBlogs(data ? data : [])
         } else {
@@ -61,7 +72,7 @@ export default function BentoGrid() {
         console.error("Error fetching blogs:", error)
         setError("Failed to load blogs. Please try again later.")
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     }
 
@@ -81,7 +92,7 @@ export default function BentoGrid() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold tracking-tight lg:text-5xl mb-8">Featured Blogs</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {loading ? (
+        {isLoading ? (
           <>
             <div className="md:col-span-2 md:row-span-2">
               <SkeletonBlogCard isLarge={true} />
@@ -140,7 +151,7 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
       }`}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black to-black opacity-70 z-10"/>
-      <Image
+      <img
         src={blog.thumbnail}
         alt={blog.title}
         width={800}
@@ -166,7 +177,7 @@ function BlogCard({ blog, isLarge = false, isWide = false }: BlogCardProps) {
           </span>
         </div>
       </div>
-      <div className="absolute top-4 right-4 bg-white/20 p-2 rounded-full opacity-0 transition-opacity hover:opacity-100">
+      <div className="absolute z-20 top-4 right-4 bg-white/20 p-2 rounded-full opacity-0 transition-opacity hover:opacity-100">
         <ArrowRightIcon className="w-4 h-4 text-white" />
       </div>
     </Link>

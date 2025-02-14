@@ -18,12 +18,15 @@ import {
 import { FileText, Pencil, Copy, Trash2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { setCurrentCover } from "@/slices/currentCoverSlice";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { deleteCoverLetter } from "@/actions/deleteCoverLetter";
 import { useToast } from "@/hooks/use-toast";
 import { RenameDialog } from "./RenameCoverLetterDialog";
-import { RecentCoverLetter } from "@/types/types";
+import { LetterProps } from "@/types/types";
 import { duplicateCoverLetter } from "@/actions/duplicateCoverLetter";
+import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+import { updateUsedCoverLetterSlots } from "@/slices/userAssets";
 
 export default function LetterItem({
   letter,
@@ -33,15 +36,17 @@ export default function LetterItem({
     id: string;
     coverName: string;
     userId: string;
+    updatedOn: Date;
   };
-  setRecentCoverLetters: React.Dispatch<
-    React.SetStateAction<RecentCoverLetter[] | undefined>
-  >;
+  setRecentCoverLetters: React.Dispatch<React.SetStateAction<LetterProps>>;
 }) {
   const isPhone = useMediaQuery({ maxWidth: 767 });
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+  const usedcoverletter = useAppSelector(
+    (state) => state?.assets?.usedcoverletters
+  );
 
   const handleOpen = () => {
     dispatch(
@@ -50,19 +55,31 @@ export default function LetterItem({
         currCoverName: letter.coverName,
       })
     );
-    router.push(`/covereditor`);
+    router.push(`/home/covereditor`);
   };
 
   const handleDuplicate = async () => {
-    try {
-      const response = await duplicateCoverLetter(letter.id);
+    const verifier = await axios.get("/api/verify-cover-slots");
+
+    if (verifier.data?.slotVerify) {
+      return toast({
+        title: "No Slots Available",
+        description:
+          "Your slots are full. Please purchase more to save cover letter.",
+        variant: "destructive",
+      });
+    }
+
+    const response = await duplicateCoverLetter(letter.id);
+    if (response && response.success) {
       setRecentCoverLetters((prev) => {
-        if (!prev) return prev;
+        if (!prev || !response.duplicatedCoverLetter) return prev;
         return [
           {
             id: response.duplicatedCoverLetter.id,
             userId: response.duplicatedCoverLetter.userId,
             coverName: response.duplicatedCoverLetter.coverName,
+            updatedOn: response.duplicatedCoverLetter.updatedOn,
           },
           ...prev,
         ];
@@ -71,34 +88,32 @@ export default function LetterItem({
         title: "Success",
         description: response.message,
       });
-    } catch (error) {
-      console.error("Failed to duplicate cover letter:", error);
+      dispatch(updateUsedCoverLetterSlots(usedcoverletter + 1));
+    } else {
       toast({
-        title: "Error",
-        description: "Failed to duplicate the cover letter :(",
+        title: `Error ${response.status}`,
+        description: response.message,
         variant: "destructive",
       });
     }
   };
 
   const handleDelete = async () => {
-    try {
-      const { success, message } = await deleteCoverLetter(letter.id);
-      if (success) {
-        setRecentCoverLetters((prev) =>
-          prev?.filter((item) => item.id !== letter.id)
-        );
-        toast({
-          title: "Success",
-          description: message,
-          variant: "default",
-        });
-      }
-    } catch (error) {
-      console.log(error);
+    const { success, message, status } = await deleteCoverLetter(letter.id);
+    if (success) {
+      setRecentCoverLetters((prev) =>
+        prev?.filter((item) => item.id !== letter.id)
+      );
       toast({
-        title: "Error",
-        description: "Failed to delete the cover letter",
+        title: "Success",
+        description: message,
+        variant: "default",
+      });
+      dispatch(updateUsedCoverLetterSlots(usedcoverletter - 1));
+    } else {
+      toast({
+        title: `Error ${status}`,
+        description: message,
         variant: "destructive",
       });
     }
@@ -139,8 +154,22 @@ export default function LetterItem({
           variant="outline"
           className="h-auto flex-col items-start p-4 w-full"
         >
-          <FileText className="h-6 w-6 mb-2" />
-          <span>{letter.coverName}</span>
+          <div className="flex-col items-start justify-start w-full">
+            <div className="flex w-full items-center justify-between">
+              <FileText className="h-5 w-5 mr-3 text-primary" />
+              <span className="text-xs text-muted-foreground ml-2">
+                Edited{" "}
+                {formatDistanceToNow(new Date(letter.updatedOn.toISOString()), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div className="w-full items-start justify-start flex">
+              <p className="text-sm pt-2 font-medium text-left">
+                {letter.coverName}
+              </p>
+            </div>
+          </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
@@ -179,8 +208,22 @@ export default function LetterItem({
           onClick={handleOpen}
           className="h-auto flex-col items-start p-4 w-full hover:bg-secondary"
         >
-          <FileText className="h-6 w-6 mb-2" />
-          <span>{letter.coverName}</span>
+          <div className="flex-col items-start justify-start w-full">
+            <div className="flex w-full items-center justify-between">
+              <FileText className="h-5 w-5 mr-3 text-primary" />
+              <span className="text-xs text-muted-foreground ml-2">
+                Edited{" "}
+                {formatDistanceToNow(new Date(letter.updatedOn.toISOString()), {
+                  addSuffix: true,
+                })}
+              </span>
+            </div>
+            <div className="w-full items-start justify-start flex">
+              <p className="text-sm pt-2 font-medium text-left">
+                {letter.coverName}
+              </p>
+            </div>
+          </div>
         </Button>
       </ContextMenuTrigger>
       <ContextMenuContent>{menuItems}</ContextMenuContent>

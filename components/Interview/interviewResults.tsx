@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React from "react";
+import React from 'react'
 import {
   Card,
   CardContent,
@@ -8,51 +8,51 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+} from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "@/components/ui/accordion"
 import {
   Label as RechartsLabel,
   PolarRadiusAxis,
   RadialBar,
   RadialBarChart,
-} from "recharts";
+} from "recharts"
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+} from "@/components/ui/chart"
+import { TrendingUp } from 'lucide-react'
+import { Badge } from "@/components/ui/badge"
 
 interface EvaluationCriteria {
-  category: string;
-  score: number;
-  comment: string;
-  likes: string[];
-  dislikes: string[];
+  category: string
+  score: number
+  comment: string
+  likes: string[]
+  dislikes: string[]
 }
 
 interface InterviewReport {
-  evaluation: EvaluationCriteria[];
-  overall_score: number;
-  final_recommendation: string;
-  overall_comment: string;
+  evaluation: EvaluationCriteria[]
+  overall_score: number
+  final_recommendation: string
+  overall_comment: string
   comment_keywords: {
-    positive: string[];
-    negative: string[];
-  };
+    positive: string[]
+    negative: string[]
+  }
 }
 
 interface InterviewResultsProps {
-  data: InterviewReport;
-  isStatic?: boolean;
+  data: InterviewReport
+  isStatic?: boolean
 }
 
 const chartConfig: ChartConfig = {
@@ -76,39 +76,24 @@ const chartConfig: ChartConfig = {
     label: "Professionalism",
     color: "hsl(var(--chart-5))",
   },
-};
+}
 
-const LikesDislikesBox = ({
-  title,
-  items,
-  colorClass,
-}: {
-  title: string;
-  items: string[];
-  colorClass: string;
-}) => (
-  <div
-    className={`p-3 rounded-md ${colorClass} border-[0.1px] border-opacity-20`}
-  >
+const LikesDislikesBox = ({ title, items, colorClass }: { title: string, items: string[], colorClass: string }) => (
+  <div className={`p-3 rounded-md ${colorClass} border-[0.1px] border-opacity-20`}>
     <h4 className="font-medium mb-2">{title}</h4>
     <ul className="list-disc list-inside">
       {items?.map((item, index) => (
-        <li key={index} className="text-sm">
-          {item}
-        </li>
+        <li key={index} className="text-sm">{item}</li>
       ))}
     </ul>
   </div>
-);
+)
 
-export default function InterviewResults({
-  data,
-  isStatic,
-}: InterviewResultsProps) {
+export default function InterviewResults({ data, isStatic }: InterviewResultsProps) {
   const chartData = data.evaluation.map((item) => ({
     name: item.category,
     score: item.score,
-  }));
+  }))
 
   return (
     <div className="space-y-8">
@@ -151,7 +136,7 @@ export default function InterviewResults({
                             Overall Score
                           </tspan>
                         </text>
-                      );
+                      )
                     }
                   }}
                 />
@@ -213,16 +198,8 @@ export default function InterviewResults({
                           {item.comment}
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <LikesDislikesBox
-                            title="PROs"
-                            items={item.likes}
-                            colorClass=" "
-                          />
-                          <LikesDislikesBox
-                            title="CONs"
-                            items={item.dislikes}
-                            colorClass=" "
-                          />
+                          <LikesDislikesBox title="PROs" items={item.likes} colorClass=" " />
+                          <LikesDislikesBox title="CONs" items={item.dislikes} colorClass=" " />
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -237,36 +214,27 @@ export default function InterviewResults({
               <CardTitle>Final Decision</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-lg font-medium mb-4">
-                {data.final_recommendation}
-              </p>
+              <p className="text-lg font-medium mb-4">{data.final_recommendation}</p>
               <p className="text-sm text-muted-foreground mb-4">
                 {data.overall_comment}
               </p>
               <div className="space-y-2">
                 <div>
-                  <h4 className="text-sm font-semibold mb-2">
-                    Positive Keywords:
-                  </h4>
+                  <h4 className="text-sm font-semibold mb-2">Positive Keywords:</h4>
                   <div className="flex flex-wrap gap-2">
                     {data.comment_keywords.positive.map((keyword, index) => (
-                      <Badge key={index}>
-                        <span className="mb-[2px]">{keyword}</span>
+                      <Badge key={index} >
+                        <span className='mb-[2px]'>{keyword}</span>
                       </Badge>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold mb-2">
-                    Areas for Improvement:
-                  </h4>
+                  <h4 className="text-sm font-semibold mb-2">Areas for Improvement:</h4>
                   <div className="flex flex-wrap gap-2">
                     {data.comment_keywords.negative.map((keyword, index) => (
-                      <Badge
-                        key={index}
-                        className=" border-opacity-20 flex items-center justify-center"
-                      >
-                        <span className="mb-[2px]">{keyword}</span>
+                      <Badge key={index} className=" border-opacity-20 flex items-center justify-center">
+                        <span className='mb-[2px]'>{keyword}</span>
                       </Badge>
                     ))}
                   </div>
@@ -277,5 +245,6 @@ export default function InterviewResults({
         </>
       )}
     </div>
-  );
+  )
 }
+

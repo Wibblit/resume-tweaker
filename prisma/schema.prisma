@@ -16,51 +16,55 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
-  emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
+  provider      String    @default("")
+  isOnboarded   Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   Resume        Resume[]
   CoverLetter   Coverletter[]
+  Profile       Profile?
+  Payment       Payment[]
+  UserAssests   UserAssets?
 
   @@map("users")
 }
 
-model Account {
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+// model Account {
+//   userId            String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refresh_token     String?
+//   access_token      String?
+//   expires_at        Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String?
+//   session_state     String?
 
-  @@id([provider, providerAccountId])
-  @@map("accounts")
-}
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+//   @@id([provider, providerAccountId])
+//   @@map("accounts")
+// }
 
-  @@map("sessions")
-}
+// model Session {
+//   sessionToken String   @unique
+//   userId       String
+//   expires      DateTime
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   @@map("sessions")
+// }
 
 model VerificationToken {
   identifier String
@@ -88,7 +92,10 @@ model Resume {
   publications   Json   @default("[]")  
   certifications Json   @default("[]")
   references     Json   @default("[]")
+  custom         Json   @default("{}")
   styles         Json   @default("{}")
+  createdOn  DateTime @default(now()) // Automatically set when a record is created
+  updatedOn  DateTime @updatedAt      // Automatically updated whenever the record is updated
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -101,6 +108,7 @@ model Coverletter {
   coverName         String
   salutation        String @default("")
   date              String @default("")
+  senderInfo        String @default("")
   recipientInfo     String @default("")
   subject           String @default("")
   opening           String @default("")
@@ -111,6 +119,8 @@ model Coverletter {
   closing           String @default("")
   signOff           String @default("")
   styles            Json   @default("{}")
+  createdOn  DateTime @default(now()) // Automatically set when a record is created
+  updatedOn  DateTime @updatedAt      // Automatically updated whenever the record is updated
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -137,10 +147,58 @@ model Blog {
   @@map("blog")
 }
 
-model Waitlist {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  joinedAt    DateTime @default(now())
+model Profile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  basics        Json     @default("[]")
+  summary       Json     @default("[]")
+  profiles      Json     @default("[]")
+  skills        Json     @default("[]")
+  projects      Json     @default("[]")
+  education     Json     @default("[]")
+  experience    Json     @default("[]")
+  languages     Json     @default("[]")   
+  volunteer     Json     @default("[]")
+  awards        Json     @default("[]")
+  publications  Json     @default("[]")
+  certifications Json    @default("[]")
+  references    Json     @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  @@map("waitlist")
+  @@map("profile")
+}
+
+model Payment {
+  id             String   @id @default(cuid()) // Payment record ID
+  paymentId  String   @unique             // Unique transaction identifier
+  userId         String                         // Foreign key to User
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId        String                         // Identifier for purchased item
+  productName      String                         // Name of the purchased item
+  quantity       Int                            // Quantity of the purchased item
+  total          Decimal   @db.Decimal(10, 2)  // Total payment amount
+  tax            Decimal   @db.Decimal(10, 2)  // Tax amount
+  currency       String                         // Currency code (e.g., "INR")
+  status         String                  // Enum for payment status
+  credits        Int
+  createdAt      DateTime  @default(now())      // Payment initiation timestamp
+  updatedAt      DateTime  @updatedAt          // Last updated timestamp
+
+  @@map("payment")
+}
+
+model UserAssets {
+  id        String   @id @default(cuid()) // Payment record ID
+  userId    String      @unique
+  credits   Int      @default(0) // Credits left for the user
+  resumeslot     Int      @default(1) // Number of slots for storing resumes
+  coverslot Int @default(1)
+  updatedAt DateTime @updatedAt
+
+user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+@@map("userassets")
+
 }

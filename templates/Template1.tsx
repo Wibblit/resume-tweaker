@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
-import { ResumeData } from "@/types/types";
+import { ResumeData, ResumeDataTemp, Custom } from "@/types/types";
 import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { Github, Linkedin, Globe } from "lucide-react";
 import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
 import { SocialIcon } from "react-social-icons";
+import { formatDate } from "@/utils/formatDate";
 
 type SectionName =
   | "summary"
@@ -19,7 +20,7 @@ type SectionName =
   | "profiles"
   | "basics"
   | "references"
-  | "volunteerings"
+  | "volunteer"
   | "publications"
   | "awards";
 
@@ -30,6 +31,7 @@ interface ModernResumeTemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
@@ -39,6 +41,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const sectionOrder = useAppSelector(
     (state) => state.rightsidebar.sectionOrder
@@ -48,8 +51,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
-  
-  const isSeparator = useAppSelector((state) => state.rightsidebar.separator)
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
+  const isSeparator = useAppSelector((state) => state.rightsidebar.separator);
 
   const styles: Record<string, React.CSSProperties> = {
     container: {
@@ -65,7 +68,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       fontWeight: "bold",
       marginBottom: isSeparator ? "0.5em" : "none",
       textTransform: "uppercase",
-      borderBottom: isSeparator ? `2px solid ${baseColor}` : 'none',
+      borderBottom: isSeparator ? `2px solid ${baseColor}` : "none",
       paddingBottom: "0.25em",
     },
     sectionTitleWithOutBorder: {
@@ -87,7 +90,6 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
     },
     link: {
       color: baseColor,
-      textDecoration: "none",
     },
   };
 
@@ -137,47 +139,55 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "summary":
         if (!content.summary?.length) return null;
         return (
-          <section className="mb-6 text-black">
+          <section className="mb-2 text-black">
             <h2 style={styles.sectionTitle}>Summary</h2>
             {/* <p>{content.summary[0].content}</p> */}
-            <HTMLViewer
-              lineHeight={lineHeight}
-              content={content.summary[0].content}
-            />
+            <div className="" style={styles.normal}>
+              <HTMLViewer
+                lineHeight={lineHeight}
+                content={content.summary[0].content}
+              />
+            </div>
           </section>
         );
 
       case "skills":
-        if (!content.skills?.[0]?.categories) return null;
+        if (content.skills?.length === 0) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Skills</h2>
-            {content.skills[0].categories.map((category, index) => (
-              <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
-                    <h3 className="py-1" style={styles.subtitle}>
-                      {category.name}
-                    </h3>
-                  </div>
-                  <div className="w-full flex flex-wrap items-start justify-start gap-2">
-                    {category.skills.map((skill, skillIndex) => (
-                      <p key={skillIndex}>
-                        {skill.name}{" "}
-                        {skillIndex !== category.skills.length - 1 && "|"}
-                      </p>
-                    ))}
+            <div className="grid grid-cols-2">
+              {content?.skills?.map((category, index) => (
+                <div key={index} className="mb-2 mr-4">
+                  <div className="">
+                    <div className="w-full flex items-center justify-between">
+                      <h3 className="py-1" style={styles.subtitle}>
+                        {category.name}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap items-start justify-start gap-1">
+                      {category.skills.map((skill, skillIndex) => (
+                        <p key={skillIndex} style={styles.normal} className="flex items-center">
+                          {skill.level && skill.level.trim() !== ""
+                            ? `${skill.name} (${skill.level})`
+                            : skill.name}
+                          {skillIndex !== category.skills.length - 1 && (
+                            <div style={styles.divider} className="inline-block ml-1">|</div>
+                          )}
+                        </p>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
       case "education":
         if (!content.education?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Education</h2>
             {content.education.map((edu, index) => (
               <div key={index} className="mb-4">
@@ -186,7 +196,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {edu.startDate} {edu.endDate && " - "} {edu.endDate}
+                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
+                          {edu.startDate && <div>{formatDate(edu.startDate, datetype)}</div>}
+                          {edu.endDate && <div className="flex items-center"><div className="mx-1">{(edu.startDate && edu.endDate) ? "-" : ""}</div> {formatDate(edu.endDate, datetype)}</div>}
+                        </div>
                       </h3>
                     </div>
                   </div>
@@ -214,27 +227,61 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "experience":
         if (!content.experience?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Experience</h2>
             {content.experience.map((exp, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
+                  <div className="w-full flex items-center justify-between" style={styles.subtitle}>
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        {exp.startDate} {exp.endDate && " - "} {exp.endDate}
+                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
+                          {exp.startDate && <div>{formatDate(exp.startDate, datetype)}</div>}
+                          {exp.endDate && <div className="flex items-center"><div className="mx-1">{(exp.startDate && exp.endDate) ? "-" : ""}</div> {formatDate(exp.endDate, datetype)}</div>}
+                        </div>
                       </h3>
                     </div>
                   </div>
-                  <div className="w-full flex items-start justify-between">
-                    <p className="italic">{exp.role}</p>
-                    <p>{exp.location}</p>
+                  <div className="w-full flex items-start justify-between mb-1" style={styles.normal}>
+                    <p
+                      className="italic"
+                      style={{
+                        fontSize:
+                          typeof styles.subtitle?.fontSize === "string"
+                            ? `${parseFloat(
+                              styles.subtitle.fontSize.replace("em", "")
+                            ) * 0.85
+                            }em`
+                            : typeof styles.subtitle?.fontSize === "number"
+                              ? styles.subtitle.fontSize * 0.8
+                              : undefined,
+                      }}
+                    >
+                      {exp.role}
+                    </p>
+                    <p
+                      style={{
+                        fontSize:
+                          typeof styles.subtitle?.fontSize === "string"
+                            ? `${parseFloat(
+                              styles.subtitle.fontSize.replace("em", "")
+                            ) * 0.85
+                            }em`
+                            : typeof styles.subtitle?.fontSize === "number"
+                              ? styles.subtitle.fontSize * 0.8
+                              : undefined,
+                      }}
+                    >
+                      {exp.location}
+                    </p>
                   </div>
                 </div>
                 {/* {exp.summary && <p className="mt-2">{exp.summary.trim()}</p>} */}
                 {exp.summary && (
-                  <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
+                  <div className="" style={styles.normal}>
+                    <HTMLViewer lineHeight={lineHeight} content={exp.summary} />
+                  </div>
                 )}
               </div>
             ))}
@@ -244,23 +291,25 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "projects":
         if (!content.projects?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Projects</h2>
             {content.projects.map((project, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
                   <div className="w-full flex items-center justify-between">
                     <div className="flex items-center">
-                      <h3 style={styles.subtitle}>{project.name}</h3>
+                      <h3 style={styles.subtitle} className="text-nowrap">
+                        {project.name}
+                      </h3>
                       {project.url && (
                         <a
                           href={project.url.href}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={styles.link}
-                          className="w-full text-left mt-1 inline-block"
+                          className="w-full text-left inline-block"
                         >
-                          <p style={styles.normal}>
+                          <p style={{ ...styles.normal, ...styles.link }}>
                             {project.url.label && (
                               <span className="mx-1">|</span>
                             )}
@@ -273,23 +322,39 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                     <div>
                       <h3 style={styles.subtitle}>
-                        {project.startDate} {project.endDate && " - "}{" "}
-                        {project.endDate}
+                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
+                          {project.startDate && <div>{formatDate(project.startDate, datetype)}</div>}
+                          {project.endDate && <div className="flex items-center"><div className="mx-1">{(project.startDate && project.endDate) ? "-" : ""}</div> {formatDate(project.endDate, datetype)}</div>}
+                        </div>
                       </h3>
                     </div>
                   </div>
                   {/* <p className="w-full text-left mt-1">{project.summary}</p> */}
-                  <HTMLViewer
-                    lineHeight={lineHeight}
-                    content={project.summary}
-                  />
-                  {project.keywords && (
-                    <div className="w-full flex flex-wrap items-start justify-start gap-2 mt-2">
-                      {project.keywords.map((keyword, keywordIndex) => (
-                        <p key={keywordIndex}>{keyword}</p>
-                      ))}
-                    </div>
-                  )}
+                  {project.keywords.length !== 0 &&
+                    project.keywords[0] !== "" && (
+                      <div className="w-full flex flex-wrap items-center justify-start gap-x-2 space-x-1">
+                        <span style={styles.normal} className="font-medium">
+                          Skills:
+                        </span>
+                        {project.keywords.map((keyword, keywordIndex) => (
+                          <span
+                            key={keywordIndex}
+                            className="font-medium"
+                            style={styles.normal}
+                          >
+                            {keyword}
+                            {keywordIndex !== project.keywords.length - 1 &&
+                              ", "}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  <div className="w-full items-start mt-1" style={styles.normal}>
+                    <HTMLViewer
+                      lineHeight={lineHeight}
+                      content={project.summary}
+                    />
+                  </div>
                 </div>
               </div>
             ))}
@@ -299,7 +364,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "certifications":
         if (!content.certifications?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
             {content.certifications.map((cert, index) => (
               <div key={index} className="mb-4">
@@ -307,7 +372,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="w-full flex items-center justify-between">
                     <h3 style={styles.subtitle}>{cert.name}</h3>
                     <div>
-                      <h3 style={styles.subtitle}>{cert.date}</h3>
+                      <h3 style={styles.normal}>
+                        {cert.date && formatDate(cert.date, datetype)}
+                      </h3>
                     </div>
                   </div>
                   <div className="w-full flex items-start justify-between">
@@ -319,7 +386,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         rel="noopener noreferrer"
                         style={styles.link}
                       >
-                        <p className="underline" style={styles.normal}>
+                        <p style={{ ...styles.normal, ...styles.link }}>
                           {cert.url.label}
                         </p>
                       </a>
@@ -334,7 +401,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "languages":
         if (!content.languages?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Languages</h2>
             <div className="flex flex-col flex-wrap justify-start">
               {content.languages.map((lang, index) => (
@@ -352,28 +419,28 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "profiles":
         if (!content.profiles?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <div className="flex flex-wrap justify-center space-x-4">
               {content.profiles.map((profile, index) => (
                 <div
-                  className="flex gap-1 items-center jsutify-center"
+                  className="flex flex-wrap justify-center"
                   key={index}
                 >
-                  {isIcons && profile.url.href !== "" && (
-                    <SocialIcon
-                      style={{ width: "16px", height: "16px" }}
-                      url={profile.url.href}
-                    />
-                  )}
                   <a
                     key={index}
                     href={profile.url.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={styles.link}
-                    className="flex items-center underline"
+                    className="flex items-center gap-2"
                   >
-                    <span className="underline">{profile.url.label}</span>
+                    {isIcons && profile.url.href !== "" && (
+                    <SocialIcon
+                      style={{ width: "20px", height: "20px" }}
+                      url={profile.url.href}
+                    />
+                  )}
+                    <span className="no-underline text-base">{profile.url.label}</span>
                   </a>
                 </div>
               ))}
@@ -384,50 +451,53 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "references":
         if (!content.references?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>References</h2>
-            {content.references.map((ref, index) => (
-              <div key={index} className="mb-2">
-                <div className="w-full flex items-start justify-start space-x-4">
-                  <h3 style={styles.subtitle}>{ref.name}</h3>
+            <div className="space-y-1">
+              {content.references.map((ref, index) => (
+                <div key={index} className="flex justify-between">
+                  <h3 style={styles.subtitle} className="font-semibold">
+                    {ref.name}
+                  </h3>
                   <p>{ref.phone}</p>
                   <p>{ref.email}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
-      case "volunteerings":
+      case "volunteer":
         if (!content.volunteer?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Volunteer Experience</h2>
-            {content.volunteer.map((vol, index) => (
-              <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
+            <div className="space-y-2">
+              {content.volunteer.map((vol, index) => (
+                <div key={index} className="flex flex-col">
+                  <div className="flex justify-between">
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
-                    <div>
-                      <h3 style={styles.subtitle}>
-                        {vol.startDate} - {vol.endDate}
-                      </h3>
-                    </div>
+                    <p style={styles.subtitle}>
+                      <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
+                        {vol.startDate && <div>{formatDate(vol.startDate, datetype)}</div>}
+                        {vol.endDate && <div className="flex items-center"><div className="mx-1">{(vol.startDate && vol.endDate) ? "-" : ""}</div> {formatDate(vol.endDate, datetype)}</div>}
+                      </div>
+                    </p>
                   </div>
-                  <div className="w-full flex items-start justify-between">
+                  <div className="flex justify-between">
                     <p>{vol.role}</p>
                     <p>{vol.location}</p>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
       case "publications":
         if (!content.publications?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Publications</h2>
             {content.publications.map((pub, index) => (
               <div key={index} className="mb-4">
@@ -443,14 +513,16 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                           style={styles.link}
                           className="flex items-center"
                         >
-                          <p style={styles.normal}>
+                          <p style={{ ...styles.normal, ...styles.link }}>
                             {pub.url.label && <span className="mx-1">|</span>}
                             {pub.url.label}
                           </p>
                         </a>
                       )}
                     </div>
-                    <h3 style={styles.subtitle}>{pub.date}</h3>
+                    <h3 style={styles.normal}>
+                      {pub.date && formatDate(pub.date, datetype)}
+                    </h3>
                   </div>
 
                   <div className="w-full flex items-center justify-start">
@@ -467,12 +539,12 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       case "awards":
         if (!content.awards?.length) return null;
         return (
-          <section className="mb-6">
+          <section className="mb-2">
             <h2 style={styles.sectionTitle}>Awards</h2>
             {content.awards.map((award, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
+                  <div className="w-full flex items-center justify-between mb-0.5">
                     <div className="flex items-center">
                       <h3 style={styles.subtitle}>{award.title}</h3>
 
@@ -485,17 +557,20 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
 
                     <div>
-                      <h3 style={styles.subtitle}>{award.date}</h3>
+                      <h3 style={styles.normal}>
+                        {award.date && formatDate(award.date, datetype)}
+                      </h3>
                     </div>
                   </div>
-
-                  {award.summary && (
-                    // <p className="w-full text-left mt-1">{award.summary}</p>
-                    <HTMLViewer
-                      lineHeight={lineHeight}
-                      content={award.summary}
-                    />
-                  )}
+                  <div className="w-full items-center justify-start" style={styles.normal}>
+                    {award.summary && (
+                      // <p className="w-full text-left mt-1">{award.summary}</p>
+                      <HTMLViewer
+                        lineHeight={lineHeight}
+                        content={award.summary}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -503,7 +578,78 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         );
 
       default:
-        return null;
+        if (
+          !content ||
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
+        return (
+          <div className="mb-2">
+            <h2 style={styles.sectionTitle}>{sectionName}</h2>
+            {content[sectionName] &&
+              Array.isArray(content[sectionName]) &&
+              //@ts-ignore
+              content[sectionName].map((sec: Custom, index: number) => (
+                <div key={index} className="mb-4">
+                  <div className="flex flex-col">
+                    {/* Main Row: Name, Location, Link on the left; Dates on the right */}
+                    <div className="flex justify-between">
+                      {/* Left Section: Name, Location, Link */}
+                      <div className="flex flex-wrap items-center">
+                        {sec.name && (
+                          <h3 style={styles.subtitle}>{sec.name}</h3>
+                        )}
+                        {sec.location && (
+                          <p style={styles.subtitle}>, {sec.location}</p>
+                        )}
+                        {sec.url && (
+                          <a
+                            href={sec.url.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.link}
+                            className="mx-2"
+                          >
+                            <span className="mx-1">{sec.url.label && "|"}</span>{" "}
+                            {sec.url.label}
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Right Section: Dates */}
+                      {sec.startDate && (
+                        <div style={styles.subtitle}>
+                          <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
+                            {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
+                            {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-" : ""}</div> {formatDate(sec.endDate, datetype)}</div>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    {sec.description && (
+                      <p style={styles.normal} className="mt-1">
+                        {sec.description}
+                      </p>
+                    )}
+
+                    {/* Summary */}
+                    {sec.summary && (
+                      <div className="mt-1" style={styles.normal}>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={sec.summary}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        );
     }
   };
 
@@ -527,7 +673,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       }
     `}
       </style>
-      {sectionOrder.column1.map((sectionName) =>
+      {sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
         renderSection(sectionName as SectionName)
       )}
     </div>

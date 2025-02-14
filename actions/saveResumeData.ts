@@ -2,44 +2,90 @@
 
 import { auth } from "@/auth";
 import { ResumeData, ResumeStyles } from "@/types/types";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/prisma";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 
-const prisma = new PrismaClient();
+export const saveResumeData = asyncHandler(
+  async (
+    resumeData: ResumeData,
+    resumeStyles: ResumeStyles,
+    resumeId: string
+  ) => {
+    //console.log(resumeStyles)
+    const session = await auth();
+    if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+    if (!resumeData || !resumeStyles || !resumeId)
+      throw ActionsError.badRequest;
 
-export async function saveResumeData(
-  resumeData: ResumeData,
-  resumeStyles: ResumeStyles,
-  resumeId: string
-) {
-  const session = await auth();
-  console.log(resumeStyles)
-  console.log("Save data request reached...");
+    // Parse the main sections
+    const parsedBasics = JSON.parse(JSON.stringify(resumeData.basics || []));
+    const parsedSummary = JSON.parse(JSON.stringify(resumeData.summary || []));
+    const parsedProfiles = JSON.parse(
+      JSON.stringify(resumeData.profiles || [])
+    );
+    const parsedSkills = JSON.parse(JSON.stringify(resumeData.skills || []));
+    const parsedExperience = JSON.parse(
+      JSON.stringify(resumeData.experience || [])
+    );
+    const parsedProjects = JSON.parse(
+      JSON.stringify(resumeData.projects || [])
+    );
+    const parsedCertifications = JSON.parse(
+      JSON.stringify(resumeData.certifications || [])
+    );
+    const parsedEducation = JSON.parse(
+      JSON.stringify(resumeData.education || [])
+    );
+    const parsedAwards = JSON.parse(JSON.stringify(resumeData.awards || []));
+    const parsedReferences = JSON.parse(
+      JSON.stringify(resumeData.references || [])
+    );
+    const parsedLanguages = JSON.parse(
+      JSON.stringify(resumeData.languages || [])
+    );
+    const parsedPublications = JSON.parse(
+      JSON.stringify(resumeData.publications || [])
+    );
+    const parsedVolunteer = JSON.parse(
+      JSON.stringify(resumeData.volunteer || [])
+    );
 
-  try {
- 
-    const parsedProfiles = JSON.parse(JSON.stringify(resumeData.profiles));
-    const parsedBasics = JSON.parse(JSON.stringify(resumeData.basics));
-    const parsedSummary = JSON.parse(JSON.stringify(resumeData.summary));
-    const parsedSkills = JSON.parse(JSON.stringify(resumeData.skills));
-    const parsedExperience = JSON.parse(JSON.stringify(resumeData.experience));
-    const parsedProjects = JSON.parse(JSON.stringify(resumeData.projects));
-    const parsedCertifications = JSON.parse(JSON.stringify(resumeData.certifications));
-    const parsedEducation = JSON.parse(JSON.stringify(resumeData.education));
-    const parsedAwards = JSON.parse(JSON.stringify(resumeData.awards));
-    const parsedReferences = JSON.parse(JSON.stringify(resumeData.references));
-    const parsedLanguages = JSON.parse(JSON.stringify(resumeData.languages));
-    const parsedPublications = JSON.parse(JSON.stringify(resumeData.publications));
-    const parsedVolunteer = JSON.parse(JSON.stringify(resumeData.volunteer));
+    // Handle custom sections dynamically
+    const customSections = [
+      "basics",
+      "summary",
+      "profiles",
+      "skills",
+      "experience",
+      "projects",
+      "certifications",
+      "education",
+      "awards",
+      "references",
+      "languages",
+      "publications",
+      "volunteer",
+    ];
 
+    const parsedCustomData = Object.keys(resumeData)
+      .filter((key) => !customSections.includes(key))
+      .reduce((acc: Record<string, any>, key) => {
+        //@ts-ignore
+        acc[key] = JSON.parse(JSON.stringify(resumeData[key] || []));
+        return acc;
+      }, {});
+
+    // Update the resume in the database
     const result = await prisma.resume.update({
       where: {
         id: resumeId,
         userId: session?.user?.id,
       },
       data: {
-        basics: parsedBasics, 
+        basics: parsedBasics,
         summary: parsedSummary,
-        profiles: parsedProfiles, 
+        profiles: parsedProfiles,
         skills: parsedSkills,
         experience: parsedExperience,
         projects: parsedProjects,
@@ -50,28 +96,16 @@ export async function saveResumeData(
         languages: parsedLanguages,
         publications: parsedPublications,
         volunteer: parsedVolunteer,
+        custom: parsedCustomData, // Make sure this is included
         styles: JSON.parse(JSON.stringify(resumeStyles)),
       },
     });
 
     return {
       success: true,
-      result: result,
+      result,
       message: "Resume updated successfully",
+      status: 200,
     };
-  } catch (error) {
-    let errorMessage = "An unknown error occurred";
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
-    return {
-      success: false,
-      message: "Failed to update resume details",
-      error: errorMessage,
-    };
-  } finally {
-    await prisma.$disconnect();
   }
-}
+);

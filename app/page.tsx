@@ -2,7 +2,6 @@ import { Hero } from "@/components/LandingPage/Hero";
 import { JoinHero } from "@/components/Hero";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
-import { TemplatesSection } from "@/components/LandingPage/Templates";
 import { FeaturesSection } from "@/components/LandingPage/Features";
 import { StickyScrollReveal } from "@/components/LandingPage/More";
 import Pricing from "@/components/LandingPage/Pricing";
@@ -11,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import FAQAccordion from "@/components/faq-accordian";
 import Link from "next/link";
 import { ImageMarquee } from "@/components/ui/marquee";
+import Footer from "@/components/LandingPage/Footer";
+import { LandingNav } from "@/components/LandingPage/LandingNav";
 
 
 export const metadata: Metadata = {
@@ -69,10 +70,12 @@ export default async function Home() {
       question: "4. How secure is my data with ResumeTweaker?",
       answer:
         "Your privacy is our priority. All uploaded resumes and data are encrypted and processed securely. We never share your information without your consent and delete your data after processing to ensure confidentiality.",
-    },
+      },
   ];
 
   return (
+    <>
+    <LandingNav/>
     <main className="relative flex justify-center items-center flex-col mx-auto">
       <div className="w-full">
         <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
@@ -127,8 +130,10 @@ export default async function Home() {
             <GetStartedSection />
           </div>
         </section>
-       <JoinHero />
+       {/* <JoinHero /> */}
       </div>
     </main>
+    <Footer/>
+    </>
   );
 }

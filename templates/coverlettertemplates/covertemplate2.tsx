@@ -2,9 +2,10 @@
 
 import React, { useEffect } from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch , useAppSelector} from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -16,7 +17,7 @@ interface CoverLetterTemplateProps {
   pageFormat: string;
 }
 
-export default function CoverTemplate3({
+export default function CoverTemplate2({
   content,
   baseColor,
   fontSize,
@@ -27,6 +28,8 @@ export default function CoverTemplate3({
 }: CoverLetterTemplateProps) {
   const dispatch = useAppDispatch();
 
+    const datetype = useAppSelector(state => state?.rightsidebar?.datetype)
+
   return (
     <div
       className="cover-letter"
@@ -34,7 +37,6 @@ export default function CoverTemplate3({
         fontFamily,
         fontSize: `${fontSize}px`,
         lineHeight: `${lineHeight}`,
-        padding: `${margin}mm`,
       }}
     >
       <style>{`
@@ -50,19 +52,24 @@ export default function CoverTemplate3({
           overflow-wrap: break-word;
         }
           p{
-          color: black;
+          // color: black;
           font-size: ${fontSize}px;
           line-height: ${1.5 * fontSize}px;
           }
       `}</style>
-      <div className=" p-6 mb-6" style={{ backgroundColor: baseColor }}>
+      <div className="p-6 mb-6" style={{ backgroundColor: baseColor }}>
         <h1 className="text-3xl font-bold text-center text-white">
           {content.subject}
         </h1>
       </div>
-      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="max-w-2xl mx-auto space-y-6" style={{
+        padding: `10mm ${margin}mm ${margin}mm ${margin}mm`
+        }}>
         <div className="flex justify-between">
-          <p>{content.date}</p>
+          <div className="">
+            <p>{content.senderInfo}</p>
+            {content.date && <p>{formatDate(content.date, datetype)}</p>}
+          </div>
           <p>{content.recipientInfo}</p>
         </div>
         <p className="font-semibold">{content.salutation}</p>

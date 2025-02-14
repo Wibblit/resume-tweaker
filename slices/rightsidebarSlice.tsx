@@ -1,9 +1,13 @@
-// redux/rightsidebarSlice.ts
-// @ts-ignore
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ResumeStyles } from "@/types/types";
-import { SectionName } from "@/types/types";
-import { Section } from "lucide-react";
+import { ResumeStyles, SectionName } from "@/types/types";
+import { addPage, deletePage } from "./addPageSlice";
+import { Defaults } from "@/data/ResumeDefaults";
+import { CDefaults } from "@/data/CoverDefaults";
+import {
+  AddCustomSection,
+  RenameCustomSection,
+  DeleteCustomSection,
+} from "./leftsidebarSlice";
 
 // Define the initial state using that type
 const initialState: ResumeStyles = {
@@ -13,224 +17,45 @@ const initialState: ResumeStyles = {
   fontSize: 10,
   lineHeight: 1,
   margin: 6,
+  datetype: "MMM 'YY",
   paperFormat: "a4",
   baseColor: "#475569",
   icons: true,
   separator: true,
   sectionOrder: {
-    column1: [
-      "basics",
-      "profiles",
-      "summary",
-      "experience",
-      "education",
-      "projects",
-      "skills",
-      "certifications",
+    sections: [
+      {
+        column1: [
+          "basics",
+          "profiles",
+          "summary",
+          "experience",
+          "education",
+          "projects",
+          "skills",
+          "certifications",
+        ],
+        column2: [],
+      },
     ],
-    column2: [],
-    column3: [
-      "languages",
-      "awards",
-      "publications",
-      "references",
-      "volunteerings",
-    ],
+    column3: ["languages", "awards", "publications", "references", "volunteer"],
   },
+  sections: [
+    "basics",
+    "profiles",
+    "summary",
+    "experience",
+    "education",
+    "projects",
+    "skills",
+    "certifications",
+    "languages",
+    "awards",
+    "publications",
+    "references",
+    "volunteer",
+  ],
 };
-
- const CDefaults = [
-   {
-     id: 1,
-     name: "Traditional",
-     font: "Arial, sans-serif",
-     fontSize: 12,
-     lineHeight: 1.5,
-     margin: 15,
-     baseColor: "#000000",
-   },
-   {
-     id: 2,
-     name: "Modern Teal",
-     font: "Helvetica, Arial, sans-serif",
-     fontSize: 11,
-     lineHeight: 1.6,
-     margin: 11,
-     baseColor: "#008080",
-   },
-   {
-     id: 3,
-     name: "Framed Teal",
-     font: "Calibri, sans-serif",
-     fontSize: 11,
-     lineHeight: 1.4,
-     margin: 15,
-     baseColor: "#008B8B",
-   },
-   {
-     id: 4,
-     name: "Green Sidebar",
-     font: "Roboto, sans-serif",
-     fontSize: 10,
-     lineHeight: 1.5,
-     margin: 7,
-     baseColor: "#0d9488",
-   },
-   {
-     id: 5,
-     name: "Centered Title",
-     font: "Georgia, serif",
-     fontSize: 12,
-     lineHeight: 1.6,
-     margin: 15,
-     baseColor: "#000000",
-   },
- ] as const;
-const Defaults: Array<ResumeStyles> = [
-  {
-    id: 1,
-    name: "",
-    font: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1,
-    margin: 6,
-    paperFormat: "a4",
-    baseColor: "#475569",
-    icons: true,
-    separator: true,
-    sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-        "skills",
-        "certifications",
-      ],
-      column2: [],
-      column3: [
-        "languages",
-        "awards",
-        "publications",
-        "references",
-        "volunteerings",
-      ],
-    },
-  },
-  {
-    id: 2,
-    name: "",
-    font: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1,
-    margin: 6,
-    paperFormat: "a4",
-    baseColor: "#ca8a04",
-    icons: true,
-    separator: true,
-    sectionOrder: {
-      column1: ["basics", "profiles", "summary", "skills", "certifications"],
-      column2: ["education", "experience", "projects", "awards"],
-      column3: ["languages", "publications", "references", "volunteerings"],
-    },
-  },
-  {
-    id: 3,
-    name: "",
-    font: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1,
-    margin: 6,
-    paperFormat: "a4",
-    baseColor: "#059669",
-    icons: true,
-    separator: true,
-    sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "skills",
-      ],
-      column2: [
-        "projects",
-        "languages",
-        "awards",
-        "publications",
-        "certifications",
-        "volunteerings",
-        "references",
-      ],
-      column3: [],
-    },
-  },
-  {
-    id: 4,
-    name: "",
-    font: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1,
-    margin: 6,
-    paperFormat: "a4",
-    baseColor: "#000000",
-    icons: true,
-    separator: true,
-    sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-        "awards",
-        "certifications",
-      ],
-      column2: [
-        "skills",
-        "languages",
-        "publications",
-        "volunteerings",
-        "references",
-      ],
-      column3: [],
-    },
-  },
-  {
-    id: 5,
-    name: "",
-    font: "Helvetica",
-    fontSize: 10,
-    lineHeight: 1,
-    margin: 6,
-    paperFormat: "a4",
-    baseColor: "#57534e",
-    icons: true,
-    separator: true,
-    sectionOrder: {
-      column1: [
-        "basics",
-        "profiles",
-        "summary",
-        "experience",
-        "education",
-        "projects",
-      ],
-      column2: [
-        "skills",
-        "awards",
-        "certifications",
-        "languages",
-        "publications",
-      ],
-      column3: ["volunteerings", "references"],
-    },
-  },
-];
 
 const MM_TO_PX = 3.78;
 
@@ -248,22 +73,80 @@ const rightsidebarSlice = createSlice({
   reducers: {
     UpdateId(state, action) {
       state.id = action.payload;
-      // state.baseColor = Defaults[state.id - 1].baseColor;
-      // state.font = Defaults[state.id - 1].font;
-      // state.fontSize = Defaults[state.id - 1].fontSize;
-      // state.lineHeight = Defaults[state.id - 1].lineHeight;
-      // state.margin = Defaults[state.id - 1].margin;
-      state.sectionOrder = Defaults[state.id - 1].sectionOrder;
     },
+    NewSection(state, action) {
+      //console.log(state.sectionOrder);
+      state.sectionOrder?.column3.push(action.payload.toLowerCase());
+      state.sections.push(action.payload);
+    },
+    UpdateSections(state, action) {
+      state.sections = action.payload;
+    },
+    CustomSectionRename(state, action) {
+      const { oldName, newName } = action.payload;
+      //console.log(oldName, newName);
+      const replacer = (arr: string[]): string[] => {
+        const newArray = arr.map((item) =>
+          item === oldName ? newName.toLowerCase() : item
+        );
+        return newArray;
+      };
+
+      if (state.sections.includes(oldName))
+        state.sections = replacer(state.sections);
+
+      //console.log(state.sections);
+
+      if (state.sectionOrder.column3.includes(oldName))
+        state.sectionOrder.column3 = replacer(state.sectionOrder.column3);
+      else {
+        for (let i = 0; i < state.sectionOrder.sections.length; i++) {
+          const { column1, column2 } = state.sectionOrder.sections[i];
+          if (column1.includes(oldName)) {
+            state.sectionOrder.sections[i].column1 = replacer(column1);
+            break;
+          } else if (column2.includes(oldName)) {
+            state.sectionOrder.sections[i].column2 = replacer(column2);
+            break;
+          }
+        }
+      }
+    },
+
+    CustomSectionDelete(state, action) {
+      const replacer = (arr: string[]): string[] => {
+        const newarr = arr.filter((item) => item !== action.payload);
+        return newarr;
+      };
+
+      if (state.sections.includes(action.payload))
+        state.sections = replacer(state.sections);
+      if (state.sectionOrder.column3.includes(action.payload))
+        state.sectionOrder.column3 = replacer(state.sectionOrder.column3);
+      else {
+        for (let i = 0; i < state.sectionOrder.sections.length; i++) {
+          const { column1, column2 } = state.sectionOrder.sections[i];
+          if (column1.includes(action.payload)) {
+            state.sectionOrder.sections[i].column1 = replacer(column1);
+            break;
+          } else if (column2.includes(action.payload)) {
+            state.sectionOrder.sections[i].column2 = replacer(column2);
+            break;
+          }
+        }
+      }
+    },
+
     ResetStyle(state, action) {
+      //console.log(state.id);
       if (action.payload === "Resume") {
-         state.baseColor = Defaults[state.id - 1].baseColor;
-         state.font = Defaults[state.id - 1].font;
-         state.fontSize = Defaults[state.id - 1].fontSize;
-         state.lineHeight = Defaults[state.id - 1].lineHeight;
-         state.margin = Defaults[state.id - 1].margin;
-         state.paperFormat = Defaults[state.id - 1].paperFormat;
-         state.sectionOrder = Defaults[state.id - 1].sectionOrder;
+        state.baseColor = Defaults[state.id - 1].baseColor;
+        state.font = Defaults[state.id - 1].font;
+        state.fontSize = Defaults[state.id - 1].fontSize;
+        state.lineHeight = Defaults[state.id - 1].lineHeight;
+        state.margin = Defaults[state.id - 1].margin;
+        state.paperFormat = Defaults[state.id - 1].paperFormat;
+        state.sectionOrder = Defaults[state.id - 1]?.sectionOrder;
       } else {
         state.baseColor = CDefaults[state.id - 1].baseColor;
         state.font = CDefaults[state.id - 1].font;
@@ -271,7 +154,6 @@ const rightsidebarSlice = createSlice({
         state.lineHeight = CDefaults[state.id - 1].lineHeight;
         state.margin = CDefaults[state.id - 1].margin;
       }
-     
     },
     UpdateFont(state, action) {
       state.font = action.payload;
@@ -294,12 +176,17 @@ const rightsidebarSlice = createSlice({
     updateSectionOrder: (
       state,
       action: PayloadAction<{
+        sectionIndex: number;
         column: "column1" | "column2" | "column3";
         order: SectionName[];
       }>
     ) => {
-      const { column, order } = action.payload;
-      state.sectionOrder[column] = order;
+      const { sectionIndex, column, order } = action.payload;
+      if (column === "column3") {
+        state.sectionOrder.column3 = order;
+      } else {
+        state.sectionOrder.sections[sectionIndex][column] = order;
+      }
     },
     UpdateBaseColor(state, action) {
       state.baseColor = action.payload;
@@ -396,6 +283,37 @@ const rightsidebarSlice = createSlice({
       state.icons = action.payload;
     },
     DownloadJSON() {},
+    addSection: (state) => {
+      state.sectionOrder.sections.push({ column1: [], column2: [] });
+    },
+    removeSection: (state, action: PayloadAction<number>) => {
+      state.sectionOrder.sections.splice(action.payload - 1, 1);
+    },
+    updateDateType(state, action) {
+      state.datetype = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(addPage, (state, action) => {
+      state.sectionOrder.sections.push({ column1: [], column2: [] });
+    }),
+      builder.addCase(deletePage, (state, action) => {
+        state.sectionOrder.column3.push(
+          ...state.sectionOrder.sections[action.payload - 1].column1,
+          ...state.sectionOrder.sections[action.payload - 1].column2
+        );
+        state.sectionOrder.sections.splice(action.payload - 1, 1);
+      }),
+      builder.addCase(AddCustomSection, (state, action) => {
+        // Call the NewSection reducer logic with the payload from AddCustomSection
+        rightsidebarSlice.caseReducers.NewSection(state, action);
+      }),
+      builder.addCase(RenameCustomSection, (state, action) => {
+        rightsidebarSlice.caseReducers.CustomSectionRename(state, action);
+      }),
+      builder.addCase(DeleteCustomSection, (state, action) => {
+        rightsidebarSlice.caseReducers.CustomSectionDelete(state, action);
+      });
   },
 });
 
@@ -415,6 +333,10 @@ export const {
   UpdateIcons,
   DownloadJSON,
   UpdateSectionOrderLayout,
+  addSection,
+  removeSection,
+  UpdateSections,
+  updateDateType,
 } = rightsidebarSlice.actions;
 
 // Export the reducer

@@ -2,9 +2,11 @@
 
 import React, { useEffect } from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { PAGE_FORMATS } from "@/components/coverPage";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -16,12 +18,7 @@ interface CoverLetterTemplateProps {
   pageFormat: "a4" | "letter";
 }
 
-const PAGE_FORMATS = {
-  a4: { width: 210, height: 297 },
-  letter: { width: 216, height: 279 },
-};
-
-const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
+const CoverTemplate3: React.FC<CoverLetterTemplateProps> = ({
   content,
   baseColor,
   fontSize,
@@ -33,7 +30,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
   const dispatch = useAppDispatch();
 
   const pageDimensions = PAGE_FORMATS[pageFormat];
-
+  const datetype = useAppSelector(state => state?.rightsidebar?.datetype)
   const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,
@@ -43,8 +40,8 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
       padding: `${margin}mm`,
       position: "relative",
       backgroundColor: "#fff",
-      height: `${pageDimensions.height}mm`, // Set height based on page format
-      width: `${pageDimensions.width}mm`, // Set width based on page format
+      height: `${pageDimensions?.height}mm`, // Set height based on page format
+      width: `${pageDimensions?.width}mm`, // Set width based on page format
       boxSizing: "border-box", // Ensure padding is included in total height
     },
     section: {
@@ -88,8 +85,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
             font-family: inherit;
           }
           .cover-letter p {
-            color: black;
-            font-size: ${1.3 * fontSize}px;
+            // color: black;
             line-height: ${1.6 * fontSize}px;
             white-space: pre-wrap; 
             word-wrap: break-word; 
@@ -103,12 +99,12 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
       </div>
       {/* Cover Letter Content */}
       <div style={{ padding: `${margin}mm`, position: "relative", zIndex: 1 }}>
-        <div style={styles.section}>
-          <p>{content.date}</p>
-        </div>
-
-        <div style={styles.section}>
-          <p style={{ textAlign: "right" }}>{content.recipientInfo}</p>
+        <div className="flex justify-between" style={styles.section}>
+          <div className="">
+            <p >{content.senderInfo}</p>
+            {content.date && <p>{formatDate(content.date, datetype)}</p>}
+          </div>
+          <p>{content.recipientInfo}</p>
         </div>
 
         <div style={styles.section}>
@@ -159,4 +155,4 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
   );
 };
 
-export default CoverTemplate1;
+export default CoverTemplate3;

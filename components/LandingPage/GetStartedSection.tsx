@@ -45,12 +45,12 @@ export default function GetStartedSection() {
                 transition={{ delay: 0.4 }}
                 className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4"
               >
-                <Link href="/#join">
+                <Link href="/login">
                   {" "}
                   <Button
                     size="lg"
                     variant={"silver"}
-                    // className="group text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
+                  // className="group text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 bg-primary hover:bg-primary/90"
                   >
                     Get Started Free
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -63,7 +63,7 @@ export default function GetStartedSection() {
               </motion.div>
 
               {/* Social proof section */}
-              
+
             </div>
           </div>
         </motion.div>

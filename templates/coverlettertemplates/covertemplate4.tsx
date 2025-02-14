@@ -2,10 +2,11 @@
 
 import React from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppDispatch } from "@/hooks/hooks";
+import { useAppDispatch , useAppSelector} from "@/hooks/hooks";
 import { useEffect } from "react";
 import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
 import HTMLViewer from "@/components/HTMLViewer";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -16,7 +17,7 @@ interface CoverLetterTemplateProps {
   margin: number;
 }
 
-export default function Component({
+export default function CoverTemplate4({
   content,
   baseColor,
   fontSize,
@@ -25,7 +26,7 @@ export default function Component({
   margin,
 }: CoverLetterTemplateProps) {
   const dispatch = useAppDispatch();
-
+  const datetype = useAppSelector(state => state?.rightsidebar?.datetype)
   const styles: Record<string, React.CSSProperties> = {
     container: {
       fontFamily,
@@ -34,8 +35,7 @@ export default function Component({
       color: "#000",
       display: "flex",
       height: "100%",
-      minHeight: "297mm", // A4 height
-      width: "210mm", // A4 width
+      maxHeight: "100%"
     },
     sidebar: {
       width: "30%",
@@ -47,10 +47,10 @@ export default function Component({
       justifyContent: "space-between",
     },
     main: {
-      width: "70%",
       padding: `${margin}mm`,
       display: "flex",
       flexDirection: "column",
+      maxHeight: "100%"
     },
     subject: {
       fontSize: "2em",
@@ -79,54 +79,57 @@ export default function Component({
             color: inherit;
             font-size: ${fontSize}px;
             line-height: ${lineHeight};
-            white-space: pre-wrap; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
           }
         `}
       </style>
       <div style={styles.sidebar}>
         <div>
-          <p style={{ fontSize: "1.2em", marginBottom: "0.5em" }}>
-            {content.date}
-          </p>
+          {content.date && (
+            <p style={{ fontSize: "1.2em", marginBottom: "0.5em" }}>
+              {formatDate(content.date, datetype)}
+            </p>
+          )}
           <p style={{ marginBottom: "1em" }}>{content.recipientInfo}</p>
+          <p style={{ marginBottom: "1em" }}>{content.senderInfo}</p>
+
         </div>
         <div>
           <p>{content.signOff}</p>
         </div>
       </div>
-      <div style={styles.main}>
-        <h1 style={styles.subject}>{content.subject}</h1>
-        <div style={styles.section}>
-          <p>{content.salutation}</p>
-        </div>
-        <div style={styles.section}>
-          <HTMLViewer lineHeight={lineHeight} content={content.opening} />
-        </div>
-        <div style={styles.section}>
-          <HTMLViewer
-            lineHeight={lineHeight}
-            content={content.interestInPosition}
-          />
-        </div>
-        <div style={styles.section}>
-          <HTMLViewer
-            lineHeight={lineHeight}
-            content={content.professionalSummary}
-          />
-        </div>
-        <div style={styles.section}>
-          <HTMLViewer
-            lineHeight={lineHeight}
-            content={content.keyAchievements}
-          />
-        </div>
-        <div style={styles.section}>
-          <HTMLViewer lineHeight={lineHeight} content={content.culturalFit} />
-        </div>
-        <div style={styles.section}>
-          <HTMLViewer lineHeight={lineHeight} content={content.closing} />
+      <div className=" overflow-hidden">
+        <div style={styles.main}>
+          <h1 style={styles.subject}>{content.subject}</h1>
+          <div style={styles.section}>
+            <p>{content.salutation}</p>
+          </div>
+          <div style={styles.section}>
+            <HTMLViewer lineHeight={lineHeight} content={content.opening} />
+          </div>
+          <div style={styles.section}>
+            <HTMLViewer
+              lineHeight={lineHeight}
+              content={content.interestInPosition}
+            />
+          </div>
+          <div style={styles.section}>
+            <HTMLViewer
+              lineHeight={lineHeight}
+              content={content.professionalSummary}
+            />
+          </div>
+          <div style={styles.section}>
+            <HTMLViewer
+              lineHeight={lineHeight}
+              content={content.keyAchievements}
+            />
+          </div>
+          <div style={styles.section}>
+            <HTMLViewer lineHeight={lineHeight} content={content.culturalFit} />
+          </div>
+          <div style={styles.section}>
+            <HTMLViewer lineHeight={lineHeight} content={content.closing} />
+          </div>
         </div>
       </div>
     </div>

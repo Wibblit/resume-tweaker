@@ -11,35 +11,46 @@ import { usePathname } from "next/navigation";
 import { saveResumeData } from "@/actions/saveResumeData";
 import axios from "axios";
 import { PageData } from "@/types/types";
-import { 
-  UpdateBaseColor, 
-  UpdateFont, 
-  UpdateFontSize, 
-  UpdateIcons, 
-  UpdateId, 
-  UpdateLineHeight, 
-  UpdateMargin, 
-  UpdatePaperFormat, 
-  updateSectionOrder, 
-  UpdateSectionOrderLayout, 
-  UpdateSeparator 
+import {
+  UpdateBaseColor,
+  UpdateFont,
+  UpdateFontSize,
+  UpdateIcons,
+  UpdateId,
+  UpdateLineHeight,
+  UpdateMargin,
+  UpdatePaperFormat,
+  updateSectionOrder,
+  UpdateSectionOrderLayout,
+  UpdateSeparator,
+  UpdateSections,
+  updateDateType,
 } from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
+import { setFullProfileData } from "@/slices/profileSlice";
+import { useToast } from "@/hooks/use-toast";
+import { initialState } from "@/slices/leftsidebarSlice";
+import { updateResumeIsSave } from "@/slices/currentResumeSlices";
 
 export default function Editor() {
-  const [activeSection, setActiveSection] = useState<keyof ResumeData | "">("basics");
+  const [activeSection, setActiveSection] = useState<keyof ResumeData | "">(
+    "basics"
+  );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { toast } = useToast();
   const ResumeData = useAppSelector((state) => state.leftsidebar);
   const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
-
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const dispatch = useAppDispatch();
+
+  const isSave = useAppSelector((state) => state?.currentResume?.isSave);
+
+  //console.log(isSave);
 
   const currentRoute = usePathname();
 
@@ -47,27 +58,100 @@ export default function Editor() {
     async function getResumeData() {
       try {
         setIsLoading(true);
-        const resumeId = currResumeId ? currResumeId : localStorage.getItem("currResumeId");
-        const response = await axios.get<{ resumeData: PageData; message: string }>(`/api/get-resume-data/${resumeId}`);
+        const resumeId = currResumeId
+          ? currResumeId
+          : localStorage.getItem("currResumeId");
+        const response = await axios.get<{
+          resumeData: PageData;
+          message: string;
+        }>(`/api/get-resume-data/${resumeId}`);
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
         const resumeData = response.data.resumeData;
-        console.log(resumeData);
-        const { id, styles, resumeName, userId, ...leftSidebBarContent } = resumeData;
-        dispatch(setCurrentResume({
-          currResumeId: resumeData.id,
-          currResumeName: resumeData.resumeName,
-        }));
-        console.log(styles.baseColor)
-        dispatch(UpdateId(styles.id));
-        dispatch(UpdateLeftBarData(leftSidebBarContent));
-        dispatch(UpdateFont(styles.font));
-        dispatch(UpdateFontSize(styles.fontSize));
-        dispatch(UpdateLineHeight(styles.lineHeight));
-        dispatch(UpdateMargin(styles.margin));
-        dispatch(UpdateIcons(styles.icons));
-        dispatch(UpdateSeparator(styles.separator));
-        dispatch(UpdatePaperFormat(styles.paperFormat));
-        dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
-        dispatch(UpdateBaseColor(styles.baseColor));
+        //console.log(resumeData);
+        const { id, styles, resumeName, userId, ...leftSidebBarContent } =
+          resumeData;
+        document.title = resumeName
+          ? `${resumeName}-Resume-ResumeTweaker`
+          : "ResumeTweaker";
+        const updatedLeftsidebardata = { ...leftSidebBarContent };
+        if (
+          //@ts-ignore
+          updatedLeftsidebardata.custom &&
+          //@ts-ignore
+          typeof updatedLeftsidebardata.custom === "object"
+        ) {
+          //@ts-ignore
+          Object.keys(updatedLeftsidebardata.custom).forEach((key) => {
+            //@ts-ignore
+            if (!updatedLeftsidebardata[key]) {
+              //@ts-ignore
+              updatedLeftsidebardata[key] = updatedLeftsidebardata.custom[key];
+            }
+          });
+          //@ts-ignore
+          delete updatedLeftsidebardata.custom;
+        }
+
+        //console.log("Updated Left Sidebar Data:", updatedLeftsidebardata);
+
+        dispatch(
+          setCurrentResume({
+            currResumeId: resumeData.id,
+            currResumeName: resumeData.resumeName,
+          })
+        );
+        //console.log(styles.baseColor);
+
+        if (styles.id) {
+          dispatch(UpdateId(styles.id));
+        }
+
+        if (leftSidebBarContent.basics?.length !== 0) {
+          //console.log(leftSidebBarContent);
+          dispatch(UpdateLeftBarData(updatedLeftsidebardata));
+        } else {
+          dispatch(UpdateLeftBarData(initialState));
+        }
+        if (styles.font) {
+          dispatch(UpdateFont(styles.font));
+        }
+        if (styles.fontSize) {
+          dispatch(UpdateFontSize(styles.fontSize));
+        }
+        if (styles.lineHeight) {
+          dispatch(UpdateLineHeight(styles.lineHeight));
+        }
+        if (styles.margin) {
+          dispatch(UpdateMargin(styles.margin));
+        }
+        if (styles.icons) {
+          dispatch(UpdateIcons(styles.icons));
+        }
+        if (styles.separator) {
+          dispatch(UpdateSeparator(styles.separator));
+        }
+        if (styles.paperFormat) {
+          dispatch(UpdatePaperFormat(styles.paperFormat));
+        }
+        if (styles.sectionOrder) {
+          dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
+        }
+        if (styles.sections) {
+          dispatch(UpdateSections(styles.sections));
+        }
+        if (styles.baseColor) {
+          dispatch(UpdateBaseColor(styles.baseColor));
+        }
+        if (styles.datetype) {
+          dispatch(updateDateType(styles.datetype));
+        }
       } catch (error) {
         console.error("Error fetching resume data:", error);
       } finally {
@@ -77,38 +161,105 @@ export default function Editor() {
     getResumeData();
   }, [dispatch]);
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get("/api/get-profile");
+        if (response.status === 429) {
+          toast({
+            title: "Whoa there! You've hit the rate limit.",
+            description: "Please slow down and try again in a few minutes.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const { profileData } = response.data;
+        //console.log(profileData);
+
+        if (profileData) {
+          const parsedData = {
+            basics: profileData.basics,
+            summary: profileData.summary,
+            profiles: profileData.profiles,
+            skills: profileData.skills,
+            projects: profileData.projects,
+            education: profileData.education,
+            experience: profileData.experience,
+            languages: profileData.languages,
+            volunteer: profileData.volunteer,
+            awards: profileData.awards,
+            publications: profileData.publications,
+            certifications: profileData.certifications,
+            references: profileData.references,
+          };
+
+          dispatch(setFullProfileData(parsedData));
+        }
+      } catch (error) {
+        console.error("Error fetching resume data:", error);
+      }
+    };
+
+    fetchProfileData();
+  }, [dispatch]);
+
   const saveData = async () => {
+    if (!isSave) return;
+
     try {
-      console.log(resumeStyles);
-      await saveResumeData(ResumeData, resumeStyles, currResumeId);
-      console.log("Resume data saved successfully");
+      //console.log(resumeStyles);
+      const res = await saveResumeData(ResumeData, resumeStyles, currResumeId);
+      if (res.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
+      //console.log("Reusme Update suceess");
+      toast({
+        title: "Success",
+        description: "The resume has been saved successfully.",
+      });
     } catch (error) {
-      console.error("Error saving resume data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save the resume.",
+        variant: "destructive",
+      });
     }
   };
 
   useEffect(() => {
     const handleRouteChange = async () => {
+      dispatch(updateResumeIsSave(true));
+      if (!isSave) return; // Skip saving if isSave is false
       await saveData();
     };
 
     const handlePopState = async () => {
+      dispatch(updateResumeIsSave(true));
+      if (!isSave) return;
       await handleRouteChange();
     };
 
-    const handleBeforeUnload = async () => {
+    const handleBeforeUnload = async (event: any) => {
+      dispatch(updateResumeIsSave(true));
+      if (!isSave) return;
       await saveData();
     };
 
     const originalPushState = window.history.pushState;
-    window.history.pushState = async function (state, title, url) {
-      await handleRouteChange();
+    window.history.pushState = function (state, title, url) {
+      if (isSave) handleRouteChange();
       originalPushState.apply(window.history, [state, title, url]);
     };
 
     const originalReplaceState = window.history.replaceState;
-    window.history.replaceState = async function (state, title, url) {
-      await handleRouteChange();
+    window.history.replaceState = function (state, title, url) {
+      if (isSave) handleRouteChange();
       originalReplaceState.apply(window.history, [state, title, url]);
     };
 
@@ -121,7 +272,7 @@ export default function Editor() {
       window.history.pushState = originalPushState;
       window.history.replaceState = originalReplaceState;
     };
-  }, [ResumeData, resumeStyles, currResumeId]);
+  }, [ResumeData, resumeStyles, currResumeId, isSave]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
@@ -129,6 +280,7 @@ export default function Editor() {
         <div>
           <LeftSideBar
             activeSection={activeSection}
+            //@ts-ignore
             setActiveSection={setActiveSection}
             isPanelOpen={isPanelOpen}
             setIsPanelOpen={setIsPanelOpen}

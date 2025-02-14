@@ -6,12 +6,8 @@ import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { ResumeData, Basics } from "@/types/types";
 import { SocialIcon } from "react-social-icons";
 import HTMLViewer from "@/components/HTMLViewer";
-import {
-  UpdateBaseColor,
-  UpdateFontSize,
-  UpdateLineHeight,
-  UpdateMargin,
-} from "@/slices/rightsidebarSlice";
+import Base64Image from "@/components/base64toPhoto";
+import { formatDate } from "@/utils/formatDate";
 
 interface TemplateProps {
   content: ResumeData;
@@ -20,6 +16,7 @@ interface TemplateProps {
   fontFamily: string;
   lineHeight: number;
   margin: number;
+  pageIndex: number;
 }
 
 const Link: React.FC<{
@@ -59,19 +56,29 @@ const LinkedEntity: React.FC<{
   url: { href: string; label: string };
   separateLinks: boolean;
   className?: string;
-}> = ({ name, url, separateLinks, className }) => {
-  return !separateLinks && isUrl(url.href) ? (
-    <Link
-      url={url}
-      label={name}
-      icon={
-        <i className="ph ph-bold ph-globe" style={{ color: "currentColor" }} />
-      }
-      iconOnRight={true}
-      className={className}
-    />
-  ) : (
-    <div className={className}>{name}</div>
+  isRightColumn: boolean;
+}> = ({ name, url, separateLinks, className, isRightColumn }) => {
+  const baseColor = useAppSelector((state) => state?.rightsidebar?.baseColor);
+  const fontSize = useAppSelector((state) => state?.rightsidebar?.fontSize);
+
+  return (
+    <div className="flex items-center">
+      <h3
+        style={{ fontSize: fontSize + Math.floor(fontSize * 0.2) }}
+        className="font-bold"
+      >
+        {name}
+      </h3>
+      {name && url.label && <span className="mx-1">|</span>}
+      <a
+        style={{ color: isRightColumn ? "white" : baseColor }}
+        href={url.href}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {url.label}
+      </a>
+    </div>
   );
 };
 
@@ -85,12 +92,13 @@ const Section: React.FC<{
     (state) => state.rightsidebar.separator
   );
 
-  console.log(title, isRightColumn);
-  
+  const fontSize = useAppSelector((state) => state?.rightsidebar?.fontSize);
+
+  //console.log(title, isRightColumn);
 
   return (
     <section
-      className="mt-4 pt-4"
+      className="mt-2 pb-2 pt-2"
       style={
         isSeparator
           ? { borderTop: `1px solid ${isRightColumn ? "white" : baseColor}` }
@@ -98,8 +106,11 @@ const Section: React.FC<{
       }
     >
       <h4
-        className="mb-2 text-base font-bold uppercase"
-        style={{ color: isRightColumn ? "white" : baseColor }}
+        className="mb-1  font-bold uppercase"
+        style={{
+          color: isRightColumn ? "white" : baseColor,
+          fontSize: fontSize + Math.floor(fontSize * 0.4),
+        }}
       >
         {title}
       </h4>
@@ -121,7 +132,8 @@ const Header: React.FC<{
   baseColor: string;
   fontSize: number;
   lineHeight: number;
-}> = ({ basics, baseColor, fontSize, lineHeight }) => {
+  content: ResumeData;
+}> = ({ basics, baseColor, fontSize, lineHeight, content }) => {
   const scaleFactor = fontSize / 16;
   const imageSize = 128; // 8rem = 128px
   const contentWidth = `calc(100% - ${imageSize}px - 1rem)`; // Subtracting image width and gap
@@ -135,56 +147,75 @@ const Header: React.FC<{
       width: contentWidth,
     },
     name: {
-      fontSize: `${Math.max(2, imageSize / 64) * scaleFactor}rem`,
+      fontSize: `2em`,
       fontWeight: "bold",
-      marginBottom: "0.5rem",
       lineHeight: 1.2,
     },
     headline: {
-      fontSize: `${Math.max(1.2, imageSize / 96) * scaleFactor}rem`,
-      marginBottom: "1rem",
+      fontSize: `1.4em`,
       color: baseColor,
       lineHeight: 1.4,
     },
     details: {
-      fontSize: `${Math.max(1, imageSize / 128) * scaleFactor}rem`,
+      fontSize: `1.2em`,
       lineHeight: 1.6,
     },
   };
 
+  const isIcons: boolean = useAppSelector(
+    (state) => state?.rightsidebar?.icons
+  );
+
   return (
-    <div style={styles.container} className="flex items-center gap-4">
-      <Picture
-        src={
-          typeof basics?.picture === "string" && basics?.picture !== ""
-            ? basics?.picture
-            : "/placeholder-user.jpeg"
-        }
-        alt={basics?.name || "Profile picture"}
-      />
+    <div style={styles.container} className="flex items-center gap-4 mb-2">
+      {basics.picture ? (
+        <img
+          src={basics?.picture}
+          alt={basics?.name}
+          width={112}
+          height={112}
+        />
+      ) : (
+        <Picture
+          src={
+            typeof basics?.picture === "string" && basics?.picture !== ""
+              ? basics?.picture
+              : "/placeholder-user.jpeg"
+          }
+          alt={basics?.name || "Profile picture"}
+        />
+      )}
+
       <div style={styles.content}>
         <h2 style={styles.name}>{basics?.name}</h2>
         <p style={styles.headline}>{basics?.headLine}</p>
-        <div
-          style={styles.details}
-          className="flex flex-wrap items-center gap-x-4 gap-y-2"
-        >
+        <div style={styles.details} className="flex flex-wrap items-center">
           {basics?.location && (
-            <div className="flex items-center gap-x-1.5 mr-2">
+            <div className="flex items-center">
               <i className="ph ph-bold ph-map-pin" />
               <div>{basics.location}</div>
+              {((basics.location && basics.email) ||
+                (basics.location && basics.phone) ||
+                (basics.location && basics.url.label)) && (
+                <span className="mx-1">|</span>
+              )}
             </div>
           )}
           {basics?.phone && (
-            <div className="flex items-center gap-x-1.5 mr-2">
+            <div className="flex items-center">
               <i className="ph ph-bold ph-phone" />
               <a href={`tel:${basics.phone}`} target="_blank" rel="noreferrer">
                 {basics.phone}
               </a>
+              {((basics.phone && basics.email) ||
+                (basics.phone && basics.location) ||
+                (basics.phone && basics.url.label)) && (
+                <span className="mx-1">|</span>
+              )}
             </div>
           )}
           {basics?.email && (
-            <div className="flex items-center gap-x-1.5 mr-2">
+            <div className="flex items-center">
               <i className="ph ph-bold ph-at" />
               <a
                 href={`mailto:${basics.email}`}
@@ -193,9 +224,38 @@ const Header: React.FC<{
               >
                 {basics.email}
               </a>
+              {((basics.email && basics.phone) ||
+                (basics.email && basics.location) ||
+                (basics.email && basics.url.label)) && (
+                <span className="mx-1">|</span>
+              )}
             </div>
           )}
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
+        </div>
+        <div className="flex flex-wrap items-center justify-start mt-1 gap-1">
+          {
+            //@ts-ignore
+            content.profiles.map((profile, index) => (
+              <a
+                key={index}
+                href={profile.url.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
+                {isIcons && profile.url.href !== "" && (
+                  <SocialIcon
+                    style={{ width: "16px", height: "16px" }}
+                    url={profile.url.href}
+                  />
+                )}
+                <span className="no-underline text-base">
+                  {profile.url.label}
+                </span>
+              </a>
+            ))
+          }
         </div>
       </div>
     </div>
@@ -209,6 +269,7 @@ const Template3: React.FC<TemplateProps> = ({
   fontFamily,
   lineHeight,
   margin,
+  pageIndex,
 }) => {
   const dispatch = useAppDispatch();
   const sectionOrder = useAppSelector(
@@ -217,6 +278,8 @@ const Template3: React.FC<TemplateProps> = ({
   const isIcons: boolean = useAppSelector(
     (state) => state?.rightsidebar?.icons
   );
+
+  const datetype = useAppSelector((state) => state?.rightsidebar?.datetype);
 
   const styles = {
     container: {
@@ -244,19 +307,20 @@ const Template3: React.FC<TemplateProps> = ({
     sidebarContent: {
       padding: `${margin}mm`,
       height: "100%",
-      overflowY: "auto" as const,
+      overflow: "hidden",
     },
     mainContent: {
       padding: `${margin}mm`,
       width: "65%",
+    },
+    normal: {
+      fontSize: "1.1em",
     },
   };
   const renderSection = (
     sectionName: string,
     isRightColumn: boolean = false
   ) => {
-    const sectionStyle = isRightColumn ? { color: "white" } : styles.body;
-
     switch (sectionName) {
       case "summary":
         return (
@@ -267,15 +331,12 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              {/* <div
-                dangerouslySetInnerHTML={{ __html: content.summary[0].content }}
-                style={sectionStyle}
-                className="text-justify"
-              /> */}
-              <HTMLViewer
-                lineHeight={lineHeight}
-                content={content.summary[0].content}
-              />
+              <div className="" style={styles.normal}>
+                <HTMLViewer
+                  lineHeight={lineHeight}
+                  content={content.summary[0].content}
+                />
+              </div>
             </Section>
           )
         );
@@ -290,21 +351,35 @@ const Template3: React.FC<TemplateProps> = ({
             >
               <div className="space-y-4">
                 {content.awards.map((award, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index} className="space-y-1">
                     <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-bold">{award.title}</div>
+                      <div className="flex flex-wrap items-center">
+                        <div
+                          style={{
+                            fontSize: fontSize + Math.floor(fontSize * 0.1),
+                          }}
+                          className="font-bold"
+                        >
+                          {award.title}
+                        </div>
+                        {award.title && award.awarder && (
+                          <span className="mx-1">|</span>
+                        )}
                         <div>{award.awarder}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{award.date}</div>
+                        <div>
+                          {award.date && formatDate(award.date, datetype)}
+                        </div>
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={award.summary}
-                      />
+                      <div className="" style={styles.normal}>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={award.summary}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -321,30 +396,33 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.publications.map((pub, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index}>
                     <div className="flex items-start justify-between">
                       <LinkedEntity
                         name={pub.name}
                         url={pub.url}
                         separateLinks={false}
                         className="font-bold"
+                        isRightColumn={isRightColumn}
                       />
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{pub.date}</div>
+                        <div>{pub.date && formatDate(pub.date, datetype)}</div>
                       </div>
                     </div>
-                    <div>{pub.publisher}</div>
-                    <div>{pub.publishedIn}</div>
+                    <div className="flex items-center justify-between flex-wrap">
+                      <div>{pub.publisher}</div>
+                      <div>{pub.publishedIn}</div>
+                    </div>
                   </div>
                 ))}
               </div>
             </Section>
           )
         );
-      case "volunteerings":
-        console.log(content.volunteer);
+      case "volunteer":
+        //console.log(content.volunteer);
         return (
           content.volunteer &&
           content.volunteer.length > 0 && (
@@ -353,18 +431,29 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.volunteer.map((vol, index) => (
                   <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-wrap items-start justify-between">
                       <div>
-                        <div className="font-bold">{vol.organization}</div>
+                        <div
+                          style={{
+                            fontSize: fontSize + Math.floor(fontSize * 0.1),
+                          }}
+                          className="font-bold"
+                        >
+                          {vol.organization}
+                        </div>
                         <div>{vol.role}</div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="font-bold">{`${vol.startDate} ${
-                          vol.endDate && " - "
-                        } ${vol.endDate}`}</div>
+                        <div>
+                          {vol.startDate && formatDate(vol.startDate, datetype)}
+                          {vol.endDate && vol.startDate && (
+                            <span className="mx-1">-</span>
+                          )}
+                          {vol.endDate && formatDate(vol.endDate, datetype)}
+                        </div>
                         <div>{vol.location}</div>
                       </div>
                     </div>
@@ -383,12 +472,21 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.references.map((ref, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="font-bold">{ref.name}</div>
-                    <div>{ref.phone}</div>
-                    <div>{ref.email}</div>
+                  <div key={index} className="space-y-1">
+                    <div
+                      style={{
+                        fontSize: fontSize + Math.floor(fontSize * 0.1),
+                      }}
+                      className="font-bold"
+                    >
+                      {ref.name}
+                    </div>
+                    <div className="flex space-x-4">
+                      <div>{ref.phone}</div>
+                      <div>{ref.email}</div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -404,32 +502,40 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.experience.map((exp, index) => (
-                  <div key={index} className="space-y-2">
+                  <div key={index}>
                     <div className="flex items-start justify-between">
                       <div>
-                        <div className="font-bold">{exp.organization}</div>
-                        <div>{exp.role}</div>
+                        <div
+                          style={{
+                            fontSize: fontSize + Math.floor(fontSize * 0.1),
+                          }}
+                          className="font-bold"
+                        >
+                          {exp.organization}
+                        </div>
+                        <em>{exp.role}</em>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div>{`${exp.startDate} ${exp.endDate && " - "} ${
-                          exp.endDate
-                        }`}</div>
+                        <div>
+                          {exp.startDate && formatDate(exp.startDate, datetype)}{" "}
+                          {exp.endDate && " - "}{" "}
+                          {exp.endDate && formatDate(exp.endDate, datetype)}
+                        </div>
                         <div>{exp.location}</div>
                       </div>
                     </div>
-                    {exp.summary && !isEmptyString(exp.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: exp.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={exp.summary}
-                      />
-                    )}
+                    <div className="mt-1">
+                      {exp.summary && !isEmptyString(exp.summary) && (
+                        <div className="" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={exp.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -439,52 +545,26 @@ const Template3: React.FC<TemplateProps> = ({
       case "skills":
         return (
           content.skills &&
-          content.skills.length > 0 &&
-          content.skills[0].categories && (
+          content.skills.length > 0 && (
             <Section
               title="Skills"
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
-                {content.skills[0].categories.map((category, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="font-bold">{category.name}</div>
-                    <div>
+              <div className="space-y-2">
+                {content.skills.map((category, index) => (
+                  <div key={index}>
+                    <div
+                      style={{
+                        fontSize: fontSize + Math.floor(fontSize * 0.1),
+                      }}
+                      className="font-bold"
+                    >
+                      {category.name}
+                    </div>
+                    <div className="flex flex-wrap items-center">
                       {category.skills.map((skill) => skill.name).join(", ")}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </Section>
-          )
-        );
-      case "profiles":
-        return (
-          content.profiles &&
-          content.profiles.length > 0 && (
-            <Section
-              title="Profiles"
-              baseColor={baseColor}
-              isRightColumn={isRightColumn}
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                {content.profiles.map((profile, index) => (
-                  <div className="flex gap-2 items-center" key={index}>
-                    {isIcons && profile.url.href !== "" && (
-                      <SocialIcon
-                        style={{ width: "16px", height: "16px" }}
-                        url={profile.url.href}
-                      />
-                    )}
-                    <a
-                      href={profile.url.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline text-sm"
-                    >
-                      {profile.url.label}
-                    </a>
                   </div>
                 ))}
               </div>
@@ -506,7 +586,13 @@ const Template3: React.FC<TemplateProps> = ({
                     key={index}
                     className="flex items-center justify-between"
                   >
-                    <span>{lang.name}</span>
+                    <span
+                      style={{
+                        fontSize: fontSize + Math.floor(fontSize * 0.1),
+                      }}
+                    >
+                      {lang.name}
+                    </span>
                     <span>{lang.level}</span>
                   </div>
                 ))}
@@ -523,19 +609,34 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
+              <div className="space-y-2 w-full">
                 {content.education.map((edu, index) => (
-                  <div key={index} className="flex items-start justify-between">
-                    <div>
-                      <div className="font-bold">{edu.institution}</div>
+                  <div
+                    key={index}
+                    className="flex-col items-start justify-between w-full"
+                  >
+                    <div className="flex w-full flex-wrap items-center justify-between">
+                      <div className="flex flex-wrap items-center">
+                        <div
+                          style={{
+                            fontSize: fontSize + Math.floor(fontSize * 0.1),
+                          }}
+                          className="font-bold"
+                        >
+                          {edu.institution}
+                        </div>
+                        <span className="mx-1">|</span>
+                        <p> {edu.degree}</p>
+                      </div>
+                      <div>
+                        {edu.startDate && formatDate(edu.startDate, datetype)}{" "}
+                        {edu.endDate && " - "}{" "}
+                        {edu.endDate && formatDate(edu.endDate, datetype)}{" "}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between">
                       <div>{edu.field}</div>
                       <div>{edu.score}</div>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <div>{`${edu.startDate} ${edu.endDate && " - "} ${
-                        edu.endDate
-                      }`}</div>
-                      <div>{edu.degree}</div>
                     </div>
                   </div>
                 ))}
@@ -554,14 +655,18 @@ const Template3: React.FC<TemplateProps> = ({
             >
               <div className="space-y-2">
                 {content.certifications.map((cert, index) => (
-                  <div key={index}>
+                  <div
+                    key={index}
+                    className="flex items-center justify-between"
+                  >
                     <LinkedEntity
                       name={cert.name}
                       url={cert.url}
                       separateLinks={false}
                       className="font-bold"
+                      isRightColumn={isRightColumn}
                     />
-                    <div>{cert.date}</div>
+                    <div>{cert.date && formatDate(cert.date, datetype)}</div>
                   </div>
                 ))}
               </div>
@@ -577,33 +682,39 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.projects.map((project, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-start justify-between">
+                  <div key={index}>
+                    <div className="flex flex-wrap items-start justify-between">
                       <LinkedEntity
                         name={project.name}
                         url={project.url}
                         separateLinks={false}
                         className="font-bold"
+                        isRightColumn={isRightColumn}
                       />
                       <div className="shrink-0 text-right">
-                        <div>{`${project.startDate} ${
-                          project.endDate && " - "
-                        } ${project.endDate}`}</div>
+                        <div>
+                          {project.startDate &&
+                            formatDate(project.startDate, datetype)}
+                          {project.endDate && project.startDate && (
+                            <span className="mx-1">-</span>
+                          )}
+                          {project.endDate &&
+                            formatDate(project.endDate, datetype)}
+                        </div>
                       </div>
                     </div>
-                    {project.summary && !isEmptyString(project.summary) && (
-                      // <div
-                      //   dangerouslySetInnerHTML={{ __html: project.summary }}
-                      //   style={sectionStyle}
-                      //   className="text-justify"
-                      // />
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={project.summary}
-                      />
-                    )}
+                    <div className="mt-1">
+                      {project.summary && !isEmptyString(project.summary) && (
+                        <div className="" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={project.summary}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -618,11 +729,100 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               fontSize={fontSize}
               lineHeight={lineHeight}
+              content={content}
             />
           )
         );
       default:
-        return null;
+        if (
+          !content ||
+          //@ts-ignore
+          !Array.isArray(content[sectionName]) ||
+          //@ts-ignore
+          !content[sectionName]?.length
+        )
+          return null;
+        return (
+          <Section
+            title={sectionName}
+            baseColor={baseColor}
+            isRightColumn={isRightColumn}
+          >
+            <div className="mb-6">
+              {
+                //@ts-ignore
+                content[sectionName] &&
+                  //@ts-ignore
+                  Array.isArray(content[sectionName]) &&
+                  //@ts-ignore
+                  content[sectionName]?.map((sec: Custom, index: number) => (
+                    <div key={index} className="mb-2">
+                      <div className="flex flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            {sec.name && (
+                              <h3
+                                style={{
+                                  fontSize:
+                                    fontSize + Math.floor(fontSize * 0.1),
+                                }}
+                                className="font-bold"
+                              >
+                                {sec.name}
+                              </h3>
+                            )}
+
+                            {sec.name && sec.url.label && (
+                              <span className="mx-1">|</span>
+                            )}
+                            {sec.location && <p>{sec.location}</p>}
+                            {sec.url.label && <span className="mx-1">|</span>}
+                            {sec.url && (
+                              <a
+                                href={sec.url.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center"
+                              >
+                                <p style={{ color: baseColor }}>
+                                  {sec.url.label}
+                                </p>
+                              </a>
+                            )}
+                          </div>
+
+                          {/* Right Section: Dates */}
+                          <div>
+                            {/* Start Date and End Date */}
+                            {sec.startDate && (
+                              <h3>
+                                {formatDate(sec.startDate, datetype)}
+                                {sec.endDate &&
+                                  ` - ${formatDate(sec.endDate, datetype)}`}
+                              </h3>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Description: Placed below the main row */}
+                        {sec.description && <p>{sec.description}</p>}
+
+                        {/* Summary: Placed below the description */}
+                        {sec.summary && (
+                          <div className="mt-1" style={styles.normal}>
+                            <HTMLViewer
+                              lineHeight={lineHeight}
+                              content={sec.summary}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+              }
+            </div>
+          </Section>
+        );
     }
   };
 
@@ -634,13 +834,20 @@ const Template3: React.FC<TemplateProps> = ({
         }
       `}</style>
       <div style={styles.mainContent}>
-        {sectionOrder.column1.map((sectionName) => renderSection(sectionName))}
+        {sectionOrder.sections.length > 0 &&
+          sectionOrder?.sections[pageIndex]?.column1.map((sectionName) => {
+            if (sectionName !== "profiles") {
+              return renderSection(sectionName);
+            }
+          })}
       </div>
       <div style={styles.sidebar}>
         <div style={styles.sidebarContent}>
-          {sectionOrder.column2.map((sectionName) =>
-            renderSection(sectionName, true)
-          )}
+          {sectionOrder.sections[pageIndex]?.column2.map((sectionName) => {
+            if (sectionName !== "profiles") {
+              return renderSection(sectionName, true);
+            }
+          })}
         </div>
       </div>
     </div>

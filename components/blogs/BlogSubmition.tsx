@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -28,6 +29,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { createBlogPost } from "@/actions/createblog";
+import { load } from "cheerio"; // Update import
 
 const categories = [
   "Web Development",
@@ -41,6 +43,23 @@ const categories = [
 
 const MAX_SLUG_LENGTH = 60;
 
+export function addIdToH2Tags(htmlString: string) {
+  const $ = load(htmlString);
+
+  $("h2").each((_, h2) => {
+    const h2Content = $(h2).text().trim();
+    const id = h2Content
+      .toLowerCase()
+      .replace(/^\d+\.\s*/, "")
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+    $(h2).attr("id", id);
+  });
+
+  return $.html();
+}
+
 export default function BlogForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,12 +72,13 @@ export default function BlogForm() {
     author: "Wibblit",
     published: false,
     tags: [] as string[],
-    image: "",
+    image: null as unknown as File,
     isFeatured: false,
   });
   const [slugError, setSlugError] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const editorRef = useRef<SunEditorCore>();
+  const { toast } = useToast();
   const { theme } = useTheme();
 
   const getSunEditorInstance = (sunEditor: SunEditorCore) => {
@@ -128,7 +148,7 @@ export default function BlogForm() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    console.log(name, value)
+    //console.log(name, value);
     if (name === "title") {
       const newTitle = value;
       const newSlug = generateSlug(newTitle);
@@ -187,19 +207,39 @@ export default function BlogForm() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setFormData((prevData) => ({ ...prevData, image: base64String }));
-        setImagePreview(base64String);
-      };
-      reader.readAsDataURL(file);
+      // const reader = new FileReader();
+      // reader.onloadend = () => {
+      //   const base64String = reader.result as string;
+      //   setFormData((prevData) => ({ ...prevData, image: base64String }));
+      //   setImagePreview(base64String);
+      // };
+      // reader.readAsDataURL(file);
+      setFormData((prev) => ({ ...prev, image: file }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    //console.log(formData);
     e.preventDefault();
     setIsSubmitting(true);
+
+    const formDataToSend = new FormData();
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("slug", formData.slug);
+    formDataToSend.append("excerpt", formData.excerpt);
+    formDataToSend.append("content", addIdToH2Tags(formData.content));
+    formDataToSend.append("category", formData.category);
+    formDataToSend.append("author", formData.author);
+    formDataToSend.append("published", String(formData.published));
+    formDataToSend.append("isFeatured", String(formData.isFeatured));
+
+    // Append tags as JSON string
+    formDataToSend.append("tags", JSON.stringify(formData.tags));
+
+    // Append image if it exists
+    if (formData.image) {
+      formDataToSend.append("image", formData.image);
+    }
 
     try {
       if (
@@ -212,22 +252,11 @@ export default function BlogForm() {
         throw new Error("Please fill in all required fields");
       }
 
-      await createBlogPost(
-        formData.title,
-        formData.slug,
-        formData.excerpt || null,
-        formData.content,
-        formData.category,
-        formData.author,
-        formData.image,
-        formData.published,
-        formData.tags,
-        formData.isFeatured
-      );
+      const res = await createBlogPost(formDataToSend);
 
-      console.log("Blog post submitted successfully:", formData);
+      //console.log("Blog post submitted successfully:", formData);
 
-      router.refresh()
+      router.refresh();
       router.push("/blogs");
     } catch (error) {
       console.error("Error submitting blog post:", error);

@@ -186,7 +186,7 @@
 //   };
 
 //   const submitAnswer = () => {
-//     console.log("Submitting answer:", userAnswer);
+//     //console.log("Submitting answer:", userAnswer);
 //     dispatch({
 //       type: "STORE_ANSWER",
 //       payload: {

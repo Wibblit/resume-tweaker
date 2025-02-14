@@ -1,45 +1,28 @@
-"use server"
+"use server";
 import { auth } from "@/auth";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/prisma";
+import { revalidatePath } from "next/cache";
+import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
+import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 
-const prisma = new PrismaClient();
+export const createResume = asyncHandler(async (resumeName: string) => {
+  const session = await auth();
+  if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
+  if (!resumeName) throw ActionsError.badRequest;
 
-export async function createResume(resumeName: string) {
-  try {
-    const session = await auth();
+  const resume = await prisma.resume.create({
+    data: {
+      userId: session.user.id,
+      resumeName: resumeName,
+    },
+  });
 
-    if (!session || !session.user || !session.user.id) {
-      return {
-        success: false,
-        message: "User is not authenticated",
-      };
-    }
+  revalidatePath("/home", "page");
 
-    const resume = await prisma.resume.create({
-      data: {
-        userId: session.user.id,
-        resumeName: resumeName,
-      },
-    });
-
-    return {
-      success: true,
-      message: "Resume created successfully",
-      resume,
-    };
-  } catch (error) {
-    let errorMessage = "An unknown error occurred";
-
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-
-    return {
-      success: false,
-      message: "Failed to create resume",
-      error: errorMessage,
-    };
-  } finally {
-    await prisma.$disconnect();
-  }
-}
+  return {
+    success: true,
+    message: "Resume created successfully",
+    resume,
+    status: 200,
+  };
+});

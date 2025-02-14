@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 
 export function WavyText() {
   const text = "AI Processing...";
-
   return (
     <div className="relative flex items-center justify-center">
       <div className="flex space-x-[2px]">
@@ -16,7 +15,7 @@ export function WavyText() {
             )}
             style={{
               animationDelay: `${i * 0.1}s`,
-              animationDuration: "1s",
+              animationDuration: "1s"
             }}
           >
             {char}

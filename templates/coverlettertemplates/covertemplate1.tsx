@@ -2,10 +2,9 @@
 
 import React from "react";
 import { CoverLetterState } from "@/types/types";
-import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
-import { useEffect } from "react";
-import { UpdateBaseColor } from "@/slices/rightsidebarSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
 import HTMLViewer from "@/components/HTMLViewer";
+import { formatDate } from "@/utils/formatDate";
 
 interface CoverLetterTemplateProps {
   content: CoverLetterState;
@@ -36,13 +35,16 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
     },
     section: {
       marginBottom: "1em",
+      fontSize: `${fontSize}px`,
     },
     heading: {
-      fontSize: "1.2em",
+      fontSize: "1em",
       fontWeight: "bold",
       marginBottom: "0.5em",
     },
   };
+
+  const datetype = useAppSelector(state => state?.rightsidebar?.datetype)
 
   return (
     <div className="cover-letter p-8" style={styles.container}>
@@ -52,8 +54,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
             font-family: inherit;
           }
           .cover-letter p {
-            color: black;
-            font-size: ${1.3 * fontSize}px;
+            // color: black;
             line-height: ${1.6 * fontSize}px;
             white-space: pre-wrap; 
             word-wrap: break-word; 
@@ -64,7 +65,11 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
       </style>
 
       <div style={styles.section}>
-        <p>{content.date}</p>
+        {content.date && <p>{formatDate(content.date, datetype)}</p>}
+      </div>
+      
+      <div style={styles.section}>
+        <p>{content.senderInfo}</p>
       </div>
 
       <div style={styles.section}>
@@ -87,6 +92,7 @@ const CoverTemplate1: React.FC<CoverLetterTemplateProps> = ({
         <HTMLViewer
           lineHeight={lineHeight}
           content={content.interestInPosition}
+          
         />
       </div>
 

@@ -15,13 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { renameCoverLetter } from "@/actions/renameCoverLetter";
-
-export type RecentCoverLetter = {
-  id: string;
-  userId: string;
-  coverName: string;
-};
-
+import { LetterProps } from "@/types/types";
 export function RenameDialog({
   children,
   coverId,
@@ -32,7 +26,7 @@ export function RenameDialog({
   coverId: string;
   coverName: string;
   setRecentCoverLetters: React.Dispatch<
-    React.SetStateAction<RecentCoverLetter[] | undefined>
+    React.SetStateAction<LetterProps>
   >;
 }) {
   const [open, setOpen] = useState(false);
@@ -51,6 +45,14 @@ export function RenameDialog({
       setLoading(true);
       try {
         const response = await renameCoverLetter(name, coverId);
+         if (response.status === 429) {
+           toast({
+             title: "Whoa there! You've hit the rate limit.",
+             description: "Please slow down and try again in a few minutes.",
+             variant: "destructive",
+           });
+           return;
+         }
         setOpen(false);
         setRecentCoverLetters((prev) =>
           prev?.map((cover) =>

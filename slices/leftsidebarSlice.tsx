@@ -1,165 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ResumeData } from "@/types/types";
+import { ResumeData, ResumeSection } from "@/types/types";
+import { v4 as uuidv4 } from "uuid";
 
-// const initialState: ResumeData = {
-//   basics: [
-//     {
-//       name: "John Doe",
-//       email: "john.doe@example.com",
-//       phone: "+1 (555) 123-4567",
-//       location: "New York, NY",
-//       headLine: "Experienced Software Engineer",
-//       picture: undefined,
-//       url: {
-//         href: "https://johndoe.com",
-//         label: "Personal Website",
-//       },
-//     },
-//   ],
-//   summary: [
-//     {
-//       content:
-//         "Passionate software engineer with 5+ years of experience in developing scalable web applications.",
-//     },
-//   ],
-//   profiles: [
-//     {
-//       url: {
-//         href: "https://linkedin.com/in/johndoe",
-//         label: "LinkedIn",
-//       },
-//     },
-//     {
-//       url: {
-//         href: "https://github.com/johndoe",
-//         label: "GitHub",
-//       },
-//     },
-//   ],
-//   skills: [
-//     {
-//       id: "tech-skills",
-//       categories: [
-//         {
-//           id: "programming-languages",
-//           name: "Programming Languages",
-//           skills: [
-//             { name: "JavaScript", level: "Advanced" },
-//             { name: "Python", level: "Intermediate" },
-//             { name: "Java", level: "Beginner" },
-//           ],
-//         },
-//         {
-//           id: "frameworks",
-//           name: "Frameworks",
-//           skills: [
-//             { name: "React", level: "Advanced" },
-//             { name: "Node.js", level: "Intermediate" },
-//             { name: "Django", level: "Beginner" },
-//           ],
-//         },
-//       ],
-//     },
-//   ],
-//   projects: [
-//     {
-//       name: "E-commerce Platform",
-//       summary:
-//         "Developed a full-stack e-commerce platform using React and Node.js",
-//       startDate: "2022-01-01",
-//       endDate: "2022-06-30",
-//       url: {
-//         href: "https://github.com/johndoe/ecommerce-platform",
-//         label: "GitHub Repository",
-//       },
-//       keywords: ["React", "Node.js", "MongoDB", "Express"],
-//     },
-//   ],
-//   education: [
-//     {
-//       institution: "University of Technology",
-//       degree: "Bachelor of Science",
-//       field: "Computer Science",
-//       specialization: "Software Engineering",
-//       startDate: "2015-09-01",
-//       endDate: "2019-05-31",
-//       score: "3.8 GPA",
-//     },
-//   ],
-//   experience: [
-//     {
-//       organization: "Tech Solutions Inc.",
-//       role: "Senior Software Engineer",
-//       startDate: "2019-06-01",
-//       endDate: "Present",
-//       location: "New York, NY",
-//       summary:
-//         "Lead developer for multiple web applications, mentoring junior developers, and implementing best practices.",
-//     },
-//   ],
-//   languages: [
-//     {
-//       name: "English",
-//       level: "Adavanced",
-//     },
-//     {
-//       name: "Spanish",
-//       level: "Intermediate",
-//     },
-//   ],
-//   volunteer: [
-//     {
-//       organization: "Code for Good",
-//       role: "Volunteer Developer",
-//       startDate: "2020-01-01",
-//       endDate: "Present",
-//       location: "Remote",
-//     },
-//   ],
-//   awards: [
-//     {
-//       title: "Best Innovative Project",
-//       awarder: "Annual Tech Conference",
-//       date: "2021-11-15",
-//       summary:
-//         "Awarded for developing an AI-powered accessibility tool for websites.",
-//     },
-//   ],
-//   publications: [
-//     {
-//       name: "Modern Web Development Techniques",
-//       publisher: "Tech Journal",
-//       publishedIn: "Volume 5, Issue 2",
-//       url: {
-//         href: "https://techjournal.com/article123",
-//         label: "Article Link",
-//       },
-//       date: "2022-03-01",
-//     },
-//   ],
-//   certifications: [
-//     {
-//       name: "AWS Certified Developer - Associate",
-//       issuer: "Amazon Web Services",
-//       date: "2021-08-15",
-//       url: {
-//         href: "https://www.youracclaim.com/badges/aws-certified-developer",
-//         label: "Verify Certification",
-//       },
-//     },
-//   ],
-//   references: [
-//     {
-//       name: "Jane Smith",
-//       phone: "+1 (555) 987-6543",
-//       email: "jane.smith@techsolutions.com",
-//     },
-//   ],
-// };
-
-const initialState: ResumeData = {
+export const initialState: ResumeData = {
   basics: [
     {
+      id: uuidv4(),
       name: "",
       email: "",
       phone: "",
@@ -179,6 +25,7 @@ const initialState: ResumeData = {
   ],
   profiles: [
     {
+      id: uuidv4(),
       url: {
         href: "",
         label: "",
@@ -188,17 +35,13 @@ const initialState: ResumeData = {
   skills: [
     {
       id: "",
-      categories: [
-        {
-          id: "",
-          name: "",
-          skills: [{ name: "", level: "" }],
-        },
-      ],
+      name: "",
+      skills: [{ name: "", level: "" }],
     },
   ],
   projects: [
     {
+      id: uuidv4(),
       name: "",
       summary: "",
       startDate: "",
@@ -212,6 +55,7 @@ const initialState: ResumeData = {
   ],
   education: [
     {
+      id: uuidv4(),
       institution: "",
       degree: "",
       field: "",
@@ -223,6 +67,7 @@ const initialState: ResumeData = {
   ],
   experience: [
     {
+      id: uuidv4(),
       organization: "",
       role: "",
       startDate: "",
@@ -233,12 +78,14 @@ const initialState: ResumeData = {
   ],
   languages: [
     {
+      id: uuidv4(),
       name: "",
       level: "",
     },
   ],
   volunteer: [
     {
+      id: uuidv4(),
       organization: "",
       role: "",
       startDate: "",
@@ -248,6 +95,7 @@ const initialState: ResumeData = {
   ],
   awards: [
     {
+      id: uuidv4(),
       title: "",
       awarder: "",
       date: "",
@@ -256,6 +104,7 @@ const initialState: ResumeData = {
   ],
   publications: [
     {
+      id: uuidv4(),
       name: "",
       publisher: "",
       publishedIn: "",
@@ -268,6 +117,7 @@ const initialState: ResumeData = {
   ],
   certifications: [
     {
+      id: uuidv4(),
       name: "",
       issuer: "",
       date: "",
@@ -279,13 +129,13 @@ const initialState: ResumeData = {
   ],
   references: [
     {
+      id: uuidv4(),
       name: "",
       phone: "",
       email: "",
     },
   ],
 };
-
 
 const leftsidebarSlice = createSlice({
   name: "leftsidebar",
@@ -294,8 +144,51 @@ const leftsidebarSlice = createSlice({
     UpdateLeftBarData(state, action: PayloadAction<ResumeData>) {
       return { ...action.payload };
     },
+    Reset() {
+      return { ...initialState };
+    },
+    AddCustomSection(state, action: PayloadAction<string>) {
+      const sectionName = action.payload.toLowerCase();
+      return {
+        ...state,
+        [sectionName]: [],
+      };
+    },
+    DeleteCustomSection(state, action: PayloadAction<string>) {
+      const sectionName = action.payload.toLowerCase();
+      //console.log(sectionName);
+      //@ts-ignore
+      const { [sectionName]: deletedSection, ...restState } = state;
+      return restState as ResumeData;
+    },
+    RenameCustomSection(
+      state,
+      action: PayloadAction<{ oldName: string; newName: string }>
+    ) {
+      const { oldName, newName } = action.payload;
+      if (oldName.toLowerCase() in state && !(newName.toLowerCase() in state)) {
+        //@ts-ignore
+        const { [oldName.toLowerCase(0)]: oldSection, ...restState } = state;
+        return {
+          ...restState,
+          [newName.toLowerCase()]: oldSection,
+        } as ResumeData;
+      }
+      return state;
+    },
+    updateResumeImage(state, action) {
+      if (state.basics) state.basics[0].picture = action.payload;
+    },
   },
 });
 
-export const { UpdateLeftBarData } = leftsidebarSlice.actions;
+export const {
+  UpdateLeftBarData,
+  Reset,
+  AddCustomSection,
+  DeleteCustomSection,
+  RenameCustomSection,
+  updateResumeImage,
+} = leftsidebarSlice.actions;
+
 export default leftsidebarSlice.reducer;
