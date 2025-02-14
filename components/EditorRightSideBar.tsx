@@ -123,23 +123,23 @@ interface RightSideBarProps {
 }
 
 const templates = [
-  { id: 1, name: "Classic Charm", image: "/templates/template1.avif" },
-  { id: 2, name: "Artistic Flair", image: "/templates/template2.avif" },
-  { id: 3, name: "Executive Edge", image: "/templates/template3.avif" },
-  { id: 4, name: "Fresh Start", image: "/templates/template4.avif" },
-  { id: 5, name: "Eco Essence", image: "/templates/template5.avif" },
-  { id: 6, name: "Naval Professional", image: "/templates/template6.avif" },
-  { id: 7, name: "Classic Centered", image: "/templates/template7.avif" },
-  { id: 8, name: "Split Modern", image: "/templates/template8.avif" },
-  { id: 9, name: "Stanford Minimalist", image: "/templates/template9.avif" },
+  { id: 1, name: "Classic Charm", image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp" },
+  { id: 2, name: "Artistic Flair", image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp" },
+  { id: 3, name: "Executive Edge", image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp" },
+  { id: 4, name: "Fresh Start", image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp" },
+  { id: 5, name: "Eco Essence", image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp" },
+  { id: 6, name: "Naval Professional", image: "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp" },
+  { id: 7, name: "Classic Centered", image: "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp" },
+  { id: 8, name: "Split Modern", image: "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp" },
+  { id: 9, name: "Stanford Minimalist", image: "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp" },
 ];
 
 const covertemplate = [
-  { id: 1, name: "Classic Professional", image: "/templates/ctemplate1.avif" },
-  { id: 2, name: "Modern Header", image: "/templates/ctemplate2.avif" },
-  { id: 3, name: "Classic Framed", image: "/templates/ctemplate3.avif" },
-  { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.avif" },
-  { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
+  { id: 1, name: "Classic Professional", image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp" },
+  { id: 2, name: "Modern Header", image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp" },
+  { id: 3, name: "Classic Framed", image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp" },
+  { id: 4, name: "Bold Sidebar", image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp" },
+  { id: 5, name: "Minimalist Centered", image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp" },
 
 ];
 

@@ -54,12 +54,12 @@ export default function LetterContent({
     {
       id: 1,
       name: "Classic Professional",
-      image: "/templates/ctemplate1.avif",
+      image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp",
     },
-    { id: 2, name: "Modern Header", image: "/templates/ctemplate2.avif" },
-    { id: 3, name: "Classic Framed", image: "/templates/ctemplate3.avif" },
-    { id: 4, name: "Bold Sidebar", image: "/templates/ctemplate4.avif" },
-    { id: 5, name: "Minimalist Centered", image: "/templates/ctemplate5.avif" },
+    { id: 2, name: "Modern Header", image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp" },
+    { id: 3, name: "Classic Framed", image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp" },
+    { id: 4, name: "Bold Sidebar", image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp" },
+    { id: 5, name: "Minimalist Centered", image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp" },
   ];
 
   const filteredTemplates = letterTemplates.filter((template) =>
