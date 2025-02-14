@@ -2,7 +2,6 @@ import { Hero } from "@/components/LandingPage/Hero";
 import { JoinHero } from "@/components/Hero";
 import type { Metadata } from "next";
 import { auth } from "@/auth";
-import { TemplatesSection } from "@/components/LandingPage/Templates";
 import { FeaturesSection } from "@/components/LandingPage/Features";
 import { StickyScrollReveal } from "@/components/LandingPage/More";
 import Pricing from "@/components/LandingPage/Pricing";
