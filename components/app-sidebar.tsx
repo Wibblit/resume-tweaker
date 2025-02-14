@@ -56,10 +56,11 @@ import { Separator } from "./ui/separator";
 import Link from "next/link";
 import { SettingsDialog } from "./Sidebar/settings/settings-dialog";
 import { usePathname } from "next/navigation";
+import Logo from "./Logo";
 
 // Menu items.
 const items = [
-  { title: "Resumes", icon: FileText, url: "/home" },
+  { title: "Resumes & Cover letters", icon: FileText, url: "/home" },
   { title: "AI Review", icon: Star, url: "/home/ai-review" },
   { title: "AI Interview", icon: MessageSquare, url: "/home/ai-interview" },
   { title: "Profile", icon: User, url: "/profile" },
@@ -112,12 +113,7 @@ export function AppSidebar({ session }: { session: Session }) {
           <div className="flex justify-between w-full">
             {!isCollapsed && (
               <Link href="/" className="flex items-center gap-2 font-semibold">
-                <span className="sm:block text-zinc-800 dark:text-zinc-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors duration-200">
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    resume
-                  </span>
-                  <span className="font-bold">tweaker</span>
-                </span>
+                  <Logo />
               </Link>
             )}
             <SidebarTrigger />
