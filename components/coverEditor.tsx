@@ -26,6 +26,7 @@ import {
   UpdateSeparator,
 } from "@/slices/rightsidebarSlice";
 import { useToast } from "@/hooks/use-toast";
+import { updateCoverLetterIsSave } from "@/slices/currentCoverSlice";
 
 export default function CoverEditor() {
   const [activeSection, setActiveSection] = useState<
@@ -42,9 +43,13 @@ export default function CoverEditor() {
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const dispatch = useAppDispatch();
 
+  const isSave = useAppSelector((state) => state?.currentCoverLetter?.isSave);
+
   const currentRoute = usePathname();
 
   const saveData = async () => {
+    if (!isSave) return;
+
     try {
       const response = await savecoverData(
         CoverLetterData,
@@ -114,7 +119,9 @@ export default function CoverEditor() {
           signOff,
         } = coverData;
         localStorage.setItem("currCoverId", id);
-        document.title = coverName ? `${coverName}-CoverLetter-ResumeTweaker` : "ResumeTweaker";
+        document.title = coverName
+          ? `${coverName}-CoverLetter-ResumeTweaker`
+          : "ResumeTweaker";
 
         dispatch(
           setCurrentCover({
@@ -159,26 +166,32 @@ export default function CoverEditor() {
 
   useEffect(() => {
     const handleRouteChange = async () => {
+      dispatch(updateCoverLetterIsSave(true));
+      if (!isSave) return; // Skip saving if isSave is false
       await saveData();
     };
 
     const handlePopState = async () => {
+      dispatch(updateCoverLetterIsSave(true));
+      if (!isSave) return; // Skip saving if isSave is false
       await handleRouteChange();
     };
 
     const handleBeforeUnload = async (event: BeforeUnloadEvent) => {
+      dispatch(updateCoverLetterIsSave(true));
+      if (!isSave) return; // Skip saving if isSave is false
       await saveData();
     };
 
     const originalPushState = window.history.pushState;
     window.history.pushState = async function (state, title, url) {
-      await handleRouteChange();
+      if (isSave) handleRouteChange();
       originalPushState.apply(window.history, [state, title, url]);
     };
 
     const originalReplaceState = window.history.replaceState;
     window.history.replaceState = async function (state, title, url) {
-      await handleRouteChange();
+      if (isSave) handleRouteChange();
       originalReplaceState.apply(window.history, [state, title, url]);
     };
 
@@ -191,7 +204,7 @@ export default function CoverEditor() {
       window.history.pushState = originalPushState;
       window.history.replaceState = originalReplaceState;
     };
-  }, [CoverLetterData, ResumeAppearance, currCoverId]);
+  }, [CoverLetterData, ResumeAppearance, currCoverId, isSave]);
 
   return (
     <div className="flex flex-col h-screen bg-background">

@@ -21,7 +21,7 @@ import {
   TransformComponent,
   TransformWrapper,
 } from "react-zoom-pan-pinch";
-import { useAppSelector } from "@/hooks/hooks";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { CoverLetterState } from "@/types/types";
 import ThemeAwareLogo from "./ThemeAwareLogo";
 import CoverTemplate1 from "@/templates/coverlettertemplates/covertemplate1";
@@ -49,6 +49,7 @@ import {
 import { useRouter } from "next/navigation";
 import { savecoverData } from "@/actions/saveCoverLetterData";
 import { useToast } from "@/hooks/use-toast";
+import { updateCoverLetterIsSave } from "@/slices/currentCoverSlice";
 
 interface Page {
   id: number;
@@ -206,6 +207,7 @@ export default function Component({
   const ResumeAppearance = useAppSelector((state) => state.rightsidebar);
   const { currCoverId } = useAppSelector((state) => state.currentCoverLetter);
   const [saving, setSaving] = useState<boolean>(false);
+  const dispatch = useAppDispatch()
 
   const handleSave = async () => {
     try {
@@ -228,6 +230,7 @@ export default function Component({
         description: "The cover letter has been saved successfully.",
       });
       setSaving(false);
+      dispatch(updateCoverLetterIsSave(false))
     } catch (error) {
       setSaving(false);
       toast({
@@ -239,11 +242,14 @@ export default function Component({
   };
   
   const handleSaveAndExit = async () => {
+    dispatch(updateCoverLetterIsSave(false));
     await handleSave()
     router.push('/home')
   }
   
   const handleExit = async () => {
+     dispatch(updateCoverLetterIsSave(false));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     router.push("/home")
   }
   useEffect(() => {

@@ -70,6 +70,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Reset, UpdateLeftBarData } from "@/slices/leftsidebarSlice";
+import { updateResumeIsSave } from "@/slices/currentResumeSlices";
 
 interface Page {
   id: number;
@@ -171,7 +172,6 @@ const ResumePage: React.FC<{
         height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
       }}
     >
-      
       {renderTemplate(page, pageIndex)}
       <div
         className="absolute inset-x-0 border-b border-dashed"
@@ -210,6 +210,7 @@ export default function ResumePages({
   const templateNumber: number = useAppSelector(
     (state) => state.rightsidebar.id
   );
+
   const resumeName = useAppSelector(
     (state) => state.currentResume
   ).currResumeName;
@@ -222,6 +223,7 @@ export default function ResumePages({
   const resumeStyles = useAppSelector((state) => state.rightsidebar);
   const { currResumeId } = useAppSelector((state) => state.currentResume);
   const [saving, setSaving] = useState<boolean>(false);
+  console.log(useAppSelector((state) => state?.currentResume?.isSave));
 
   const handleSave = async () => {
     try {
@@ -242,6 +244,7 @@ export default function ResumePages({
         description: "The resume has been saved successfully.",
       });
       setSaving(false);
+      dispatch(updateResumeIsSave(false));
     } catch (error) {
       toast({
         title: "Error",
@@ -252,13 +255,17 @@ export default function ResumePages({
     }
   };
 
-    const handleSaveAndExit = async () => {
-      await handleSave();
-      router.push("/home");
-    };
-    const handleExit = async () => {
-      router.push("/home")
-    }
+  const handleSaveAndExit = async () => {
+    dispatch(updateResumeIsSave(false));
+    await handleSave();
+    router.push("/home");
+  };
+  const handleExit = async () => {
+    dispatch(updateResumeIsSave(false));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    router.push("/home");
+  };
+
 
   useEffect(() => {
     dispatch(
@@ -523,9 +530,7 @@ export default function ResumePages({
                       {saving ? (
                         <Loader className="h-4 w-4 animate-spin" />
                       ) : (
-                        
-                          <Save className="h-4 w-4" />
-    
+                        <Save className="h-4 w-4" />
                       )}
                     </Button>
                   </TooltipTrigger>
@@ -583,8 +588,8 @@ export default function ResumePages({
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="sm" className="z-10">
-                        <LogOut className="h-4 w-4" />
-                        Exit
+                      <LogOut className="h-4 w-4" />
+                      Exit
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -600,7 +605,7 @@ export default function ResumePages({
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction onClick={handleExit}>
-                            Don't save
+                        Don't save
                       </AlertDialogAction>
                       <AlertDialogAction onClick={handleSaveAndExit}>
                         Save and Exit
@@ -638,10 +643,10 @@ export default function ResumePages({
                   {saving ? (
                     <Loader className="h-4 w-4 animate-spin" />
                   ) : (
-                        <>
-                          <Save className="h-4 w-4" />
-                          Save
-                          </>
+                    <>
+                      <Save className="h-4 w-4" />
+                      Save
+                    </>
                   )}
                 </Button>
               </TooltipTrigger>

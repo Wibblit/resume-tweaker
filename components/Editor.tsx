@@ -24,13 +24,14 @@ import {
   UpdateSectionOrderLayout,
   UpdateSeparator,
   UpdateSections,
-  updateDateType
+  updateDateType,
 } from "@/slices/rightsidebarSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { UpdateLeftBarData } from "@/slices/leftsidebarSlice";
 import { setFullProfileData } from "@/slices/profileSlice";
 import { useToast } from "@/hooks/use-toast";
 import { initialState } from "@/slices/leftsidebarSlice";
+import { updateResumeIsSave } from "@/slices/currentResumeSlices";
 
 export default function Editor() {
   const [activeSection, setActiveSection] = useState<keyof ResumeData | "">(
@@ -46,6 +47,10 @@ export default function Editor() {
   const printFrameRef = useRef<HTMLIFrameElement | null>(null);
   const isPhoneView = useMediaQuery({ maxWidth: 767 });
   const dispatch = useAppDispatch();
+
+  const isSave = useAppSelector((state) => state?.currentResume?.isSave);
+
+  console.log(isSave);
 
   const currentRoute = usePathname();
 
@@ -72,7 +77,9 @@ export default function Editor() {
         console.log(resumeData);
         const { id, styles, resumeName, userId, ...leftSidebBarContent } =
           resumeData;
-        document.title = resumeName ? `${resumeName}-Resume-ResumeTweaker` : "ResumeTweaker";
+        document.title = resumeName
+          ? `${resumeName}-Resume-ResumeTweaker`
+          : "ResumeTweaker";
         const updatedLeftsidebardata = { ...leftSidebBarContent };
         if (
           //@ts-ignore
@@ -137,7 +144,7 @@ export default function Editor() {
           dispatch(UpdateSectionOrderLayout(styles.sectionOrder));
         }
         if (styles.sections) {
-          dispatch(UpdateSections(styles.sections))
+          dispatch(UpdateSections(styles.sections));
         }
         if (styles.baseColor) {
           dispatch(UpdateBaseColor(styles.baseColor));
@@ -198,6 +205,8 @@ export default function Editor() {
   }, [dispatch]);
 
   const saveData = async () => {
+    if (!isSave) return;
+
     try {
       console.log(resumeStyles);
       const res = await saveResumeData(ResumeData, resumeStyles, currResumeId);
@@ -209,7 +218,7 @@ export default function Editor() {
         });
         return;
       }
-      console.log("Reusme Update suceess")
+      console.log("Reusme Update suceess");
       toast({
         title: "Success",
         description: "The resume has been saved successfully.",
@@ -225,26 +234,32 @@ export default function Editor() {
 
   useEffect(() => {
     const handleRouteChange = async () => {
+      dispatch(updateResumeIsSave(true));
+      if (!isSave) return; // Skip saving if isSave is false
       await saveData();
     };
 
     const handlePopState = async () => {
+      dispatch(updateResumeIsSave(true));
+      if (!isSave) return;
       await handleRouteChange();
     };
 
-    const handleBeforeUnload = async () => {
+    const handleBeforeUnload = async (event: any) => {
+      dispatch(updateResumeIsSave(true));
+      if (!isSave) return;
       await saveData();
     };
 
     const originalPushState = window.history.pushState;
-    window.history.pushState = async function (state, title, url) {
-      await handleRouteChange();
+    window.history.pushState = function (state, title, url) {
+      if (isSave) handleRouteChange();
       originalPushState.apply(window.history, [state, title, url]);
     };
 
     const originalReplaceState = window.history.replaceState;
-    window.history.replaceState = async function (state, title, url) {
-      await handleRouteChange();
+    window.history.replaceState = function (state, title, url) {
+      if (isSave) handleRouteChange();
       originalReplaceState.apply(window.history, [state, title, url]);
     };
 
@@ -257,7 +272,7 @@ export default function Editor() {
       window.history.pushState = originalPushState;
       window.history.replaceState = originalReplaceState;
     };
-  }, [ResumeData, resumeStyles, currResumeId]);
+  }, [ResumeData, resumeStyles, currResumeId, isSave]);
 
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
