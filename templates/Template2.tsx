@@ -58,7 +58,7 @@ const LinkedEntity: React.FC<{
   return (
     <div className={className}>
       <span style={{fontWeight : 600}} className="bold">{name}</span>
-      {name && url.label && " | "}
+      {name && url.label && <div className="mx-1">|</div>}
       {url.label && (
         <a
           href={url.href}
@@ -318,7 +318,9 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
                                     ? "33%"
                                     : skill.level == "Intermediate"
                                     ? "66%"
-                                    : "100%",
+                                    : skill.level == "Advanced"
+                                    ? "100%"
+                                    : "0%",
                               }}
                               className="h-full rounded-md py-1"
                             ></div>
@@ -375,7 +377,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
 
                     {/* Second Row */}
                     <div className="flex justify-between">
-                      <div>{edu.field}</div>
+                      <div>{edu.field}{edu.field && edu.specialization && <span className="mx-1">|</span> }<span className="font-normal">{edu.specialization}</span></div>
                       <div className="  font-medium">
                         {edu.score}
                       </div>

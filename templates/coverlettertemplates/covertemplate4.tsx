@@ -34,7 +34,8 @@ export default function CoverTemplate4({
       lineHeight: `${lineHeight}`,
       color: "#000",
       display: "flex",
-      maxHeight: "100%",
+      height: "100%",
+      maxHeight: "100%"
     },
     sidebar: {
       width: "30%",

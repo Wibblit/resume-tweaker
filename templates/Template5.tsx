@@ -90,7 +90,7 @@ const Section: React.FC<{
   }
   return (
     <section
-      className="mt-4"
+      className="mt-2"
     >
       <div className="relative mb-2">
         <h4
@@ -308,7 +308,7 @@ const Template5: React.FC<TemplateProps> = ({
       flex: 1,
     },
     body: {
-      fontSize: `${1.1 * scaleFactor}rem`,
+      fontSize: `1.1em`,
       color: "black",
     },
     sidebar: {
@@ -333,6 +333,7 @@ const Template5: React.FC<TemplateProps> = ({
       textAlign: "left",
     },
     normal: {
+      fontSize: `1.1em`,
       textAlign: "left",
     },
     undertitle: {
@@ -360,10 +361,12 @@ const Template5: React.FC<TemplateProps> = ({
               title="Summary"
               baseColor={baseColor}
             >
-              <HTMLViewer
-                lineHeight={lineHeight}
-                content={content.summary[0].content}
-              />
+              <div className="" style={styles.normal}>
+                <HTMLViewer
+                  lineHeight={lineHeight}
+                  content={content.summary[0].content}
+                />
+              </div>
             </Section>
           )
         );
@@ -480,10 +483,12 @@ const Template5: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={award.summary}
-                      />
+                      <div className="" style={styles.normal}>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={award.summary}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -499,7 +504,7 @@ const Template5: React.FC<TemplateProps> = ({
               title="Experience"
               baseColor={baseColor}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 {content.experience.map((exp, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex items-start justify-between">
@@ -521,10 +526,12 @@ const Template5: React.FC<TemplateProps> = ({
                       //   style={sectionStyle}
                       //   className="text-justify"
                       // />
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={exp.summary}
-                      />
+                      <div className="" style={styles.normal}>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={exp.summary}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -604,9 +611,9 @@ const Template5: React.FC<TemplateProps> = ({
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <div className={`flex flex-wrap  justify-end items-center whitespace-nowrap`}>
+                      <div className={`flex flex-nowrap  justify-end items-center whitespace-nowrap`}>
                         {edu.startDate && <div>{formatDate(edu.startDate, datetype)}</div>}
-                        {edu.endDate && <div className="flex items-center"><div className="">{(edu.startDate && edu.endDate) ? "-" : ""}</div> {formatDate(edu.endDate, datetype)}</div>}
+                        {edu.endDate && <div className="flex items-center"><div className="">{(edu.startDate && edu.endDate) ? <div className="mx-1">-</div> : ""}</div> {formatDate(edu.endDate, datetype)}</div>}
                       </div>
                       <div className="text-right">{edu.score}</div>
                     </div>
@@ -677,10 +684,12 @@ const Template5: React.FC<TemplateProps> = ({
                     </div>
                     <div className="">
                       {project.summary && !isEmptyString(project.summary) && (
-                        <HTMLViewer
-                          lineHeight={lineHeight}
-                          content={project.summary}
-                        />
+                        <div className="" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={project.summary}
+                          />
+                        </div>
                       )}
                     </div>
                   </div>
@@ -752,7 +761,7 @@ const Template5: React.FC<TemplateProps> = ({
 
                     {/* Summary: Placed below the description */}
                     {sec.summary && (
-                      <div className="mt-2">
+                      <div className="mt-2" style={styles.normal}>
                         <HTMLViewer
                           lineHeight={lineHeight}
                           content={sec.summary}

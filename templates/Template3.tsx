@@ -147,17 +147,17 @@ const Header: React.FC<{
       width: contentWidth,
     },
     name: {
-      fontSize: `${Math.max(2, imageSize / 64) * scaleFactor}rem`,
+      fontSize: `2em`,
       fontWeight: "bold",
       lineHeight: 1.2,
     },
     headline: {
-      fontSize: `${Math.max(1.2, imageSize / 108) * scaleFactor}rem`,
+      fontSize: `1.4em`,
       color: baseColor,
       lineHeight: 1.4,
     },
     details: {
-      fontSize: `${Math.max(1, imageSize / 128) * scaleFactor}rem`,
+      fontSize: `1.2em`,
       lineHeight: 1.6,
     },
   };
@@ -197,8 +197,8 @@ const Header: React.FC<{
               {((basics.location && basics.email) ||
                 (basics.location && basics.phone) ||
                 (basics.location && basics.url.label)) && (
-                <span className="mx-1">|</span>
-              )}
+                  <span className="mx-1">|</span>
+                )}
             </div>
           )}
           {basics?.phone && (
@@ -210,8 +210,8 @@ const Header: React.FC<{
               {((basics.phone && basics.email) ||
                 (basics.phone && basics.location) ||
                 (basics.phone && basics.url.label)) && (
-                <span className="mx-1">|</span>
-              )}
+                  <span className="mx-1">|</span>
+                )}
             </div>
           )}
           {basics?.email && (
@@ -227,37 +227,31 @@ const Header: React.FC<{
               {((basics.email && basics.phone) ||
                 (basics.email && basics.location) ||
                 (basics.email && basics.url.label)) && (
-                <span className="mx-1">|</span>
-              )}
+                  <span className="mx-1">|</span>
+                )}
             </div>
           )}
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
-        <div className="flex flex-wrap items-center justify-start mt-1">
+        <div className="flex flex-wrap items-center justify-start mt-1 gap-1">
           {
             //@ts-ignore
             content.profiles.map((profile, index) => (
-              <div className="flex items-center" key={index}>
-                {isIcons && profile.url.href !== "" && (
-                  <SocialIcon
-                    style={{ width: "16px", height: "16px" }}
-                    url={profile.url.href}
-                  />
-                )}
                 <a
+                  key={index}
                   href={profile.url.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="underline text-sm mr-2"
+                  className="flex items-center gap-2"
                 >
-                  {profile.url.label}
-                </a>
-                {!isIcons &&
-                  content.profiles &&
-                  index !== content.profiles?.length - 1 && (
-                    <span className="mr-1">|</span>
+                  {isIcons && profile.url.href !== "" && (
+                    <SocialIcon
+                      style={{ width: "16px", height: "16px" }}
+                      url={profile.url.href}
+                    />
                   )}
-              </div>
+                  <span className="no-underline text-base">{profile.url.label}</span>
+                </a>
             ))
           }
         </div>
@@ -311,12 +305,15 @@ const Template3: React.FC<TemplateProps> = ({
     sidebarContent: {
       padding: `${margin}mm`,
       height: "100%",
-      overflowY: "auto" as const,
+      overflow: "hidden"
     },
     mainContent: {
       padding: `${margin}mm`,
       width: "65%",
     },
+    normal : {
+      fontSize: "1.1em"
+    }
   };
   const renderSection = (
     sectionName: string,
@@ -332,10 +329,12 @@ const Template3: React.FC<TemplateProps> = ({
               baseColor={baseColor}
               isRightColumn={isRightColumn}
             >
-              <HTMLViewer
-                lineHeight={lineHeight}
-                content={content.summary[0].content}
-              />
+              <div className="" style={styles.normal}>
+                <HTMLViewer
+                  lineHeight={lineHeight}
+                  content={content.summary[0].content}
+                />
+              </div>
             </Section>
           )
         );
@@ -373,10 +372,12 @@ const Template3: React.FC<TemplateProps> = ({
                       </div>
                     </div>
                     {award.summary && !isEmptyString(award.summary) && (
-                      <HTMLViewer
-                        lineHeight={lineHeight}
-                        content={award.summary}
-                      />
+                      <div className="" style={styles.normal}>
+                        <HTMLViewer
+                          lineHeight={lineHeight}
+                          content={award.summary}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -525,10 +526,12 @@ const Template3: React.FC<TemplateProps> = ({
                     </div>
                     <div className="mt-1">
                       {exp.summary && !isEmptyString(exp.summary) && (
-                        <HTMLViewer
-                          lineHeight={lineHeight}
-                          content={exp.summary}
-                        />
+                        <div className="" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={exp.summary}
+                          />
+                        </div>
                       )}
                     </div>
                   </div>
@@ -702,10 +705,12 @@ const Template3: React.FC<TemplateProps> = ({
                     </div>
                     <div className="mt-1">
                       {project.summary && !isEmptyString(project.summary) && (
-                        <HTMLViewer
-                          lineHeight={lineHeight}
-                          content={project.summary}
-                        />
+                        <div className="" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={project.summary}
+                          />
+                        </div>
                       )}
                     </div>
                   </div>
@@ -745,73 +750,73 @@ const Template3: React.FC<TemplateProps> = ({
               {
                 //@ts-ignore
                 content[sectionName] &&
-                  //@ts-ignore
-                  Array.isArray(content[sectionName]) &&
-                  //@ts-ignore
-                  content[sectionName]?.map((sec: Custom, index: number) => (
-                    <div key={index} className="mb-2">
-                      <div className="flex flex-col justify-between">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
-                            {sec.name && (
-                              <h3
-                                style={{
-                                  fontSize:
-                                    fontSize + Math.floor(fontSize * 0.1),
-                                }}
-                                className="font-bold"
-                              >
-                                {sec.name}
-                              </h3>
-                            )}
+                //@ts-ignore
+                Array.isArray(content[sectionName]) &&
+                //@ts-ignore
+                content[sectionName]?.map((sec: Custom, index: number) => (
+                  <div key={index} className="mb-2">
+                    <div className="flex flex-col justify-between">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          {sec.name && (
+                            <h3
+                              style={{
+                                fontSize:
+                                  fontSize + Math.floor(fontSize * 0.1),
+                              }}
+                              className="font-bold"
+                            >
+                              {sec.name}
+                            </h3>
+                          )}
 
-                            {sec.name && sec.url.label && (
-                              <span className="mx-1">|</span>
-                            )}
-                            {sec.location && <p>{sec.location}</p>}
-                            {sec.url.label && <span className="mx-1">|</span>}
-                            {sec.url && (
-                              <a
-                                href={sec.url.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                              >
-                                <p style={{ color: baseColor }}>
-                                  {sec.url.label}
-                                </p>
-                              </a>
-                            )}
-                          </div>
-
-                          {/* Right Section: Dates */}
-                          <div>
-                            {/* Start Date and End Date */}
-                            {sec.startDate && (
-                              <h3>
-                                {formatDate(sec.startDate, datetype)}
-                                {sec.endDate &&
-                                  ` - ${formatDate(sec.endDate, datetype)}`}
-                              </h3>
-                            )}
-                          </div>
+                          {sec.name && sec.url.label && (
+                            <span className="mx-1">|</span>
+                          )}
+                          {sec.location && <p>{sec.location}</p>}
+                          {sec.url.label && <span className="mx-1">|</span>}
+                          {sec.url && (
+                            <a
+                              href={sec.url.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center"
+                            >
+                              <p style={{ color: baseColor }}>
+                                {sec.url.label}
+                              </p>
+                            </a>
+                          )}
                         </div>
 
-                        {/* Description: Placed below the main row */}
-                        {sec.description && <p>{sec.description}</p>}
-
-                        {/* Summary: Placed below the description */}
-                        {sec.summary && (
-                          <div className="mt-1">
-                            <HTMLViewer
-                              lineHeight={lineHeight}
-                              content={sec.summary}
-                            />
-                          </div>
-                        )}
+                        {/* Right Section: Dates */}
+                        <div>
+                          {/* Start Date and End Date */}
+                          {sec.startDate && (
+                            <h3>
+                              {formatDate(sec.startDate, datetype)}
+                              {sec.endDate &&
+                                ` - ${formatDate(sec.endDate, datetype)}`}
+                            </h3>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Description: Placed below the main row */}
+                      {sec.description && <p>{sec.description}</p>}
+
+                      {/* Summary: Placed below the description */}
+                      {sec.summary && (
+                        <div className="mt-1" style={styles.normal}>
+                          <HTMLViewer
+                            lineHeight={lineHeight}
+                            content={sec.summary}
+                          />
+                        </div>
+                      )}
                     </div>
-                  ))
+                  </div>
+                ))
               }
             </div>
           </Section>
