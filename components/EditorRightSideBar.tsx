@@ -498,12 +498,10 @@ export default function EditorRightSideBar({
                           >
                             <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
                               <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                              <Image
+                              <img
                                 src={template.image}
                                 alt={`${template.name} template`}
-                                fill
                                 className="absolute inset-0 w-full h-full object-cover"
-                                loading="lazy"
                               />
                             </div>
                             <div className="p-2 text-center font-medium">
