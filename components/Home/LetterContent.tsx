@@ -179,10 +179,9 @@ export default function LetterContent({
                   className="h-auto flex-col items-start p-4 group"
                 >
                   <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
-                    <Image
+                    <img
                       src={template.image}
                       alt={template.name}
-                      fill
                       className="object-cover transition-transform group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
