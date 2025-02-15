@@ -197,7 +197,7 @@ export function PaymentHistoryModal({
                       </TableCell>
                       <TableCell className="text-center">{payment.quantity}</TableCell>
                       <TableCell className="text-right font-medium">
-                        {payment.total} {payment.currency}
+                        {payment.total/100} {payment.currency}
                       </TableCell>
                       <TableCell className="text-center">{payment.credits}</TableCell>
                       <TableCell>
