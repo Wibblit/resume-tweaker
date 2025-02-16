@@ -107,7 +107,7 @@ function EditorPage() {
                 onClick={() => router.push("/login")}
               >
                 <FileText className="w-6 h-6 mr-2" />
-                Create Resume
+                Create Resume for Free
               </Button>
               <Button
                 size="lg"
@@ -115,7 +115,7 @@ function EditorPage() {
                 className="transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-background/50"
                 onClick={() => router.push("/login")}
               >
-                Create Cover Letter
+                Create Cover Letter for Free
               </Button>
             </div>
           </div>
@@ -251,13 +251,13 @@ function EditorPage() {
         <div className="relative">
           <h2 className="text-3xl font-bold text-center mb-16">
             <GradientText className="animate-[shine_8s_ease-in-out_infinite] bg-[size:200%_auto]">
-              Choose Your Document
+              What do you want to build?
             </GradientText>
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
             <TypeCard
               icon={<FileText className="w-6 h-6" />}
-              title="Resume Editor"
+              title="Free Resume Editor"
               description="Create a professional resume with customizable sections, AI assistance, and multiple templates."
               features={[
                 "Custom sections for experience & skills",
@@ -271,7 +271,7 @@ function EditorPage() {
 
             <TypeCard
               icon={<FileText className="w-6 h-6" />}
-              title="Cover Letter Editor"
+              title="Free Cover Letter Editor"
               description="Write compelling cover letters with AI assistance and professional templates."
               features={[
                 "Customizable letter sections",
@@ -362,7 +362,7 @@ function EditorPage() {
           variant={"silver"}
           onClick={() => router.push("/login")}
         >
-          Get Started Now
+          Get Started Free
         </Button>
       </section>
     </div>

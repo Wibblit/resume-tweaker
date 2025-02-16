@@ -287,7 +287,7 @@ function PresetVisualCard() {
                           />
                           <stop
                             offset="100%"
-                            stopColor="hsl(220, 70%, 30%)"
+                            stopColor="hsl(220, 70%, 50%)"
                             stopOpacity={0.9}
                           />
                         </linearGradient>
@@ -305,7 +305,7 @@ function PresetVisualCard() {
                           />
                           <stop
                             offset="100%"
-                            stopColor="hsl(280, 65%, 40%)"
+                            stopColor="hsl(280, 65%, 60%)"
                             stopOpacity={0.9}
                           />
                         </linearGradient>
@@ -323,7 +323,7 @@ function PresetVisualCard() {
                           />
                           <stop
                             offset="100%"
-                            stopColor="hsl(340, 75%, 35%)"
+                            stopColor="hsl(340, 75%, 55%)"
                             stopOpacity={0.9}
                           />
                         </linearGradient>
@@ -341,7 +341,7 @@ function PresetVisualCard() {
                           />
                           <stop
                             offset="100%"
-                            stopColor="hsl(160, 60%, 25%)"
+                            stopColor="hsl(160, 60%, 45%)"
                             stopOpacity={0.9}
                           />
                         </linearGradient>

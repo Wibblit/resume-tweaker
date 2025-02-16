@@ -40,7 +40,7 @@ export function Hero() {
           <div className="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
             <Button asChild size="lg" variant={"silver"}>
               <a href="login">
-                Get Started
+                Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </a>
             </Button>
