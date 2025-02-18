@@ -1,5 +1,13 @@
 import React from 'react';
-
+import { Metadata } from "next"
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description:
+    "This is the Terms of Service of Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
+  alternates: {
+    canonical: "https://resumetweaker.wibblit.com/legal/cookie-policy",
+  }
+};
 export default function TermsOfService() {
   const rawhtml = `
   <div id="services">

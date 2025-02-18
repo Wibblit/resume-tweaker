@@ -75,7 +75,7 @@ export default function Footer() {
             <h3 className="text-base font-semibold">Support & Resources</h3>
             <ul className="space-y-3">
               {[
-                { href: "/blog", label: "Blog" },
+                { href: "/blogs", label: "Blog" },
                 {
                   href: "mailto:contact@wibblit.com",
                   label: "Contact Support",

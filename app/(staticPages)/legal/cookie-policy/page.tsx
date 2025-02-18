@@ -1,4 +1,14 @@
 import React from 'react';
+import { Metadata } from "next"
+export const metadata: Metadata = {
+  title: "Cookie Policy",
+  description:
+    "This is the Cookie policy of Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
+  alternates: {
+    canonical: "https://resumetweaker.wibblit.com/legal/cookie-policy",
+  }
+};
+
 
 export default function CookiePolicy() {
   const rawhtml = ` <div>

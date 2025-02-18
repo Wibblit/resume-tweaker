@@ -6,7 +6,8 @@ import PresetVisualCard from "@/components/PresetVisualiserCard";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ResumeTweaker Pricing | Affordable Resume and Interview Services",
+  title: {
+    absolute:"ResumeTweaker Pricing | Affordable Resume and Interview Services"},
   description:
     "Discover ResumeTweaker's affordable pricing plans for resume building, cover letter writing, and interview preparation services.",
   alternates: {

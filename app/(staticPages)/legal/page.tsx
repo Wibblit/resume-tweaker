@@ -3,7 +3,8 @@ import LegalPoliciesGrid from "@/components/legal-policies-grid";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "ResumeTweaker Legal | Terms of Service and Privacy Policy",
+    title: {
+      absolute:"ResumeTweaker Legal | Terms of Service and Privacy Policy"},
     description:
       "Review ResumeTweaker's Terms of Service and Privacy Policy to understand our commitment to your data security and service usage.",
     alternates: {

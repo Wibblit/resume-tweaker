@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import InterviewPage from "@/components/LandingPage/LandingInterviewPage";
 
 export const metadata: Metadata = {
-  title: "AI Interview Preparation Tools",
+  title: {
+    absolute:"ResumeTweaker | AI Interview Preparation Tools"},
   description:
     "Prepare for your next interview with ResumeTweaker's AI-driven interview prep tools. Practice common questions and receive personalized feedback.",
   alternates: {

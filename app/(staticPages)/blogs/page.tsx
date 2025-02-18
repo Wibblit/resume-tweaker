@@ -6,7 +6,8 @@ import { auth } from "@/auth";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "ResumeTweaker Blog | Career Advice and Job Search Tips",
+  title: {
+    absolute:"ResumeTweaker Blog | Career Advice and Job Search Tips"},
   description:
     "Explore ResumeTweaker's blog for expert career advice, resume tips, and job search strategies to advance your professional journey.",
   alternates: {

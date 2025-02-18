@@ -1,5 +1,13 @@
 import React from 'react';
-
+import { Metadata } from "next"
+export const metadata: Metadata = {
+  title: "Refund Policy",
+  description:
+    "This is the Refund policy of Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
+  alternates: {
+    canonical: "https://resumetweaker.wibblit.com/legal/refund-policy",
+  }
+};
 export default function RefundPolicy() {
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:p-6 lg:p-28">

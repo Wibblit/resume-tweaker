@@ -2,7 +2,8 @@ import { Metadata } from "next"
 import EditorPage from "@/components/LandingPage/LandingEditorPage"
 
 export const metadata: Metadata = {
-  title: "ResumeTweaker | AI Resume and Cover Letter Builder",
+  title: {
+    absolute:"ResumeTweaker | AI Resume and Cover Letter Builder"},
   description:
     "Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
   alternates: {

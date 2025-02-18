@@ -104,7 +104,7 @@ export default function BasicInfo({
           <Input
             id="url.label"
             name="url.label"
-            placeholder="Resume tweaker"
+            placeholder="ResumeTweaker"
             value={basics.url.label}
             onChange={handleChange}
           />
