@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "Learn about Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/legal/privacy-policy",
+    canonical: "https://resumetweaker.wibblit.com/about",
   }
 };
 export default function AboutAnimation() {
