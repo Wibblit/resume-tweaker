@@ -7,6 +7,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import { ReduxWrapper } from "@/components/ReduxWrapper";
+import { CookieConsentWrapper } from "@/components/CookieConsentWrapper";
+
 export const metadata: Metadata = {
   title: {
     default: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
@@ -110,8 +112,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-      <GoogleAnalytics gaId="G-2SNY7ETV6E" />
-        
+        <GoogleAnalytics gaId="G-2SNY7ETV6E" />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.className)}>
         <ThemeProvider
@@ -123,6 +124,7 @@ export default function RootLayout({
           <SessionProvider>
             <ReduxWrapper>
               {children}
+              <CookieConsentWrapper />
             </ReduxWrapper>
           </SessionProvider>
         </ThemeProvider>
