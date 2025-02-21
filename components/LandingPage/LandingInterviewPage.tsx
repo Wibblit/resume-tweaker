@@ -107,15 +107,15 @@ function InterviewPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8"></div>
         <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Master Your Next Interview with
+            Ace Your Next Interview with our
             <br />
             <GradientText className="text-5xl md:text-7xl">
-              AI-Powered Practice
+              AI Voice Interview
             </GradientText>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Experience realistic interview simulations with advanced AI
-            technology. Perfect your responses and boost your confidence.
+            Experience realistic simulations with advanced AI
+            Speech Interviews. Just like a real interview, you don't have to type your answers, just talk to our AI.
           </p>
           <div className="flex gap-4 flex-wrap justify-center">
             <Button
