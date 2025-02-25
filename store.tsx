@@ -1,7 +1,7 @@
 // store.ts
 "use client";
 // @ts-ignore
-import { configureStore, GetDefaultMiddleware } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 // @ts-ignore
 import logger from "redux-logger";
 import rightsidebarReducer from "./slices/rightsidebarSlice";
@@ -25,9 +25,7 @@ const store = configureStore({
     profile: profileReducer,
     page: pageReducer,
     assets: userAssets,
-  },
-  middleware: (getDefaultMiddleware: GetDefaultMiddleware) =>
-    getDefaultMiddleware().concat(logger),
+  }
 });
 
 export type RootState = ReturnType<typeof store.getState>;
