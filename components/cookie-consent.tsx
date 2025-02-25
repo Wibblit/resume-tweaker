@@ -89,7 +89,7 @@ export function CookieConsent({
       <div className="dark:bg-card bg-background rounded-lg sm:rounded-md border border-border shadow-lg">
         <div className="grid gap-2">
           <div className="border-b border-border h-12 sm:h-14 flex items-center justify-between p-3 sm:p-4">
-            <h1 className="text-base sm:text-lg font-medium">We use cookies</h1>
+            <span className="text-base sm:text-lg font-medium">We use cookies</span>
             <CookieIcon className="h-4 w-4 sm:h-[1.2rem] sm:w-[1.2rem]" />
           </div>
           <div className="p-3 sm:p-4">
@@ -136,7 +136,7 @@ export function CookieConsent({
     >
       <div className="m-0 sm:m-3 dark:bg-card bg-background border border-border rounded-lg shadow-lg">
         <div className="flex items-center justify-between p-3">
-          <h1 className="text-base sm:text-lg font-medium">We use cookies</h1>
+          <span className="text-base sm:text-lg font-medium">We use cookies</span>
           <CookieIcon className="h-4 w-4 sm:h-[1.2rem] sm:w-[1.2rem]" />
         </div>
         <div className="p-3 -mt-2">
@@ -184,9 +184,9 @@ export function CookieConsent({
             </div>
           </div>
           <div className="p-3">
-            <p className="text-[11px] sm:text-xs text-muted-foreground">
+            <span className="text-[11px] sm:text-xs text-muted-foreground">
               We use cookies to enhance your browsing experience.
-            </p>
+            </span>
             <div className="flex flex-col sm:flex-row items-center gap-2 mt-3">
               <Button
                 onClick={accept}
