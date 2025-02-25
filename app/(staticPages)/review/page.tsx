@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: {
     absolute:"ResumeTweaker | AI Powered Resume Review"},
   description:
-    "Enhance your resume with ResumeTweaker's AI powered review services. Receive detailed feedback and optimization tips to improve your job prospects.",
+    "Boost your job prospects with ResumeTweaker’s AI-powered resume review. Get detailed feedback, ATS optimization tips, and a resume score to help you stand out.",
   alternates: {
     canonical: "https://resumetweaker.wibblit.com/review",
   },

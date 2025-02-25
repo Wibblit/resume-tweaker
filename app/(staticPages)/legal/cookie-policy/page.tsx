@@ -205,7 +205,7 @@ export default function CookiePolicy() {
        <td>
         <span>
          Authentication
-         <a data-custom-class="link" href="__________" target="_blank">
+         <a data-custom-class="link" href="https://resumetweaker.wibblit.com/legal/privacy-policy" target="_blank">
           <span>
            View Service Privacy Policy
           </span>
@@ -278,7 +278,7 @@ export default function CookiePolicy() {
        <td>
         <span>
          Authenticaiton
-         <a data-custom-class="link" href="__________" target="_blank">
+         <a data-custom-class="link" href="https://resumetweaker.wibblit.com/legal/privacy-policy" target="_blank">
           <span>
            View Service Privacy Policy
           </span>

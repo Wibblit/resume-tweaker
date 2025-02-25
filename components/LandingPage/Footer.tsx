@@ -39,7 +39,7 @@ export default function Footer() {
             <h3 className="text-base font-semibold">Features</h3>
             <ul className="space-y-3">
               {[
-                { href: "/editor", label: "Editor" },
+                { href: "/builder", label: "Builder" },
                 { href: "/review", label: "AI Review" },
                 { href: "/interview", label: "AI Interview" },
               ].map((link) => (

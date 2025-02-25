@@ -21,45 +21,89 @@ import { Card } from "@/components/ui/card"
 import { TypeCard } from "@/components/ReviewPage/TypeCard"
 import type { RefObject } from "react"
 import React from "react"
+import FAQAccordion from "../faq-accordian"
 
 const features = [
   {
     icon: <PenTool className="w-6 h-6" />,
     title: "Custom Sections",
-    description: "Create and organize custom sections to highlight your unique experiences and skills.",
+    description: "Highlight your unique experiences with personalized resume sections.",
     video: "/videos/editor-features/custom-sections.mp4",
   },
   {
     icon: <Wand2 className="w-6 h-6" />,
     title: "AI Assistance",
-    description: "Get real-time suggestions and improvements as you write your content.",
+    description: "Get instant suggestions to improve your resume and cover letter.",
     video: "/videos/editor-features/aiassist.mp4",
   },
   {
     icon: <Layout className="w-6 h-6" />,
     title: "Multiple Templates",
-    description: "Choose from a variety of professional templates to match your style.",
+    description: "Choose from professional resume templates tailored to your style.",
     video: "/videos/editor-features/templates.mp4",
   },
   {
     icon: <Type className="w-6 h-6" />,
     title: "Font Selection",
-    description: "Customize your document with professional fonts for better readability.",
+    description: "Enhance readability with a variety of professional fonts.",
     video: "/videos/editor-features/fonts.mp4",
   },
   {
     icon: <Palette className="w-6 h-6" />,
     title: "Color Themes",
-    description: "Apply different color schemes to make your documents stand out.",
+    description: "Customize your resume with eye-catching color schemes.",
     video: "/videos/editor-features/colors.mp4",
   },
   {
     icon: <MoveVertical className="w-6 h-6" />,
     title: "Drag & Drop Sections",
-    description: "Easily reorganize sections to create the perfect layout.",
+    description: "Easily arrange sections to create the perfect layout.",
     video: "/videos/editor-features/sections.mp4",
   },
 ]
+const faqData = [
+  {
+    question: "How do I generate my CV?",
+    answer: "With ResumeTweaker, generating a CV is quick and easy. Just input your details, choose a template, and let the AI craft a polished, professional CV tailored to your needs."
+  },
+  {
+    question: "How to create a CV for free?",
+    answer: "ResumeTweaker offers a free tier that lets you create and download a CV. You can experiment with templates and refine your content with AI suggestions before upgrading for advanced features."
+  },
+  {
+    question: "Which resume maker is best in 2025?",
+    answer: "ResumeTweaker stands out as one of the best resume makers in 2025, combining AI-powered content suggestions, ATS optimization, and sleek templates to help you land your dream job."
+  },
+  {
+    question: "How can I create a resume on my phone as a PDF?",
+    answer: "ResumeTweaker is mobile-friendly! You can easily create and download your resume as a PDF right from your phone, with all the AI-powered features available on desktop."
+  },
+  {
+    question: "What is the best AI resume builder?",
+    answer: "ResumeTweaker is a top choice for AI-powered resume building, offering keyword optimization, job-specific content suggestions, and beautiful templates that pass ATS scans."
+  },
+  {
+    question: "Can AI review my CV for mistakes?",
+    answer: "Absolutely! ResumeTweaker's AI scans your CV, identifies potential issues, and suggests improvements for structure, grammar, and alignment with job descriptions."
+  },
+  {
+    question: "Do companies use AI to screen resumes?",
+    answer: "Yes, many companies use ATS (Applicant Tracking Systems) to screen resumes. ResumeTweaker helps optimize your CV with the right keywords and formatting to increase your chances of passing through these systems."
+  }
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqData.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+};
 
 function EditorPage() {
   const router = useRouter()
@@ -81,6 +125,10 @@ function EditorPage() {
 
   return (
     <div className="min-h-screen ">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
         dark:bg-[linear-gradient(to_right,#1c1c1c_1px,transparent_1px),linear-gradient(to_bottom,#1c1c1c_1px,transparent_1px)] 
         bg-[size:6rem_4rem]
@@ -91,14 +139,13 @@ function EditorPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-20"></div>
         <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden ">
           <div className="relative z-10">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
-              Create Professional Documents with
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
+              Say hello to the best 
               <br />
-              <GradientText className="text-5xl md:text-7xl mt-2">AI-Powered Editor</GradientText>
+              <GradientText className="text-5xl md:text-6xl mt-2">AI Resume & Cover Letter Builder</GradientText>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-              Craft compelling resumes and cover letters with our intelligent editor. Get AI assistance, choose from
-              multiple templates, and customize every detail.
+            <p className="text-xl text-muted-foreground mb-8 max-w-4xl mx-auto leading-relaxed">
+            Struggling to create a standout resume? ResumeTweaker is your all-in-one tool for crafting job-winning resumes and personalized cover letters. Our AI resume builder helps you highlight your skills, experience, and achievements to catch recruiters' attention.
             </p>
             <div className="flex gap-6 flex-wrap justify-center">
               <Button
@@ -107,7 +154,7 @@ function EditorPage() {
                 onClick={() => router.push("/login")}
               >
                 <FileText className="w-6 h-6 mr-2" />
-                Create Resume for Free
+                Start Building Your Resume
               </Button>
               <Button
                 size="lg"
@@ -257,7 +304,7 @@ function EditorPage() {
           <div className="grid md:grid-cols-2 gap-8">
             <TypeCard
               icon={<FileText className="w-6 h-6" />}
-              title="Free Resume Editor"
+              title="Free Resume Builder"
               description="Create a professional resume with customizable sections, AI assistance, and multiple templates."
               features={[
                 "Custom sections for experience & skills",
@@ -271,7 +318,7 @@ function EditorPage() {
 
             <TypeCard
               icon={<FileText className="w-6 h-6" />}
-              title="Free Cover Letter Editor"
+              title="Free Cover Letter Builder"
               description="Write compelling cover letters with AI assistance and professional templates."
               features={[
                 "Customizable letter sections",
@@ -346,7 +393,9 @@ function EditorPage() {
           </div>
         </div>
       </section>
-
+      <section className="container mx-auto px-4 py-20">
+        <FAQAccordion faqData={faqData} />
+      </section>
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-4xl font-bold mb-6">
@@ -355,7 +404,7 @@ function EditorPage() {
           </GradientText>
         </h2>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-          Create compelling resumes and cover letters that stand out with our AI-powered editor.
+        Build job-winning resumes and cover letters with ResumeTweaker's AI-powered resume builder. Create ATS-friendly resumes in minutes and land your dream job faster.
         </p>
         <Button
           size="lg"

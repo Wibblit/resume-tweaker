@@ -36,7 +36,7 @@ export function LandingNav() {
   }, []);
 
   const navItems = [
-    { href: "/editor", label: "Editor" },
+    { href: "/builder", label: "Builder" },
     { href: "/review", label: "Review" },
     { href: "/interview", label: "Interview" },
     { href: "/pricing", label: "Pricing" },

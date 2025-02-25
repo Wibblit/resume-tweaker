@@ -15,6 +15,7 @@ import Link from "next/link";
 
 import { TypeCard } from "@/components/ReviewPage/TypeCard";
 import { useRouter } from "next/navigation";
+import FAQAccordion from "../faq-accordian";
 
 const dummyData = {
   evaluation: [
@@ -75,10 +76,62 @@ const processSteps = [
   },
 ];
 
+const faqData = [
+  {
+    question: "Is it worth paying for a resume review?",
+    answer: "Investing in a professional resume review can significantly enhance your job application by ensuring your resume is polished, ATS-friendly, and tailored to specific roles, thereby increasing your chances of securing interviews."
+  },
+  {
+    question: "What is the best AI for resume review?",
+    answer: "ResumeTweaker offers an AI-powered resume review service that provides instant, detailed feedback, helping you optimize your resume's content, format, and alignment with job descriptions."
+  },
+  {
+    question: "Is ResumeTweaker's resume review worth it?",
+    answer: "Yes, ResumeTweaker's AI-driven resume review service offers comprehensive analysis, including ATS compatibility checks, content quality assessments, and personalized improvement suggestions, making it a valuable tool for job seekers aiming to enhance their resumes."
+  },
+  {
+    question: "How does ResumeTweaker compare to other resume review services?",
+    answer: "ResumeTweaker stands out by combining advanced AI technology with user-friendly features, offering instant feedback and a variety of professional templates, making it a competitive choice among resume review services."
+  },
+  {
+    question: "What makes a resume ATS-friendly?",
+    answer: "An ATS-friendly resume uses a clean, straightforward format with standard section headings, keyword optimization based on job descriptions, and avoids elements like tables, graphics, or fancy fonts that may confuse applicant tracking systems (ATS). ResumeTweaker automatically checks and adjusts your resume to be ATS-compatible."
+  },
+  {
+    question: "How often should I update my resume?",
+    answer: "It's a good idea to update your resume every six months or whenever you gain new skills, complete significant projects, or take on new responsibilities. Regular updates ensure your resume is ready for new opportunities at any time. ResumeTweaker can make updating your resume quick and easy with real-time suggestions."
+  },
+  {
+    question: "What should I include in a cover letter?",
+    answer: "A strong cover letter should include a personalized introduction, a brief explanation of why you’re a good fit for the role, specific examples of your achievements, and a compelling closing statement. ResumeTweaker's AI can help you craft a tailored, impactful cover letter in minutes."
+  },
+  {
+    question: "Can AI really help me get a job?",
+    answer: "Yes! AI tools like ResumeTweaker help job seekers by optimizing resumes for ATS systems, suggesting impactful content, and tailoring documents to specific roles. While AI can't replace personalized effort, it can dramatically improve your chances of landing interviews by ensuring your application materials are polished and aligned with industry standards."
+  }
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqData.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+};
+
 export default function ReviewPage() {
   const router = useRouter();
   return (
     <div className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero Section */}
       <div className="bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] 
         dark:bg-[linear-gradient(to_right,#1c1c1c_1px,transparent_1px),linear-gradient(to_bottom,#1c1c1c_1px,transparent_1px)] 
@@ -88,15 +141,14 @@ export default function ReviewPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-10" />
         <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Optimize Your Resume with
+            Optimize Your Resume with the Best
             <br />
             <GradientText className="text-5xl md:text-7xl">
-              AI-Powered Review
+              AI ATS Resume Checker
             </GradientText>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Get instant, professional feedback on your resume with advanced AI
-            analysis. Perfect your resume for your dream job.
+            Instantly improve your resume with our online resume checker. Get a detailed ATS resume score and actionable tips to stand out.
           </p>
           <div className="flex gap-4 flex-wrap justify-center">
             <Link href="/login?callbackUrl=/home/ai-review">
@@ -106,7 +158,7 @@ export default function ReviewPage() {
                 variant={"silver"}
               >
                 <FileText className="w-6 h-6 mr-2" />
-                Review My Resume
+                Start ATS Resume Review
               </Button>
             </Link>
 
@@ -119,7 +171,7 @@ export default function ReviewPage() {
                 reviewTypesSection?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Learn More
+              Learn More About Resume Scores
             </Button>
           </div>
         </section>
@@ -136,27 +188,27 @@ export default function ReviewPage() {
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <TypeCard
               icon={<CheckCircle className="w-6 h-6" />}
-              title="Generic Review"
-              description="Comprehensive analysis of your resume's structure, content, and impact. Perfect for overall resume improvement."
+              title="Generic ATS Resume Review"
+              description="Get a ATS resume score with detailed feedback on content, structure, and keywords to improve your job application success."
               features={[
                 "ATS Compatibility Check",
-                "Content Quality Analysis",
-                "Format Optimization",
-                "Language Enhancement",
+                "Resume Content Quality Analysis",
+                "Format & Layout Optimization",
+                "Language & Grammar Enhancement",
                 "Basic Improvement Suggestions",
               ]}
               action={() => router.push("/login?callbackUrl=/home/ai-review")}
             />
             <TypeCard
               icon={<Sparkles className="w-6 h-6" />}
-              title="Tailored Review"
-              description="Job-specific analysis comparing your resume against the target role. Upload a job description for customized feedback."
+              title="Tailored Job-Specific Review"
+              description="Upload a job description to get an AI-powered resume review tailored to your target role. Ideal for keyword alignment and skill matching."
               features={[
-                "Keyword Alignment Analysis",
+                "Keyword Optimization for ATS",
                 "Skills Gap Identification",
                 "Job-Specific Recommendations",
                 "Qualification Matching",
-                "Targeted Improvement Plan",
+                "Targeted Resume Improvement Plan",
               ]}
               action={() => router.push("/login?callbackUrl=/home/ai-review")}
               isPro
@@ -185,13 +237,11 @@ export default function ReviewPage() {
           <div className="space-y-6">
             <h3 className="text-2xl font-semibold mb-4">We Analyze:</h3>
             <div className="space-y-4">
-              {[
-                "Content Quality & Impact",
-                "ATS Compatibility",
-                "Structure & Formatting",
-                "Professional Language",
-                "Achievement Highlights",
-              ].map((item) => (
+              {["Resume Content Quality & Impact", 
+              "ATS Compatibility Score", 
+              "Structure & Formatting for ATS",
+               "Professional Language & Clarity", 
+               "Achievement & Metric Highlights"].map((item) => (
                 <div key={item} className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                   <span>{item}</span>
@@ -205,15 +255,16 @@ export default function ReviewPage() {
           </div>
         </div>
       </section>
-
+      <section className="container mx-auto px-4 py-20">
+        <FAQAccordion faqData={faqData} />
+      </section>
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-4xl font-bold mb-6">
-          <GradientText>Ready to Optimize Your Resume?</GradientText>
+          <GradientText>Ready to Boost Your Resume Score?</GradientText>
         </h2>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Get instant feedback and improve your chances of landing your dream
-          job.
+        Use our ATS resume checker to get instant feedback and increase your chances of landing your dream job.
         </p>
         <Link href={'/login?callbackUrl=/home/ai-review'}>
           <Button
@@ -221,7 +272,7 @@ export default function ReviewPage() {
             variant={"silver"}
           // onClick={() => router.push("/home/ai-review")}
           >
-            Start Resume Review
+            Start AI Resume Review
           </Button>
         </Link>
       </section>

@@ -112,7 +112,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
         "/home/ai-interview",
         "/home/ai-review",
         "/profile",
-        "/home/editor",
+        "/home/builder",
       ];
       const isProtectedRoute = protectedRoutes.some((route) =>
         nextUrl.pathname.startsWith(route)

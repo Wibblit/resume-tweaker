@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "This is the Terms of Service of Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/legal/cookie-policy",
+    canonical: "https://resumetweaker.wibblit.com/legal/terms-of-service",
   }
 };
 export default function TermsOfService() {

@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   title: {
     absolute:"ResumeTweaker | AI Resume and Cover Letter Builder"},
   description:
-    "Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
+    "Create a standout resume and cover letter with ResumeTweaker's AI tools. Build, optimize, and download ATS-friendly CVs as PDFs — free and mobile-friendly.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/editor",
+    canonical: "https://resumetweaker.wibblit.com/builder",
   },
   keywords: [
     "AI resume builder",

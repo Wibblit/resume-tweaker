@@ -46,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/review`
     },
     {
-      url: `${process.env.NEXT_PUBLIC_BASE_URL}/editor`
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/builder`
     },
     {
       url: `${process.env.NEXT_PUBLIC_BASE_URL}/about`

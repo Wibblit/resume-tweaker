@@ -105,7 +105,7 @@ export default function Pricing() {
             There are <span className="text-primary font-semibold"> no recurring payments</span>. Pay once, use forever <span className="text-primary font-semibold">(credits never expire)</span>. All plans include{" "}
             <span className="text-primary font-semibold">full access</span> to
             our AI-powered tools. We accept{" "}
-            <span className="text-primary font-semibold">100+</span> currencies.
+            <span className="text-primary font-semibold">100+</span> countries.
           </p>
         </div>
 
