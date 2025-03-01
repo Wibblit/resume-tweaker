@@ -75,7 +75,8 @@ export const POST = asyncHandler(async (request: NextRequest) => {
       createdOn: null,
       updatedOn: null,
     };
-    result = JSON.stringify(result) + JSON.stringify(result);
+    result = JSON.stringify(result, null, 2);
+    console.log(result)
   }
 
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
