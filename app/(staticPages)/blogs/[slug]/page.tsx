@@ -33,20 +33,50 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const data = await fetchBlog(params.slug);
   if (!data) return { title: "Blog Post Not Found" };
-
+  const baseUrl = "https://resumetweaker.wibblit.com";
   const thumbnailUrl = data.thumbnail || "No blog image";
-
+  const publishedDate = data.createdAt?.toISOString();
+  const updatedDate = data.updatedAt?.toISOString();
+  const postUrl = `${baseUrl}/blog/${params.slug}`;
   return {
     title: data.title,
     description: data.excerpt,
+    keywords: data.tags,
     openGraph: {
+      type: "article",
+      url: postUrl,
+      title: data.title,
+      description: data.excerpt ?? undefined,
       images: [
         {
           url: thumbnailUrl,
+          width: 1200,
+          height: 630,
+          alt: data.title,
         },
       ],
+      siteName: "resumetweaker.wibblit.com",
+      publishedTime: publishedDate,
+      modifiedTime: updatedDate,
     },
-    keywords: data.tags,
+
+    twitter: {
+      card: "summary_large_image",
+      title: data.title,
+      images: [thumbnailUrl],
+      description: data.excerpt ?? undefined,
+      site: "resumetweaker.wibblit.com"
+    },
+
+    other: {
+      "article:author": data.author || "Unknown Author",
+      "article:section": data.category || "Blog",
+      "article:tag": data.tags?.join(", "),
+    },
+    alternates: {
+      canonical: `${baseUrl}/blog/${params.slug}`,
+    },
+    
   };
 }
 
