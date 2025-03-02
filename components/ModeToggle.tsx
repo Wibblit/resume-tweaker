@@ -73,7 +73,7 @@ export function ModeToggle() {
 
             {/* Tablet and above view */}
             <motion.div
-              className="absolute right-0 mt-2 hidden origin-top-right rounded-md bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:block"
+              className="absolute right-0 mt-2 hidden origin-top-right rounded-md bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:block z-50"
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}

@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useRef, useEffect } from "react"
-import { Card } from "@/components/ui/card"
+import { Card, CardHeader } from "@/components/ui/card"
 import { TypeCard } from "@/components/ReviewPage/TypeCard"
 import type { RefObject } from "react"
 import React from "react"
@@ -267,12 +267,12 @@ function EditorPage() {
                       }`}
                   >
                     <video
-                      ref={videoRefs.current[index]}
                       className="w-full h-full object-cover dark:bg-black bg-white"
                       loop
                       muted
                       playsInline
                       autoPlay
+                      preload="auto"
                     >
                       <source src={feature.video} type="video/mp4" />
                       <center>Your browser does not support video tags</center>
@@ -345,10 +345,10 @@ function EditorPage() {
           AI power exactly when you need it during the writing process.
         </p>
         <div className="grid md:grid-cols-2 gap-12 items-start">
-          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg bg-card backdrop-blur-sm border border-background/20">
+          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-gradient-to-br from-zinc-100/20 via-zinc-100/20 to-amber-300/20 dark:from-zinc-900/20 dark:via-zinc-900/20 dark:to-amber-900/20 dark:border-zinc-700/20">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-primary/10">
-                <Sparkles className="w-8 h-8 text-primary" />
+              <div className="p-3 rounded-xl bg-amber-200 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700">
+                <Sparkles className="w-8 h-8 text-amber-500 dark:text-amber-400" />
               </div>
               <h3 className="text-2xl font-semibold">AI Generate</h3>
             </div>
@@ -368,10 +368,10 @@ function EditorPage() {
               )}
             </ul>
           </Card>
-          <div className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-card border border-background/20">
+          <Card className="space-y-8 p-8 rounded-2xl transition-all duration-200 hover:shadow-lg backdrop-blur-sm bg-gradient-to-br from-zinc-100/20 via-zinc-100/20 to-purple-300/20 dark:from-zinc-900/20 dark:via-zinc-900/20 dark:to-purple-900/20 dark:border-zinc-700/20">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-primary/10">
-                <Sparkles className="w-8 h-8 text-primary" />
+              <div className="p-3 rounded-xl bg-purple-200 dark:bg-purple-950/30 border-purple-300 dark:border-purple-800">
+                <Sparkles className="w-8 h-8  text-purple-500 dark:text-purple-400 " />
               </div>
               <h3 className="text-2xl font-semibold">AI Assist</h3>
             </div>
@@ -390,7 +390,7 @@ function EditorPage() {
                 ),
               )}
             </ul>
-          </div>
+          </Card>
         </div>
       </section>
       <section className="container mx-auto px-4 py-20">

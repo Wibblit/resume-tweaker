@@ -243,9 +243,9 @@ export default function BlogPost({ data }: BlogPostProps) {
   }
 
   return (
-    <article className="container mt-8 mx-auto px-4 py-8 max-w-7xl">
+    <article className="container mt-8 px-4 py-8 lg:max-w-5xl xl:max-w-7xl">
       <Breadcrumbs currPage={blog.title} />
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr,280px] gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-[70%,25%] gap-[5%]">
         <div>
           <header className="mb-8">
             <Badge className="mb-6 mt-4">{blog.category}</Badge>
@@ -268,18 +268,16 @@ export default function BlogPost({ data }: BlogPostProps) {
                 </span>
               </div>
               <div className="flex gap-x-1 items-center">
-                <Zap className="h-6 w-6 text-yellow-400" />
+                <Zap className="h-6 w-6 text-amber-400" />
                 <span>{sparkCount}</span>
               </div>
             </div>
           </header>
-          <div className="relative w-full md:h-[400px] h-auto mb-4 md:mb-8 rounded-lg overflow-hidden">
+          <div className="relative w-full mb-4 md:mb-8 rounded-lg overflow-hidden">
             <img
               src={blog.thumbnail}
               alt={blog.title}
-              height={600}
-              width={600}
-              className="md:object-cover object-contain w-full h-auto"
+              className="md:object-cover object-center object-contain w-full h-full"
             />
           </div>
           {/* Table of Contents for mobile */}
@@ -328,11 +326,11 @@ export default function BlogPost({ data }: BlogPostProps) {
                   variant="outline"
                   onClick={handleSparkClick}
                   disabled={hasSparked}
-                  className={`relative w-full xs:w-auto ${hasSparked ? "bg-yellow-100 dark:bg-yellow-900" : ""
+                  className={`relative w-full xs:w-auto ${hasSparked ? "bg-amber-100 dark:bg-amber-900" : ""
                     }`}
                 >
                   <Zap
-                    className={`h-5 w-5 mr-2 ${hasSparked ? "text-yellow-400" : ""
+                    className={`h-5 w-5 mr-2 ${hasSparked ? "text-amber-400" : ""
                       }`}
                   />
                   Spark {sparkCount > 0 && `(${sparkCount})`}
@@ -345,7 +343,7 @@ export default function BlogPost({ data }: BlogPostProps) {
                         exit={{ scale: 0, opacity: 0 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <Zap className="h-8 w-8 text-yellow-400" />
+                        <Zap className="h-8 w-8 text-amber-400" />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -385,7 +383,7 @@ export default function BlogPost({ data }: BlogPostProps) {
                   className="text-sm text-secondary font-semibold py-2 my-2 w-full bg-primary rounded-lg flex items-center justify-center"
                 >
                   <span className="hover:scale-105">
-                    Build Your Resume - Free forever
+                    Start for Free
                   </span>
                 </Link>
               </div>
