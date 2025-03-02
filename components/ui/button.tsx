@@ -20,7 +20,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        silver: "bg-gradient-to-br text-primary-foreground from-zinc-800/80 via-zinc-500/80 to-zinc-800/80 dark:from-zinc-400/80 dark:via-zinc-200 dark:to-zinc-400/80 transition-all duration-500 easeInOut shadow-lg hover:shadow-xl",
+        silver: "bg-gradient-to-br text-primary-foreground from-zinc-800/80 via-zinc-500/80 to-zinc-800/80 dark:from-zinc-500/80 dark:via-zinc-200 dark:to-zinc-500/80 transition-all duration-500 easeInOut shadow-lg hover:shadow-xl",
         cardButton : "border border-input bg-background/85 shadow-sm hover:bg-accent hover:text-accent-foreground"
       },
       size: {
