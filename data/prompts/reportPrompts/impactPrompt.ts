@@ -1,14 +1,16 @@
-export const actionMetricsPrompt = (
-    resumeText: string,
-  ) => {
-    return `### Resume Measurement and Correction Framework
+import { reportRules } from "./rules";
+
+export const impactPrompt = (
+  resumeText: string,
+) => {
+  return `### Resume Measurement and Correction Framework
   
-  #### Metrics to Measure:
+  #### Metrics to Measure (Don't Measure anything else):
   - **actionWordsUsage:** Count and assess the strength of action verbs per line.
   - **Quantifiability:** Detect numbers, percentages, or measurable results.
   - **contentRepetition:** Catch redundant achievements or skills across sections.
   
-  Each metric is scored out of 5, starting at full marks. Points are deducted based on severity and frequency. A total score (out of 5) is calculated as the average of all three metrics.
+  Each metric is scored out of 5, starting at full marks. Points are deducted based on severity and frequency.
   
   #### Scoring Guidelines:
   - **5/5:** No issues found.
@@ -34,26 +36,21 @@ export const actionMetricsPrompt = (
      - **Moderate Issues:** Repeated achievements in different sections.
      - **Major Issues:** Excessive redundancy, making sections feel duplicated.
   
-  #### Commenting Rules:
-  - Be specific and actionable.
-  - No generic feedback — comments should precisely describe the issue.
-  - Never modify dates, URLs, or HTML structure.
-  
-  #### Correction Process:
-  - Use a JSON selector to point to the exact issue.
-  - Provide the complete value of the field selected, don't fill partia values
-  
-  #### Example Output format:
-  
+###Report Rules
+${reportRules}
+When removing a duplicate skill or a whole entry, make sure to select the immediate parent and rewrite it completely without the thing to be removed, instead of targetting the thing to be removed(never do that).
+
+  #### example output format (Strictly follow this format):
   '''json
-  {
-  "metrics": {
-    "actionWordsUsage": {
-      "score": 3,
-      "comments": [
+{
+  "results": [
+    {
+      "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
+      "metrics": [
         {
-          "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
-          "issue": [
+          "type": "actionWordsUsage",
+          "score": 3,
+          "issues": [
             {
               "name": "Weak verb: 'worked on' should be replaced with a stronger verb like 'orchestrated' or 'executed'.",
               "severity": "minor"
@@ -61,38 +58,51 @@ export const actionMetricsPrompt = (
             {
               "name": "Passive voice: 'was responsible for' could be changed to an active verb like 'managed' or 'led'.",
               "severity": "moderate"
+            },
+            {
+              "name": "Duplicate achievement: 'Increased customer satisfaction by 15%' appears twice in different projects.",
+              "severity": "moderate"
             }
-          ],
-          "correction": "Orchestrated the development of a new CRM system, improving customer retention by 20%. Managed a team of 5 developers to complete the project 2 weeks ahead of schedule."
-        },
+          ]
+        }
+      ],
+      "correction_logic": "Replaced weak verbs with stronger alternatives, converted passive voice to active, and consolidated duplicate achievements.",
+      "final_output": "Orchestrated the development of a new CRM system, improving customer retention by 20%. Managed a team of 5 developers to complete the project 2 weeks ahead of schedule. Emphasized customer satisfaction improvement in a unified entry."
+    },
+    {
+      "selector": "projects[?(@.id=='38ed886f-7cbb-4119-ace4-c8a6a5764449')].summary",
+      "metrics": [
         {
-          "selector": "projects[?(@.id=='38ed886f-7cbb-4119-ace4-c8a6a5764449')].summary",
-          "issue": [
+          "type": "actionWordsUsage",
+          "score": 3,
+          "issues": [
             {
               "name": "Generic action word: 'helped' can be replaced with a more impactful verb like 'facilitated' or 'accelerated'.",
               "severity": "minor"
             }
-          ],
-          "correction": "Facilitated the launch of a marketing campaign that reached 10,000 users within the first month."
-        }
-      ]
-    },
-    "Quantifiability": {
-      "score": 4,
-      "comments": [
+          ]
+        },
         {
-          "selector": "projects[?(@.id=='38ed886f-7cbb-4119-ace4-c8a6a5764449')].summary",
-          "issue": [
+          "type": "quantifiability",
+          "score": 4,
+          "issues": [
             {
               "name": "Missing measurable result: Add specific metrics to show impact.",
               "severity": "moderate"
             }
-          ],
-          "correction": "This campaign led to a 25% increase in social media engagement and generated 300 qualified leads."
-        },
+          ]
+        }
+      ],
+      "correction_logic": "Replaced generic verbs with impactful ones and added measurable results to showcase impact. Couldn't find exact number so considered experience and role to make up believable quantifiers",
+      "final_output": "Facilitated the launch of a marketing campaign that reached 10,000 users within the first month. This campaign led to a 25% increase in social media engagement and generated 300 qualified leads."
+    },
+    {
+      "selector": "awards[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].summary",
+      "metrics": [
         {
-          "selector": "achievements[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].details",
-          "issue": [
+          "type": "quantifiability",
+          "score": 4,
+          "issues": [
             {
               "name": "Unquantified achievement: 'improved team efficiency' — add a percentage or measurable impact.",
               "severity": "moderate"
@@ -101,45 +111,95 @@ export const actionMetricsPrompt = (
               "name": "Unclear outcome: 'increased revenue' — specify the amount or percentage.",
               "severity": "major"
             }
-          ],
-          "correction": "Improved team efficiency by 30% through workflow automation. Increased revenue by $500,000 within one fiscal year through strategic upselling initiatives."
+          ]
         }
-      ]
+      ],
+      "correction_logic": "Added specific metrics or percentages to quantify achievements and clarify outcomes. Couldn't find exact number so considered experience and role to make up believable quantifiers",
+      "final_output": "Improved team efficiency by 30% through workflow automation. Increased revenue by $500,000 within one fiscal year through strategic upselling initiatives."
     },
-    "contentRepetition": {
-      "score": 2,
-      "comments": [
+    {
+      "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
+      "metrics": [
         {
-          "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
-          "issue": [
+          "type": "contentRepetition",
+          "score": 2,
+          "issues": [
             {
               "name": "Repeated skill: 'SEO' appears in both the 'Marketing' and 'Digital Strategy' sections.",
               "severity": "moderate"
             }
-          ],
-          "correction": "Remove the redundant 'SEO' entry in the 'Digital Strategy' section to avoid repetition."
-        },
+          ]
+        }
+      ],
+      "correction_logic": "Removed 'SEO' from Marketing",
+      "final_output": "{
+              "id": "e7f8d9c0-a4b5-6789-0123-456789abcdef",
+              "name": "Marketing",
+              "skills": [
+                {
+                  "name": "HubSpot",
+                  "level": "Beginner"
+                },
+                {
+                  "name": "Marketo",
+                  "level": "Intermediate"
+                },
+                {
+                  "name": "Salesforce",
+                  "level": "Beginner"
+                },
+                {
+                  "name": "Google Ads",
+                  "level": "Intermediate"
+                },
+                {
+                  "name": "Social Media Marketing (Facebook, LinkedIn, etc.)",
+                  "level": "Intermediate"
+                }
+              ]
+            },"
+    },
+    {
+  "selector": "awards",
+  "metrics": [
+    {
+      "type": "contentRepetition",
+      "score": 2,
+      "issues": [
         {
-          "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
-          "issue": [
-            {
-              "name": "Duplicate achievement: 'Increased customer satisfaction by 15%' appears twice in different projects.",
-              "severity": "moderate"
-            }
-          ],
-          "correction": "Consolidate the repeated achievement into one entry, emphasizing the context of customer satisfaction improvement."
+          "name": "Duplicate award detected: Multiple awards have identical titles and summaries.",
+          "severity": "major"
         }
       ]
     }
-  },
-  "total_score": 3
+  ],
+  "correction_logic": "Removed duplicate award entry by omitting it from the final output.",
+  "final_output": [
+    {
+      "id": "90876543-2109-8765-4321-0fedcba98765",
+      "date": "2022",
+      "title": "One of the employees ever, 2020",
+      "awarder": "Brightwave Global",
+      "summary": "Recognized for conceptualizing a holiday campaign that increased seasonal sales by 50%"
+    },
+    {
+      "id": "78654321-0987-6543-2109-876543210fed",
+      "date": "2017",
+      "title": "Employee of the Year, 2017",
+      "awarder": "Spark Innovations",
+      "summary": "Recognized for conceptualizing a holiday campaign that increased seasonal sales by 50%"
+    }
+  ]
 }
-  '''
+  ]
+}
+'''
   
+  follow the output format strictly, do not return anything else other than the requested json
+
   INPUT:
   Here is the resume you need to work on 
   ${resumeText}
   `
-  };
-  
-  
+};
+

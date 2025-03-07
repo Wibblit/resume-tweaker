@@ -1,14 +1,16 @@
+import { reportRules } from "./rules";
+
 export const grammerPrompt = (
   resumeText: string,
 ) => {
   return `### Resume Measurement and Correction Framework
 
-#### Metrics to Measure:
+#### Metrics to Measure (Don't Measure anything else):
 - **Grammar:** Check for spelling, punctuation, and syntax errors.
 - **Repetition:** Identify nearby or frequent repeated words/phrases.
 - **Tone Consistency:** Ensure a professional, active tone and flag shifts.
 
-Each metric is scored out of 5, starting at full marks. Points are deducted for issues based on severity and frequency. A total score (out of 5) is calculated as the average of all three metrics.
+Each metric is scored out of 5, starting at full marks. Points are deducted for issues based on severity and frequency.
 
 #### Scoring Guidelines:
 - **5/5:** No issues found.
@@ -33,109 +35,101 @@ Each metric is scored out of 5, starting at full marks. Points are deducted for 
    - **Minor Issues:** Slight passive voice usage.
    - **Moderate Issues:** Inconsistent tense or tone shifts across sections.
    - **Major Issues:** Highly casual or unprofessional language.
-
-  #### Commenting Rules:
-  - Be specific and actionable.
-  - No generic feedback — comments should precisely describe the issue.
-  - Never modify dates, URLs, or HTML structure.
   
-  #### Correction Process:
-  - Use a JSON selector to point to the exact issue.
-  - Provide the complete value of the field selected, don't fill partia values
+###Report Rules
+${reportRules}
 
-#### Example Output format:
+  #### example output format (Strictly follow this format):
 
-'''json
-{
-  "metrics": {
-    "Grammar": {
-      "score": 3,
-      "comments": [
-        {
-          "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
-          "issue": [
-            {
-              "name": "Subject-verb agreement error: 'Designed email marketing campaigns that achieves a 35% increase' should be 'Designed email marketing campaigns that achieved a 35% increase'.",
-              "severity": "major"
-            },
-            {
-              "name": "Subject-verb agreement error: 'Supported the implementation of SEO strategies that elevate website ranking' should be 'Supported the implementation of SEO strategies that elevated website ranking'.",
-              "severity": "major"
-            }
-          ],
-          "correction": "<ul><li><p>Designed email marketing campaigns that achieved a 35% increase in open rates and a 20% boost in click-through rates.</p></li><li><p>Supported the implementation of SEO strategies that elevated website ranking from page 5 to page 1 on Google.</p></li><li><p>Coordinated events and trade shows, driving attendee engagement and generating over $200,000 in sales leads.</p></li><li><p>Conducted customer surveys and focus groups to gather insights that shaped marketing strategies.</p></li></ul>"
-        },
-        {
-          "selector": "summary.content",
-          "issue": [
-            {
-              "name": "Punctuation error: Missing comma after 'brand strategy'.",
-              "severity": "minor"
-            },
-            {
-              "name": "Spelling error: 'campain' should be 'campaign'.",
-              "severity": "minor"
-            }
-          ],
-          "correction": "Innovative and results-driven marketing professional with 10 years of experience in digital marketing, brand strategy, and campaign management. Proven ability to drive growth, increase brand visibility, and deliver ROI-driven strategies in fast-paced environments. Expertise in leading cross-functional teams, leveraging analytics for decision-making, and executing successful multichannel campaigns."
-        }
-      ]
-    },
-    "Repetition": {
-      "score": 4,
-      "comments": [
-        {
-          "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
-          "issue": [
-            {
-              "name": "Repeated skill: 'HubSpot' appears twice.",
-              "severity": "moderate"
-            },
-            {
-              "name": "Duplicate entry: 'Google Analytics' listed under both Marketing and Analytics sections.",
-              "severity": "moderate"
-            }
-          ],
-          "correction": '[
-            {"id": "e7f8d9c0-a4b5-6789-0123-456789abcdef",
-            "name": "Marketing", 
-            "skills": [
-            {"name": "HubSpot", "level": "Beginner"}, 
-            {"name": "Marketo", "level": "Intermediate"}, 
-            {"name": "Salesforce", "level": "Beginner"}
+  '''json
+  {
+    "results": [
+      {
+        "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
+        "metrics": [
+          {
+            "type": "actionWordsUsage",
+            "score": 3,
+            "issues": [
+              {
+                "name": "Weak verb: 'worked on' should be replaced with a stronger verb like 'orchestrated' or 'executed'.",
+                "severity": "minor"
+              },
+              {
+                "name": "Passive voice: 'was responsible for' could be changed to an active verb like 'managed' or 'led'.",
+                "severity": "moderate"
+              }
             ]
-           }
-          ]'
-        }
-      ]
-    },
-    "Tone Consistency": {
-      "score": 2,
-      "comments": [
-        {
-          "selector": "projects[?(@.id=='38ed886f-7cbb-4119-ace4-c8a6a5764449')].summary",
-          "issue": [
-            {
-              "name": "Tone shift: Casual language 'real dudes' should be replaced with professional phrasing.",
-              "severity": "major"
-            },
-            {
-              "name": "Inconsistent tone: 'crushing goals' sounds overly informal in a corporate context.",
-              "severity": "moderate"
-            }
-          ],
-          "correction": "This campaign demonstrates the inner workings of a successful marketing strategy and tests its effectiveness in the real world with real prospects, driving measurable results."
-        }
-      ]
-    }
-  },
-  "total_score": 3
-}
+          },
+          {
+            "type": "repetition",
+            "score": 2,
+            "issues": [
+              {
+                "name": "Duplicate achievement: 'Increased customer satisfaction by 15%' appears twice in different projects.",
+                "severity": "moderate"
+              }
+            ]
+          }
+        ],
+        "correction_logic": "Replaced passive and weak verbs with stronger, active alternatives. Consolidated repeated achievements to avoid redundancy.",
+        "final_output": "<ul><li><p>Orchestrated the development of a new CRM system, improving customer retention by 20%.</p></li><li><p>Managed a team of 5 developers to complete the project 2 weeks ahead of schedule.</p></li></ul>"
+      },
+      {
+        "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
+        "metrics": [
+          {
+            "type": "repetition",
+            "score": 2,
+            "issues": [
+              {
+                "name": "Repeated skill: 'SEO' appears in both the 'Marketing' and 'Digital Strategy' sections.",
+                "severity": "moderate"
+              }
+            ]
+          }
+        ],
+        "correction_logic": "Removed redundant 'SEO' entry in the 'Digital Strategy' section to prevent repetition.",
+        "final_output": "[
+          {"id": "e7f8d9c0-a4b5-6789-0123-456789abcdef",
+          "name": "Marketing", 
+          "skills": [
+            {"name": "SEO", "level": "Advanced"}, 
+            {"name": "Content Marketing", "level": "Intermediate"}, 
+            {"name": "Google Analytics", "level": "Beginner"}
+          ]
+          }
+        ]"
+      },
+      {
+        "selector": "awards[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].summary",
+        "metrics": [
+          {
+            "type": "toneconsistency",
+            "score": 4,
+            "issues": [
+              {
+                "name": "Inconsistent tone: 'improved team efficiency' sounds neutral, while 'increased revenue' is highly enthusiastic — align tone for consistency.",
+                "severity": "moderate"
+              },
+              {
+                "name": "Mixed formality: 'through strategic upselling initiatives' feels overly formal compared to the rest of the text.",
+                "severity": "minor"
+              }
+            ]
+          }
+        ],
+        "correction_logic": "Adjusted language to maintain a consistent tone throughout, balancing enthusiasm and professionalism.",
+        "final_output": "Enhanced team efficiency by 30% through streamlined workflows. Boosted revenue by $500,000 within one fiscal year by implementing targeted upselling strategies."
+      }
+    ]
+  }
+  '''
 
-'''
+  follow the output format strictly, do not return anything else other than the requested json
 
-INPUT:
-Here is the resume you need to work on 
-${resumeText}
+  INPUT:
+  Here is the resume you need to work on 
+  ${resumeText}
 `
 };
