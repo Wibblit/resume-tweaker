@@ -194,7 +194,7 @@ export default function ReviewPage() {
                 "ATS Compatibility Check",
                 "Resume Content Quality Analysis",
                 "Format & Layout Optimization",
-                "Language & Grammar Enhancement",
+                "Language & Grammer Enhancement",
                 "Basic Improvement Suggestions",
               ]}
               action={() => router.push("/login?callbackUrl=/home/ai-review")}
