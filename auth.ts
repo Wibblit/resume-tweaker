@@ -81,7 +81,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
         });
       }
       if (!existingUser) {
-        callbackUrl = "/onboarding"
+        callbackUrl = "/home"
         if (user && user.email && profile && account && account.provider) {
           existingUser = await prisma.user.create({
             data: {

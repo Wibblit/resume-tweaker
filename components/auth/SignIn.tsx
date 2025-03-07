@@ -49,12 +49,12 @@ export function SignIn() {
 
   const handleOAuthLogin = async (provider: string) => {
     setIsLoading(provider);
-    if (redirect){
-        seturl("/onboarding"+`?callbackUrl=${redirect}`)
-    }
+    // if (redirect){
+    //     seturl("/onboarding"+`?callbackUrl=${redirect}`)
+    // }
     try {
       await signIn(provider, {
-        redirectTo: url??"/onboarding",
+        redirectTo: "/home",
       });
     } catch (error) {
       throw error;
