@@ -48,7 +48,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
       "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
       "metrics": [
         {
-          "type": "actionWordsUsage",
+          "type": "Action Words usage",
           "score": 3,
           "issues": [
             {
@@ -73,7 +73,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
       "selector": "projects[?(@.id=='38ed886f-7cbb-4119-ace4-c8a6a5764449')].summary",
       "metrics": [
         {
-          "type": "actionWordsUsage",
+          "type": "Action Words usage",
           "score": 3,
           "issues": [
             {
@@ -83,7 +83,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
           ]
         },
         {
-          "type": "quantifiability",
+          "type": "Quantifiability",
           "score": 4,
           "issues": [
             {
@@ -100,7 +100,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
       "selector": "awards[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].summary",
       "metrics": [
         {
-          "type": "quantifiability",
+          "type": "Quantifiability",
           "score": 4,
           "issues": [
             {
@@ -121,7 +121,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
       "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
       "metrics": [
         {
-          "type": "contentRepetition",
+          "type": "Content Repetition",
           "score": 2,
           "issues": [
             {
@@ -163,7 +163,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
   "selector": "awards",
   "metrics": [
     {
-      "type": "contentRepetition",
+      "type": "Content Repetition",
       "score": 2,
       "issues": [
         {

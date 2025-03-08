@@ -48,7 +48,7 @@ ${reportRules}
         "selector": "experience[?(@.id=='c5d4a3b2-8190-7654-3210-fedcba987654')].summary",
         "metrics": [
           {
-            "type": "actionWordsUsage",
+            "type": "Grammar",
             "score": 3,
             "issues": [
               {
@@ -62,7 +62,7 @@ ${reportRules}
             ]
           },
           {
-            "type": "repetition",
+            "type": "Repetition",
             "score": 2,
             "issues": [
               {
@@ -79,7 +79,7 @@ ${reportRules}
         "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
         "metrics": [
           {
-            "type": "repetition",
+            "type": "Repetition",
             "score": 2,
             "issues": [
               {
@@ -105,7 +105,7 @@ ${reportRules}
         "selector": "awards[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].summary",
         "metrics": [
           {
-            "type": "toneconsistency",
+            "type": "Tone Consistency",
             "score": 4,
             "issues": [
               {

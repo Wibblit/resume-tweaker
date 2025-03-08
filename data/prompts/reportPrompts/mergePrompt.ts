@@ -55,7 +55,10 @@ Your task is to merge conflicting changes for the same JSON selectors, resolving
 
 **Output Format:**
 A unified JSON object with the resolved content and merge logic.
-
+### formatting rules
+- There must be no newline characters inside the json content
+- There must be no unescaped double quotes inside the content because this will break the json, because its already surrounded by quotations
+- Overall note that the main output you generate will be parsed as json, and as for the final_output field, some of them are strings, but others are objects represented as strings which need to be valid to be parsed, so be careful
 '''json
 {
 "result":[
