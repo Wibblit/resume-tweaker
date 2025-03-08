@@ -4,16 +4,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import { genericPrompt } from "@/data/prompts/genericPrompt";
 import { jdTailoredPrompt } from "@/data/prompts/jdTailoredPrompt";
-import { grammerPrompt } from "@/data/prompts/reportPrompts/grammarPrompt";
-import { impactPrompt } from "@/data/prompts/reportPrompts/impactPrompt";
-import { readabilityClarityPrompt } from "@/data/prompts/reportPrompts/readclarityPrompt";
-import { relevancePrompt } from "@/data/prompts/reportPrompts/relevancePrompt";
 import { rateLimiter } from "@/lib/rateLimiter";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 import { creditList } from "@/utils/credits";
 import { prisma } from "@/prisma";
-import { executeStagesSequentially, reviewfinalout } from "./review-utilities";
+import { resumeReview } from "./review-utilities";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -86,9 +82,9 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   // const detailedPrompt = `${result} ${jd} ${prompt}`;
   // const generatedContent = await model.generateContent(detailedPrompt);
-  const generatedContent = await reviewfinalout(result,jd)
-  const response = generatedContent
-  console.log("Review result:\n",JSON.stringify(response,null,2));
+  const generatedContent = await resumeReview(result,jd,reviewType)
+  const review = generatedContent
+  console.log("Review result:\n",JSON.stringify(review,null,2));
   await prisma.userAssets.update({
     where: {
       userId: session?.user?.id,
@@ -104,7 +100,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   });
 
   return NextResponse.json({
-    // outjson,
+    output: review,
     message: "Review generated successfully.",
   });
 });

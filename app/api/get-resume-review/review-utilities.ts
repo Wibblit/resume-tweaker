@@ -8,7 +8,50 @@ import { result } from "lodash";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-function transformData(input: any[]): { transformed: any[], uniqueSelectors: string[] } {
+type Issue = {
+  name: string;
+  severity: string;
+};
+
+type Metric = {
+  type: string;
+  score: number;
+  issues: Issue[];
+};
+
+type StageResult = {
+  selector: string;
+  metrics: Metric[];
+  correction_logic: string;
+  final_output: string;
+};
+
+type TransformedResult = {
+  selector: string;
+  proposed_changes: {
+    type: string;
+    correction_logic: string;
+    final_output: string;
+  }[];
+};
+
+type MergedResult = {
+  result: {
+    selector: string;
+    final_output: string;
+    correction_logic: string;
+    metrics?: Metric[];
+  }[];
+};
+
+type TokenUsage = {
+  stagename: string;
+  promptTokensUsed: number;
+  candidateTokensUsed: number;
+  totalTokensUsed: number;
+};
+
+function transformData(input: StageResult[]): { transformed: TransformedResult[]; uniqueSelectors: string[] } {
   const outputMap = new Map<string, any>();
   const selectorCount = new Map<string, number>();
 
@@ -47,7 +90,8 @@ function transformData(input: any[]): { transformed: any[], uniqueSelectors: str
   };
 }
 
-function mergeMetrics(stageResults: { selector: string; metrics: { type: string; score: number; issues: { name: string; severity: string }[] }[]; correction_logic: string; final_output: string }[], transformed: { selector: string }[], mergedJson: { result: { selector: string; final_output: string; correction_logic: string; metrics?: { type: string; score: number; issues: { name: string; severity: string }[] }[] }[] }): { result: { selector: string; final_output: string; correction_logic: string; metrics?: { type: string; score: number; issues: { name: string; severity: string }[] }[] }[] } {
+
+function mergeMetrics(stageResults: StageResult[], transformed: TransformedResult[], mergedJson: MergedResult): MergedResult {
   const metricsMap = new Map<string, { type: string; score: number; issues: { name: string; severity: string }[] }[]>();
 
   // Collect and merge metrics for each selector
@@ -74,7 +118,7 @@ function mergeMetrics(stageResults: { selector: string; metrics: { type: string;
   return { result: updatedResult };
 }
 
-function syncStageResultsWithMerged(stageResults: { selector: string; metrics: { type: string; score: number; issues: { name: string; severity: string }[] }[]; correction_logic: string; final_output: string }[], mergedResult: { result: { selector: string; final_output: string; correction_logic: string; metrics?: { type: string; score: number; issues: { name: string; severity: string }[] }[] }[] }): { selector: string; metrics: { type: string; score: number; issues: { name: string; severity: string }[] }[]; correction_logic: string; final_output: string }[] {
+function syncStageResultsWithMerged(stageResults: StageResult[], mergedResult: MergedResult): StageResult[] {
 
   const mergedSelectors = new Set(mergedResult.result.map(item => item.selector));
 
@@ -97,32 +141,48 @@ function syncStageResultsWithMerged(stageResults: { selector: string; metrics: {
 
 export const executeStagesSequentially = async (stagePrompts: string[], stageName: string[]) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const stageResults: { selector: string; metrics: { type: string; score: number; issues: { name: string; severity: string }[] }[]; correction_logic: string; final_output: string }[] = [];
-
+  const stageResults: StageResult[] = [];
+  let tokensused: {stagename:string, promptTokensUsed:number, candidateTokensUsed:number,totalTokensUsed:number }[] = []
   for (let i = 0; i < stagePrompts.length; i++) {
     const prompt = `${stagePrompts[i]}`;
     const name = stageName[i]
     const response = await model.generateContent(prompt);
     const text = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
+    var tokendata = response.response.usageMetadata
+    tokensused.push({
+      candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
+      promptTokensUsed: tokendata?.promptTokenCount ?? 0,
+      totalTokensUsed:tokendata?.totalTokenCount ?? 0,
+      stagename: name,
+    })
     const jsontext = JSON.parse(text)
     console.log(`${name} check completed`)
+    // console.log(jsontext.results)
     stageResults.push(...jsontext.results);
+
   }
   const cleaned = transformData(stageResults)
   return {
     stageres: stageResults,
     tomerge: cleaned.transformed,
-    nottomerge: cleaned.uniqueSelectors
+    nottomerge: cleaned.uniqueSelectors,
+    tokeninfo: tokensused
   }
 };
 //TODO
 //make changes
-export const reviewfinalout = async (resume: string, jd: string) => {
+export const resumeReview = async (resume: string, jd: string, reviewType: string) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const stagespromptlist = [grammerPrompt(resume),readabilityClarityPrompt(resume),impactPrompt(resume),relevancePrompt(resume,jd)]
+  let stagespromptlist = []
+  if (reviewType == 'generic'){
+    stagespromptlist = [grammerPrompt(resume),readabilityClarityPrompt(resume),impactPrompt(resume)]
+  }
+  else {
+    stagespromptlist = [grammerPrompt(resume),readabilityClarityPrompt(resume),impactPrompt(resume),relevancePrompt(resume,jd)]
+  }
   const stageNames = ["grammer","readabilityClarity", "impact", "relevance"]
   const stageresults = await executeStagesSequentially(stagespromptlist, stageNames)
-  const restext = JSON.stringify(JSON.parse)
+  let tokensinfo = stageresults.tokeninfo
   var finalText = ''
   if (stageresults.tomerge.length >= 1) {
     
@@ -130,10 +190,51 @@ export const reviewfinalout = async (resume: string, jd: string) => {
     console.log("Finding and merging conflicts")
     const response = await model.generateContent(conflictMergePrompt);
     finalText = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
+    const mergejson = JSON.parse(finalText)
+    console.log('parsed merge')
+    const mergedmetricsjson = mergeMetrics(stageresults.stageres,stageresults.tomerge,mergejson)
+    console.log('merged metrics')
+    const finalStageResults = syncStageResultsWithMerged(stageresults.stageres,mergedmetricsjson)
+    console.log('final result ready')
+    var tokendata = response.response.usageMetadata
+    tokensinfo.push({
+      candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
+      promptTokensUsed: tokendata?.promptTokenCount ?? 0,
+      totalTokensUsed:tokendata?.totalTokenCount ?? 0,
+      stagename: "merge",
+    })
+    const totaltokens = tokensinfo.reduce(
+      (acc, curr) => {
+        acc.candidateTokensUsed += curr.candidateTokensUsed;
+        acc.promptTokensUsed += curr.promptTokensUsed;
+        acc.totalTokensUsed += curr.totalTokensUsed;
+        return acc;
+      },
+      { candidateTokensUsed: 0, promptTokensUsed: 0, totalTokensUsed: 0 }
+    );
+    tokensinfo.push({
+      ...totaltokens,
+      stagename: "total",
+    });
+    
+    return { finalStageResults ,tokensinfo};
   }
-  const mergejson = JSON.parse(finalText)
-  const mergedmetricsjson = mergeMetrics(stageresults.stageres,stageresults.tomerge,mergejson)
-  const finalStageResults = syncStageResultsWithMerged(stageresults.stageres,mergedmetricsjson)
-  return { finalStageResults };
+  if (stageresults.tomerge.length === 0){
+    const finalStageResults = stageresults.stageres
+    const totaltokens = tokensinfo.reduce(
+      (acc, curr) => {
+        acc.candidateTokensUsed += curr.candidateTokensUsed;
+        acc.promptTokensUsed += curr.promptTokensUsed;
+        acc.totalTokensUsed += curr.totalTokensUsed;
+        return acc;
+      },
+      { candidateTokensUsed: 0, promptTokensUsed: 0, totalTokensUsed: 0 }
+    );
+    tokensinfo.push({
+      ...totaltokens,
+      stagename: "total",
+    });
+    return {finalStageResults,tokensinfo}
+  }
 };
 
