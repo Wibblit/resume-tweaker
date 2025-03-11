@@ -20,16 +20,6 @@ export const GET = asyncHandler(async (req: NextRequest) => {
     { code, session }
   );
 console.log("Response Data", response.data)
-  if (response.status === 200) {
-    const updatedSession =  await unstable_update({
-      ...session,
-      user: {
-        ...session.user,
-        connectedEmail: response.data.data.email,
-      },
-    });
-    console.log("Session Email Auth", updatedSession)
-  }
 
   if (response.status !== 200) {
     throw ApiError.custom("Failed to authenticate with Gmail", 500);
