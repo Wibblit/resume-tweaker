@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="384.88882"
+   height="237.16869"
+   viewBox="0 0 384.88882 237.16869"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     style="display:none"
+     transform="translate(-63.555588,-137.41563)">
+    <rect
+       style="display:inline;fill:#ffffff;fill-opacity:1"
+       id="rect10"
+       width="524.76135"
+       height="519.8241"
+       x="-6.3479195"
+       y="-1.4106488" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:371.156px;font-family:'LT Wave';-inkscape-font-specification:'LT Wave';fill:#000000;stroke-width:1.93311"
+       x="47.967033"
+       y="371.24393"
+       id="text1"><tspan
+         id="tspan1"
+         x="47.967033"
+         y="371.24393"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:371.156px;font-family:'LT Wave';-inkscape-font-specification:'LT Wave, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:1.93311"><tspan
+   style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:371.156px;font-family:'LT Wave';-inkscape-font-specification:'LT Wave, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#8f8f8f;fill-opacity:1;stroke-width:1.93311"
+   id="tspan2">r</tspan>t.</tspan></text>
+  </g>
+  <g
+     id="g9"
+     style="display:inline"
+     transform="translate(-63.555588,-137.41563)">
+    <rect
+       style="display:none;fill:#000000;fill-opacity:1"
+       id="rect4"
+       width="524.76135"
+       height="519.8241"
+       x="-6.3479195"
+       y="-1.4106488" />
+    <g
+       id="text9"
+       style="font-size:371.156px;font-family:'LT Wave';-inkscape-font-specification:'LT Wave';letter-spacing:0px;stroke-width:1.93311"
+       aria-label="rt.">
+      <path
+         style="font-weight:bold;-inkscape-font-specification:'LT Wave, Bold';fill:#9d9d9d"
+         d="m 156.34459,224.26615 c 8.53659,0 24.12514,0.37115 36.74444,2.22693 v -41.56947 c -13.36161,-1.85578 -27.09439,-2.59809 -40.82716,-2.59809 -71.261952,0 -88.706284,17.81549 -88.706284,69.40617 V 371.24393 H 116.63089 V 251.73169 c 0,-21.15589 4.45388,-27.46554 39.7137,-27.46554 z"
+         id="path3" />
+      <path
+         style="font-weight:bold;-inkscape-font-specification:'LT Wave, Bold';fill:#ffffff"
+         d="m 315.94203,332.6437 c -20.78474,0 -28.20786,-7.42312 -28.20786,-29.32132 V 227.2354 h 69.40617 v -41.56948 h -69.40617 v -48.25028 h -53.07531 v 48.25028 h -26.35208 v 41.56948 h 26.35208 v 78.68507 c 0,52.70415 18.5578,68.66386 70.8908,68.66386 17.81549,0 35.25982,-2.96925 53.07531,-7.42312 v -38.60022 c -16.70202,2.96924 -28.20786,4.08271 -42.68294,4.08271 z m 69.40586,14.10393 v 1.11347 c 0,16.33086 10.76352,26.72323 31.54826,26.72323 20.04243,0 31.54826,-10.39237 31.54826,-26.72323 v -1.11347 c 0,-16.70202 -11.50583,-27.09439 -31.54826,-27.09439 -20.78474,0 -31.54826,10.39237 -31.54826,27.09439 z"
+         id="path4" />
+    </g>
+  </g>
+</svg>
