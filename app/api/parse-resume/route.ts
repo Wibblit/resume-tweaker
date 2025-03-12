@@ -178,6 +178,11 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     }
   ]
   - Make sure to generate unique uuid in place of <UNIQUE_UUID>
+
+  ### IMPORTANT NOTE
+  - Dates must always be in this format "2025-03-12T14:30:00.000Z" for 12/3/2025 14:30, make sure that startDate, endDate and the date fields only contain these values in this format
+  - Regardless of what format you get the date
+
   `.trim();
 
   const result = await model.generateContent(prompt);
