@@ -820,13 +820,14 @@ export default function AIReview({
     "Evaluating readability",
     "Assessing content repetition",
     "Reviewing overall structure",
+    "Building change list"
   ];
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
         setCurrentSentenceIndex((prevIndex) => (prevIndex + 1) % sentences.length);
-      }, 2000); // Change sentence every 2 seconds
+      }, 5000); // Change sentence every 5 seconds
 
       return () => clearInterval(interval);
     }
@@ -1178,7 +1179,7 @@ export default function AIReview({
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xl"
           >
-            <div className="flex flex-col justify-between items-center p-4 bg-gradient-to-t from-bg-card via-zinc/20 to-transparent rounded-md shadow-md border min-w-96 min-h-44">
+            <div className="flex flex-col justify-between items-center p-4 bg-card rounded-md shadow-md border min-w-96 min-h-44">
               <motion.div
                 key={currentSentenceIndex}
                 initial={{ opacity: 0}}
