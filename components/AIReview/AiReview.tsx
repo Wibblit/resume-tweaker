@@ -233,40 +233,6 @@ export default function AIReview({
       "final_output": "This sample campaign demonstrates the inner workings of a successful marketing strategy.  Its effectiveness is tested in the real world with actual prospects."
     },
     {
-      "selector": "volunteer[0]",
-      "metrics": [
-        {
-          "type": "Tone Consistency",
-          "score": 3,
-          "issues": [
-            {
-              "name": "Inconsistent information: The role and organization fields are contradictory.  Please clarify and ensure consistency.",
-              "severity": "moderate"
-            }
-          ]
-        }
-      ],
-      "correction_logic": "Corrected inconsistent information; removed the conflicting role and location to focus on the organization.",
-      "final_output": "{ \\"id\\": \\"43801067-bd47-43e6-87c9-363609d256f2\\", \\"organization\\": \\"Brightwave Global\\", \\"endDate\\": \\"2025-02-12T18:30:00.000Z\\", \\"startDate\\": \\"2025-02-04T18:30:00.000Z\\"}"
-    },
-    {
-      "selector": "volunteer[1]",
-      "metrics": [
-        {
-          "type": "Tone Consistency",
-          "score": 3,
-          "issues": [
-            {
-              "name": "Inconsistent information: The role and organization fields are contradictory.  Please clarify and ensure consistency.",
-              "severity": "moderate"
-            }
-          ]
-        }
-      ],
-      "correction_logic": "Corrected inconsistent information; removed the conflicting role and location to focus on the organization.",
-      "final_output": "{ \\"id\\": \\"74f91a01-24c9-43e3-9b45-13ea93505f45\\", \\"organization\\": \\"Brightwave Global\\", \\"endDate\\": \\"2025-02-12T18:30:00.000Z\\", \\"startDate\\": \\"2025-02-26T18:30:00.000Z\\"}"
-    },
-    {
       "selector": "awards[?(@.id=='90876543-2109-8765-4321-0fedcba98765')].title",
       "metrics": [
         {
@@ -284,7 +250,7 @@ export default function AIReview({
       "final_output": "One of the best employees ever, 2020"
     },
     {
-      "selector": "summary.content",
+      "selector": "summary[0].content",
       "metrics": [
         {
           "type": "Conciseness & Clarity",
