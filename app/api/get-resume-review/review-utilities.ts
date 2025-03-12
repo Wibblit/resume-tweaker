@@ -44,12 +44,6 @@ type MergedResult = {
   }[];
 };
 
-type TokenUsage = {
-  stagename: string;
-  promptTokensUsed: number;
-  candidateTokensUsed: number;
-  totalTokensUsed: number;
-};
 
 function transformData(input: StageResult[]): { transformed: TransformedResult[]; uniqueSelectors: string[] } {
   const outputMap = new Map<string, any>();

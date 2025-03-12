@@ -1,5 +1,10 @@
 export const reportRules = () => {
     return `
+
+### THINGS NOT TO JUDGE
+- Do not judge the fields in the json, or the structure of the json, they are final, your job is only to judge the contents
+- never ever make any issues about the structure of the json objects, return them in the same structure you that you recieved them, this is very very important
+
 #### Commenting Rules:
 - Be specific and actionable — no generic feedback.
 - Only comment on serious issues; minor ones can be ignored.
@@ -11,6 +16,9 @@ export const reportRules = () => {
 - final_output field must be clean and ready for use (no placeholders or comment markers) and must be in the final format to insert directly into the resume without requiring cleanup, so no paranthesis comments or anything, it needs to be final, this is a correction, dont suggest things in this, this is the final corrected value part of the selector.
 - Prioritize conciseness, while correcting take into account the no of sentences or points before making the correction.
 - The correction must be in line with the comment and the correction_logic
+
+#### Special case for correction
+- note that the main resume summary is an array of objects, even though it only has one single object, the selector for summary content is summary[0].content, not summary.content
 
 #### Conflict Resolution:
 - Resolve all issues within each metric and across metrics for the same selector.
@@ -43,5 +51,7 @@ export const reportRules = () => {
   - in makebelieve mode, you fill the selectors fields with mainfieldname_orderno, example- experience_1, project_2
   - Do not go deep and review subsection in this mode, eg single points of a summary, only review full sections and give outputs, plain text is fine
   - But keep the outputs valid jsons though, thats important.}
+
+
 `
 }

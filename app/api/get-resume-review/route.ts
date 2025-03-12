@@ -49,7 +49,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     throw ApiError.rateLimitExceeded; // Rate-limiting error
   }
 
-  let result =
+  let resume =
     resumeOption === "upload"
       ? resumeText
       : await prisma.resume.findUnique({
@@ -59,32 +59,30 @@ export const POST = asyncHandler(async (request: NextRequest) => {
           },
         });
 
-  if (!result) {
+  if (!resume) {
     throw ApiError.resourceNotFound; // If resume is not found
   }
-
+  let resumejson = null
   if (resumeOption !== "upload") {
-    const { id, userId, resumeName, ...resumeDetails } = result;
-    result = resumeDetails;
-    result = {
-      ...result,
-      basics: result.basics.map((basic: any, index: number) =>
+    const { id, userId, resumeName, ...resumeDetails } = resume;
+    resume = resumeDetails;
+    resume = {
+      ...resume,
+      basics: resume.basics.map((basic: any, index: number) =>
         index === 0 ? { ...basic, picture: null } : basic
       ),
       styles: null,
       createdOn: null,
       updatedOn: null,
     };
-    result = JSON.stringify(result, null, 2);
-    console.log(result)
+    resumejson = resume
+    resume = JSON.stringify(resume, null, 2);
+    // console.log(resume)
   }
   
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  // const detailedPrompt = `${result} ${jd} ${prompt}`;
-  // const generatedContent = await model.generateContent(detailedPrompt);
-  const generatedContent = await resumeReview(result,jd,reviewType)
+  const generatedContent = await resumeReview(resume,jd,reviewType)
   const review = generatedContent
-  console.log("Review result:\n",JSON.stringify(review,null,2));
+  // console.log("Review resume:\n",JSON.stringify(review,null,2));
   await prisma.userAssets.update({
     where: {
       userId: session?.user?.id,
@@ -101,6 +99,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
 
   return NextResponse.json({
     output: review,
+    resume: resumejson,
     message: "Review generated successfully.",
   });
 });
