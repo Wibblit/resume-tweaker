@@ -21,16 +21,14 @@ import {
   FileText,
   Upload,
   Loader2,
-  Loader, X, Save, CheckCircle
+  Loader,
+  X,
+  Save,
+  CheckCircle,
 } from "lucide-react";
 import axios, { CancelTokenSource } from "axios";
-import { RecentResume as UserResume } from "@/types/types";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { ResumeData, RecentResume as UserResume } from "@/types/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   Accordion,
@@ -46,8 +44,9 @@ import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
 import { updateCredits } from "@/slices/userAssets";
 import { PremiumModal } from "../premium-modal";
 import { Badge } from "../ui/badge";
-import jp from 'jsonpath';
+import jp from "jsonpath";
 import { ScrollArea } from "../ui/scroll-area";
+import { saveResumeData } from "@/actions/saveResumeData";
 
 type Issue = {
   name: string;
@@ -66,7 +65,6 @@ type AIReviewResult = {
   correction_logic: string;
   final_output: string;
 };
-
 
 function getProperty(obj: any, selector: string): any {
   try {
@@ -126,7 +124,8 @@ function processMetrics(suggestions: AIReviewResult[]) {
     });
   });
 
-  const averageScore = scoreCount > 0 ? (totalScore / scoreCount).toFixed(1) : 0;
+  const averageScore =
+    scoreCount > 0 ? (totalScore / scoreCount).toFixed(1) : 0;
 
   // Count issues by severity
   const issuesBySeverity: Record<string, number> = {
@@ -157,34 +156,34 @@ function processMetrics(suggestions: AIReviewResult[]) {
 }
 
 function groupIssuesBySection(suggestions: AIReviewResult[]) {
-  if (!suggestions || !suggestions.length) return {}
+  if (!suggestions || !suggestions.length) return {};
 
-  const groupedIssues: Record<string, AIReviewResult[]> = {}
+  const groupedIssues: Record<string, AIReviewResult[]> = {};
 
   suggestions.forEach((suggestion) => {
     // Extract the major section from the selector
-    let majorSection = suggestion.selector
+    let majorSection = suggestion.selector;
 
     // Find the first occurrence of [, (, or . and use everything before it
-    const bracketIndex = majorSection.indexOf("[")
-    const parenthesisIndex = majorSection.indexOf("(")
-    const dotIndex = majorSection.indexOf(".")
+    const bracketIndex = majorSection.indexOf("[");
+    const parenthesisIndex = majorSection.indexOf("(");
+    const dotIndex = majorSection.indexOf(".");
 
-    let cutIndex = majorSection.length
-    if (bracketIndex > -1) cutIndex = Math.min(cutIndex, bracketIndex)
-    if (parenthesisIndex > -1) cutIndex = Math.min(cutIndex, parenthesisIndex)
-    if (dotIndex > -1) cutIndex = Math.min(cutIndex, dotIndex)
+    let cutIndex = majorSection.length;
+    if (bracketIndex > -1) cutIndex = Math.min(cutIndex, bracketIndex);
+    if (parenthesisIndex > -1) cutIndex = Math.min(cutIndex, parenthesisIndex);
+    if (dotIndex > -1) cutIndex = Math.min(cutIndex, dotIndex);
 
-    majorSection = majorSection.substring(0, cutIndex)
+    majorSection = majorSection.substring(0, cutIndex);
 
     if (!groupedIssues[majorSection]) {
-      groupedIssues[majorSection] = []
+      groupedIssues[majorSection] = [];
     }
 
-    groupedIssues[majorSection].push(suggestion)
-  })
+    groupedIssues[majorSection].push(suggestion);
+  });
 
-  return groupedIssues
+  return groupedIssues;
 }
 
 export default function AIReview({
@@ -203,6 +202,11 @@ export default function AIReview({
   const [selectedResume, setSelectedResume] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [jd, setJd] = useState("");
+
+  console.log(selectedResume);
+
+  console.log();
+
   const text = `[
     {
       "selector": "projects[0].summary",
@@ -464,8 +468,8 @@ export default function AIReview({
       "correction_logic": "Combined both changes. The concise and clear sentence adds valuable quantitative data, complementing the initial recognition statement.",
       "final_output": "Awarded for outstanding contributions to the team and exceeding expectations in driving impactful results. Increased seasonal sales by 50% with a new holiday campaign."
     }
-  ]`
-  const parsed = JSON.parse(text)
+  ]`;
+  const parsed = JSON.parse(text);
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
     parsed
   );
@@ -796,8 +800,8 @@ export default function AIReview({
   "styles": null,
   "createdOn": null,
   "updatedOn": null
-}`
-  const testparseresume = JSON.parse(testresume)
+}`;
+  const testparseresume = JSON.parse(testresume);
   const [resumeData, setResumeData] = useState(testparseresume);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [userResumes, setUserResumes] = useState<UserResume[]>();
@@ -810,9 +814,10 @@ export default function AIReview({
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
   const dispatch = useAppDispatch();
   const credits = useAppSelector((state) => state?.assets?.credits);
-  const [cancelTokenSource, setCancelTokenSource] = useState<CancelTokenSource | null>(null);
+  const [cancelTokenSource, setCancelTokenSource] =
+    useState<CancelTokenSource | null>(null);
 
-  const [showResultsDialog, setShowResultsDialog] = useState(false)
+  const [showResultsDialog, setShowResultsDialog] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
   const sentences = [
     "Analyzing your resume",
@@ -820,13 +825,15 @@ export default function AIReview({
     "Evaluating readability",
     "Assessing content repetition",
     "Reviewing overall structure",
-    "Building change list"
+    "Building change list",
   ];
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
-        setCurrentSentenceIndex((prevIndex) => (prevIndex + 1) % sentences.length);
+        setCurrentSentenceIndex(
+          (prevIndex) => (prevIndex + 1) % sentences.length
+        );
       }, 5000); // Change sentence every 5 seconds
 
       return () => clearInterval(interval);
@@ -837,10 +844,12 @@ export default function AIReview({
     setOpen(false);
   };
 
-  const metrics = aiSuggestions ? processMetrics(aiSuggestions) : null
+  const metrics = aiSuggestions ? processMetrics(aiSuggestions) : null;
 
   // Group issues by major section
-  const groupedIssues = aiSuggestions ? groupIssuesBySection(aiSuggestions) : {}
+  const groupedIssues = aiSuggestions
+    ? groupIssuesBySection(aiSuggestions)
+    : {};
 
   const { toast } = useToast();
   useEffect(() => {
@@ -860,8 +869,6 @@ export default function AIReview({
       workerRef.current = null;
     };
   }, []);
-
-
 
   useEffect(() => {
     setUserResumes(recentResumes);
@@ -922,22 +929,26 @@ export default function AIReview({
     }
     setIsLoading(true);
     setAiSuggestions(null);
-    setShowResultsDialog(true)
+    setShowResultsDialog(true);
 
     const source = axios.CancelToken.source();
     setCancelTokenSource(source);
 
     try {
       //console.log(reviewType);
-      const response = await axios.post(`/api/get-resume-review`, {
-        resumeId: selectedResume,
-        resumeOption,
-        resumeText,
-        jd: jd,
-        reviewType: reviewType,
-      }, {
-        cancelToken: source.token,
-      });
+      const response = await axios.post(
+        `/api/get-resume-review`,
+        {
+          resumeId: selectedResume,
+          resumeOption,
+          resumeText,
+          jd: jd,
+          reviewType: reviewType,
+        },
+        {
+          cancelToken: source.token,
+        }
+      );
       setResumeData(response?.data?.resume);
       if (response?.data?.statusCode === 402) {
         return toast({
@@ -962,9 +973,9 @@ export default function AIReview({
       dispatch(
         updateCredits(
           credits -
-          ((reviewType === "tailored"
-            ? creditList.get("tailored")
-            : creditList.get("generic")) ?? 0)
+            ((reviewType === "tailored"
+              ? creditList.get("tailored")
+              : creditList.get("generic")) ?? 0)
         )
       );
     } catch (error) {
@@ -978,22 +989,107 @@ export default function AIReview({
     }
   };
   const handleDeleteIssue = (selector: string) => {
-    if (!aiSuggestions) return
+    if (!aiSuggestions) return;
 
-    const updatedSuggestions = aiSuggestions.filter((suggestion) => suggestion.selector !== selector)
+    const updatedSuggestions = aiSuggestions.filter(
+      (suggestion) => suggestion.selector !== selector
+    );
 
-    setAiSuggestions(updatedSuggestions)
-    console.log(`Deleted issue with selector: ${selector}`)
+    setAiSuggestions(updatedSuggestions);
+    console.log(`Deleted issue with selector: ${selector}`);
+  };
+
+  const handleSave = async () => {
+    console.log("Saved");
+    try {
+      //console.log(resumeStyles);
+      console.log(
+        "Attempting to save resume data...",
+        resumeData,
+        selectedResume
+      );
+      const res = await saveResumeData(
+        resumeData,
+        undefined,
+        selectedResume,
+        "reviewupdate"
+      );
+      console.log("saveResumeData function:", saveResumeData);
+
+      console.log("Response received:", res);
+      if (res.status === 429) {
+        toast({
+          title: "Whoa there! You've hit the rate limit.",
+          description: "Please slow down and try again in a few minutes.",
+          variant: "destructive",
+        });
+        return;
+      }
+      //console.log("Reusme Update suceess");
+      toast({
+        title: "Success",
+        description: "Resume updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save the resume.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  function updateResumeData(selector: string, finalOutput: string) {
+    setResumeData((prevData: ResumeData) => {
+      // Deep copy to prevent mutation issues
+      const updatedData = JSON.parse(JSON.stringify(prevData));
+
+      // Try to parse finalOutput if it's valid JSON
+      let parsedOutput: any = finalOutput;
+      try {
+        parsedOutput = JSON.parse(finalOutput);
+      } catch (e) {
+        // If parsing fails, it means finalOutput is already a string or primitive, so leave it as is
+      }
+
+      // Ensure selector is a valid JSONPath
+      try {
+        jp.value(updatedData, selector, parsedOutput);
+      } catch (error) {
+        console.error("Invalid JSONPath selector:", selector, error);
+        toast({
+          title: "Error",
+          description: "Something went wrong while updating. Please try again.",
+          variant: "destructive",
+        });
+
+        return prevData; // Return previous data if JSONPath fails
+      }
+
+      return updatedData;
+    });
   }
+
+  console.log(resumeData);
 
   const handleAcceptIssue = (selector: string, finalOutput: string) => {
-    if (!aiSuggestions) return
+    if (!aiSuggestions) return;
 
-    const updatedSuggestions = aiSuggestions.filter((suggestion) => suggestion.selector !== selector)
+    const updatedSuggestions = aiSuggestions.filter(
+      (suggestion) => suggestion.selector !== selector
+    );
 
-    setAiSuggestions(updatedSuggestions)
-    console.log(`Accepted issue with selector: ${selector}, final output: ${finalOutput}`)
-  }
+    setAiSuggestions(updatedSuggestions);
+    updateResumeData(selector, finalOutput);
+    toast({
+      title: "Success",
+      description: "Changes have been queued. Please save.",
+    });
+
+    // console.log(
+    //   `Accepted issue with selector: ${selector}, final output: ${finalOutput}`
+    // );
+  };
 
   return (
     <div className="flex h-screen bg-background text-foreground">
@@ -1071,7 +1167,6 @@ export default function AIReview({
                     onChange={handleFileUpload}
                     className="flex-1"
                     disabled={resumeOption !== "upload" || isOcrInProgress}
-
                   />
                   <Dialog
                     open={isUploadDialogOpen}
@@ -1182,7 +1277,7 @@ export default function AIReview({
             <div className="flex flex-col justify-between items-center p-4 bg-card rounded-md shadow-md border min-w-96 min-h-44">
               <motion.div
                 key={currentSentenceIndex}
-                initial={{ opacity: 0}}
+                initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1 }}
@@ -1190,13 +1285,17 @@ export default function AIReview({
               >
                 <p className="font-medium">{sentences[currentSentenceIndex]}</p>
               </motion.div>
-              <Button variant="outline" size="sm" onClick={() => {
-                if (cancelTokenSource) {
-                  cancelTokenSource.cancel("Request canceled by the user.");
-                }
-                setIsLoading(false);
-                setShowResultsDialog(false);
-              }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (cancelTokenSource) {
+                    cancelTokenSource.cancel("Request canceled by the user.");
+                  }
+                  setIsLoading(false);
+                  setShowResultsDialog(false);
+                }}
+              >
                 <X className="mr-2 h-4 w-4" />
                 Exit
               </Button>
@@ -1216,12 +1315,16 @@ export default function AIReview({
             <div className="flex h-full flex-col">
               {/* Header with exit and save buttons */}
               <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-background p-4">
-                <Button variant="outline" size="sm" onClick={() => setShowResultsDialog(false)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowResultsDialog(false)}
+                >
                   <X className="mr-2 h-4 w-4" />
                   Exit
                 </Button>
                 <h2 className="text-xl font-bold">Resume Analysis Results</h2>
-                <Button variant="default" size="sm">
+                <Button onClick={handleSave} variant="default" size="sm">
                   <Save className="mr-2 h-4 w-4" />
                   Save
                 </Button>
@@ -1231,50 +1334,74 @@ export default function AIReview({
               {metrics && (
                 <div className="border-b bg-muted/30 p-4">
                   <div className="mx-auto max-w-7xl">
-                    <h3 className="mb-4 text-lg font-semibold">Resume Metrics</h3>
+                    <h3 className="mb-4 text-lg font-semibold">
+                      Resume Metrics
+                    </h3>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                       <Card>
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium">Total Issues</CardTitle>
+                          <CardTitle className="text-sm font-medium">
+                            Total Issues
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold">{metrics.totalIssues}</div>
+                          <div className="text-2xl font-bold">
+                            {metrics.totalIssues}
+                          </div>
                         </CardContent>
                       </Card>
 
                       <Card>
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+                          <CardTitle className="text-sm font-medium">
+                            Average Score
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-2xl font-bold">{metrics.averageScore}/10</div>
+                          <div className="text-2xl font-bold">
+                            {metrics.averageScore}/10
+                          </div>
                         </CardContent>
                       </Card>
 
                       <Card>
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium">Most Common Issue</CardTitle>
+                          <CardTitle className="text-sm font-medium">
+                            Most Common Issue
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-lg font-bold">{metrics.mostCommonIssueType}</div>
-                          <div className="text-sm text-muted-foreground">{metrics.mostCommonIssueCount} issues</div>
+                          <div className="text-lg font-bold">
+                            {metrics.mostCommonIssueType}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {metrics.mostCommonIssueCount} issues
+                          </div>
                         </CardContent>
                       </Card>
 
                       <Card>
                         <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium">Issues by Severity</CardTitle>
+                          <CardTitle className="text-sm font-medium">
+                            Issues by Severity
+                          </CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="flex flex-wrap gap-2">
                             {metrics.issuesBySeverity.major > 0 && (
-                              <Badge variant="destructive">{metrics.issuesBySeverity.major} Major</Badge>
+                              <Badge variant="destructive">
+                                {metrics.issuesBySeverity.major} Major
+                              </Badge>
                             )}
                             {metrics.issuesBySeverity.moderate > 0 && (
-                              <Badge variant="default">{metrics.issuesBySeverity.moderate} Moderate</Badge>
+                              <Badge variant="default">
+                                {metrics.issuesBySeverity.moderate} Moderate
+                              </Badge>
                             )}
                             {metrics.issuesBySeverity.minor > 0 && (
-                              <Badge variant="secondary">{metrics.issuesBySeverity.minor} Minor</Badge>
+                              <Badge variant="secondary">
+                                {metrics.issuesBySeverity.minor} Minor
+                              </Badge>
                             )}
                           </div>
                         </CardContent>
@@ -1292,122 +1419,198 @@ export default function AIReview({
                     <div className="p-4">
                       <h3 className="mb-4 text-lg font-semibold">Issues</h3>
 
-                      {Object.entries(groupedIssues).map(([section, issues]) => (
-                        <Accordion type="single" collapsible key={section} className="mb-4">
-                          <AccordionItem value={section}>
-                            <AccordionTrigger className="px-4 py-2 bg-muted/50 rounded-md">
-                              <div className="flex items-center justify-between w-full">
-                                <span className="font-medium capitalize">{section}</span>
-                                <Badge variant="outline" className="ml-2">
-                                  {issues.length} {issues.length === 1 ? "issue" : "issues"}
-                                </Badge>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent className="pt-2">
-                              {issues.map((issue, index) => (
-                                <Accordion type="single" collapsible key={index} className="mb-2">
-                                  <AccordionItem
-                                    value={`${section}-${index}`}
-                                    className="border rounded-md overflow-hidden"
+                      {Object.entries(groupedIssues).map(
+                        ([section, issues]) => (
+                          <Accordion
+                            type="single"
+                            collapsible
+                            key={section}
+                            className="mb-4"
+                          >
+                            <AccordionItem value={section}>
+                              <AccordionTrigger className="px-4 py-2 bg-muted/50 rounded-md">
+                                <div className="flex items-center justify-between w-full">
+                                  <span className="font-medium capitalize">
+                                    {section}
+                                  </span>
+                                  <Badge variant="outline" className="ml-2">
+                                    {issues.length}{" "}
+                                    {issues.length === 1 ? "issue" : "issues"}
+                                  </Badge>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="pt-2">
+                                {issues.map((issue, index) => (
+                                  <Accordion
+                                    type="single"
+                                    collapsible
+                                    key={index}
+                                    className="mb-2"
                                   >
-                                    <AccordionTrigger className="px-4 py-2 hover:bg-muted/30">
-                                      <div className="flex items-center justify-between w-full">
-                                        <span className="font-medium text-sm">{issue.selector}</span>
-                                        <Badge variant="outline" className="ml-2">
-                                          {issue.metrics.reduce((count, metric) => count + metric.issues.length, 0)}{" "}
-                                          issues
-                                        </Badge>
-                                      </div>
-                                    </AccordionTrigger>
-                                    <AccordionContent className="bg-muted/10 p-4">
-                                      <div className="space-y-4">
-                                        {issue.metrics.map((metric, metricIndex) => (
-                                          <div key={metricIndex} className="space-y-2">
-                                            <div className="flex items-center justify-between">
-                                              <h4 className="font-medium">{metric.type}</h4>
-                                              <div className="flex items-center gap-2">
-                                                <Progress value={metric.score * 10} className="w-24" />
-                                                <span className="text-sm">{metric.score}/10</span>
-                                              </div>
-                                            </div>
-
-                                            {metric.issues.length > 0 && (
-                                              <div className="space-y-2">
-                                                {metric.issues.map((issueItem, issueIndex) => (
-                                                  <div key={issueIndex} className="rounded-md bg-muted/30 p-2">
-                                                    <div className="flex items-start justify-between">
-                                                      <div>
-                                                        <p className="text-sm">{issueItem.name}</p>
-                                                        <Badge
-                                                          variant={
-                                                            issueItem.severity === "major"
-                                                              ? "destructive"
-                                                              : issueItem.severity === "moderate"
-                                                                ? "default"
-                                                                : "secondary"
-                                                          }
-                                                          className="mt-1"
-                                                        >
-                                                          {issueItem.severity}
-                                                        </Badge>
-                                                      </div>
-                                                    </div>
+                                    <AccordionItem
+                                      value={`${section}-${index}`}
+                                      className="border rounded-md overflow-hidden"
+                                    >
+                                      <AccordionTrigger className="px-4 py-2 hover:bg-muted/30">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span className="font-medium text-sm">
+                                            {issue.selector}
+                                          </span>
+                                          <Badge
+                                            variant="outline"
+                                            className="ml-2"
+                                          >
+                                            {issue.metrics.reduce(
+                                              (count, metric) =>
+                                                count + metric.issues.length,
+                                              0
+                                            )}{" "}
+                                            issues
+                                          </Badge>
+                                        </div>
+                                      </AccordionTrigger>
+                                      <AccordionContent className="bg-muted/10 p-4">
+                                        <div className="space-y-4">
+                                          {issue.metrics.map(
+                                            (metric, metricIndex) => (
+                                              <div
+                                                key={metricIndex}
+                                                className="space-y-2"
+                                              >
+                                                <div className="flex items-center justify-between">
+                                                  <h4 className="font-medium">
+                                                    {metric.type}
+                                                  </h4>
+                                                  <div className="flex items-center gap-2">
+                                                    <Progress
+                                                      value={metric.score * 10}
+                                                      className="w-24"
+                                                    />
+                                                    <span className="text-sm">
+                                                      {metric.score}/10
+                                                    </span>
                                                   </div>
-                                                ))}
-                                              </div>
-                                            )}
+                                                </div>
 
-                                            <div className="pt-2">
-                                              <h5 className="text-sm font-medium">Original:</h5>
-                                              <div className="mt-1 rounded-md bg-muted/20 p-2 text-sm">
-                                                {resumeData
-                                                  ? JSON.stringify(getProperty(resumeData, issue.selector))
-                                                  : "Loading..."}
-                                              </div>
-                                            </div>
+                                                {metric.issues.length > 0 && (
+                                                  <div className="space-y-2">
+                                                    {metric.issues.map(
+                                                      (
+                                                        issueItem,
+                                                        issueIndex
+                                                      ) => (
+                                                        <div
+                                                          key={issueIndex}
+                                                          className="rounded-md bg-muted/30 p-2"
+                                                        >
+                                                          <div className="flex items-start justify-between">
+                                                            <div>
+                                                              <p className="text-sm">
+                                                                {issueItem.name}
+                                                              </p>
+                                                              <Badge
+                                                                variant={
+                                                                  issueItem.severity ===
+                                                                  "major"
+                                                                    ? "destructive"
+                                                                    : issueItem.severity ===
+                                                                      "moderate"
+                                                                    ? "default"
+                                                                    : "secondary"
+                                                                }
+                                                                className="mt-1"
+                                                              >
+                                                                {
+                                                                  issueItem.severity
+                                                                }
+                                                              </Badge>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
 
-                                            <div className="pt-2">
-                                              <h5 className="text-sm font-medium">Suggested:</h5>
-                                              <div className="mt-1 rounded-md bg-muted/20 p-2 text-sm">
-                                                {JSON.stringify(issue.final_output, null, 2)}
-                                              </div>
-                                            </div>
+                                                <div className="pt-2">
+                                                  <h5 className="text-sm font-medium">
+                                                    Original:
+                                                  </h5>
+                                                  <div className="mt-1 rounded-md bg-muted/20 p-2 text-sm">
+                                                    {resumeData
+                                                      ? JSON.stringify(
+                                                          getProperty(
+                                                            resumeData,
+                                                            issue.selector
+                                                          )
+                                                        )
+                                                      : "Loading..."}
+                                                  </div>
+                                                </div>
 
-                                            <div className="flex justify-end gap-2 pt-2">
-                                              <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleDeleteIssue(issue.selector)}
-                                              >
-                                                <X className="mr-1 h-3 w-3" />
-                                                Delete
-                                              </Button>
-                                              <Button
-                                                variant="default"
-                                                size="sm"
-                                                onClick={() => handleAcceptIssue(issue.selector, issue.final_output)}
-                                              >
-                                                <CheckCircle className="mr-1 h-3 w-3" />
-                                                Accept
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    </AccordionContent>
-                                  </AccordionItem>
-                                </Accordion>
-                              ))}
-                            </AccordionContent>
-                          </AccordionItem>
-                        </Accordion>
-                      ))}
+                                                <div className="pt-2">
+                                                  <h5 className="text-sm font-medium">
+                                                    Suggested:
+                                                  </h5>
+                                                  <div className="mt-1 rounded-md bg-muted/20 p-2 text-sm">
+                                                    {JSON.stringify(
+                                                      issue.final_output,
+                                                      null,
+                                                      2
+                                                    )}
+                                                  </div>
+                                                </div>
+
+                                                <div className="flex justify-end gap-2 pt-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      handleDeleteIssue(
+                                                        issue.selector
+                                                      )
+                                                    }
+                                                  >
+                                                    <X className="mr-1 h-3 w-3" />
+                                                    Delete
+                                                  </Button>
+                                                  <Button
+                                                    variant="default"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      handleAcceptIssue(
+                                                        issue.selector,
+                                                        issue.final_output
+                                                      )
+                                                    }
+                                                  >
+                                                    <CheckCircle className="mr-1 h-3 w-3" />
+                                                    Accept
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                            )
+                                          )}
+                                        </div>
+                                      </AccordionContent>
+                                    </AccordionItem>
+                                  </Accordion>
+                                ))}
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        )
+                      )}
 
                       {Object.keys(groupedIssues).length === 0 && (
                         <div className="flex flex-col items-center justify-center p-8 text-center">
                           <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                          <h4 className="text-lg font-medium">No issues found</h4>
-                          <p className="text-muted-foreground">Your resume looks great!</p>
+                          <h4 className="text-lg font-medium">
+                            No issues found
+                          </h4>
+                          <p className="text-muted-foreground">
+                            Your resume looks great!
+                          </p>
                         </div>
                       )}
                     </div>
@@ -1419,7 +1622,9 @@ export default function AIReview({
                   <div className="flex h-full items-center justify-center p-4">
                     <div className="text-center">
                       <FileText className="mx-auto h-16 w-16 text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">Resume Preview</h3>
+                      <h3 className="mt-4 text-lg font-medium">
+                        Resume Preview
+                      </h3>
                       <p className="mt-2 text-sm text-muted-foreground">
                         This area would display a preview of your resume
                       </p>

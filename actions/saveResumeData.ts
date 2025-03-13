@@ -10,12 +10,13 @@ export const saveResumeData = asyncHandler(
   async (
     resumeData: ResumeData,
     resumeStyles: ResumeStyles,
-    resumeId: string
+    resumeId: string,
+    type?: string
   ) => {
     //console.log(resumeStyles)
     const session = await auth();
     if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
-    if (!resumeData || !resumeStyles || !resumeId)
+    if (!resumeData || !resumeId || (type !== "reviewupdate" && !resumeStyles))
       throw ActionsError.badRequest;
 
     // Parse the main sections
@@ -76,29 +77,35 @@ export const saveResumeData = asyncHandler(
         return acc;
       }, {});
 
-    // Update the resume in the database
+    const updateData: any = {
+      basics: parsedBasics,
+      summary: parsedSummary,
+      profiles: parsedProfiles,
+      skills: parsedSkills,
+      experience: parsedExperience,
+      projects: parsedProjects,
+      certifications: parsedCertifications,
+      education: parsedEducation,
+      awards: parsedAwards,
+      references: parsedReferences,
+      languages: parsedLanguages,
+      publications: parsedPublications,
+      volunteer: parsedVolunteer,
+      custom: parsedCustomData,
+    };
+
+    // Ensure type is checked safely
+    if (!type || type !== "reviewupdate") {
+      updateData.styles = JSON.parse(JSON.stringify(resumeStyles));
+      console.log("I didn't get called, haha")
+    }
+
     const result = await prisma.resume.update({
       where: {
         id: resumeId,
         userId: session?.user?.id,
       },
-      data: {
-        basics: parsedBasics,
-        summary: parsedSummary,
-        profiles: parsedProfiles,
-        skills: parsedSkills,
-        experience: parsedExperience,
-        projects: parsedProjects,
-        certifications: parsedCertifications,
-        education: parsedEducation,
-        awards: parsedAwards,
-        references: parsedReferences,
-        languages: parsedLanguages,
-        publications: parsedPublications,
-        volunteer: parsedVolunteer,
-        custom: parsedCustomData, // Make sure this is included
-        styles: JSON.parse(JSON.stringify(resumeStyles)),
-      },
+      data: updateData, // Pass the modified object here
     });
 
     return {
