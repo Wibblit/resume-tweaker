@@ -803,7 +803,7 @@ export default function AIReview({
   const [userResumes, setUserResumes] = useState<UserResume[]>();
   const [resuLoading, setresuLoading] = useState<boolean>(false);
   const [funcdisabler, setFuncDisabler] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [resumeText, setResumeText] = useState("");
   const workerRef = useRef<Tesseract.Worker | null>(null);
   const [ocrProgress, setOcrProgress] = useState(0);
