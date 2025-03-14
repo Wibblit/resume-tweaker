@@ -101,7 +101,7 @@ export default function ResumeDisplay({
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-gray-100 dark:bg-gray-900">
+    <div className="flex flex-col h-full w-full bg-sidebar/30">
       <ScrollArea className="flex-grow">
         <div className="flex flex-col items-center justify-start p-4 pb-20">
           {pages.map((page, index) => (

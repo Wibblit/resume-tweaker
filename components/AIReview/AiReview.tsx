@@ -1168,180 +1168,182 @@ export default function AIReview({
   };
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
-      <motion.main
-        className="flex-1 overflow-auto p-4 md:p-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-3xl font-bold">AI Resume Review</h1>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="resume-option">Resume Option</Label>
-              <RadioGroup
-                id="resume-option"
-                value={resumeOption}
-                onValueChange={(value: "select" | "upload") =>
-                  setResumeOption(value)
-                }
-                className="mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="select" id="select-resume" />
-                  <Label htmlFor="select-resume">Select Existing Resume</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="upload" id="upload-resume" />
-                  <Label htmlFor="upload-resume">Upload New Resume</Label>
-                </div>
-              </RadioGroup>
+    <div className="flex flex-col h-full bg-background text-foreground">
+      <div className="flex h-[calc(100vh-60px)] md:h-[calc(100vh-20px)] w-full items-center justify-center p-4">
+        <motion.main
+          className="flex-1 max-w-4xl p-4 md:py-12 rounded-xl border "
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-6 flex items-center justify-between">
+              <h1 className="text-3xl font-bold">AI Resume Review</h1>
             </div>
-            {resumeOption === "select" ? (
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="resume-select">Select Resume</Label>
-                <Select
-                  value={selectedResume}
-                  onValueChange={handleResumeSelect}
-                >
-                  <SelectTrigger className="w-full mt-2">
-                    <SelectValue placeholder="Choose a resume" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {resuLoading ? (
-                      <SelectItem
-                        value={"null"}
-                        className="flex items-center justify-center"
-                      >
-                        <Loader2 className="mr-4 h-4 w-4 animate-spin" />
-                      </SelectItem>
-                    ) : userResumes?.length === 0 ? (
-                      <SelectItem value="noresumes">
-                        No resumes found
-                      </SelectItem>
-                    ) : (
-                      userResumes?.map((resume) => (
-                        <SelectItem key={resume.id} value={resume.id}>
-                          {resume.resumeName}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            ) : (
-              <div>
-                <Label htmlFor="resume-upload">Upload Your Resume</Label>
-                <div className="mt-2 flex items-center gap-4">
-                  <Input
-                    id="resume-upload"
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileUpload}
-                    className="flex-1"
-                    disabled={resumeOption !== "upload" || isOcrInProgress}
-                  />
-                  <Dialog
-                    open={isUploadDialogOpen}
-                    onOpenChange={setIsUploadDialogOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        disabled={resumeOption !== "upload" || isOcrInProgress}
-                      >
-                        <Upload className="h-4 w-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <h2 className="text-lg font-semibold mb-4">
-                        Upload Resume
-                      </h2>
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleFileUpload}
-                        className="w-full"
-                        disabled={isOcrInProgress}
-                      />
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                {file && (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    File uploaded: {file.name}
-                  </p>
-                )}
-                {isOcrInProgress && (
-                  <div className="mt-4">
-                    <Label>Extracting data from PDF...</Label>
-                    <Progress value={ocrProgress * 100} className="mt-2" />
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {(ocrProgress * 100).toFixed(0)}% complete
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-            <div>
-              <Label htmlFor="review-type">Review Type</Label>
-              <RadioGroup
-                id="review-type"
-                value={reviewType}
-                onValueChange={setReviewType}
-                className="mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="generic" id="generic" />
-                  <Label htmlFor="generic">Generic Review</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="tailored" id="tailored" />
-                  <Label htmlFor="tailored">Tailored Review</Label>
-                </div>
-              </RadioGroup>
-            </div>
-            {reviewType === "tailored" && (
-              <div>
-                <Label htmlFor="jd">Job Description</Label>
-                <Textarea
-                  id="jd"
-                  placeholder="Paste the job description here for tailored suggestions..."
-                  value={jd}
-                  onChange={(e) => setJd(e.target.value)}
+                <Label htmlFor="resume-option">Resume Option</Label>
+                <RadioGroup
+                  id="resume-option"
+                  value={resumeOption}
+                  onValueChange={(value: "select" | "upload") =>
+                    setResumeOption(value)
+                  }
                   className="mt-2"
-                  required
-                />
-              </div>
-            )}
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <Loader className="w-4 h-4 animate-spin" />
-              </div>
-            ) : (
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading || isOcrInProgress}
-              >
-                {isLoading ? (
-                  <div className="flex">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="select" id="select-resume" />
+                    <Label htmlFor="select-resume">Select Existing Resume</Label>
                   </div>
-                ) : (
-                  "Start Resume Review"
-                )}
-              </Button>
-            )}
-          </form>
-        </div>
-      </motion.main>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="upload" id="upload-resume" />
+                    <Label htmlFor="upload-resume">Upload New Resume</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              {resumeOption === "select" ? (
+                <div>
+                  <Label htmlFor="resume-select">Select Resume</Label>
+                  <Select
+                    value={selectedResume}
+                    onValueChange={handleResumeSelect}
+                  >
+                    <SelectTrigger className="w-full mt-2">
+                      <SelectValue placeholder="Choose a resume" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {resuLoading ? (
+                        <SelectItem
+                          value={"null"}
+                          className="flex items-center justify-center"
+                        >
+                          <Loader2 className="mr-4 h-4 w-4 animate-spin" />
+                        </SelectItem>
+                      ) : userResumes?.length === 0 ? (
+                        <SelectItem value="noresumes">
+                          No resumes found
+                        </SelectItem>
+                      ) : (
+                        userResumes?.map((resume) => (
+                          <SelectItem key={resume.id} value={resume.id}>
+                            {resume.resumeName}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                <div>
+                  <Label htmlFor="resume-upload">Upload Your Resume</Label>
+                  <div className="mt-2 flex items-center gap-4">
+                    <Input
+                      id="resume-upload"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileUpload}
+                      className="flex-1"
+                      disabled={resumeOption !== "upload" || isOcrInProgress}
+                    />
+                    <Dialog
+                      open={isUploadDialogOpen}
+                      onOpenChange={setIsUploadDialogOpen}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="outline"
+                          disabled={resumeOption !== "upload" || isOcrInProgress}
+                        >
+                          <Upload className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <h2 className="text-lg font-semibold mb-4">
+                          Upload Resume
+                        </h2>
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={handleFileUpload}
+                          className="w-full"
+                          disabled={isOcrInProgress}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  {file && (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      File uploaded: {file.name}
+                    </p>
+                  )}
+                  {isOcrInProgress && (
+                    <div className="mt-4">
+                      <Label>Extracting data from PDF...</Label>
+                      <Progress value={ocrProgress * 100} className="mt-2" />
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {(ocrProgress * 100).toFixed(0)}% complete
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div>
+                <Label htmlFor="review-type">Review Type</Label>
+                <RadioGroup
+                  id="review-type"
+                  value={reviewType}
+                  onValueChange={setReviewType}
+                  className="mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="generic" id="generic" />
+                    <Label htmlFor="generic">Generic Review</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="tailored" id="tailored" />
+                    <Label htmlFor="tailored">Tailored Review</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              {reviewType === "tailored" && (
+                <div>
+                  <Label htmlFor="jd">Job Description</Label>
+                  <Textarea
+                    id="jd"
+                    placeholder="Paste the job description here for tailored suggestions..."
+                    value={jd}
+                    onChange={(e) => setJd(e.target.value)}
+                    className="mt-2"
+                    required
+                  />
+                </div>
+              )}
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader className="w-4 h-4 animate-spin" />
+                </div>
+              ) : (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading || isOcrInProgress}
+                >
+                  {isLoading ? (
+                    <div className="flex">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing...
+                    </div>
+                  ) : (
+                    "Start Resume Review"
+                  )}
+                </Button>
+              )}
+            </form>
+          </div>
+        </motion.main>
+      </div>
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -1571,11 +1573,11 @@ export default function AIReview({
                                                   </h4>
                                                   <div className="flex items-center gap-2">
                                                     <Progress
-                                                      value={metric.score * 10}
+                                                      value={metric.score * 20}
                                                       className="w-24"
                                                     />
                                                     <span className="text-sm">
-                                                      {metric.score}/10
+                                                      {metric.score}/5
                                                     </span>
                                                   </div>
                                                 </div>
