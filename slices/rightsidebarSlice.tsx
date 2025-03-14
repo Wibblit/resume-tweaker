@@ -10,7 +10,7 @@ import {
 } from "./leftsidebarSlice";
 
 // Define the initial state using that type
-const initialState: ResumeStyles = {
+export const initialState: ResumeStyles = {
   id: 1,
   name: "",
   font: "Helvetica",

@@ -27,7 +27,11 @@ import {
   CheckCircle,
 } from "lucide-react";
 import axios, { CancelTokenSource } from "axios";
-import { ResumeData, RecentResume as UserResume } from "@/types/types";
+import {
+  ResumeData,
+  ResumeStyles,
+  RecentResume as UserResume,
+} from "@/types/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -47,6 +51,8 @@ import { Badge } from "../ui/badge";
 import jp from "jsonpath";
 import { ScrollArea } from "../ui/scroll-area";
 import { saveResumeData } from "@/actions/saveResumeData";
+import ResumeDisplay from "../resumeViewer";
+import { initialState } from "@/slices/rightsidebarSlice";
 
 type Issue = {
   name: string;
@@ -473,6 +479,19 @@ export default function AIReview({
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
     parsed
   );
+
+  console.log(aiSuggestions);
+  type DataItem = {
+    selector: string;
+    final_output: string;
+  };
+
+  function extractFinalOutput(data: DataItem[]): DataItem[] {
+    return data.map(({ selector, final_output }) => ({
+      selector,
+      final_output,
+    }));
+  }
   const testresume = `
   {
   "basics": [
@@ -816,6 +835,7 @@ export default function AIReview({
   const credits = useAppSelector((state) => state?.assets?.credits);
   const [cancelTokenSource, setCancelTokenSource] =
     useState<CancelTokenSource | null>(null);
+  const [resumeStyles, setResumeStyles] = useState<ResumeStyles>(initialState);
 
   const [showResultsDialog, setShowResultsDialog] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
@@ -827,6 +847,59 @@ export default function AIReview({
     "Reviewing overall structure",
     "Building change list",
   ];
+
+  function extractSelectorAndOutput(jsonText: string) {
+    try {
+      const data = JSON.parse(jsonText);
+      return data.map((item: any) => ({
+        selector: item.selector,
+        final_output: item.final_output,
+      }));
+    } catch (error) {
+      console.error("Invalid JSON format", error);
+      return [];
+    }
+  }
+
+  const handleAcceptAllAndSave = async () => {
+    //@ts-ignore
+    const data = extractFinalOutput(aiSuggestions);
+    console.log(data);
+
+    setResumeData((prevData: ResumeData) => {
+      const updatedData = JSON.parse(JSON.stringify(prevData));
+
+      data.forEach(({ selector, final_output }) => {
+        let parsedOutput: any = final_output;
+        try {
+          parsedOutput = JSON.parse(final_output);
+        } catch (e) {}
+
+        try {
+          jp.value(updatedData, selector, parsedOutput);
+        } catch (error) {
+          console.error("Invalid JSONPath selector:", selector, error);
+          toast({
+            title: "Error",
+            description:
+              "Something went wrong while updating. Please try again.",
+            variant: "destructive",
+          });
+        }
+      });
+
+      (async () => {
+        await handleSave({ value: updatedData });
+      })();
+      // 🔥 Call handleSave with the updated data
+
+
+      return updatedData;
+    });
+
+    setAiSuggestions([]);
+  };
+
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   useEffect(() => {
     if (isLoading) {
@@ -950,6 +1023,7 @@ export default function AIReview({
         }
       );
       setResumeData(response?.data?.resume);
+      setResumeStyles(response?.data?.styles);
       if (response?.data?.statusCode === 402) {
         return toast({
           variant: "destructive", // Set the toast type to error
@@ -999,7 +1073,9 @@ export default function AIReview({
     console.log(`Deleted issue with selector: ${selector}`);
   };
 
-  const handleSave = async () => {
+  const handleSave = async (
+    { value }: { value?: any } = { value: undefined }
+  ) => {
     console.log("Saved");
     try {
       //console.log(resumeStyles);
@@ -1008,8 +1084,9 @@ export default function AIReview({
         resumeData,
         selectedResume
       );
+      let data = value ? value : resumeData;
       const res = await saveResumeData(
-        resumeData,
+        data,
         undefined,
         selectedResume,
         "reviewupdate"
@@ -1324,10 +1401,24 @@ export default function AIReview({
                   Exit
                 </Button>
                 <h2 className="text-xl font-bold">Resume Analysis Results</h2>
-                <Button onClick={handleSave} variant="default" size="sm">
-                  <Save className="mr-2 h-4 w-4" />
-                  Save
-                </Button>
+                <div className="flex items-center gap-x-2">
+                  <Button
+                    onClick={handleAcceptAllAndSave}
+                    variant="default"
+                    size="sm"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Accept All & Save
+                  </Button>
+                  <Button
+                    onClick={() => handleSave()}
+                    variant="default"
+                    size="sm"
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save
+                  </Button>
+                </div>
               </div>
 
               {/* Metrics row */}
@@ -1620,7 +1711,13 @@ export default function AIReview({
                 {/* Right column - Resume preview (placeholder) */}
                 <div className="hidden md:block md:w-1/2 overflow-auto bg-muted/10">
                   <div className="flex h-full items-center justify-center p-4">
-                    <div className="text-center">
+                    <ResumeDisplay
+                      resumeData={resumeData}
+                      resumeStyle={resumeStyles}
+                      templateNumber={resumeStyles.id}
+                      key={resumeStyles.id}
+                    />
+                    {/* <div className="text-center">
                       <FileText className="mx-auto h-16 w-16 text-muted-foreground" />
                       <h3 className="mt-4 text-lg font-medium">
                         Resume Preview
@@ -1628,7 +1725,7 @@ export default function AIReview({
                       <p className="mt-2 text-sm text-muted-foreground">
                         This area would display a preview of your resume
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
