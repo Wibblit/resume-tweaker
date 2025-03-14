@@ -7,6 +7,8 @@ export const reportRules = () => {
 
 #### Commenting Rules:
 - Be specific and actionable — no generic feedback.
+- Follow this format for writing issues: '[strictly 3-4 word description, in passive voice] - [specific issue]' eg. 'Tone Inconsistency detected - Use formal language to maintain consistency and professionalism'
+- Do not use the same comment for multiple issues, be specific
 - Only comment on serious issues; minor ones can be ignored.
 - Fix content but never alter dates, URLs, or HTML structure.
 
@@ -32,6 +34,7 @@ export const reportRules = () => {
 
 ### Important NOTE
 - If there are no problems in a section, DO NOT EVER RETURN that in the output, even if the comment is "no issues", that is against the rules and will be penalised because it is a wastage of resources
+- If you catch yourself writing "no issues found" or putting an empty [] in the comment, then you are doing something wrong, because you are not supposed to return that in the output, only return the issues you find, if you find none, then dont return anything
 - Skills sections have subcategories, respect that, do not flatten that structure
 - take a good look at the field and subfield names and follow them in both selectors and final_output where necessary
 - DO NOT EVER COMMENT 'no issues found' and return the same thing as final_output, that is a collosal waste of my time, if you think something has no issues, then just leave it, dont put it in the json output.

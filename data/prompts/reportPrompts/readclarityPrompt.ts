@@ -54,7 +54,7 @@ ${reportRules}
               ]
             }
           ],
-          "correction_logic": "Split long sentences for better readability and replaced passive voice with active voice.",
+          "correction_logic": "Split long sentences for better readability and replace passive voice with active voice.",
           "final_output": "<ul><li><p>Managed multiple marketing campaigns to enhance brand awareness and generate leads. This resulted in increased customer engagement.</p></li><li><p>The team completed the project within the deadline.</p></li></ul>"
         },
         {
@@ -71,7 +71,7 @@ ${reportRules}
               ]
             }
           ],
-          "correction_logic": "Clarifed vague statements to provide more specific details.",
+          "correction_logic": "Clarife vague statements to provide more specific details.",
           "final_output": "<ul><li><p>Managed multiple marketing campaigns to enhance brand awareness and generate warm leads. This resulted in increased customer retention.</p></li><li><p>The team completed the project within the deadline.</p></li></ul>"
         },
         {
@@ -96,7 +96,7 @@ ${reportRules}
               ]
             }
           ],
-          "correction_logic": "Trimmed redundant phrases, simplified wordy sentences, and specified vague descriptions.",
+          "correction_logic": "Trim redundant phrases, simplify wordy sentences, and specify vague descriptions.",
           "final_output": "Innovative and results-driven marketing professional with 10 years of experience. Collaborated with team members, optimized system performance through effective strategies, and handled project management tasks like scheduling, budgeting, and team coordination."
         }
       ]

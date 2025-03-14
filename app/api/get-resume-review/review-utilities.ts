@@ -26,12 +26,15 @@ type StageResult = {
   final_output: string;
 };
 
-type TransformedResult = {
+type MergedSelectorGroup = {
   selector: string;
-  proposed_changes: {
-    type: string;
-    correction_logic: string;
-    final_output: string;
+  tomerge: {
+    selector: string;
+    proposed_changes: {
+      type: string;
+      correction_logic: string;
+      final_output: string;
+    };
   }[];
 };
 
@@ -45,51 +48,82 @@ type MergedResult = {
 };
 
 
-function transformData(input: StageResult[]): { transformed: TransformedResult[]; uniqueSelectors: string[] } {
-  const outputMap = new Map<string, any>();
-  const selectorCount = new Map<string, number>();
+function mergeSelectors(input: StageResult[]): {
+  mergedSelectorGroups: MergedSelectorGroup[],
+  subsetsToRemove: string[]
+} {
+  const outputMap = new Map<string, any[]>();
+  const subsetsToRemove: string[] = [];
 
-  input.forEach((entry: { selector: string; metrics: { type: any }[]; correction_logic: any; final_output: any }) => {
+  // Collect all changes and map them to selectors
+  input.forEach((entry) => {
     const selector = entry.selector;
-
     const change = {
-      type: entry.metrics[0]?.type,
-      correction_logic: entry.correction_logic,
-      final_output: entry.final_output
+      selector,
+      type: entry.metrics[0]?.type || '',
+      correction_logic: entry.correction_logic || '',
+      final_output: entry.final_output || '',
     };
 
     if (!outputMap.has(selector)) {
-      outputMap.set(selector, {
-        selector,
-        proposed_changes: [change]
-      });
-      selectorCount.set(selector, 1);
-    } else {
-      outputMap.get(selector).proposed_changes.push(change);
-      selectorCount.set(selector, (selectorCount.get(selector) || 0) + 1);
+      outputMap.set(selector, []);
+    }
+
+    outputMap.get(selector)!.push(change);
+  });
+
+  // Find and group selectors by superset-subset relationship
+  const sortedSelectors = Array.from(outputMap.keys()).sort();
+  const groupedResults = new Map<string, any[]>();
+
+  sortedSelectors.forEach((selector) => {
+    let foundSuperset = false;
+
+    for (const key of groupedResults.keys()) {
+      if (selector.startsWith(key)) {
+        groupedResults.get(key)!.push(...outputMap.get(selector)!);
+        subsetsToRemove.push(selector); // Add subset to removal list
+        foundSuperset = true;
+        break;
+      }
+    }
+
+    if (!foundSuperset) {
+      groupedResults.set(selector, outputMap.get(selector)!);
     }
   });
 
-  const transformed = Array.from(outputMap.entries())
-    .filter(([selector]) => selectorCount.get(selector)! > 1)
-    .map(([_, value]) => value);
+  // Build mergedSelectorGroups output
+  const mergedSelectorGroups: MergedSelectorGroup[] = [];
 
-  const uniqueSelectors = Array.from(selectorCount.entries())
-    .filter(([_, count]) => count === 1)
-    .map(([selector]) => selector);
+  groupedResults.forEach((changes, selector) => {
+    if (changes.length >= 2) {
+      mergedSelectorGroups.push({
+        selector: String(selector),
+        tomerge: changes.map((change) => ({
+          selector: change.selector,
+          proposed_changes: {
+            type: change.type,
+            correction_logic: change.correction_logic,
+            final_output: change.final_output,
+          },
+        })),
+      });
+    }
+  });
 
   return {
-    transformed,
-    uniqueSelectors
+    mergedSelectorGroups,
+    subsetsToRemove
   };
 }
 
 
-function mergeMetrics(stageResults: StageResult[], transformed: TransformedResult[], mergedJson: MergedResult): MergedResult {
+function mergeMetrics(stageResults: StageResult[], mergedSelectorGroups: MergedSelectorGroup[], mergedJson: MergedResult): MergedResult {
   const metricsMap = new Map<string, { type: string; score: number; issues: { name: string; severity: string }[] }[]>();
 
   // Collect and merge metrics for each selector
-  transformed.forEach(({ selector }) => {
+  mergedSelectorGroups.forEach(({ selector }) => {
     const matchingResults = stageResults.filter((result) => result.selector === selector);
 
     if (matchingResults.length > 0) {
@@ -103,22 +137,26 @@ function mergeMetrics(stageResults: StageResult[], transformed: TransformedResul
     if (metricsMap.has(item.selector)) {
       return {
         ...item,
-        metrics: metricsMap.get(item.selector),
+        metrics: metricsMap.get(item.selector) || [],
       };
     }
-    return item;
+    return {
+      ...item,
+      metrics: [],
+    };
   });
-
+  console.log("mergeMetrics: ", updatedResult)
   return { result: updatedResult };
 }
 
-function syncStageResultsWithMerged(stageResults: StageResult[], mergedResult: MergedResult): StageResult[] {
-
+function syncStageResultsWithMerged(stageResults: StageResult[], mergedResult: MergedResult, subsetsToRemove: string[]): StageResult[] {
+  // console.log("syncing", mergedResult);
   const mergedSelectors = new Set(mergedResult.result.map(item => item.selector));
-
+  // console.log(mergedSelectors)
   // Remove all entries from stageResults that exist in mergedResult
-  const filteredStageResults = stageResults.filter(result => !mergedSelectors.has(result.selector));
-
+  const filteredStageResults = stageResults.filter(result =>
+    !mergedSelectors.has(result.selector) && !subsetsToRemove.includes(result.selector)
+  );
   // Add the merged result entries
   const updatedStageResults = [
     ...filteredStageResults,
@@ -133,68 +171,73 @@ function syncStageResultsWithMerged(stageResults: StageResult[], mergedResult: M
   return updatedStageResults;
 }
 
-export const executeStagesSequentially = async (stagePrompts: string[], stageName: string[]) => {
+export const executeStagesConcurrently = async (stagePrompts: string[], stageNames: string[]) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const stageResults: StageResult[] = [];
-  let tokensused: {stagename:string, promptTokensUsed:number, candidateTokensUsed:number,totalTokensUsed:number }[] = []
-  for (let i = 0; i < stagePrompts.length; i++) {
-    const prompt = `${stagePrompts[i]}`;
-    const name = stageName[i]
-    const response = await model.generateContent(prompt);
-    const text = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
-    var tokendata = response.response.usageMetadata
-    tokensused.push({
-      candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
-      promptTokensUsed: tokendata?.promptTokenCount ?? 0,
-      totalTokensUsed:tokendata?.totalTokenCount ?? 0,
-      stagename: name,
-    })
-    const jsontext = JSON.parse(text)
-    console.log(`${name} check completed`)
-    // console.log(jsontext.results)
-    stageResults.push(...jsontext.results);
+  let tokensused: { stagename: string, promptTokensUsed: number, candidateTokensUsed: number, totalTokensUsed: number }[] = [];
 
-  }
-  const cleaned = transformData(stageResults)
+  const stagePromises = stagePrompts.map((prompt, index) => {
+    const name = stageNames[index];
+    return model.generateContent(prompt).then(response => {
+      const text = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
+      const tokendata = response.response.usageMetadata;
+      tokensused.push({
+        candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
+        promptTokensUsed: tokendata?.promptTokenCount ?? 0,
+        totalTokensUsed: tokendata?.totalTokenCount ?? 0,
+        stagename: name,
+      });
+      const jsontext = JSON.parse(text);
+      console.log(`${name} check completed`);
+      return jsontext.results;
+    });
+  });
+
+  const results = await Promise.all(stagePromises);
+  results.forEach(result => stageResults.push(...result));
+  // console.log("All stages completed", stageResults);
+  const cleaned = mergeSelectors(stageResults);
+  // console.log("Merging completed", cleaned);
   return {
     stageres: stageResults,
-    tomerge: cleaned.transformed,
-    nottomerge: cleaned.uniqueSelectors,
+    tomerge: cleaned.mergedSelectorGroups,
+    subsetsToRemove: cleaned.subsetsToRemove,
     tokeninfo: tokensused
-  }
+  };
 };
-//TODO
-//make changes
+
+
 export const resumeReview = async (resume: string, jd: string, reviewType: string) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   let stagespromptlist = []
-  if (reviewType == 'generic'){
-    stagespromptlist = [grammerPrompt(resume),readabilityClarityPrompt(resume),impactPrompt(resume)]
+  if (reviewType == 'generic') {
+    stagespromptlist = [grammerPrompt(resume), readabilityClarityPrompt(resume), impactPrompt(resume)]
   }
   else {
-    stagespromptlist = [grammerPrompt(resume),readabilityClarityPrompt(resume),impactPrompt(resume),relevancePrompt(resume,jd)]
+    stagespromptlist = [grammerPrompt(resume), readabilityClarityPrompt(resume), impactPrompt(resume), relevancePrompt(resume, jd)]
   }
-  const stageNames = ["grammer","readabilityClarity", "impact", "relevance"]
-  const stageresults = await executeStagesSequentially(stagespromptlist, stageNames)
+  const stageNames = ["grammer", "readabilityClarity", "impact", "relevance"]
+  const stageresults = await executeStagesConcurrently(stagespromptlist, stageNames)
   let tokensinfo = stageresults.tokeninfo
   var finalText = ''
   if (stageresults.tomerge.length >= 1) {
-    
-    const conflictMergePrompt = mergePrompt(JSON.stringify({results:stageresults.tomerge}))
+
     console.log("Finding and merging conflicts")
+    const conflictMergePrompt = mergePrompt(JSON.stringify({ results: stageresults.tomerge }))
     const response = await model.generateContent(conflictMergePrompt);
     finalText = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
     const mergejson = JSON.parse(finalText)
+    // console.log('parsed merge',JSON.stringify(mergejson, null, 2))
     console.log('parsed merge')
-    const mergedmetricsjson = mergeMetrics(stageresults.stageres,stageresults.tomerge,mergejson)
-    console.log('merged metrics')
-    const finalStageResults = syncStageResultsWithMerged(stageresults.stageres,mergedmetricsjson)
-    console.log('final result ready')
+    const mergedmetricsjson = mergeMetrics(stageresults.stageres, stageresults.tomerge, mergejson)
+    console.log('merged metrics', JSON.stringify(mergedmetricsjson, null, 2))
+    const finalStageResults = syncStageResultsWithMerged(stageresults.stageres, mergedmetricsjson, stageresults.subsetsToRemove)
+    console.log('final result ready:')
     var tokendata = response.response.usageMetadata
     tokensinfo.push({
       candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
       promptTokensUsed: tokendata?.promptTokenCount ?? 0,
-      totalTokensUsed:tokendata?.totalTokenCount ?? 0,
+      totalTokensUsed: tokendata?.totalTokenCount ?? 0,
       stagename: "merge",
     })
     const totaltokens = tokensinfo.reduce(
@@ -210,10 +253,10 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
       ...totaltokens,
       stagename: "total",
     });
-    
-    return { finalStageResults ,tokensinfo};
+
+    return { finalStageResults, tokensinfo };
   }
-  if (stageresults.tomerge.length === 0){
+  if (stageresults.tomerge.length === 0) {
     const finalStageResults = stageresults.stageres
     const totaltokens = tokensinfo.reduce(
       (acc, curr) => {
@@ -228,7 +271,7 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
       ...totaltokens,
       stagename: "total",
     });
-    return {finalStageResults,tokensinfo}
+    return { finalStageResults, tokensinfo }
   }
 };
 

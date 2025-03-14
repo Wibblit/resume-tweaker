@@ -62,7 +62,7 @@ ${reportRules}
             ]
           }
         ],
-        "correction_logic": "Merged the suggestions into the 'summary' field, added missing keywords and refined existing terms for better alignment.",
+        "correction_logic": "Merge the suggestions into the 'summary' field, add missing keywords and refined existing terms for better alignment.",
         "final_output": "<ul><li><p>Managed client outreach and lead generation, with a focus on <b>CRM optimization</b> and <b>B2B lead generation</b> strategies.</p></li><li><p>Designed email marketing campaigns that achieved a 35% increase in open rates and a 20% boost in click-through rates.</p></li><li><p>Coordinated events and trade shows, driving attendee engagement and generating over $200,000 in sales leads.</p></li><li><p>Conducted customer surveys and focus groups to gather insights that shaped marketing strategies.</p></li></ul>"
       },
       {
@@ -89,7 +89,7 @@ ${reportRules}
             ],
           }
         ],
-        "correction_logic": "Updated the project summary to use stronger verbs, incorporated missing skills",
+        "correction_logic": "Update the project summary to use stronger verbs, incorporate missing skills",
         "final_output": "<ul><li><p><b>Spearheaded</b> data migration projects, leveraging <b>SQL</b> for database optimization.</p></li><li><p>Positioned the project as a core highlight to align with job priorities.</p></li></ul>"
       },
       {
@@ -106,7 +106,7 @@ ${reportRules}
       ]
       }
     ],
-    "correction_logic": "Reordered experiences to follow reverse chronological order, starting with the most recent position.",
+    "correction_logic": "Reorder experiences to follow reverse chronological order, starting with the most recent position.",
     "final_output": [
       {
         "id": "a3b2c1d0-6543-2109-8765-43210fedcba98",

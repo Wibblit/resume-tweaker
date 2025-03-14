@@ -72,7 +72,7 @@ ${reportRules}
             ]
           }
         ],
-        "correction_logic": "Replaced passive and weak verbs with stronger, active alternatives. Consolidated repeated achievements to avoid redundancy.",
+        "correction_logic": "Replace passive and weak verbs with stronger, active alternatives. Consolidate repeated achievements to avoid redundancy.",
         "final_output": "<ul><li><p>Orchestrated the development of a new CRM system, improving customer retention by 20%.</p></li><li><p>Managed a team of 5 developers to complete the project 2 weeks ahead of schedule.</p></li></ul>"
       },
       {
@@ -89,7 +89,7 @@ ${reportRules}
             ]
           }
         ],
-        "correction_logic": "Removed redundant 'SEO' entry in the 'Digital Strategy' section to prevent repetition.",
+        "correction_logic": "Remove redundant 'SEO' entry in the 'Digital Strategy' section to prevent repetition.",
         "final_output": "[
           {"id": "e7f8d9c0-a4b5-6789-0123-456789abcdef",
           "name": "Marketing", 
@@ -119,7 +119,7 @@ ${reportRules}
             ]
           }
         ],
-        "correction_logic": "Adjusted language to maintain a consistent tone throughout, balancing enthusiasm and professionalism.",
+        "correction_logic": "Adjust language to maintain a consistent tone throughout, balancing enthusiasm and professionalism.",
         "final_output": "Enhanced team efficiency by 30% through streamlined workflows. Boosted revenue by $500,000 within one fiscal year by implementing targeted upselling strategies."
       }
     ]

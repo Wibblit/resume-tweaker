@@ -66,7 +66,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
           ]
         }
       ],
-      "correction_logic": "Replaced weak verbs with stronger alternatives, converted passive voice to active, and consolidated duplicate achievements.",
+      "correction_logic": "Replace weak verbs with stronger alternatives, convert passive voice to active, and consolidate duplicate achievements.",
       "final_output": "Orchestrated the development of a new CRM system, improving customer retention by 20%. Managed a team of 5 developers to complete the project 2 weeks ahead of schedule. Emphasized customer satisfaction improvement in a unified entry."
     },
     {
@@ -93,7 +93,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
           ]
         }
       ],
-      "correction_logic": "Replaced generic verbs with impactful ones and added measurable results to showcase impact. Couldn't find exact number so considered experience and role to make up believable quantifiers",
+      "correction_logic": "Replace generic verbs with impactful ones and added measurable results to showcase impact. Couldn't find exact number so considered experience and role to make up believable quantifiers",
       "final_output": "Facilitated the launch of a marketing campaign that reached 10,000 users within the first month. This campaign led to a 25% increase in social media engagement and generated 300 qualified leads."
     },
     {
@@ -114,7 +114,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
           ]
         }
       ],
-      "correction_logic": "Added specific metrics or percentages to quantify achievements and clarify outcomes. Couldn't find exact number so considered experience and role to make up believable quantifiers",
+      "correction_logic": "Add specific metrics or percentages to quantify achievements and clarify outcomes. Couldn't find exact number so considered experience and role to make up believable quantifiers",
       "final_output": "Improved team efficiency by 30% through workflow automation. Increased revenue by $500,000 within one fiscal year through strategic upselling initiatives."
     },
     {
@@ -131,7 +131,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
           ]
         }
       ],
-      "correction_logic": "Removed 'SEO' from Marketing",
+      "correction_logic": "Remove 'SEO' from Marketing to fix redundancy.",
       "final_output": "{
               "id": "e7f8d9c0-a4b5-6789-0123-456789abcdef",
               "name": "Marketing",
@@ -173,7 +173,7 @@ When removing a duplicate skill or a whole entry, make sure to select the immedi
       ]
     }
   ],
-  "correction_logic": "Removed duplicate award entry by omitting it from the final output.",
+  "correction_logic": "Remove duplicate award entry by omitting it from the final output.",
   "final_output": [
     {
       "id": "90876543-2109-8765-4321-0fedcba98765",
