@@ -62,26 +62,27 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   if (!resume) {
     throw ApiError.resourceNotFound; // If resume is not found
   }
-  let resumejson = null
+  let resumejson = null;
+  let resumestyles = null;
   if (resumeOption !== "upload") {
-    const { id, userId, resumeName, ...resumeDetails } = resume;
+    const { id, userId, resumeName, styles, ...resumeDetails } = resume;
     resume = resumeDetails;
     resume = {
       ...resume,
       basics: resume.basics.map((basic: any, index: number) =>
         index === 0 ? { ...basic, picture: null } : basic
       ),
-      styles: null,
       createdOn: null,
       updatedOn: null,
     };
-    resumejson = resume
+    resumejson = resume;
     resume = JSON.stringify(resume, null, 2);
+    resumestyles = styles;
     // console.log(resume)
   }
-  
-  const generatedContent = await resumeReview(resume,jd,reviewType)
-  const review = generatedContent
+
+  const generatedContent = await resumeReview(resume, jd, reviewType);
+  const review = generatedContent;
   // console.log("Review resume:\n",JSON.stringify(review,null,2));
   await prisma.userAssets.update({
     where: {
@@ -100,6 +101,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   return NextResponse.json({
     output: review,
     resume: resumejson,
+    styles: resumestyles,
     message: "Review generated successfully.",
   });
 });
