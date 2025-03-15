@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { AddJobDialog } from "./AddJobDialog";
-import { Job } from "@/types/job-tracker";
+import { Job, JobState } from "@/types/job-tracker";
 import { v4 as uuidv4 } from "uuid";
 import { JobStorage } from "@/lib/services/JobStorage";
 import ConnectGmailButton from "./GmailConnectButton";
@@ -138,6 +138,17 @@ const Tracker = () => {
       job.state.toLowerCase().includes(search.toLowerCase())
   );
 
+  const getStateColor = (state: JobState) => {
+    const colors = {
+      bookmark: "bg-yellow-50 dark:bg-yellow-950",
+      applied: "bg-blue-50 dark:bg-blue-950",
+      shortlisted: "bg-purple-50 dark:bg-purple-950",
+      interviewing: "bg-green-50 dark:bg-green-950",
+      negotiation: "bg-orange-50 dark:bg-orange-950",
+    };
+    return colors[state];
+  };
+
   return (
     <>
       <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
@@ -171,33 +182,74 @@ const Tracker = () => {
           onValueChange={setSearch}
         />
         <CommandList>
-          <CommandEmpty>No jobs found.</CommandEmpty>
           <CommandGroup heading="Jobs">
-            {filteredJobs.map((job) => (
-              <CommandItem
-                key={job.id}
-                value={`${job.companyName} ${job.jobTitle}`}
-                className="flex items-center justify-between"
-              >
-                <div>
-                  <p className="font-medium">{job.jobTitle}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {job.companyName}
-                  </p>
-                </div>
-                <span className="text-xs px-2 py-1 rounded-full bg-secondary">
-                  {job.state}
-                </span>
-              </CommandItem>
-            ))}
+            {filteredJobs.some((job) => job.source !== "mail") ? (
+              filteredJobs
+                .filter((job) => job.source !== "mail")
+                .slice(0, 3)
+                .map((job) => (
+                  <CommandItem
+                    key={job.id}
+                    value={`${job.companyName} ${job.jobTitle}`}
+                    className="flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="font-medium">{job.jobTitle}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {job.companyName}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${getStateColor(
+                        job.state
+                      )}`}
+                    >
+                      {job.state}
+                    </span>
+                  </CommandItem>
+                ))
+            ) : (
+              <CommandEmpty>No jobs found.</CommandEmpty>
+            )}
+          </CommandGroup>
+
+          <CommandGroup heading="Emails">
+            {filteredJobs.some((job) => job.source === "mail") ? (
+              filteredJobs
+                .filter((job) => job.source === "mail")
+                .slice(0, 3)
+                .map((job) => (
+                  <CommandItem
+                    key={job.id}
+                    value={`${job.companyName} ${job.jobTitle}`}
+                    className="flex items-center justify-between"
+                  >
+                    <div>
+                      <p className="font-medium">{job.jobTitle}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {job.companyName}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${getStateColor(
+                        job.state
+                      )}`}
+                    >
+                      {job.state}
+                    </span>
+                  </CommandItem>
+                ))
+            ) : (
+              <CommandEmpty>No emails found.</CommandEmpty>
+            )}
           </CommandGroup>
         </CommandList>
       </CommandDialog>
 
       <NotificationSheet />
 
-      <div className="p-6">
-        <header className="mb-8">
+      <div className="py-6 px-3">
+        <header className="mb-2 px-6">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4 flex-1 max-w-md">
               <Button
@@ -235,13 +287,13 @@ const Tracker = () => {
                 <PlusCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">Add new</span>
               </Button>
-              {!session?.user.connectedEmail && <ConnectGmailButton />}
+             <ConnectGmailButton session={session!} />
             </div>
           </div>
           <div className="h-px bg-gradient-to-r from-border via-border/80 to-transparent mt-6" />
         </header>
 
-        <ScrollArea className="w-full h-[calc(100vh-140px)]">
+        <ScrollArea className="w-full h-[calc(100vh-120px)]">
           <KanbanBoard />
           <ScrollBar orientation="horizontal" />
         </ScrollArea>

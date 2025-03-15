@@ -18,5 +18,5 @@ export interface Job {
   state: JobState;
   addedOn: string;
   readonly url: string | null;
-  source: "extension" | "website";
+  source: "extension" | "website" | "mail";
 }
