@@ -55,7 +55,6 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
         token.isNewUser = user.isNewUser;
         token.connectedEmail = user.connectedEmail;
       }
-
       // Handle session updates
       if (trigger === "update" && session?.connectedEmail) {
         token.connectedEmail = session.connectedEmail;

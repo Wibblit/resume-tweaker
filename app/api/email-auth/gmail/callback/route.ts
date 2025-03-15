@@ -17,7 +17,9 @@ export const GET = asyncHandler(async (req: NextRequest) => {
   console.log("Authorization code: ", code);
   const response = await axios.post(
     "http://localhost:3001/api/auth/gmail/token",
-    { code, session }
+    { code, session }, {
+      withCredentials: true,
+    }
   );
 console.log("Response Data", response.data)
 

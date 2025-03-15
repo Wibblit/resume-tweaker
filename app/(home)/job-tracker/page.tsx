@@ -15,9 +15,9 @@ const JobTracker = () => {
 
   useEffect(() => {
     (async () => {
-      if (searchParams.get("gmailConnected") === "true") {
+      if (searchParams.get("gmailConnected") === "true" && searchParams.get("email")) {
         const response = await update({
-          connectedEmail: "gmail",
+          connectedEmail: searchParams.get("email"),
         });
         console.log(response);
       }

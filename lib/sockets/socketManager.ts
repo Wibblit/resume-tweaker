@@ -16,8 +16,11 @@ export class SocketManger {
   private static instance: SocketManger;
   private socket: Socket;
 
-  private constructor() {
+  private constructor(token: string) {
     this.socket = io("http://localhost:3001", {
+      auth: {
+        token: token || ""
+      },
       autoConnect: true,
       transports: ["websocket"],
       reconnection: true,
@@ -35,9 +38,9 @@ export class SocketManger {
     });
   }
 
-  public static getInstance(): SocketManger {
+  public static getInstance(token: string): SocketManger {
     if (!SocketManger.instance) {
-      SocketManger.instance = new SocketManger();
+      SocketManger.instance = new SocketManger(token);
     }
     return SocketManger.instance;
   }

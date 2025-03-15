@@ -12,7 +12,10 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
 import { useRouter } from "next/navigation";
-import { addNotification, setSheetOpen } from "@/slices/job-tracker/notification/notification-slice";
+import {
+  addNotification,
+  setSheetOpen,
+} from "@/slices/job-tracker/notification/notification-slice";
 import { useAppDispatch } from "@/hooks/hooks";
 
 const SocketContext = createContext<SocketManger | null>(null);
@@ -25,57 +28,60 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    // Only proceed if authenticated and has user ID
-    if (status === "authenticated" && session?.user?.id) {
-      // Initialize socket manager only once if not already initialized
-      if (!socketManagerRef.current) {
-        socketManagerRef.current = SocketManger.getInstance();
+    async function setUpSocket() {
+      if (status === "authenticated" && session?.user?.id && session?.user.connectedEmail) {
+        if (!socketManagerRef.current) {
+          const response = await fetch("/api/auth/token");
+          const { token } = await response.json();
 
-        // Register the user
-        socketManagerRef.current.registerUser(session.user.id);
+          socketManagerRef.current = SocketManger.getInstance(token);
+          socketManagerRef.current.registerUser(session.user.id);
 
-        // Set up notification handler just once when initializing
-        socketManagerRef.current.onNotification((notification) => {
-          console.log("🔔 New Notification:", notification);
-          notification.message.forEach((job) => {
-            dispatch(addNotification(job));
+          // Set up notification handler just once when initializing
+          socketManagerRef.current.onNotification((notification) => {
+            console.log("🔔 New Notification:", notification);
+            notification.message.forEach((job) => {
+              dispatch(addNotification(job));
+            });
+            toast({
+              title: "🔔 New Job Notification",
+              description: `📩 You have received ${notification.message.length} new job notifications!`,
+              action: (
+                <ToastAction
+                  onClick={() => dispatch(setSheetOpen(true))}
+                  altText="Go to notifications"
+                >
+                  View
+                </ToastAction>
+              ),
+              duration: Infinity,
+            });
           });
-          toast({
-            title: "🔔 New Job Notification",
-            description: `📩 You have received ${notification.message.length} new job notifications!`,
-            action: (
-              <ToastAction
-                onClick={() => dispatch(setSheetOpen(true))}
-                altText="Go to notifications"
-              >
-                View
-              </ToastAction>
-            ),
-            duration: Infinity,
-          });
-        });
-      }
-
-      // Handle page unload (but not reloads)
-      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        const [navigationEntry] = performance.getEntriesByType(
-          "navigation"
-        ) as PerformanceNavigationTiming[];
-
-        if (navigationEntry && navigationEntry.type === "reload") {
-          return; // Do not disconnect on reload
         }
-        socketManagerRef.current?.disconnect();
-      };
 
-      window.addEventListener("beforeunload", handleBeforeUnload);
+        // Handle page unload (but not reloads)
+        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+          const [navigationEntry] = performance.getEntriesByType(
+            "navigation"
+          ) as PerformanceNavigationTiming[];
 
-      // Cleanup function
-      return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
+          if (navigationEntry && navigationEntry.type === "reload") {
+            return; // Do not disconnect on reload
+          }
+          socketManagerRef.current?.disconnect();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        // Cleanup function
+        return () => {
+          window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+      }
     }
-  }, [session?.user?.id, status, toast, router]);
+
+    setUpSocket();
+  }, [session?.user?.id, status, toast, router, session?.user.connectedEmail]);
 
   return (
     <SocketContext.Provider value={socketManagerRef.current}>
