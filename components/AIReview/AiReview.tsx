@@ -10,6 +10,7 @@ import Tesseract, { createWorker, PSM } from "tesseract.js";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { format, parseISO } from 'date-fns';
 import {
   Select,
   SelectContent,
@@ -53,6 +54,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { saveResumeData } from "@/actions/saveResumeData";
 import ResumeDisplay from "../resumeViewer";
 import { initialState } from "@/slices/rightsidebarSlice";
+import { formatDate } from '@/utils/formatDate';
 
 type Issue = {
   name: string;
@@ -71,6 +73,11 @@ type AIReviewResult = {
   correction_logic: string;
   final_output: string;
 };
+interface ContentRendererProps {
+  content: any;
+  className?: string;
+  dateFormat?: string;
+}
 
 function getProperty(obj: any, selector: string): any {
   try {
@@ -191,6 +198,133 @@ function groupIssuesBySection(suggestions: AIReviewResult[]) {
 
   return groupedIssues;
 }
+
+
+const ContentRenderer: React.FC<ContentRendererProps> = ({ 
+  content, 
+  className = "",
+  dateFormat = "MMM yyyy"
+}) => {
+  const isHTML = (str: string): boolean => {
+    return /<[a-z][\s\S]*>/i.test(str);
+  };
+
+  const isJSONString = (str: string): boolean => {
+    try {
+      const parsed = JSON.parse(str);
+      return typeof parsed === 'object' && parsed !== null;
+    } catch {
+      return false;
+    }
+  };
+
+  const formatDateValue = (value: any, format: string) => {
+    try {
+      if (typeof value !== 'string') {
+        return String(value);
+      }
+      return formatDate(value, format);
+    } catch {
+      return String(value);
+    }
+  };
+
+  const shouldFormatDate = (key: string, value: any) => {
+    const dateFields = ['startDate', 'endDate', 'date'];
+    return dateFields.includes(key) && typeof value === 'string';
+  };
+
+
+  const renderObject = (obj: any, depth = 0): JSX.Element => {
+    const entries = Object.entries(obj).filter(([key]) => key !== 'id');
+    
+    return (
+      <div className={`space-y-2 ${depth > 0 ? 'ml-4' : ''}`}>
+        {entries.map(([key, value], index) => {
+          // Skip rendering if value is null or undefined
+          if (value == null) return null;
+
+          const formattedKey = key.replace(/([A-Z])/g, ' $1')
+            .replace(/^./, str => str.toUpperCase());
+
+          return (
+            <div key={index} className="flex flex-col">
+              <div className="flex items-baseline">
+                <span className="text-sm font-medium text-muted-foreground min-w-[120px]">
+                  {formattedKey}:
+                </span>
+                <span className="text-sm ml-2 flex-1">
+                  {typeof value === 'object' ? (
+                    renderObject(value, depth + 1)
+                  ) : (
+                    <span className="text-foreground">
+{shouldFormatDate(key, value) 
+                      ? (typeof value === 'object' ? String(value) : formatDateValue(value, dateFormat))
+                      : String(value)}                    </span>
+                  )}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderArray = (arr: any[]): JSX.Element => {
+    return (
+      <div className="space-y-4">
+        {arr.map((item, index) => (
+          <div 
+            key={index} 
+            className="relative pl-4 border-l-2 border-primary/50 dark:border-primary/30"
+          >
+            <div className="absolute -left-1 top-0 h-2 w-2 rounded-full bg-primary"></div>
+            {typeof item === 'object' ? renderObject(item) : String(item)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderContent = () => {
+    if (content == null) {
+      return <span className="text-muted-foreground italic">No content</span>;
+    }
+
+    if (typeof content === 'object') {
+      return Array.isArray(content) 
+        ? renderArray(content)
+        : renderObject(content);
+    }
+
+    const stringContent = String(content);
+
+    if (isJSONString(stringContent)) {
+      const parsed = JSON.parse(stringContent);
+      return Array.isArray(parsed) 
+        ? renderArray(parsed)
+        : renderObject(parsed);
+    }
+
+    if (isHTML(stringContent)) {
+      return (
+        <div 
+          dangerouslySetInnerHTML={{ __html: stringContent }}
+          className="prose prose-sm max-w-none dark:prose-invert"
+        />
+      );
+    }
+
+    return <span className="whitespace-pre-wrap">{stringContent}</span>;
+  };
+
+  return (
+    <div className={`rounded-md p-2 ${className}`}>
+      {renderContent()}
+    </div>
+  );
+};
 
 export default function AIReview({
   recentResumes,
@@ -873,7 +1007,7 @@ export default function AIReview({
         let parsedOutput: any = final_output;
         try {
           parsedOutput = JSON.parse(final_output);
-        } catch (e) {}
+        } catch (e) { }
 
         try {
           jp.value(updatedData, selector, parsedOutput);
@@ -891,7 +1025,6 @@ export default function AIReview({
       (async () => {
         await handleSave({ value: updatedData });
       })();
-      // 🔥 Call handleSave with the updated data
 
 
       return updatedData;
@@ -905,7 +1038,7 @@ export default function AIReview({
     if (isLoading) {
       const interval = setInterval(() => {
         setCurrentSentenceIndex((prevIndex) => (prevIndex + 1) % sentences.length);
-      }, 3000); // Change sentence every 5 seconds
+      }, 3000); // Change sentence every 3 seconds
 
       return () => clearInterval(interval);
     }
@@ -1023,6 +1156,7 @@ export default function AIReview({
       setResumeData(response?.data?.resume);
       // setResumeData(testparseresume);
       setResumeStyles(response?.data?.styles);
+      // console.log("asdasdasdasdasdasdasd");
       if (response?.data?.statusCode === 402) {
         return toast({
           variant: "destructive", // Set the toast type to error
@@ -1046,9 +1180,9 @@ export default function AIReview({
       dispatch(
         updateCredits(
           credits -
-            ((reviewType === "tailored"
-              ? creditList.get("tailored")
-              : creditList.get("generic")) ?? 0)
+          ((reviewType === "tailored"
+            ? creditList.get("tailored")
+            : creditList.get("generic")) ?? 0)
         )
       );
     } catch (error) {
@@ -1077,7 +1211,7 @@ export default function AIReview({
   ) => {
     console.log("Saved");
     try {
-      //console.log(resumeStyles);
+      // console.log(resumeStyles);
       console.log(
         "Attempting to save resume data...",
         resumeData,
@@ -1146,7 +1280,7 @@ export default function AIReview({
     });
   }
 
-  console.log(resumeData);
+  console.log(resumeData, resumeStyles);
 
   const handleAcceptIssue = (selector: string, finalOutput: string) => {
     if (!aiSuggestions) return;
@@ -1523,7 +1657,7 @@ export default function AIReview({
                                   <span className="font-medium capitalize">
                                     {section}
                                   </span>
-                                  <Badge variant="outline" className="ml-2">
+                                  <Badge variant="outline" className="mx-2">
                                     {issues.length}{" "}
                                     {issues.length === 1 ? "issue" : "issues"}
                                   </Badge>
@@ -1542,145 +1676,96 @@ export default function AIReview({
                                       className="border rounded-md overflow-hidden"
                                     >
                                       <AccordionTrigger className="px-4 py-2 hover:bg-muted/30">
-                                        <div className="flex items-center justify-between w-full">
+                                        <div className="flex items-center justify-between text-left w-full">
                                           <span className="font-medium text-sm">
-                                            {issue.selector}
+                                            {issue.correction_logic}
                                           </span>
-                                          <Badge
-                                            variant="outline"
-                                            className="ml-2"
-                                          >
-                                            {issue.metrics.reduce(
-                                              (count, metric) =>
-                                                count + metric.issues.length,
-                                              0
-                                            )}{" "}
-                                            issues
-                                          </Badge>
                                         </div>
                                       </AccordionTrigger>
                                       <AccordionContent className="bg-muted/10 p-4">
                                         <div className="space-y-4">
-                                          {issue.metrics.map(
-                                            (metric, metricIndex) => (
-                                              <div
-                                                key={metricIndex}
-                                                className="space-y-2"
-                                              >
-                                                <div className="flex items-center justify-between">
-                                                  <h4 className="font-medium">
-                                                    {metric.type}
-                                                  </h4>
-                                                  <div className="flex items-center gap-2">
-                                                    <Progress
-                                                      value={metric.score * 20}
-                                                      className="w-24"
-                                                    />
-                                                    <span className="text-sm">
-                                                      {metric.score}/5
-                                                    </span>
-                                                  </div>
-                                                </div>
-
-                                                {metric.issues.length > 0 && (
-                                                  <div className="space-y-2">
-                                                    {metric.issues.map(
-                                                      (
-                                                        issueItem,
-                                                        issueIndex
-                                                      ) => (
-                                                        <div
-                                                          key={issueIndex}
-                                                          className="rounded-md bg-muted/30 p-2"
-                                                        >
-                                                          <div className="flex items-start justify-between">
-                                                            <div>
-                                                              <p className="text-sm">
-                                                                {issueItem.name}
-                                                              </p>
-                                                              <Badge
-                                                                variant={
-                                                                  issueItem.severity ===
-                                                                  "major"
-                                                                    ? "destructive"
-                                                                    : issueItem.severity ===
-                                                                      "moderate"
-                                                                    ? "default"
-                                                                    : "secondary"
-                                                                }
-                                                                className="mt-1"
-                                                              >
-                                                                {
-                                                                  issueItem.severity
-                                                                }
-                                                              </Badge>
-                                                            </div>
-                                                          </div>
-                                                        </div>
-                                                      )
-                                                    )}
-                                                  </div>
-                                                )}
-
-                                                <div className="pt-2">
-                                                  <h5 className="text-sm font-medium">
-                                                    Original:
-                                                  </h5>
-                                                  <div className="mt-1 rounded-md bg-muted/20 p-2 text-sm">
-                                                    {resumeData
-                                                      ? JSON.stringify(
-                                                          getProperty(
-                                                            resumeData,
-                                                            issue.selector
-                                                          )
-                                                        )
-                                                      : "Loading..."}
-                                                  </div>
-                                                </div>
-
-                                                <div className="pt-2">
-                                                  <h5 className="text-sm font-medium">
-                                                    Suggested:
-                                                  </h5>
-                                                  <div className="mt-1 rounded-md bg-muted/20 p-2 text-sm">
-                                                    {JSON.stringify(
-                                                      issue.final_output,
-                                                      null,
-                                                      2
-                                                    )}
-                                                  </div>
-                                                </div>
-
-                                                <div className="flex justify-end gap-2 pt-2">
-                                                  <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                      handleDeleteIssue(
-                                                        issue.selector
-                                                      )
-                                                    }
-                                                  >
-                                                    <X className="mr-1 h-3 w-3" />
-                                                    Delete
-                                                  </Button>
-                                                  <Button
-                                                    variant="default"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                      handleAcceptIssue(
-                                                        issue.selector,
-                                                        issue.final_output
-                                                      )
-                                                    }
-                                                  >
-                                                    <CheckCircle className="mr-1 h-3 w-3" />
-                                                    Accept
-                                                  </Button>
+                                          {/* Metrics Section */}
+                                          {issue.metrics.map((metric, metricIndex) => (
+                                            <div key={metricIndex} className="space-y-2">
+                                              <div className="flex items-center justify-between">
+                                                <h4 className="font-medium">{metric.type}</h4>
+                                                <div className="flex items-center gap-2">
+                                                  <Progress value={metric.score * 20} className="w-24" />
+                                                  <span className="text-sm">{metric.score}/5</span>
                                                 </div>
                                               </div>
-                                            )
-                                          )}
+
+                                              {metric.issues.length > 0 && (
+                                                <div className="space-y-2">
+                                                  {metric.issues.map((issueItem, issueIndex) => (
+                                                    <div key={issueIndex} className="rounded-md bg-muted/30 p-2">
+                                                      <div className="flex items-start justify-between">
+                                                        <div className="flex flex-wrap items-center gap-2 justify-between">
+                                                          <p className="text-sm">{issueItem.name}</p>
+                                                          <Badge
+                                                            variant={
+                                                              issueItem.severity === "major"
+                                                                ? "destructive"
+                                                                : issueItem.severity === "moderate"
+                                                                  ? "default"
+                                                                  : "secondary"
+                                                            }
+                                                            className="mt-1"
+                                                          >
+                                                            {issueItem.severity}
+                                                          </Badge>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              )}
+                                            </div>
+                                          ))}
+
+                                          {/* Original and Suggested Section - Shown once at the end */}
+                                          <div className="border-t pt-4 mt-4">
+                                            <div className="space-y-4">
+                                              <div>
+                                                <h5 className="text-sm font-medium">Original:</h5>
+                                                <div className="mt-1 rounded-md bg-muted/20 p-2">
+                                                  <ContentRenderer
+                                                    content={resumeData ? getProperty(resumeData, issue.selector) : "Loading..."}
+                                                    dateFormat={resumeStyles?.datetype || "MMM yyyy"}
+                                                  />
+                                                </div>
+                                              </div>
+
+                                              <div>
+                                                <h5 className="text-sm font-medium">Suggested:</h5>
+                                                <div className="mt-1 rounded-md bg-muted/20 p-2">
+                                                  <ContentRenderer
+                                                    content={issue.final_output}
+                                                    dateFormat={resumeStyles?.datetype || "MMM yyyy"}
+                                                  />
+                                                </div>
+                                              </div>
+
+                                              <div className="flex justify-end gap-2">
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() => handleDeleteIssue(issue.selector)}
+                                                >
+                                                  <X className="mr-1 h-3 w-3" />
+                                                  Delete
+                                                </Button>
+                                                <Button
+                                                  variant="default"
+                                                  size="sm"
+                                                  onClick={() => handleAcceptIssue(issue.selector, issue.final_output)}
+                                                >
+                                                  <CheckCircle className="mr-1 h-3 w-3" />
+                                                  Accept
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </div>
                                         </div>
                                       </AccordionContent>
                                     </AccordionItem>

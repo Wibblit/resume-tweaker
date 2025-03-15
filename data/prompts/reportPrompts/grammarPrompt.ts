@@ -7,7 +7,7 @@ export const grammerPrompt = (
 
 #### Metrics to Measure (Don't Measure anything else):
 - **Grammar:** Check for spelling, punctuation, and syntax errors.
-- **Repetition:** Identify nearby or frequent repeated words/phrases.
+- **Repetitive Language:** Identify nearby or frequent repeated words/phrases, do not check for redundant points or skills, limit only to words or phrases from a gramatical perspective.
 - **Tone Consistency:** Ensure a professional, active tone and flag shifts.
 
 Each metric is scored out of 5, starting at full marks. Points are deducted for issues based on severity and frequency.
@@ -26,10 +26,10 @@ Each metric is scored out of 5, starting at full marks. Points are deducted for 
    - **Moderate Issues:** Misplaced modifiers, awkward sentence structure.
    - **Major Issues:** Run-on sentences, subject-verb agreement errors.
 
-2. **Repetition:**
+2. **Repetitive Language:**
    - **Minor Issues:** Single repeated word within a paragraph.
-   - **Moderate Issues:** Multiple repetitions within a section.
-   - **Major Issues:** Frequent redundant phrases throughout the resume.
+   - **Moderate Issues:** Multiple phrases within a section.
+   - **Major Issues:** Frequent redundant words and phrases throughout the section.
 
 3. **Tone Consistency:**
    - **Minor Issues:** Slight passive voice usage.
@@ -60,46 +60,31 @@ ${reportRules}
                 "severity": "moderate"
               }
             ]
-          },
-          {
-            "type": "Repetition",
-            "score": 2,
-            "issues": [
-              {
-                "name": "Duplicate achievement: 'Increased customer satisfaction by 15%' appears twice in different projects.",
-                "severity": "moderate"
-              }
-            ]
           }
         ],
-        "correction_logic": "Replace passive and weak verbs with stronger, active alternatives. Consolidate repeated achievements to avoid redundancy.",
+        "correction_logic": "Replace passive and weak verbs with stronger, active alternatives.",
         "final_output": "<ul><li><p>Orchestrated the development of a new CRM system, improving customer retention by 20%.</p></li><li><p>Managed a team of 5 developers to complete the project 2 weeks ahead of schedule.</p></li></ul>"
       },
       {
-        "selector": "skills[?(@.id=='e7f8d9c0-a4b5-6789-0123-456789abcdef')]",
+        "selector": "projects[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].summary",
         "metrics": [
           {
-            "type": "Repetition",
-            "score": 2,
+            "type": "Repetitive Language",
+            "score": 3,
             "issues": [
               {
-                "name": "Repeated skill: 'SEO' appears in both the 'Marketing' and 'Digital Strategy' sections.",
+                "name": "Phrase repetition: 'Developed a platform' and 'Built a platform' convey the same idea—consider varying phrasing.",
                 "severity": "moderate"
+              },
+              {
+                "name": "Word redundancy: 'using cutting-edge AI models' and 'leveraging AI-driven insights' both emphasize AI in a repetitive manner.",
+                "severity": "minor"
               }
             ]
           }
         ],
-        "correction_logic": "Remove redundant 'SEO' entry in the 'Digital Strategy' section to prevent repetition.",
-        "final_output": "[
-          {"id": "e7f8d9c0-a4b5-6789-0123-456789abcdef",
-          "name": "Marketing", 
-          "skills": [
-            {"name": "SEO", "level": "Advanced"}, 
-            {"name": "Content Marketing", "level": "Intermediate"}, 
-            {"name": "Google Analytics", "level": "Beginner"}
-          ]
-          }
-        ]"
+        "correction_logic": "Refine language by reducing redundancy while preserving clarity and impact.",
+        "final_output": "Designed and implemented a scalable platform integrating AI-driven insights for predictive analytics, enhancing operational efficiency."
       },
       {
         "selector": "awards[?(@.id=='12345678-9abc-def0-1234-56789abcdef0')].summary",

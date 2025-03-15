@@ -120,39 +120,53 @@ function mergeSelectors(input: StageResult[]): {
 
 
 function mergeMetrics(stageResults: StageResult[], mergedSelectorGroups: MergedSelectorGroup[], mergedJson: MergedResult): MergedResult {
-  const metricsMap = new Map<string, { type: string; score: number; issues: { name: string; severity: string }[] }[]>();
-
-  // Collect and merge metrics for each selector
-  mergedSelectorGroups.forEach(({ selector }) => {
-    const matchingResults = stageResults.filter((result) => result.selector === selector);
-
-    if (matchingResults.length > 0) {
-      const mergedMetrics = matchingResults.flatMap((result) => result.metrics);
-      metricsMap.set(selector, mergedMetrics);
+  try {
+    if (!stageResults || !mergedSelectorGroups || !mergedJson) {
+      console.error('Missing required parameters in mergeMetrics:', { stageResults, mergedSelectorGroups, mergedJson });
+      return { result: [] };
     }
-  });
 
-  // Insert merged metrics into the mergedJson
-  const updatedResult = mergedJson.result.map((item) => {
-    if (metricsMap.has(item.selector)) {
+    // Ensure mergedJson has a result property
+    if (!mergedJson.result) {
+      console.error('mergedJson is missing result property:', mergedJson);
+      return { result: [] };
+    }
+    const metricsMap = new Map<string, { type: string; score: number; issues: { name: string; severity: string }[] }[]>();
+
+    // Collect and merge metrics for each selector
+    mergedSelectorGroups.forEach(({ selector }) => {
+      if (!selector) return;
+      const matchingResults = stageResults.filter((result) => result.selector === selector);
+
+      if (matchingResults.length > 0) {
+        const mergedMetrics = matchingResults.flatMap((result) => result.metrics);
+        metricsMap.set(selector, mergedMetrics);
+      }
+    });
+
+    // Insert merged metrics into the mergedJson
+    const updatedResult = mergedJson.result.map((item) => {
+      if (!item?.selector) return item;
+      if (metricsMap.has(item.selector)) {
+        return {
+          ...item,
+          metrics: metricsMap.get(item.selector) || [],
+        };
+      }
       return {
         ...item,
-        metrics: metricsMap.get(item.selector) || [],
+        metrics: [],
       };
-    }
-    return {
-      ...item,
-      metrics: [],
-    };
-  });
-  console.log("mergeMetrics: ", updatedResult)
-  return { result: updatedResult };
+    });
+    return { result: updatedResult };
+  } catch (error) {
+    console.error('Error in mergeMetrics:', error);
+    return { result: [] };
+  }
 }
 
 function syncStageResultsWithMerged(stageResults: StageResult[], mergedResult: MergedResult, subsetsToRemove: string[]): StageResult[] {
-  // console.log("syncing", mergedResult);
   const mergedSelectors = new Set(mergedResult.result.map(item => item.selector));
-  // console.log(mergedSelectors)
   // Remove all entries from stageResults that exist in mergedResult
   const filteredStageResults = stageResults.filter(result =>
     !mergedSelectors.has(result.selector) && !subsetsToRemove.includes(result.selector)
@@ -195,9 +209,7 @@ export const executeStagesConcurrently = async (stagePrompts: string[], stageNam
 
   const results = await Promise.all(stagePromises);
   results.forEach(result => stageResults.push(...result));
-  // console.log("All stages completed", stageResults);
   const cleaned = mergeSelectors(stageResults);
-  // console.log("Merging completed", cleaned);
   return {
     stageres: stageResults,
     tomerge: cleaned.mergedSelectorGroups,
@@ -218,21 +230,21 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
   }
   const stageNames = ["grammer", "readabilityClarity", "impact", "relevance"]
   const stageresults = await executeStagesConcurrently(stagespromptlist, stageNames)
+  console.log('stages completed----------------------------\n', stageresults)
   let tokensinfo = stageresults.tokeninfo
   var finalText = ''
   if (stageresults.tomerge.length >= 1) {
 
-    console.log("Finding and merging conflicts")
+    console.log("Merging conflicts\n")
     const conflictMergePrompt = mergePrompt(JSON.stringify({ results: stageresults.tomerge }))
     const response = await model.generateContent(conflictMergePrompt);
     finalText = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
     const mergejson = JSON.parse(finalText)
-    // console.log('parsed merge',JSON.stringify(mergejson, null, 2))
     console.log('parsed merge')
     const mergedmetricsjson = mergeMetrics(stageresults.stageres, stageresults.tomerge, mergejson)
-    console.log('merged metrics', JSON.stringify(mergedmetricsjson, null, 2))
+    console.log('merged metrics---------------------------------\n', mergedmetricsjson)
     const finalStageResults = syncStageResultsWithMerged(stageresults.stageres, mergedmetricsjson, stageresults.subsetsToRemove)
-    console.log('final result ready:')
+    console.log('final result ready-----------------------------\n', finalStageResults)
     var tokendata = response.response.usageMetadata
     tokensinfo.push({
       candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
@@ -257,6 +269,7 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
     return { finalStageResults, tokensinfo };
   }
   if (stageresults.tomerge.length === 0) {
+    console.log('No conflicts found')
     const finalStageResults = stageresults.stageres
     const totaltokens = tokensinfo.reduce(
       (acc, curr) => {

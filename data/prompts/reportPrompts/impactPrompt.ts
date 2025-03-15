@@ -8,7 +8,7 @@ export const impactPrompt = (
   #### Metrics to Measure (Don't Measure anything else):
   - **actionWordsUsage:** Count and assess the strength of action verbs per line.
   - **Quantifiability:** Detect numbers, percentages, or measurable results.
-  - **contentRepetition:** Catch redundant achievements or skills across sections.
+  - **contentRepetition:** Catch redundant achievements or skills etc across sections.
   
   Each metric is scored out of 5, starting at full marks. Points are deducted based on severity and frequency.
   

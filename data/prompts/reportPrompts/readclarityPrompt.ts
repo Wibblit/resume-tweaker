@@ -82,10 +82,6 @@ ${reportRules}
               "score": 2,
               "issues": [
                 {
-                  "name": "Redundant phrase: 'Collaborated together with team members' — 'together' is unnecessary.",
-                  "severity": "minor"
-                },
-                {
                   "name": "Wordy sentence: 'Utilized effective strategies to optimize and improve the overall performance of the system.' Could be: 'Optimized system performance through effective strategies.'",
                   "severity": "moderate"
                 },
@@ -96,7 +92,7 @@ ${reportRules}
               ]
             }
           ],
-          "correction_logic": "Trim redundant phrases, simplify wordy sentences, and specify vague descriptions.",
+          "correction_logic": "Simplify wordy sentences, and specify vague descriptions.",
           "final_output": "Innovative and results-driven marketing professional with 10 years of experience. Collaborated with team members, optimized system performance through effective strategies, and handled project management tasks like scheduling, budgeting, and team coordination."
         }
       ]

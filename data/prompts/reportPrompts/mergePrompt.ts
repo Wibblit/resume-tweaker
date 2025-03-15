@@ -17,7 +17,8 @@ Your task is to merge conflicting changes for the same JSON selectors, resolving
 7. Respect Context: Ensure the final output reads naturally, even after combining multiple improvements.
 8. Supersets and duplicate selectors need to be merged, see the example, you need to merge superset sections(complete sections), superset selectors, and duplicate selectors. 
 9. The final selector value should be the selector of the superset of all the tomerge and its given to you as the main selector field in the input json, keep that unchanged.
-9. **Input Format:**
+10. While Writing comments make them about the changes, like you are telling the person to make these changes, not about how you made the changes or merged the changes.
+**Input Format:**
    A JSON list containing only the conflicting selectors and their proposed changes.
 
 '''json
@@ -113,12 +114,14 @@ Your task is to merge conflicting changes for the same JSON selectors, resolving
 
 '''
 
-10.**Output Format:**
+**Output Format:**
 A unified JSON object with the resolved content and merge logic.
 ### formatting rules
 - There must be no newline characters inside the json content
 - There must be no unescaped double quotes inside the content because this will break the json, because its already surrounded by quotations
 - Overall note that the main output you generate will be parsed as json, and as for the final_output field, some of them are strings, but others are objects represented as strings which need to be valid to be parsed, so be careful
+- The JSON structure must never change, only the values inside the fields can change. the name of the first field is always "result" and it is an array of objects, each object has 3 fields, "selector", "final_output", and "correction_logic"
+- The final_output field can be a string, an object, or an array of objects, and the correction_logic field is always a string
 '''json
 {
     "result": [
