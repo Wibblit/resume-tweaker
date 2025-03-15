@@ -287,7 +287,7 @@ const Tracker = () => {
                 <PlusCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">Add new</span>
               </Button>
-             <ConnectGmailButton session={session!} />
+             <ConnectGmailButton />
             </div>
           </div>
           <div className="h-px bg-gradient-to-r from-border via-border/80 to-transparent mt-6" />

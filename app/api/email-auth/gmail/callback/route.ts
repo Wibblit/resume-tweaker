@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
-import { auth, unstable_update } from "@/auth";
+import { auth } from "@/auth";
 
 export const GET = asyncHandler(async (req: NextRequest) => {
   const session = await auth();
@@ -14,11 +14,17 @@ export const GET = asyncHandler(async (req: NextRequest) => {
   if (!code) {
     throw ApiError.custom("Missing code parameter", 400);
   }
+
+  const cookieHeader = req.headers.get("cookie");
+
   console.log("Authorization code: ", code);
   const response = await axios.post(
     "http://localhost:3001/api/auth/gmail/token",
     { code, session }, {
       withCredentials: true,
+      headers: {
+        Cookie: cookieHeader || ''
+      }
     }
   );
 console.log("Response Data", response.data)

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getGoogleAuthURL } from "@/lib/client/gmailAuth";
-import { ChevronDown, LogOut, Mail } from "lucide-react";
+import { ChevronDown, LogOut, Mail, Loader2 } from "lucide-react";
 import { HoverBorderGradient } from "../ui/HoverBoardGradient";
 import {
   Tooltip,
@@ -18,9 +18,11 @@ import {
 } from "@/components/ui/popover";
 import { type Session } from "next-auth";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 
-const ConnectGmailButton = ({ session }: { session: Session }) => {
+const ConnectGmailButton = () => {
   const [showInitialTooltip, setShowInitialTooltip] = useState(true);
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     // Hide the initial tooltip after 5 seconds
@@ -39,7 +41,17 @@ const ConnectGmailButton = ({ session }: { session: Session }) => {
     // For example: signOut() from next-auth or a custom disconnect function
   };
 
-  if (session.user.connectedEmail) {
+  // Show loader while session is loading
+  if (status === "loading") {
+    return (
+      <Button disabled variant="outline" className="flex items-center gap-2">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        <span>Loading...</span>
+      </Button>
+    );
+  }
+
+  if (session?.user.connectedEmail) {
     return (
       <Popover>
         <PopoverTrigger asChild>
