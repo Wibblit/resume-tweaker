@@ -26,6 +26,8 @@ model User {
   Profile       Profile?
   Payment       Payment[]
   UserAssests   UserAssets?
+  Token       Tokens?
+  jobEmails        JobEmails[]        @relation("UserJobs")
 
   @@map("users")
 }
@@ -202,3 +204,44 @@ user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 @@map("userassets")
 
 }
+
+model Tokens {
+  id           String @id @default(cuid())
+  accessToken  String
+  refreshToken String
+  userId       String @unique
+  email        String @unique
+  expires      BigInt
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model JobEmails {
+  id          String   @id @default(cuid())
+  jobId       String
+  jobState    String
+  jobRole     String
+  companyName String
+  location    String
+  workType    String
+  description String
+  meetingUrl  String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserJobs")
+  createdAt   DateTime @default(now())
+}
+
+model JD {
+  id             String @id @default(cuid())
+  companyName    String
+  employmentType String
+  jobDescription String
+  jobTitle       String
+  location       String
+  logoSrc        String
+  salaryRange    String
+  source         String
+  state          String
+  url            String
+  workType       String
+}
+

@@ -13,6 +13,9 @@ import currentCoverLetterReducer from "./slices/currentCoverSlice";
 import profileReducer from "./slices/profileSlice";
 import pageReducer from "./slices/addPageSlice";
 import userAssets from "./slices/userAssets";
+import jobReducer from "./slices/job-tracker/job-slice";
+import notificationReducer from "./slices/job-tracker/notification/notification-slice";
+
 
 const store = configureStore({
   reducer: {
@@ -25,7 +28,9 @@ const store = configureStore({
     profile: profileReducer,
     page: pageReducer,
     assets: userAssets,
-  }
+    jobs: jobReducer,
+    notifications: notificationReducer,
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  LayoutDashboard
 } from "lucide-react";
 import {
   Sidebar,
@@ -63,6 +64,7 @@ const items = [
   { title: "Resumes & Cover letters", icon: FileText, url: "/home" },
   { title: "AI Review", icon: Star, url: "/home/ai-review" },
   { title: "AI Interview", icon: MessageSquare, url: "/home/ai-interview" },
+  { title: "Job tracker", icon: LayoutDashboard, url: "/home/job-tracker", isNew: true },
   { title: "Profile", icon: User, url: "/profile" },
 ];
 
@@ -134,6 +136,11 @@ export function AppSidebar({ session }: { session: Session }) {
                       <a href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
+                         {item.isNew && !isCollapsed && (
+                          <span className="ml-2 absolute right-2 inline-flex px-1.5 py-0.5 text-[10px] font-medium bg-primary text-primary-foreground rounded-full">
+                            NEW
+                          </span>
+                        )}
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
