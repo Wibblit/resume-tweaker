@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { ExtensionCommunicator } from "@/lib/services/ExtensionCommunicator";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
@@ -10,7 +11,16 @@ import {
 import { KanbanBoard } from "./KanbanBoard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Loader2, PlusCircle, Save } from "lucide-react";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Loader2, PlusCircle, Save, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -37,7 +47,9 @@ const Tracker = () => {
   const jobs = useAppSelector((state) => state.jobs.items);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showSearchDialog, setShowSearchDialog] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState("");
   const searchParams = useSearchParams();
   const { data: session, update } = useSession();
   const { toast } = useToast();
@@ -119,6 +131,13 @@ const Tracker = () => {
       .catch(console.error);
   };
 
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job.companyName.toLowerCase().includes(search.toLowerCase()) ||
+      job.jobTitle.toLowerCase().includes(search.toLowerCase()) ||
+      job.state.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <>
       <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
@@ -145,15 +164,53 @@ const Tracker = () => {
         onSubmit={handleAddJob}
       />
 
+      <CommandDialog open={showSearchDialog} onOpenChange={setShowSearchDialog}>
+        <CommandInput
+          placeholder="Search jobs..."
+          value={search}
+          onValueChange={setSearch}
+        />
+        <CommandList>
+          <CommandEmpty>No jobs found.</CommandEmpty>
+          <CommandGroup heading="Jobs">
+            {filteredJobs.map((job) => (
+              <CommandItem
+                key={job.id}
+                value={`${job.companyName} ${job.jobTitle}`}
+                className="flex items-center justify-between"
+              >
+                <div>
+                  <p className="font-medium">{job.jobTitle}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {job.companyName}
+                  </p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-secondary">
+                  {job.state}
+                </span>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+
       <NotificationSheet />
 
       <div className="p-6">
         <header className="mb-8">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <h2 className="font-bold text-3xl md:text-4xl bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                Job Tracker
-              </h2>
+            <div className="flex items-center gap-4 flex-1 max-w-md">
+              <Button
+                variant="outline"
+                className="w-full justify-start text-muted-foreground"
+                onClick={() => setShowSearchDialog(true)}
+              >
+                <Search className="mr-2 h-4 w-4" />
+                Search jobs...
+                <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                  <span className="text-xs">⌘</span>K
+                </kbd>
+              </Button>
             </div>
             <div className="flex items-center gap-2">
               <NotificationBell />

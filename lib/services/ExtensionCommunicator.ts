@@ -1,7 +1,9 @@
 import { Job } from "@/types/job-tracker";
 import { JobStorage } from "./JobStorage";
 
-const EXTENSION_ID = process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "enjomipibdefinafkiecghmabelfpjio";
+const EXTENSION_ID =
+  process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID ||
+  "pkghmhfhkloagakddedgpccekgapifje";
 
 export class ExtensionCommunicator {
   private static sendMessage<T>(message: any): Promise<T> {
@@ -29,7 +31,7 @@ export class ExtensionCommunicator {
     try {
       const response = await this.sendMessage<{ success: boolean; data: Job[]; isChanged: boolean }>({ type: "GET_ALL_JOBS" });
 
-      console.log("Jobs fetched successfully.", response.data);
+      console.log("Jobs fetched successfully.", response.data, response);
       if (response.isChanged) {
         await JobStorage.storeJobs(response.data);
         console.log("Extension data updated in IndexDB");

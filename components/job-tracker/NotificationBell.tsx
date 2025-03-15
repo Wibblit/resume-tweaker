@@ -16,19 +16,30 @@ export const NotificationBell = () => {
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="icon"
-      className="relative"
+      className={cn(
+        "relative h-10 w-10 rounded-full",
+        "hover:bg-primary hover:text-primary-foreground",
+        "transition-colors duration-200",
+        hasNotifications && "ring-2 ring-primary ring-offset-2"
+      )}
       onClick={() => dispatch(setSheetOpen(true))}
     >
       <Bell className="h-5 w-5" />
       {hasNotifications && (
         <span
           className={cn(
-            "absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500",
-            "animate-pulse"
+            "absolute -top-2 -right-2",
+            "min-w-[1.25rem] h-5 px-1",
+            "flex items-center justify-center",
+            "rounded-full text-xs font-medium",
+            "bg-primary text-primary-foreground",
+            "shadow-sm"
           )}
-        />
+        >
+          {notifications.length > 99 ? "99+" : notifications.length}
+        </span>
       )}
     </Button>
   );
