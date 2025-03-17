@@ -82,32 +82,6 @@ export function AppSidebar({ session }: { session: Session }) {
   const { state: sidebarState } = useSidebar();
   const isCollapsed = sidebarState === "collapsed";
 
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        dispatch(updateLoadingTrue());
-        const response = await axios.get("/api/get-credits", {
-          withCredentials: true,
-        });
-        //console.log(response?.data?.Credits?.credits);
-        dispatch(updateCredits(response?.data?.Credits?.credits));
-        dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
-        dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
-      } catch (error) {
-        //console.log(error);
-        toast({
-          title: "Failed to Load Credits",
-          description: "Unable to fetch your credits. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        dispatch(updateLoadingFalse());
-      }
-    })();
-  }, [dispatch, toast]);
-
   return (
     <TooltipProvider>
       <Sidebar variant="inset" collapsible="icon">
