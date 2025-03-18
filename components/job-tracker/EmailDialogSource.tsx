@@ -19,6 +19,7 @@ import { JobInfo } from "./JobCard";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
+import { gmailLogo } from "@/lib/client/Urls";
 
 const EmailDialogSource = ({
   job,
@@ -47,9 +48,7 @@ const EmailDialogSource = ({
       <DialogHeader className="flex flex-col gap-6">
         <div className="flex items-start gap-6">
           <img
-            src={
-              "https://raw.githubusercontent.com/github/explore/8f19e4dbbf13418dc1b1d58bb265953553c15a46/topics/gmail/gmail.png"
-            }
+            src={gmailLogo}
             alt={`${job.companyName} logo`}
             className="w-24 h-24 rounded-2xl object-cover border shadow-sm"
           />
@@ -72,7 +71,10 @@ const EmailDialogSource = ({
             </div>
             <div className="grid sm:grid-cols-2 gap-3 mt-4">
               <JobInfo icon={MapPin} text={job.location ?? "Not specified"} />
-              <JobInfo icon={Briefcase} text={job.employmentType} />
+              <JobInfo
+                icon={Briefcase}
+                text={job.employmentType ?? "Not specified"}
+              />
               <JobInfo icon={Clock} text={job.workType ?? "Not specified"} />
               <JobInfo
                 icon={DollarSign}
@@ -161,7 +163,9 @@ const EmailDialogSource = ({
             <div className="prose prose-sm max-w-none dark:prose-invert">
               <div
                 dangerouslySetInnerHTML={{
-                  __html: job.jobDescription + "....",
+                  __html:
+                    job.jobDescription +
+                    `....<a href="${emailUrl}" target="_blank" rel="noopener noreferrer">read more</a>`,
                 }}
                 className="job-description"
               />
@@ -180,7 +184,10 @@ const EmailDialogSource = ({
                 <div className="flex items-center gap-3 text-sm">
                   <ExternalLink className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Source:</span>
-                  <span>{job.source}</span>
+                  <span className="flex gap-x-2 items-center">
+                    {job.source}
+                    <img src={gmailLogo} className="w-4 h-4" />
+                  </span>
                 </div>
               )}
             </div>

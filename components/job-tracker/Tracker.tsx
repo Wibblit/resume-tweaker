@@ -19,7 +19,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Loader2, PlusCircle, Save, Search } from "lucide-react";
+import { Building2, Loader2, PlusCircle, Save, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -187,9 +187,9 @@ const Tracker = () => {
         />
         <CommandList>
           <CommandGroup heading="Jobs">
-            {filteredJobs.some((job) => job.source !== "mail") ? (
+            {filteredJobs.some((job) => job.source !== "email") ? (
               filteredJobs
-                .filter((job) => job.source !== "mail")
+                .filter((job) => job.source !== "email")
                 .slice(0, 3)
                 .map((job) => (
                   <CommandItem
@@ -197,12 +197,26 @@ const Tracker = () => {
                     value={`${job.companyName} ${job.jobTitle}`}
                     className="flex items-center justify-between"
                   >
-                    <div>
-                      <p className="font-medium">{job.jobTitle}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {job.companyName}
-                      </p>
+                    <div className="flex gap-2">
+                      {job.logoSrc ? (
+                        <img
+                          src={job.logoSrc || ""}
+                          className="w-10 h-10 rounded-xl"
+                          alt="company logo"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-secondary border shadow-sm">
+                          <Building2 className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium">{job.jobTitle}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {job.companyName}
+                        </p>
+                      </div>
                     </div>
+
                     <span
                       className={`text-xs px-2 py-1 rounded-full ${getStateColor(
                         job.state
@@ -218,9 +232,9 @@ const Tracker = () => {
           </CommandGroup>
 
           <CommandGroup heading="Emails">
-            {filteredJobs.some((job) => job.source === "mail") ? (
+            {filteredJobs.some((job) => job.source === "email") ? (
               filteredJobs
-                .filter((job) => job.source === "mail")
+                .filter((job) => job.source === "email")
                 .slice(0, 3)
                 .map((job) => (
                   <CommandItem

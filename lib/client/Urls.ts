@@ -1,0 +1,6 @@
+export const gmailLogo =
+  "https://raw.githubusercontent.com/github/explore/8f19e4dbbf13418dc1b1d58bb265953553c15a46/topics/gmail/gmail.png";
+export const linkedinLogo =
+  "https://tpc.googlesyndication.com/simgad/14778439095016119154";
+
+  

@@ -12,7 +12,7 @@ import {
   CalendarIcon,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { JobInfo } from "./JobCard";
+import { getSourceIcon, JobInfo } from "./JobCard";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
@@ -107,6 +107,13 @@ const OtherDialogSource = ({
                 <span className="text-muted-foreground">Added on:</span>
                 <span>{job.addedOn}</span>
               </div>
+              {job.source && (
+                <div className="flex items-center gap-3 text-sm">
+                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">Source:</span>
+                  <span className="flex gap-x-2 items-center">{job.source}{getSourceIcon(job.source)}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
