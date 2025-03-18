@@ -18,5 +18,6 @@ export interface Job {
   state: JobState;
   addedOn: string;
   readonly url: string | null;
-  source: "extension" | "website" | "mail";
+  source: string;
+  meetingUrl?: string;
 }

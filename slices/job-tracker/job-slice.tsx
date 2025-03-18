@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Job, JobState } from "@/types/job-tracker";
+import { addNotification } from "./notification/notification-slice";
 
 // Define the state interface
 interface JobsState {
@@ -71,6 +72,32 @@ const jobSlice = createSlice({
       state.initialItems = state.items.map((job) => ({ ...job })); // Deep clone each job
       state.hasUnsavedChanges = false;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(addNotification, (state, action) => {
+      const job: Job = {
+        id: action.payload.id,
+        jobTitle: action.payload.jobRole,
+        location: action.payload.location,
+        companyName: action.payload.companyName,
+        logoSrc: null,
+        jobDescription: action.payload.snippet,
+        workType: action.payload.workType,
+        employmentType: "",
+        meetingUrl: action.payload.meetingUrl,
+        state: action.payload.jobState.toLowerCase() as JobState,
+        addedOn: action.payload.date,
+        source: "email",
+        salaryRange: "",
+        url: "",
+      };
+
+      state.items.push(job);
+      state.hasUnsavedChanges = hasStateChanged(
+        state.items,
+        state.initialItems
+      );
+    });
   },
 });
 

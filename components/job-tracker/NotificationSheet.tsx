@@ -46,7 +46,7 @@ export const NotificationSheet = () => {
   const notifications = useAppSelector(
     (state) => state.notifications.notifications
   );
-  const { data: session, } = useSession();
+  const { data: session } = useSession();
 
   const getJobStateColors = (jobState: string) => {
     const state = jobState?.toLowerCase() as keyof typeof jobStateColors;
@@ -70,18 +70,28 @@ export const NotificationSheet = () => {
           </Button>
         </div>
 
+        {session?.user.connectedEmail && (
+          <div className="px-4 py-2 border-b bg-muted/30">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Connected to:
+              </span>
+              <span className="text-sm font-medium truncate">
+                {session.user.connectedEmail}
+              </span>
+            </div>
+          </div>
+        )}
+
         <ScrollArea className="h-[calc(100vh-64px)]">
           {notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <Bell className="h-10 w-10 text-muted-foreground mb-3 opacity-30" />
               <p className="text-muted-foreground text-sm">No notifications</p>
-              <p className="text-muted-foreground text-sm mt-1">( {session?.user.connectedEmail} )</p>
             </div>
           ) : (
             <div className="py-2">
-              {session?.user.connectedEmail && (
-                <p>Connected Gmail: {session.user.connectedEmail}</p>
-              )}
               {notifications.map((notification) => {
                 const colors = getJobStateColors(notification.jobState);
                 return (
@@ -128,7 +138,9 @@ export const NotificationSheet = () => {
                             asChild
                           >
                             <a
-                              href={`https://mail.google.com/mail/u/0/#inbox/${notification.id}`}
+                              href={`https://mail.google.com/mail/u/${
+                                session?.user.connectedEmail || ""
+                              }/#inbox/${notification.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -136,7 +148,6 @@ export const NotificationSheet = () => {
                               Email
                             </a>
                           </Button>
-
                           {notification.meetingUrl && (
                             <Button
                               variant="outline"
@@ -155,7 +166,17 @@ export const NotificationSheet = () => {
                           )}
 
                           <span className="text-xs text-muted-foreground ml-auto">
-                            {notification.date}
+                            {new Date(notification.date).toLocaleString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                              }
+                            )}
                           </span>
                         </div>
                       </div>
