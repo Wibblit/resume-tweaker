@@ -5,7 +5,7 @@ import { asyncHandler } from "@/lib/actionsHelpers/actionsAsyncHandler";
 import { ActionsError } from "@/lib/actionsHelpers/actionsErrorHandler";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
-import { uploadFileToR2, uploadHtmlToR2 } from "@/utils/upload";
+import r2Storage from "@/utils/upload";
 
 export const updateBlogPost = asyncHandler(async (formData: FormData) => {
   try {
@@ -45,7 +45,7 @@ export const updateBlogPost = asyncHandler(async (formData: FormData) => {
     if (thumbnailType === "file" && isImgChanged === "true") {
       const file = formData.get("thumbnail");
       if (file) {
-        thumbnailUrl = await uploadFileToR2({
+        thumbnailUrl = await r2Storage.uploadFile({
           //@ts-ignore
           file,
           bucketName: process.env.R2_BUCKET_BLOGS as string,
@@ -60,7 +60,7 @@ export const updateBlogPost = asyncHandler(async (formData: FormData) => {
     }
 
     // Upload content to R2
-    const contentUrl = await uploadHtmlToR2(slug as string, content as string);
+    const contentUrl = await r2Storage.uploadHtml(slug as string, content as string);
 
     // Parse values
     const parsedTags = JSON.parse(tags as string) as string[];
