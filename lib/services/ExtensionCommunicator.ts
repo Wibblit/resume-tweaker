@@ -14,7 +14,10 @@ export class ExtensionCommunicator {
         { includeTlsChannelId: true },
         (response) => {
           if (chrome.runtime.lastError) {
-            console.error("Chrome Extension Error:", chrome.runtime.lastError.message);
+            console.error(
+              "Chrome Extension Error:",
+              chrome.runtime.lastError.message
+            );
             reject(new Error(chrome.runtime.lastError.message));
           } else if (response?.success) {
             resolve(response);
@@ -27,9 +30,13 @@ export class ExtensionCommunicator {
     });
   }
 
-  static async updateIndexDB(): Promise<Job[]> {
+  static async updateIndexDB(): Promise<{ isChanged: boolean; data: Job[] }> {
     try {
-      const response = await this.sendMessage<{ success: boolean; data: Job[]; isChanged: boolean }>({ type: "GET_ALL_JOBS" });
+      const response = await this.sendMessage<{
+        success: boolean;
+        data: Job[];
+        isChanged: boolean;
+      }>({ type: "GET_ALL_JOBS" });
 
       console.log("Jobs fetched successfully.", response.data, response);
       if (response.isChanged) {
@@ -37,10 +44,10 @@ export class ExtensionCommunicator {
         console.log("Extension data updated in IndexDB");
         await this.unsetIsChanged();
       }
-      return response.data;
+      return { data: response.data, isChanged: response.isChanged };
     } catch (error) {
       console.error("Failed to get jobs:", error);
-      return [];
+      return { isChanged: false, data: [] };
     }
   }
 
@@ -49,6 +56,9 @@ export class ExtensionCommunicator {
   }
 
   static async updateChanges(jobs: Job[]): Promise<{ success: boolean }> {
-    return this.sendMessage<{ success: boolean }>({ type: "UPDATE_CHANGES", data: jobs });
+    return this.sendMessage<{ success: boolean }>({
+      type: "UPDATE_CHANGES",
+      data: jobs,
+    });
   }
 }

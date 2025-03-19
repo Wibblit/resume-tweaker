@@ -20,4 +20,5 @@ export interface Job {
   readonly url: string | null;
   source: string;
   meetingUrl?: string;
+  status?: "new" | "updated" | "old";
 }

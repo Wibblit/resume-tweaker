@@ -17,6 +17,7 @@ import { ExtensionCommunicator } from "@/lib/services/ExtensionCommunicator";
 import { JobStorage } from "@/lib/services/JobStorage";
 import { toast } from "@/hooks/use-toast";
 import { deleteJobEmail } from "@/actions/deleteJobEmail";
+import { deleteJD } from "@/actions/deleteJD";
 interface JobCardProps {
   job: Job;
   index: number;
@@ -92,12 +93,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, index }) => {
       dispatch(removeJob(jobId)),
       await JobStorage.deleteJob(jobId),
       await ExtensionCommunicator.updateChanges(jobs),
-      (async() => {
+      (async () => {
         if (type === "email") {
           await deleteJobEmail(jobId);
           return;
         }
-      })()
+        await deleteJD(jobId);
+      })(),
     ]);
     dispatch(resetUnsavedChanges());
     toast({

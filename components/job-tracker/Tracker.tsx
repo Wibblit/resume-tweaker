@@ -38,6 +38,7 @@ import { NotificationSheet } from "./NotificationSheet";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
+import { updateJD } from "@/actions/updateJD";
 
 const Tracker = () => {
   const dispatch = useAppDispatch();
@@ -58,9 +59,26 @@ const Tracker = () => {
   useEffect(() => {
     async function getAllJobs() {
       try {
-        await ExtensionCommunicator.updateIndexDB();
+        const res = await ExtensionCommunicator.updateIndexDB();
         const indexDbData = await JobStorage.getJobs();
+        console.log("IndexDB Data", indexDbData);
         dispatch(setJobs(indexDbData));
+        const updatedJobs = res.data.filter((job) => job.status === "updated");
+        const newJobs = res.data.filter((job) => job.status === "new");
+        console.log("response data", res.data);
+        console.log('newJobs', newJobs);
+        if (res.isChanged) {
+          if (updatedJobs.length > 0 || newJobs.length > 0) {
+            console.log("Updating JDs");
+            await updateJD(updatedJobs, newJobs);
+          }
+        }
+        const formattedData = res.data.map((job: Job) => ({
+          ...job,
+          status: "old" as "old",
+        }));
+
+        await ExtensionCommunicator.updateChanges(formattedData);
       } catch (error) {
         console.error(error);
       }

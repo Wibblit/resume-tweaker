@@ -238,7 +238,7 @@ model JD {
   userId         String
   companyName    String
   employmentType String
-  jdUrl          String
+  r2FileName     String @unique()
   jobTitle       String
   location       String
   logoSrc        String
