@@ -28,6 +28,7 @@ model User {
   UserAssests   UserAssets?
   Token       Tokens?
   jobEmails        JobEmails[]        @relation("UserJobs")
+  JDs             JD[]               @relation("UserJDs")
 
   @@map("users")
 }
@@ -228,13 +229,16 @@ model JobEmails {
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserJobs")
   createdAt   DateTime @default(now())
+
+  @@unique([jobId, userId])
 }
 
 model JD {
   id             String @id @default(cuid())
+  userId         String
   companyName    String
   employmentType String
-  jobDescription String
+  jdUrl          String
   jobTitle       String
   location       String
   logoSrc        String
@@ -243,5 +247,6 @@ model JD {
   state          String
   url            String
   workType       String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserJDs")
 }
 

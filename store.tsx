@@ -16,6 +16,7 @@ import pageReducer from "./slices/addPageSlice";
 import userAssets from "./slices/userAssets";
 import jobReducer from "./slices/job-tracker/job-slice";
 import notificationReducer from "./slices/job-tracker/notification/notification-slice";
+import DialogReducer from "./slices/job-tracker/dialogSlice";
 
 // Persist config for notifications only
 const notificationPersistConfig = {
@@ -36,6 +37,7 @@ const rootReducer = combineReducers({
   assets: userAssets,
   jobs: jobReducer,
   notifications: persistReducer(notificationPersistConfig, notificationReducer), // Persisted
+  dialog: DialogReducer,
 });
 
 export const store = configureStore({

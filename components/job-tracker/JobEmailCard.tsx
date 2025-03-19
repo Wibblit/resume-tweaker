@@ -2,6 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { Building2, MapPin, MoreVertical, Trash2, Eye } from "lucide-react";
 import { gmailLogo } from "@/lib/client/Urls";
 import { Job } from "@/types/job-tracker";
+import { formatDate } from "@/lib/client/helperFunctions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -134,16 +135,7 @@ export function JobEmailCard({
           <span className="text-xs">{job.source}</span>
         </div>
         <Separator orientation="vertical" className="my-2" />
-        <div className="text-xs">
-          {new Date(job.addedOn).toLocaleString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })}
-        </div>
+        <div className="text-xs">{formatDate(job.addedOn)}</div>
       </div>
     </div>
   );

@@ -10,6 +10,13 @@ import OtherDialogSource from "./OtherDialogSource";
 import { useSession } from "next-auth/react";
 import { JobEmailCard } from "./JobEmailCard";
 import { OtherSourceJobCard } from "./OutSourceJobCard";
+import { setOpenJobId, resetOpenJobId } from "@/slices/job-tracker/dialogSlice";
+import { useAppSelector, useAppDispatch } from "@/hooks/hooks";
+import { removeJob, resetUnsavedChanges } from "@/slices/job-tracker/job-slice";
+import { ExtensionCommunicator } from "@/lib/services/ExtensionCommunicator";
+import { JobStorage } from "@/lib/services/JobStorage";
+import { toast } from "@/hooks/use-toast";
+import { deleteJobEmail } from "@/actions/deleteJobEmail";
 interface JobCardProps {
   job: Job;
   index: number;
@@ -68,34 +75,69 @@ const getStatusColor = (status: JobState) => {
 export const JobCard: React.FC<JobCardProps> = ({ job, index }) => {
   const statusColors = getStatusColor(job.state as JobState);
   const { data: session } = useSession();
+  const openJobId = useAppSelector((state) => state.dialog.openJobId);
+  const jobs = useAppSelector((state) => state.jobs.items);
+  const dispatch = useAppDispatch();
+
+  const handleView = (jobId: string) => {
+    dispatch(setOpenJobId(jobId));
+  };
+
+  const handleClose = () => {
+    dispatch(resetOpenJobId());
+  };
+
+  const handleDelete = async (type: "email" | "job", jobId: string) => {
+    await Promise.all([
+      dispatch(removeJob(jobId)),
+      await JobStorage.deleteJob(jobId),
+      await ExtensionCommunicator.updateChanges(jobs),
+      (async() => {
+        if (type === "email") {
+          await deleteJobEmail(jobId);
+          return;
+        }
+      })()
+    ]);
+    dispatch(resetUnsavedChanges());
+    toast({
+      variant: "default",
+      title: "Success",
+      description: "deleted job succesfully",
+    });
+  };
+
   return (
     <Draggable draggableId={job.id} index={index}>
       {(provided) => (
-        <Dialog>
-          <DialogTrigger asChild>
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              className="group bg-card p-4 rounded-lg shadow-sm mb-3 hover:shadow-md transition-all cursor-pointer border hover:border-primary/20 hover:bg-accent/50"
-            >
-              {job.source === "email" ? (
-                <JobEmailCard
-                  onView={() => {}}
-                  onDelete={() => {}}
-                  job={job}
-                  statusColors={statusColors}
-                />
-              ) : (
-                <OtherSourceJobCard
-                  onDelete={() => {}}
-                  onView={() => {}}
-                  job={job}
-                  statusColors={statusColors}
-                />
-              )}
-            </div>
-          </DialogTrigger>
+        <Dialog
+          open={openJobId === job.id}
+          onOpenChange={(isOpen) => isOpen || handleClose()}
+          key={job.id}
+        >
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            className="group bg-card p-4 rounded-lg shadow-sm mb-3 hover:shadow-md transition-all cursor-pointer border hover:border-primary/20 hover:bg-accent/50"
+            onClick={() => handleView(job.id)}
+          >
+            {job.source === "email" ? (
+              <JobEmailCard
+                onView={() => handleView(job.id)}
+                onDelete={async () => await handleDelete("job", job.id)}
+                job={job}
+                statusColors={statusColors}
+              />
+            ) : (
+              <OtherSourceJobCard
+                onDelete={async () => await handleDelete("job", job.id)}
+                onView={() => handleView(job.id)}
+                job={job}
+                statusColors={statusColors}
+              />
+            )}
+          </div>
           <DialogContent className="sm:max-w-[800px] h-[85vh] max-h-[800px] flex flex-col">
             {job.source === "email" ? (
               <EmailDialogSource

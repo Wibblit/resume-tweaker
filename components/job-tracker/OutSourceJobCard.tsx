@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { getSourceIcon } from "./JobCard";
+import { formatDate } from "@/lib/client/helperFunctions";
 
 export function OtherSourceJobCard({
   job,
@@ -28,7 +29,7 @@ export function OtherSourceJobCard({
 }: {
   job: Job;
   statusColors: { bg: string; text: string };
-  onDelete: () => void;
+  onDelete: () => Promise<void>;
   onView: () => void;
 }): JSX.Element {
   return (
@@ -108,9 +109,9 @@ export function OtherSourceJobCard({
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          onDelete();
+                          await onDelete();
                         }}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
@@ -140,7 +141,7 @@ export function OtherSourceJobCard({
           <span className="text-xs">{job.source}</span>
         </div>
         <Separator orientation="vertical" className="my-2" />
-        <div className="text-xs">{job.addedOn}</div>
+        <div className="text-xs">{formatDate(job.addedOn)}</div>
       </div>
     </div>
   );
