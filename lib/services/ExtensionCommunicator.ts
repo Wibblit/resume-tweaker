@@ -3,7 +3,7 @@ import { JobStorage } from "./JobStorage";
 
 const EXTENSION_ID =
   process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID ||
-  "pkghmhfhkloagakddedgpccekgapifje";
+  "bdginglpipmmlnfkoikphljipmhalbkf";
 
 export class ExtensionCommunicator {
   private static sendMessage<T>(message: any): Promise<T> {
