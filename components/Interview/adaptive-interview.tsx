@@ -30,6 +30,7 @@ import fetchRetry from "fetch-retry";
 import { updateCredits } from "@/slices/userAssets";
 import { useAppSelector } from "@/hooks/hooks";
 import { creditList } from "@/utils/credits";
+import TTSService from "@/services/tts.service";
 
 interface AdaptiveInterviewProps {
   interviewData: {
@@ -85,8 +86,14 @@ export default function AdaptiveInterview({
   const [currRetryNumber, setCurrRetryNumber] = useState(0);
   const [isdetected, setIsDetected] = useState<boolean>(false);
   const [stopper, setStopper] = useState<boolean>(false);
-
+  const [isUsingModelTTS, setIsUsingModelTTS] = useState(false);
   const [isoLoader, setIsoLoader] = useState<boolean>(false);
+
+  const ttsservice = new TTSService(
+    setIsTimerPaused,
+    setAudioQueue,
+    isUsingModelTTS
+  );
 
   const router = useRouter();
   const dispatch = useDispatch();
@@ -122,6 +129,8 @@ export default function AdaptiveInterview({
   ]);
 
   useEffect(() => {
+    const isBrowserTTSAvailable = "speechSynthesis" in window;
+    setIsUsingModelTTS(!isBrowserTTSAvailable); // Use model-based TTS if browser TTS is unavailable
     fetchFirstQuestion();
   }, []);
 
@@ -201,19 +210,7 @@ export default function AdaptiveInterview({
   };
 
   const generateAudio = async (question: string) => {
-    setIsTimerPaused(true);
-    try {
-      const wav = await tts.predict({
-        text: question,
-        voiceId: "en_US-hfc_male-medium",
-      });
-      const audioUrl = URL.createObjectURL(wav);
-      setAudioQueue((prevQueue) => [...prevQueue, audioUrl]);
-    } catch (error) {
-      console.error(`Error generating audio for question:`, error);
-    } finally {
-      setIsTimerPaused(false);
-    }
+    ttsservice.generateAudio(question);
   };
 
   const handleNextQuestion = async () => {
@@ -527,6 +524,7 @@ export default function AdaptiveInterview({
       setIsPlayingAudio(false);
     }
   };
+
   const handleNextQuestions = async () => {
     setIsNextLoading(true);
     setIsoLoader(true);
