@@ -190,6 +190,9 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   ### IMPORTANT NOTE
   - Dates must always be in this format "2025-03-12T14:30:00.000Z" for 12/3/2025 14:30, make sure that startDate, endDate and the date fields only contain these values in this format
   - Regardless of what format you get the date
+  - note that the summary fields in the projects, experience, and awards sections are html formatted, they will most likely have unordered lists, and bolds etc, make sure they are formatted properly.
+  - example of a summary field in the projects section(use this as a reference for the other summary fields):
+  "summary": "<ul><li>Implemented a new feature for the app</li><li>Fixed a bug in the app</li></ul>"
 
   `.trim();
 
@@ -201,12 +204,12 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     .replace(/```json\s*|\s*```/g, "")
     .trim();
   //console.log("json string", jsonString);
-  const cleanedData = JSON.parse(jsonString);
+  const resume = JSON.parse(jsonString);
 
   //console.log(
   //   "Gemini response for resume parsing:",
   //   JSON.stringify(cleanedData, null, 2)
   // );
 
-  return NextResponse.json({ cleanedData });
+  return NextResponse.json({ resume });
 });

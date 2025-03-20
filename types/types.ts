@@ -324,3 +324,22 @@ export type LetterProps =
       updatedOn: Date;
     }[]
   | [];
+
+
+  type Issue = {
+    name: string;
+    severity: string;
+  };
+  
+  type Metric = {
+    type: string;
+    score: number;
+    issues: Issue[];
+  };
+  
+export  type AIReviewResult = {
+    selector: string;
+    metrics: Metric[];
+    correction_logic: string;
+    final_output: string;
+  };
