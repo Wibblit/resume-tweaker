@@ -20,6 +20,14 @@ export const POST = asyncHandler(async (req: NextRequest) => {
   const prompt = `
   This is a user-uploaded resume from my onboarding page. Extract all profile data available in the resume and format it strictly according to the structure below. If a field does not have data, include it with default values (empty strings, empty arrays, or undefined as applicable). Ensure that the output is a valid JSON string that can be directly parsed using JSON.parse (Will direct updated in redux state after parsing).
   
+  ### Rules
+  - Analyse the resume miticulously and extract all the information available in the resume.
+  - The resume may contain the following sections: basics, summary, profiles, skills, projects, education, experience, languages, volunteer, awards, publications, certifications, references.
+  - for the skills section, notice that skills are grouped by their category, and each skill individually has a name and a level.
+  - for the skills section, do not put all the skills as one comma separated string, instead, group them by their category and each skill should have a name and a level.
+  - for the education section, the degree field should contain the degree name, the field field should contain the field of study, and the specialization field should contain the specialization if available. ex (Bachelor of Technology (degree)) in (Computer Science and Engineering (field)) with specialization in (Artificial Intelligence(specialization)). 
+  - for the basics and the summary section, notice how they are arrays, but they will only ever contain one object, but keep them as arrays.
+
   The required structure is as follows:
   
   {
@@ -161,9 +169,9 @@ export const POST = asyncHandler(async (req: NextRequest) => {
       }
     ]
   }
-  
+  --------------------------------------------------
   Input Resume Text: ${JSON.stringify(text, null, 2)}
-  
+  --------------------------------------------------
   Output Instructions:
   - The output should strictly follow the structure and field names provided above.
   - If a field has no data, leave it with its default value (e.g., "", [], or null).

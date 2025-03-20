@@ -21,8 +21,6 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   }
   const data = await request.json();
   const { resumeId, jd, resumeOption, resumeText, reviewType } = data;
-  //console.log(data);
-  const prompt = jd ? jdTailoredPrompt : genericPrompt;
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
   const results = await prisma.userAssets.findUnique({
@@ -48,58 +46,87 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   if (rateLimiter(session.user.id, ip)) {
     throw ApiError.rateLimitExceeded; // Rate-limiting error
   }
-
-  let resume =
-    resumeOption === "upload"
-      ? resumeText
-      : await prisma.resume.findUnique({
-          where: {
-            id: resumeId,
-            userId: session.user.id,
-          },
-        });
-
-  if (!resume) {
-    throw ApiError.resourceNotFound; // If resume is not found
-  }
+  let resume;
   let resumejson = null;
   let resumestyles = null;
-  if (resumeOption !== "upload") {
-    const { id, userId, resumeName, styles, ...resumeDetails } = resume;
-    resume = resumeDetails;
-    resume = {
-      ...resume,
-      basics: resume.basics.map((basic: any, index: number) =>
+
+  if (resumeOption === "upload") {
+    // For uploaded resumes, use the provided text and default styles
+    resume = resumeText;
+    resumejson = JSON.parse(resumeText);
+    resumestyles = {
+      id: 1,
+      font: {
+        family: 'Helvetica',
+        size: '11pt',
+        color: '#000000'
+      },
+      spacing: {
+        margin: 6,
+        lineHeight: 1.2
+      },
+      datetype: "MMM 'YY",
+      sections: [
+        'basics', 'profiles', 'summary', 'experience',
+        'education', 'projects', 'skills', 'certifications',
+        'languages', 'awards', 'publications', 'references',
+        'volunteer'
+      ],
+      sectionOrder: {
+        sections: [
+          { name: 'left', width: 'full' },
+          { name: 'right', width: 'full' }
+        ],
+        column3: []
+      }
+    };
+  } else {
+    // For selected resumes, fetch from database
+    const dbResume = await prisma.resume.findUnique({
+      where: {
+        id: resumeId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!dbResume) {
+      throw ApiError.resourceNotFound;
+    }
+
+    const { id, userId, resumeName, styles, ...resumeDetails } = dbResume;
+    
+    // Process resume data
+    const processedResume = {
+      ...resumeDetails,
+      basics: Array.isArray(resumeDetails.basics) ? resumeDetails.basics.map((basic: any, index: number) =>
         index === 0 ? { ...basic, picture: null } : basic
-      ),
+      ) : [],
       createdOn: null,
       updatedOn: null,
     };
-    resumejson = resume;
-    resume = JSON.stringify(resume, null, 2);
+
+    resumejson = processedResume;
+    resume = JSON.stringify(processedResume, null, 2);
     resumestyles = styles;
-    // console.log(resume)
   }
 
+  // Generate review
   const generatedContent = await resumeReview(resume, jd, reviewType);
-  const review = generatedContent;
-  // console.log("Review resume:\n",JSON.stringify(review,null,2));
+
+  // Update credits
   await prisma.userAssets.update({
     where: {
       userId: session?.user?.id,
     },
     data: {
       credits: {
-        decrement:
-          reviewType === "tailored"
-            ? creditList.get("tailored")
-            : creditList.get("generic"),
+        decrement: requiredCredits,
       },
     },
   });
 
   return NextResponse.json({
-    output: review,
+    output: generatedContent,
     resume: resumejson,
     styles: resumestyles,
     message: "Review generated successfully.",

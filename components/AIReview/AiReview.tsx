@@ -55,6 +55,7 @@ import { saveResumeData } from "@/actions/saveResumeData";
 import ResumeDisplay from "../resumeViewer";
 import { initialState } from "@/slices/rightsidebarSlice";
 import { formatDate } from '@/utils/formatDate';
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 type Issue = {
   name: string;
@@ -88,6 +89,7 @@ function getProperty(obj: any, selector: string): any {
     return undefined;
   }
 }
+
 
 function processMetrics(suggestions: AIReviewResult[]) {
   if (!suggestions || !suggestions.length) return null;
@@ -176,7 +178,6 @@ function groupIssuesBySection(suggestions: AIReviewResult[]) {
   suggestions.forEach((suggestion) => {
     // Extract the major section from the selector
     let majorSection = suggestion.selector;
-
     // Find the first occurrence of [, (, or . and use everything before it
     const bracketIndex = majorSection.indexOf("[");
     const parenthesisIndex = majorSection.indexOf("(");
@@ -344,7 +345,63 @@ export default function AIReview({
   const [jd, setJd] = useState("");
 
   console.log(selectedResume);
-
+  const DEFAULT_RESUME_STYLES: ResumeStyles = {
+    "id": 2,
+    "font": "Arial",
+    "name": "",
+    "icons": true,
+    "margin": 5,
+    "datetype": "MMM 'YY",
+    "fontSize": 15,
+    "sections": [
+      "basics",
+      "profiles",
+      "summary",
+      "experience",
+      "education",
+      "projects",
+      "skills",
+      "certifications",
+      "languages",
+      "awards",
+      "publications",
+      "references",
+      "volunteer",
+      "test",
+      "asdfsadf"
+    ],
+    "baseColor": "#000000",
+    "separator": true,
+    "lineHeight": 1.1,
+    "paperFormat": "a4",
+    "sectionOrder": {
+      "column3": [
+        "certifications",
+        "volunteer",
+        "references",
+        "languages",
+        "projects",
+        "publications",
+        "test",
+        "asdfsadf"
+      ],
+      "sections": [
+        {
+          "column1": [
+            "basics",
+            "profiles",
+            "awards",
+            "summary",
+            "skills",
+            "education"
+          ],
+          "column2": [
+            "experience"
+          ]
+        }
+      ]
+    }
+  }
   console.log();
 
   const text = `[
@@ -1078,42 +1135,82 @@ export default function AIReview({
     setUserResumes(recentResumes);
   }, []);
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const uploadedFile = event.target.files?.[0];
-    if (!uploadedFile) return;
-
-    setIsOcrInProgress(true);
-    setOcrProgress(0);
-
-    const worker = workerRef.current;
-    await worker?.load();
-    await worker?.loadLanguage("eng");
-    await worker?.initialize("eng");
-    await worker?.setParameters({
-      tessjs_create_hocr: "1",
-      tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
-    });
-
-    let ocrText = "";
-
-    if (uploadedFile.type === "application/pdf") {
-      setFile(uploadedFile);
-      const pdfUrl = URL.createObjectURL(uploadedFile);
-      const imageUrls = await pdfToImages(pdfUrl);
-      for (let i = 0; i < imageUrls.length; i++) {
-        const response = await worker?.recognize(imageUrls[i]);
-        ocrText += " " + response?.data.text;
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const uploadedFile = event.target.files?.[0];
+      if (!uploadedFile) return;
+  
+      setIsOcrInProgress(true);
+      setOcrProgress(0);
+  
+      const worker = workerRef.current;
+      if (!worker) {
+        throw new Error("OCR worker not initialized");
       }
-      setIsUploadDialogOpen(false);
-      setResumeOption("upload");
+  
+      await worker.load();
+      await worker.loadLanguage("eng");
+      await worker.initialize("eng");
+      await worker.setParameters({
+        tessjs_create_hocr: "1",
+        tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
+      });
+  
+      let ocrText = "";
+  
+      if (uploadedFile.type === "application/pdf") {
+        setFile(uploadedFile);
+        const pdfUrl = URL.createObjectURL(uploadedFile);
+        console.log("PDF URL:", pdfUrl);
+        const imageUrls = await pdfToImages(pdfUrl);
+        
+        for (let i = 0; i < imageUrls.length; i++) {
+          const response = await worker.recognize(imageUrls[i]);
+          ocrText += " " + response?.data.text;
+        }
+  
+        // Parse the OCR text
+        try {
+          const parseResponse = await fetch('/api/parse-resume', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: ocrText }),
+          });
+  
+          if (!parseResponse.ok) {
+            throw new Error('Failed to parse resume');
+          }
+  
+          const parsedData = await parseResponse.json();
+          
+          // Set the resume data and styles
+          setResumeData(parsedData.resume);
+          setResumeStyles(DEFAULT_RESUME_STYLES);
+          setResumeText(JSON.stringify(parsedData.resume));
+          setIsUploadDialogOpen(false);
+          setResumeOption("upload");
+        } catch (error) {
+          console.error('Error parsing resume:', error);
+          toast({
+            title: "Error",
+            description: "Failed to parse the resume. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error processing file:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process the file. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOcrInProgress(false);
+      setOcrProgress(1);
     }
-
-    setResumeText(ocrText);
-    //console.log(ocrText);
-    setIsOcrInProgress(false);
-    setOcrProgress(1);
   };
 
   const handleResumeSelect = (value: string) => {
@@ -1153,10 +1250,14 @@ export default function AIReview({
           cancelToken: source.token,
         }
       );
-      setResumeData(response?.data?.resume);
-      // setResumeData(testparseresume);
-      setResumeStyles(response?.data?.styles);
-      // console.log("asdasdasdasdasdasdasd");
+      if (resumeOption === "upload") {
+        // For uploaded resumes, we already have the data and styles
+        setResumeStyles(DEFAULT_RESUME_STYLES);
+      } else {
+        // For selected resumes, use the response data
+        setResumeData(response?.data?.resume);
+        setResumeStyles(response?.data?.styles);
+      }
       if (response?.data?.statusCode === 402) {
         return toast({
           variant: "destructive", // Set the toast type to error
@@ -1280,7 +1381,7 @@ export default function AIReview({
     });
   }
 
-  console.log(resumeData, resumeStyles);
+  // console.log(resumeData, resumeStyles);
 
   const handleAcceptIssue = (selector: string, finalOutput: string) => {
     if (!aiSuggestions) return;
@@ -1383,6 +1484,7 @@ export default function AIReview({
                       open={isUploadDialogOpen}
                       onOpenChange={setIsUploadDialogOpen}
                     >
+                      <DialogTitle></DialogTitle>
                       <DialogTrigger asChild>
                         <Button
                           type="button"
