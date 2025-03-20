@@ -39,6 +39,7 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
 import { updateJD } from "@/actions/updateJD";
+import { setOpenJobId } from "@/slices/job-tracker/dialogSlice";
 
 const Tracker = () => {
   const dispatch = useAppDispatch();
@@ -66,7 +67,7 @@ const Tracker = () => {
         const updatedJobs = res.data.filter((job) => job.status === "updated");
         const newJobs = res.data.filter((job) => job.status === "new");
         console.log("response data", res.data);
-        console.log('newJobs', newJobs);
+        console.log("newJobs", newJobs);
         if (res.isChanged) {
           if (updatedJobs.length > 0 || newJobs.length > 0) {
             console.log("Updating JDs");
@@ -139,10 +140,12 @@ const Tracker = () => {
       url: null,
       source: "website",
       id: uuidv4() + "-manual",
+      status: "new" as "new",
     };
 
     dispatch(addJob(newJob));
-
+    await updateJD([], [newJob]);
+    
     JobStorage.addJob(newJob)
       .then(() => {
         toast({
@@ -169,6 +172,11 @@ const Tracker = () => {
       negotiation: "bg-orange-50 dark:bg-orange-950",
     };
     return colors[state];
+  };
+
+  const handleJobClick = (jobId: string) => {
+    setShowSearchDialog(false); // Close the search dialog
+    dispatch(setOpenJobId(jobId)); // Open the job dialog
   };
 
   return (
@@ -213,7 +221,8 @@ const Tracker = () => {
                   <CommandItem
                     key={job.id}
                     value={`${job.companyName} ${job.jobTitle}`}
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between cursor-pointer"
+                    onSelect={() => handleJobClick(job.id)}
                   >
                     <div className="flex gap-2">
                       {job.logoSrc ? (
@@ -258,7 +267,8 @@ const Tracker = () => {
                   <CommandItem
                     key={job.id}
                     value={`${job.companyName} ${job.jobTitle}`}
-                    className="flex items-center justify-between"
+                    className="flex items-center justify-between cursor-pointer"
+                    onSelect={() => handleJobClick(job.id)}
                   >
                     <div>
                       <p className="font-medium">{job.jobTitle}</p>

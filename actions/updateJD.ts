@@ -22,17 +22,7 @@ export const updateJD = asyncHandler(
           await prisma.jD.update({
             where: { id: job.id },
             data: {
-              userId,
-              companyName: job.companyName,
-              employmentType: job.employmentType,
-              jobTitle: job.jobTitle,
-              location: job.location,
-              logoSrc: job.logoSrc || "",
-              salaryRange: job.salaryRange,
-              source: job.source,
               state: job.state,
-              workType: job.workType,
-              url: job.url || "",
             },
           });
         } else {
@@ -42,18 +32,18 @@ export const updateJD = asyncHandler(
           await prisma.jD.create({
             data: {
               id: job.id,
-              userId,
               companyName: job.companyName,
-              employmentType: job.employmentType,
+              employmentType: job.employmentType || "",
               jobTitle: job.jobTitle,
               location: job.location,
               logoSrc: job.logoSrc || "",
-              salaryRange: job.salaryRange,
+              salaryRange: job.salaryRange || "",
               source: job.source,
               state: job.state,
-              workType: job.workType,
+              workType: job.workType || "",
               url: job.url || "",
-              r2FileName,
+              r2FileName: r2FileName,
+              user: { connect: { id: userId } }, // Connect the JD with the existing User by userId
             },
           });
         }

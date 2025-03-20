@@ -17,6 +17,8 @@ import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
 import { formatDate } from "@/lib/client/helperFunctions";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/hooks/hooks";
 
 const OtherDialogSource = ({
   job,
@@ -28,6 +30,22 @@ const OtherDialogSource = ({
     text: string;
   };
 }) => {
+  const router = useRouter();
+  const jobs = useAppSelector((state) => state.jobs.items);
+
+  const handleInterview = (jobId: string) => {
+    const job = jobs.find((job) => job.id === jobId);
+    if (job) {
+      const jobParam = new URLSearchParams({
+        jobTitle: job.jobTitle,
+        jobDescription: job.jobDescription,
+        companyName: job.companyName,
+        fromKanban: "true",
+      }).toString();
+      router.push(`/home/ai-interview?${jobParam}`);
+    }
+  };
+
   return (
     <>
       <DialogHeader className="flex flex-col gap-6">
@@ -71,9 +89,9 @@ const OtherDialogSource = ({
           </div>
         </div>
         <div className="flex gap-2">
-          <Button className="flex-1">
+          <Button onClick={() => handleInterview(job.id)} className="flex-1">
             <Video className="w-4 h-4 mr-2" />
-            Prepare for interview
+            Prepare for interview yoji
           </Button>
           <Button
             variant="outline"

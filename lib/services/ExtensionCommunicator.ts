@@ -56,9 +56,16 @@ export class ExtensionCommunicator {
   }
 
   static async updateChanges(jobs: Job[]): Promise<{ success: boolean }> {
+    console.log("jobs from delete function", jobs);
     return this.sendMessage<{ success: boolean }>({
       type: "UPDATE_CHANGES",
       data: jobs,
+    });
+  }
+
+  static async clearExtensionStorage(): Promise<{ success: boolean }> {
+    return this.sendMessage({
+      type: "CLEAR_STORAGE",
     });
   }
 }

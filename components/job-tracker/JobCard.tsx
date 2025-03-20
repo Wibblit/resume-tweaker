@@ -18,6 +18,7 @@ import { JobStorage } from "@/lib/services/JobStorage";
 import { toast } from "@/hooks/use-toast";
 import { deleteJobEmail } from "@/actions/deleteJobEmail";
 import { deleteJD } from "@/actions/deleteJD";
+import store from "@/store";
 interface JobCardProps {
   job: Job;
   index: number;
@@ -89,10 +90,14 @@ export const JobCard: React.FC<JobCardProps> = ({ job, index }) => {
   };
 
   const handleDelete = async (type: "email" | "job", jobId: string) => {
+    dispatch(removeJob(jobId));
+    const updatedJobs = store.getState().jobs.items;
     await Promise.all([
-      dispatch(removeJob(jobId)),
       await JobStorage.deleteJob(jobId),
-      await ExtensionCommunicator.updateChanges(jobs),
+      (async () => {
+        await ExtensionCommunicator.updateChanges(updatedJobs);
+        dispatch(resetUnsavedChanges());
+      })(),
       (async () => {
         if (type === "email") {
           await deleteJobEmail(jobId);
@@ -101,7 +106,6 @@ export const JobCard: React.FC<JobCardProps> = ({ job, index }) => {
         await deleteJD(jobId);
       })(),
     ]);
-    dispatch(resetUnsavedChanges());
     toast({
       variant: "default",
       title: "Success",

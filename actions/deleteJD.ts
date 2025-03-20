@@ -26,7 +26,7 @@ export const deleteJD = asyncHandler(async (jobId: string) => {
     bucketName: process.env.R2_BUCKET_JDS!,
     fileName: r2FileName,
   });
-
+  
   console.log("response from r2 jd deletion", JSON.stringify(response));
 
   return {

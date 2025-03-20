@@ -5,6 +5,8 @@ import { updateJobState } from "@/slices/job-tracker/job-slice";
 import { KanbanColumn } from "./KanbanColumn";
 import type { JobState } from "@/types/job-tracker";
 import { JobStorage } from "@/lib/services/JobStorage";
+import { updateJobState as updateDBJobState } from "@/actions/updateJobState";
+import store from "@/store";
 
 const columns: { state: JobState; title: string }[] = [
   { state: "bookmark", title: "Bookmarked" },
@@ -36,10 +38,14 @@ export const KanbanBoard: React.FC = () => {
         newState: destination.droppableId as JobState,
       })
     );
-  
-    const job = jobs.find((job) => job.id === draggableId);
+
+    const job = store
+      .getState()
+      .jobs.items.find((job) => job.id === draggableId);
+      
     if (job) {
       await JobStorage.updateJob(job);
+      await updateDBJobState(job);
     }
   };
 
