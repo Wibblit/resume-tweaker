@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
-import * as tts from "@diffusionstudio/vits-web";
 import { NoAudioAlert } from "./NoAudioAlert";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -153,9 +152,6 @@ export default function AdaptiveInterview({
   const handleConfirmQuit = () => {
     if (isRecording) {
       mediaRecorderRef.current?.stop();
-    }
-    if (isPlayingAudio) {
-      stopAudio();
     }
     router.replace("/home/ai-interview");
   };
@@ -506,53 +502,9 @@ export default function AdaptiveInterview({
     }
   };
 
-  // useEffect(() => {
-  //   setIsTypingComplete(false);
-  //   if (audioQueue[currentQuestionIndex]) {
-  //     audioRef.current = new Audio(audioQueue[currentQuestionIndex]);
-  //     playAudio();
-  //     audioRef.current.onended = () => {
-  //       setIsPlayingAudio(false);
-  //     };
-  //   }
-  //   // Clean up the audio when the component unmounts or question changes
-  //   return () => {
-  //     if (audioRef.current) {
-  //       audioRef.current.pause();
-  //       audioRef.current.currentTime = 0;
-  //       setIsPlayingAudio(false);
-  //     }
-  //   };
-  // }, [
-  //   questions[currentQuestionIndex],
-  //   audioQueue[currentQuestionIndex],
-  //   setIsPlayingAudio,
-  // ]);
-
-  const playAudio = () => {
-    if (audioRef.current && !isPlayingAudio) {
-      audioRef.current
-        .play()
-        .then(() => setIsPlayingAudio(true))
-        .catch((err) => {
-          console.error("Audio playback failed:", err);
-          setIsPlayingAudio(false);
-        });
-    }
-  };
-
-  const stopAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlayingAudio(false);
-    }
-  };
-
   const handleNextQuestions = async () => {
     setIsNextLoading(true);
     setIsoLoader(true);
-    // stopAudio();
     await handleNextQuestion();
     setIsNextLoading(false);
   };
