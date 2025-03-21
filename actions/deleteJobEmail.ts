@@ -10,12 +10,24 @@ export const deleteJobEmail = asyncHandler(async (jobEmailId: string) => {
   if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
   if (!jobEmailId) throw ActionsError.badRequest;
 
-  await prisma.jobEmails.delete({
+  // await prisma.jobEmails.delete({
+  //   where: {
+  //     jobId_userId: {
+  //       userId: session?.user?.id,
+  //       jobId: jobEmailId,
+  //     },
+  //   },
+  // });
+
+  await prisma.jobEmails.update({
     where: {
       jobId_userId: {
-        userId: session?.user?.id,
+        userId: session.user.id,
         jobId: jobEmailId,
       },
+    },
+    data: {
+      isDeleted: true,
     },
   });
 

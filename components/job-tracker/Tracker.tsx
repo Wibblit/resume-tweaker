@@ -36,10 +36,14 @@ import ConnectGmailButton from "./GmailConnectButton";
 import { NotificationBell } from "./NotificationBell";
 import { NotificationSheet } from "./NotificationSheet";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 import { useSidebar } from "@/components/ui/sidebar";
 import { updateJD } from "@/actions/updateJD";
 import { setOpenJobId } from "@/slices/job-tracker/dialogSlice";
+import { getUserJobs } from "@/actions/getUserJobs";
+import { useRouter } from "next/navigation";
+import { updatedAfter } from "@/actions/updatedAfter";
+import throttle from "lodash/throttle";
+import { removeJob } from "@/slices/job-tracker/job-slice";
 
 const Tracker = () => {
   const dispatch = useAppDispatch();
@@ -52,22 +56,48 @@ const Tracker = () => {
   const [showSearchDialog, setShowSearchDialog] = useState(false);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const searchParams = useSearchParams();
-  const { data: session, update } = useSession();
   const { toast } = useToast();
   const { state: sidebarState } = useSidebar();
+
+  async function syncData() {
+    const lastSync = await JobStorage.getLastSync();
+    const since = lastSync?.toISOString() ?? "1970-01-01T00:00:00.000Z";
+    const updatedJobs = await updatedAfter(since);
+    const { jobs, emails } = updatedJobs.data;
+    console.log("jobs from syncData: ", jobs);
+    for (const job of [...jobs, ...emails]) {
+      if (job.isDeleted) {
+        console.log("lastsync delete horaha h", job.id);
+        await JobStorage.deleteJob(job.id);
+        dispatch(removeJob(job.id));
+      } else {
+        const { isDeleted, ...rest } = job;
+        await JobStorage.updateJob(rest);
+      }
+    }
+    await JobStorage.setLastSync(new Date());
+  }
+
+  const throttleSyncData = throttle(syncData, 30000);
 
   useEffect(() => {
     async function getAllJobs() {
       try {
-        const res = await ExtensionCommunicator.updateIndexDB();
-        const indexDbData = await JobStorage.getJobs();
+        let indexDbData = await JobStorage.getJobs();
+        if (indexDbData.length === 0) {
+          const userJobs = await getUserJobs();
+          await JobStorage.storeJobs([
+            ...userJobs.data.jobData,
+            ...userJobs.data.jobEmailData,
+          ]);
+        }
+        const res = await ExtensionCommunicator.updateIndexDB(); //updates any extension data to indexDB
+        indexDbData = await JobStorage.getJobs();
         console.log("IndexDB Data", indexDbData);
         dispatch(setJobs(indexDbData));
-        const updatedJobs = res.data.filter((job) => job.status === "updated");
-        const newJobs = res.data.filter((job) => job.status === "new");
-        console.log("response data", res.data);
-        console.log("newJobs", newJobs);
+        await throttleSyncData();
+        const updatedJobs = res.data.filter((job) => job.status === "updated"); //updated jobs from extension
+        const newJobs = res.data.filter((job) => job.status === "new"); //new jobs from the extension
         if (res.isChanged) {
           if (updatedJobs.length > 0 || newJobs.length > 0) {
             console.log("Updating JDs");
@@ -145,7 +175,7 @@ const Tracker = () => {
 
     dispatch(addJob(newJob));
     await updateJD([], [newJob]);
-    
+
     JobStorage.addJob(newJob)
       .then(() => {
         toast({

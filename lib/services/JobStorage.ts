@@ -2,7 +2,7 @@ import { Job } from "@/types/job-tracker";
 
 const DB_NAME = "JobTrackerDB";
 const STORE_NAME = "jobData";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export class JobStorage {
   private static db: IDBDatabase | null = null;
@@ -21,6 +21,9 @@ export class JobStorage {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains(STORE_NAME)) {
           db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains("meta")) {
+          db.createObjectStore("meta");
         }
       };
 
@@ -124,6 +127,36 @@ export class JobStorage {
     return new Promise((resolve, reject) => {
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
+  static async setLastSync(date: Date): Promise<void> {
+    const db = await this.openDB();
+    const tx = db.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+    store.put(date.toISOString(), "lastSync");
+
+    return new Promise((resolve, reject) => {
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  static async getLastSync(): Promise<Date | null> {
+    const db = await this.openDB();
+    const tx = db.transaction("meta", "readonly");
+    const store = tx.objectStore("meta");
+
+    return new Promise((resolve, reject) => {
+      const req = store.get("lastSync");
+      req.onsuccess = () => {
+        if (req.result) {
+          resolve(new Date(req.result));
+        } else {
+          resolve(null);
+        }
+      };
+      req.onerror = () => reject(req.error);
     });
   }
 }

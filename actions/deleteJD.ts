@@ -11,27 +11,37 @@ export const deleteJD = asyncHandler(async (jobId: string) => {
   if (!session || !session?.user?.id) throw ActionsError.userNotAuthenticated;
   if (!jobId) throw ActionsError.badRequest;
 
-  const { r2FileName } = await prisma.jD.delete({
+  // const { r2FileName } = await prisma.jD.delete({
+  //   where: {
+  //     id: jobId,
+  //     userId: session?.user?.id,
+  //   },
+  //   select: {
+  //     r2FileName: true,
+  //   },
+  // });
+
+  // //delete the JD from r2 using jdUrl
+  // const response = await deleteFileFromR2({
+  //   bucketName: process.env.R2_BUCKET_JDS!,
+  //   fileName: r2FileName,
+  // });
+
+  await prisma.jD.update({
     where: {
       id: jobId,
-      userId: session?.user?.id,
+      userId: session.user.id,
     },
-    select: {
-      r2FileName: true,
+    data: {
+      isDeleted: true,
     },
   });
 
-  //delete the JD from r2 using jdUrl
-  const response = await deleteFileFromR2({
-    bucketName: process.env.R2_BUCKET_JDS!,
-    fileName: r2FileName,
-  });
-  
-  console.log("response from r2 jd deletion", JSON.stringify(response));
+  // console.log("response from r2 jd deletion", JSON.stringify(response));
 
   return {
     success: true,
-    message: "Successfully deleted the job email",
+    message: "Successfully deleted the job description",
     status: 200,
   };
 });

@@ -43,7 +43,8 @@ export const updateJD = asyncHandler(
               workType: job.workType || "",
               url: job.url || "",
               r2FileName: r2FileName,
-              user: { connect: { id: userId } }, // Connect the JD with the existing User by userId
+              addedOn: job.addedOn, 
+              user: { connect: { id: userId } },
             },
           });
         }

@@ -224,8 +224,10 @@ model JobEmails {
   description String
   meetingUrl  String
   userId      String
+  isDeleted   Boolean @default(false)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserJobs")
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt @default(now())
 
   @@unique([jobId, userId])
 }
@@ -244,5 +246,9 @@ model JD {
   state          String
   url            String
   workType       String
+  addedOn        String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt @default(now())
+  isDeleted      Boolean  @default(false)
   user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
