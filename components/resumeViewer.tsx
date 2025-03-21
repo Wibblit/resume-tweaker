@@ -1,7 +1,7 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
-import { ResumeStyles} from "@/types/types";
+import { ResumeStyles } from "@/types/types";
 import {
   UpdateSectionOrderLayout,
   UpdateFontSize,
@@ -32,6 +32,7 @@ interface ResumeDisplayProps {
   resumeStyle: ResumeStyles;
   resumeData: ResumeData;
   templateNumber?: number;
+  className?: string;
 }
 
 const PAGE_FORMATS = {
@@ -45,6 +46,7 @@ export default function ResumeDisplay({
   resumeStyle,
   resumeData,
   templateNumber = 1,
+  className,
 }: ResumeDisplayProps) {
   // Use the template number from props or fall back to resumeStyle.id
   const activeTemplate = templateNumber || resumeStyle.id || 1;
@@ -101,8 +103,12 @@ export default function ResumeDisplay({
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-sidebar/30">
-      <ScrollArea className="flex-grow">
+    <div
+      className={[
+        'flex flex-col h-full w-full bg-sidebar/30',
+        className || ''
+      ].filter(Boolean).join(' ')}
+    >      <ScrollArea className="flex-grow">
         <div className="flex flex-col items-center justify-start p-4 pb-20">
           {pages.map((page, index) => (
             <motion.div
@@ -114,15 +120,14 @@ export default function ResumeDisplay({
             >
               <div
                 id={`page-${page.id}`}
+                data-page={page.id}
                 className="relative bg-white text-foreground shadow-2xl overflow-hidden mx-auto"
                 style={{
                   fontFamily: resumeStyle.font,
-                  width: `${
-                    PAGE_FORMATS[resumeStyle.paperFormat]?.width * MM_TO_PX
-                  }px`,
-                  height: `${
-                    PAGE_FORMATS[resumeStyle.paperFormat]?.height * MM_TO_PX
-                  }px`,
+                  width: `${PAGE_FORMATS[resumeStyle.paperFormat]?.width * MM_TO_PX
+                    }px`,
+                  height: `${PAGE_FORMATS[resumeStyle.paperFormat]?.height * MM_TO_PX
+                    }px`,
                 }}
               >
                 {renderTemplate(page, index, resumeStyle)}

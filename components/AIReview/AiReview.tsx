@@ -26,6 +26,7 @@ import {
   X,
   Save,
   CheckCircle,
+  Printer
 } from "lucide-react";
 import axios, { CancelTokenSource } from "axios";
 import {
@@ -80,6 +81,14 @@ interface ContentRendererProps {
   className?: string;
   dateFormat?: string;
 }
+
+
+const PAGE_FORMATS = {
+  a4: { width: 210, height: 297 },
+  letter: { width: 216, height: 279 },
+};
+
+const MM_TO_PX = 3.7795275591;
 
 const getProperty = async (obj: any, selector: string) => {
   return await getPropertyServer(obj, selector);
@@ -420,18 +429,6 @@ export default function AIReview({
     "Building change list",
   ];
 
-  function extractSelectorAndOutput(jsonText: string) {
-    try {
-      const data = JSON.parse(jsonText);
-      return data.map((item: any) => ({
-        selector: item.selector,
-        final_output: item.final_output,
-      }));
-    } catch (error) {
-      console.error("Invalid JSON format", error);
-      return [];
-    }
-  }
 
   const handleAcceptAllAndSave = async () => {
     try {
@@ -754,6 +751,86 @@ export default function AIReview({
     // );
   };
 
+  // In AiReview.tsx
+  const handlePrint = () => {
+    const pagesHTML = Array.from(document.querySelectorAll("[data-page]"))
+      .map((el) => el.outerHTML)
+      .join("");
+  
+    // Get all styles from document
+    const styles = Array.from(document.styleSheets)
+      .map((sheet) => {
+        try {
+          return Array.from(sheet.cssRules)
+            .map((rule) => rule.cssText)
+            .join("\n");
+        } catch (e) {
+          console.warn("Error accessing stylesheet rules", e);
+          return "";
+        }
+      })
+      .join("\n");
+  
+    // Print-specific styles
+    const printStyles = `
+      @page {
+        size: ${resumeStyles.paperFormat};
+        margin: 0;
+      }
+      @media print {
+        html, body {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        #resume-pages {
+          width: ${PAGE_FORMATS[resumeStyles.paperFormat].width * MM_TO_PX}px;
+          margin: 0 auto;
+        }
+        /* Hide all other elements */
+        body > *:not(#resume-pages) {
+          display: none !important;
+        }
+      }
+    `;
+  
+    // Create print iframe
+    const printFrame = document.createElement("iframe");
+    printFrame.style.display = "none";
+    document.body.appendChild(printFrame);
+  
+    // Write content to iframe
+    const printDoc = printFrame.contentDocument;
+    printDoc?.open();
+    printDoc?.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>${styles}</style>
+          <style>${printStyles}</style>
+        </head>
+        <body>
+          <div id="resume-pages">
+            ${pagesHTML}
+          </div>
+        </body>
+      </html>
+    `);
+    printDoc?.close();
+  
+    // Wait for content to load then print
+    setTimeout(() => {
+      printFrame.contentWindow?.print();
+      document.body.removeChild(printFrame);
+    }, 500);
+  };
+  
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
       <div className="flex h-[calc(100vh-60px)] md:h-[calc(100vh-20px)] w-full items-center justify-center p-4">
@@ -969,7 +1046,6 @@ export default function AIReview({
           </motion.div>
         )}
       </AnimatePresence>
-      {/* <textarea name="" id="" value={JSON.stringify("Asd",null,2)}></textarea> */}
       <AnimatePresence>
         {showResultsDialog && (
           <motion.div
@@ -991,6 +1067,14 @@ export default function AIReview({
                 </Button>
                 <h2 className="text-xl font-bold">Resume Analysis Results</h2>
                 <div className="flex items-center gap-x-2">
+                  <Button
+                    onClick={handlePrint}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print Resume
+                  </Button>
                   <Button
                     onClick={handleAcceptAllAndSave}
                     variant="default"
@@ -1255,6 +1339,7 @@ export default function AIReview({
                       resumeStyle={resumeStyles}
                       templateNumber={resumeStyles.id}
                       key={resumeStyles.id}
+                      className="resume-display-container"
                     />
                     {/* <div className="text-center">
                       <FileText className="mx-auto h-16 w-16 text-muted-foreground" />
