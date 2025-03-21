@@ -3,11 +3,6 @@
 import { useEffect, useState } from "react";
 import { ExtensionCommunicator } from "@/lib/services/ExtensionCommunicator";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
-import {
-  setJobs,
-  resetUnsavedChanges,
-  addJob,
-} from "@/slices/job-tracker/job-slice";
 import { KanbanBoard } from "./KanbanBoard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -43,7 +38,12 @@ import { getUserJobs } from "@/actions/getUserJobs";
 import { useRouter } from "next/navigation";
 import { updatedAfter } from "@/actions/updatedAfter";
 import throttle from "lodash/throttle";
-import { removeJob } from "@/slices/job-tracker/job-slice";
+import {
+  removeJob,
+  addJob,
+  setJobs,
+  resetUnsavedChanges,
+} from "@/slices/job-tracker/job-slice";
 
 const Tracker = () => {
   const dispatch = useAppDispatch();
@@ -59,26 +59,47 @@ const Tracker = () => {
   const { toast } = useToast();
   const { state: sidebarState } = useSidebar();
 
-  async function syncData() {
-    const lastSync = await JobStorage.getLastSync();
-    const since = lastSync?.toISOString() ?? "1970-01-01T00:00:00.000Z";
-    const updatedJobs = await updatedAfter(since);
-    const { jobs, emails } = updatedJobs.data;
-    console.log("jobs from syncData: ", jobs);
-    for (const job of [...jobs, ...emails]) {
-      if (job.isDeleted) {
-        console.log("lastsync delete horaha h", job.id);
-        await JobStorage.deleteJob(job.id);
-        dispatch(removeJob(job.id));
-      } else {
-        const { isDeleted, ...rest } = job;
-        await JobStorage.updateJob(rest);
-      }
+async function syncData(extensionData: Job[]) {
+  const lastSync = await JobStorage.getLastSync();
+  const since = lastSync?.toISOString() ?? "1970-01-01T00:00:00.000Z";
+  const updatedJobs = await updatedAfter(since);
+  const { jobs, emails } = updatedJobs.data;
+  console.log("jobs from syncData: ", jobs);
+
+  // Convert extensionData to a Map for fast lookups
+  const extensionDataMap = new Map(extensionData.map((job) => [job.id, job]));
+
+  const deletePromises = [];
+  const updatePromises = [];
+
+  // Process both jobs and emails
+  for (const job of [...jobs, ...emails]) {
+    if (job.isDeleted) {
+      console.log("lastsync delete horaha h", job.id);
+      // Mark the job for deletion
+      deletePromises.push(JobStorage.deleteJob(job.id));
+      dispatch(removeJob(job.id));
+      extensionDataMap.delete(job.id); // Remove job from map
+    } else {
+      const { isDeleted, ...rest } = job;
+      // Mark the job for update
+      updatePromises.push(JobStorage.updateJob(rest));
+      dispatch(addJob(job));
+      extensionDataMap.set(job.id, job); // Update job in map
     }
-    await JobStorage.setLastSync(new Date());
   }
 
-  const throttleSyncData = throttle(syncData, 30000);
+  // Wait for all delete and update operations to complete
+  await Promise.all([...deletePromises, ...updatePromises]);
+
+  // Set the last sync time after updates and deletions are complete
+  await JobStorage.setLastSync(new Date());
+
+  return Array.from(extensionDataMap.values());
+}
+
+
+  const throttleSyncData = throttle(syncData, 30 * 1000);
 
   useEffect(() => {
     async function getAllJobs() {
@@ -95,7 +116,7 @@ const Tracker = () => {
         indexDbData = await JobStorage.getJobs();
         console.log("IndexDB Data", indexDbData);
         dispatch(setJobs(indexDbData));
-        await throttleSyncData();
+        const extensionData = await throttleSyncData(res.data);
         const updatedJobs = res.data.filter((job) => job.status === "updated"); //updated jobs from extension
         const newJobs = res.data.filter((job) => job.status === "new"); //new jobs from the extension
         if (res.isChanged) {
@@ -104,9 +125,9 @@ const Tracker = () => {
             await updateJD(updatedJobs, newJobs);
           }
         }
-        const formattedData = res.data.map((job: Job) => ({
+        const formattedData = extensionData.map((job: Job) => ({
           ...job,
-          status: "old" as "old",
+          status: "old" as const,
         }));
 
         await ExtensionCommunicator.updateChanges(formattedData);

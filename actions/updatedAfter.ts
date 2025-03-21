@@ -12,7 +12,7 @@ export const updatedAfter = asyncHandler(async (since: string) => {
 
   if (!session) throw ActionsError.unauthorizedAction;
   if (!since) throw ActionsError.badRequest;
-
+  console.log("since from after", since);
   async function getJobs(): Promise<Job[]> {
     const jobs = await prisma.jD.findMany({
       where: {

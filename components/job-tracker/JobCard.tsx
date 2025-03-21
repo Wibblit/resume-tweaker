@@ -24,7 +24,7 @@ interface JobCardProps {
   index: number;
 }
 
-export function getSourceIcon(source: string) {
+export function getSourceIcon(source: string = '') {
   switch (source.toLowerCase()) {
     case "linkedin":
       return (

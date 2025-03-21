@@ -23,30 +23,45 @@ export const updateJD = asyncHandler(
             where: { id: job.id },
             data: {
               state: job.state,
+              isDeleted: false,
             },
           });
         } else {
-          const { fileName: r2FileName } = await r2Storage.uploadText(
-            job.jobDescription
-          );
-          await prisma.jD.create({
-            data: {
-              id: job.id,
-              companyName: job.companyName,
-              employmentType: job.employmentType || "",
-              jobTitle: job.jobTitle,
-              location: job.location,
-              logoSrc: job.logoSrc || "",
-              salaryRange: job.salaryRange || "",
-              source: job.source,
-              state: job.state,
-              workType: job.workType || "",
-              url: job.url || "",
-              r2FileName: r2FileName,
-              addedOn: job.addedOn, 
-              user: { connect: { id: userId } },
-            },
+          const existingJob = await prisma.jD.findUnique({
+            where: { id: job.id },
           });
+          if (existingJob) {
+            await prisma.jD.update({
+              where: {
+                id: job.id,
+              },
+              data: {
+                isDeleted: false,
+              },
+            });
+          } else {
+            const { fileName: r2FileName } = await r2Storage.uploadText(
+              job.jobDescription
+            );
+            await prisma.jD.create({
+              data: {
+                id: job.id,
+                companyName: job.companyName,
+                employmentType: job.employmentType || "",
+                jobTitle: job.jobTitle,
+                location: job.location,
+                logoSrc: job.logoSrc || "",
+                salaryRange: job.salaryRange || "",
+                source: job.source,
+                state: job.state,
+                workType: job.workType || "",
+                url: job.url || "",
+                r2FileName: r2FileName,
+                addedOn: job.addedOn,
+                user: { connect: { id: userId } },
+              },
+            });
+          }
         }
       }
     };

@@ -107,7 +107,7 @@ export class JobStorage {
     const store = transaction.objectStore(STORE_NAME);
 
     store.delete(jobId);
-
+    
     return new Promise((resolve, reject) => {
       transaction.oncomplete = () => resolve();
       transaction.onerror = () => reject(transaction.error);

@@ -35,7 +35,10 @@ const jobSlice = createSlice({
 
     // Add a new job
     addJob: (state, action: PayloadAction<Job>) => {
-      state.items.push(action.payload);
+      const idx = state.items.findIndex((j) => j.id === action.payload.id);
+      if (idx < 0) {
+        state.items.push(action.payload);
+      }
       state.hasUnsavedChanges = hasStateChanged(
         state.items,
         state.initialItems
