@@ -1,60 +1,74 @@
-'use client'
+'use client';
 
-import jp from 'jsonpath';
 import { ResumeData } from '@/types/types';
 
-export function getPropertyServer(obj: any, selector: string): any {
+// Type for the JSONPath module
+type JSONPath = {
+  query: (obj: any, path: string) => any[];
+  value: (obj: any, path: string, newValue?: any) => any;
+};
+
+async function getJsonPath(): Promise<JSONPath> {
+  const module = await import('jsonpath');
+  return module.default || module;
+}
+
+export async function getPropertyServer(obj: any, selector: string): Promise<any> {
   try {
-    // Remove the $ prefix if it exists, as we're adding it
-    const cleanSelector = selector.startsWith('$') ? selector : `$.${selector}`;
-    const result = jp.query(obj, cleanSelector);
-    return result.length === 1 ? result[0] : result;
+    const jp = await getJsonPath();
+    const result = jp.query(obj, selector);
+    return Array.isArray(result) && result.length === 1 ? result[0] : result;
   } catch (error) {
-    console.error("Invalid selector:", selector, error);
+    console.error('Invalid selector:', selector, error);
     return undefined;
   }
 }
 
-export function updateResumeDataServer(resumeData: ResumeData, selector: string, finalOutput: string): ResumeData{
+export async function updateResumeDataServer(
+  resumeData: ResumeData, 
+  selector: string, 
+  finalOutput: string
+): Promise<ResumeData> {
   const updatedData = JSON.parse(JSON.stringify(resumeData));
-  
+
   try {
     let parsedOutput: any = finalOutput;
     try {
       parsedOutput = JSON.parse(finalOutput);
     } catch (e) {
-      // If parsing fails, use the original string
+      // Use the original string if JSON parsing fails
     }
 
-    // Clean the selector
-    const cleanSelector = selector.startsWith('$') ? selector : `$.${selector}`;
-    jp.value(updatedData, cleanSelector, parsedOutput);
+    const jp = await getJsonPath();
+    jp.value(updatedData, selector, parsedOutput);
     return updatedData;
   } catch (error) {
-    console.error("Invalid JSONPath selector:", selector, error);
-    return resumeData; // Return original data if update fails
+    console.error('Invalid selector:', selector, error);
+    return resumeData;
   }
 }
 
-export function processAcceptAllChanges(resumeData: ResumeData, changes: { selector: string, final_output: string }[]): ResumeData {
+export async function processAcceptAllChanges(
+  resumeData: ResumeData, 
+  changes: { selector: string, final_output: string }[]
+): Promise<ResumeData> {
   let updatedData = JSON.parse(JSON.stringify(resumeData));
-  
+  const jp = await getJsonPath();
+
   for (const { selector, final_output } of changes) {
     try {
       let parsedOutput: any = final_output;
       try {
         parsedOutput = JSON.parse(final_output);
       } catch (e) {
-        // If parsing fails, use the original string
+        // Use the original string if JSON parsing fails
       }
 
-      // Clean the selector
-      const cleanSelector = selector.startsWith('$') ? selector : `$.${selector}`;
-      jp.value(updatedData, cleanSelector, parsedOutput);
+      jp.value(updatedData, selector, parsedOutput);
     } catch (error) {
-      console.error("Invalid JSONPath selector:", selector, error);
+      console.error('Invalid selector:', selector, error);
     }
   }
-  
+
   return updatedData;
 }
