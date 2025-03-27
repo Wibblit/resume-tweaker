@@ -222,6 +222,9 @@ export const executeStagesConcurrently = async (stagePrompts: string[], stageNam
 export const resumeReview = async (resume: string, jd: string, reviewType: string) => {
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   let stagespromptlist = []
+  console.log('-------------------------------------------')
+  console.log('resume review started------------------------')
+  console.log('resume:', resume)
   if (reviewType == 'generic') {
     stagespromptlist = [grammerPrompt(resume), readabilityClarityPrompt(resume), impactPrompt(resume)]
   }
@@ -242,9 +245,9 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
     const mergejson = JSON.parse(finalText)
     console.log('parsed merge')
     const mergedmetricsjson = mergeMetrics(stageresults.stageres, stageresults.tomerge, mergejson)
-    console.log('merged metrics---------------------------------\n', mergedmetricsjson)
+    console.log('merged metrics---------------------------------\n', JSON.stringify(mergedmetricsjson,null,2))
     const finalStageResults = syncStageResultsWithMerged(stageresults.stageres, mergedmetricsjson, stageresults.subsetsToRemove)
-    console.log('final result ready-----------------------------\n', finalStageResults)
+    console.log('final result ready-----------------------------\n', JSON.stringify(finalStageResults,null,2))
     var tokendata = response.response.usageMetadata
     tokensinfo.push({
       candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,

@@ -15,12 +15,17 @@ export const reportRules = () => {
 #### Correction Process:
 - Use JSON selectors for pinpoint accuracy.
 - Provide full field values, even for small changes.
-- final_output field must be clean and ready for use (no placeholders or comment markers) and must be in the final format to insert directly into the resume without requiring cleanup, so no paranthesis comments or anything, it needs to be final, this is a correction, dont suggest things in this, this is the final corrected value part of the selector.
+- final_output field must be clean and ready for use (no placeholders or comment markers, or paranthesised suggestions asking the user to do something more) and must be in the final format to insert directly into the resume without requiring cleanup or additional work, so no paranthesis comments or anything, it needs to be final, this is a correction, dont suggest things in this, this is the final corrected value part of the selector.
 - Prioritize conciseness, while correcting take into account the no of sentences or points before making the correction.
 - The correction must be in line with the comment and the correction_logic
 
 #### Special case for correction
 - note that the main resume summary is an array of objects, even though it only has one single object, the selector for summary content is summary[0].content, not summary.content
+
+#### Special rules for selectors
+- Use index-based selectors only for the summary field, and specifically only summary[0].content, literally no other field is allowed to use index based selectors.
+- For every selector other than the summary[0].content, index-based selectors are not allowed, so if you need something like awards[0].summary, then you need to use filter bsed selectors, like awards[?(@.id=='90876543-2109-8765-4321-0fedcba98765')].summary and nothing else.
+- you can only use filter based selectors and regular key based selectors (if you want select whole object like 'awards') for all other fields, so no index based selectors for any other field, only summary[0].content is allowed to use index based selectors.
 
 #### Conflict Resolution:
 - Resolve all issues within each metric and across metrics for the same selector.
@@ -28,7 +33,7 @@ export const reportRules = () => {
 
 ### Ethical Boundaries:
 - Don't invent abilities beyond the user's scope.
-- Use vague or estimated values only when necessary, and keep them realistic.
+- Use vague or made up estimated values only when necessary, and keep them realistic, but when you need to use madeup values, use them, dont prompt the user to do it.
 - Avoid unnecessary jargon or artificial complexity, this rule needs to be coexistant with the previous one, pick circumstances.
 - Optimize for both ATS and human readability with formal, natural language.
 
@@ -38,6 +43,7 @@ export const reportRules = () => {
 - Skills sections have subcategories, respect that, do not flatten that structure
 - take a good look at the field and subfield names and follow them in both selectors and final_output where necessary
 - DO NOT EVER COMMENT 'no issues found' and return the same thing as final_output, that is a collosal waste of my time, if you think something has no issues, then just leave it, dont put it in the json output.
+- If you find that your final_output changes nothing from the original, then just leave it out, dont put it in the json output, that is a collosal waste of my time, if you think something has no issues, then just leave it, dont put it in the json output.
 
 ### general rules of thumb regarding lenghts
 - Main summary should be 2-3 sentences
