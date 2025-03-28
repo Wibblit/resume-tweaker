@@ -90,10 +90,10 @@ export default function ResumeContent({
               </div>
             ) : (
               <div className="flex flex-wrap sm:flex-nowrap items-center justify-start sm:justify-start gap-2">
-                <div className="flex items-center gap-1 bg-secondary/50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[140px] justify-center">
+                <div className="flex items-center gap-1 bg-secondary/50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm min-w-[160px] justify-center">
                   <FileText className="w-4 h-4 text-primary" />
                   <span className="font-medium text-secondary-foreground">
-                    {availableSlots} / {resumeslot} slots
+                    {usedresumeslot} / {resumeslot} slots used
                   </span>
                 </div>
 

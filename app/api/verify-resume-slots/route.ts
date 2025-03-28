@@ -38,5 +38,6 @@ export const GET = asyncHandler(async (req: NextRequest) => {
   return NextResponse.json({
     success: true,
     slotVerify: data?.resumeslot < resumes + 1,
+    usedresume: resumes,
   });
 });

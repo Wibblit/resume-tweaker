@@ -3,14 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  Loader2,
-  X,
-  Save,
-  CheckCircle,
-  Printer
-} from "lucide-react";
+import { FileText, Loader2, X, Save, CheckCircle, Printer } from "lucide-react";
 import axios, { CancelTokenSource } from "axios";
 import {
   ResumeData,
@@ -36,9 +29,26 @@ import { saveResumeData } from "@/actions/saveResumeData";
 import ResumeDisplay from "../resumeViewer";
 import { initialState } from "@/slices/rightsidebarSlice";
 import { DEFAULT_RESUME_STYLES, testresume } from "@/data/reviewData";
-import { getPropertyServer, updateResumeDataServer, processAcceptAllChanges } from '@/lib/resumereview/resumeActions';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  getPropertyServer,
+  updateResumeDataServer,
+  processAcceptAllChanges,
+} from "@/lib/resumereview/resumeActions";
 import AIReviewSetup from "./AIReviewSetup";
 import { ContentRenderer, AsyncContentRenderer } from "./ContentRenderer";
+import { createResumeWithData } from "@/actions/createResume";
+import { updateUsedResumeSlots } from "@/slices/userAssets";
 
 type Issue = {
   name: string;
@@ -115,7 +125,8 @@ function processMetrics(suggestions: AIReviewResult[]) {
     });
   });
 
-  const averageScore = scoreCount > 0 ? (totalScore / scoreCount).toFixed(1) : 0;
+  const averageScore =
+    scoreCount > 0 ? (totalScore / scoreCount).toFixed(1) : 0;
 
   const issuesBySeverity: Record<string, number> = {
     minor: 0,
@@ -177,18 +188,30 @@ export default function AIReview({
 }: {
   recentResumes: UserResume[];
 }) {
-  const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(null);
+  const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
+    null
+  );
   const testparseresume = JSON.parse(testresume);
   const [resumeData, setResumeData] = useState(testparseresume);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const credits = useAppSelector((state) => state?.assets?.credits);
-  const [cancelTokenSource, setCancelTokenSource] = useState<CancelTokenSource | null>(null);
+  const [cancelTokenSource, setCancelTokenSource] =
+    useState<CancelTokenSource | null>(null);
   const [resumeStyles, setResumeStyles] = useState<ResumeStyles>(initialState);
   const [showResultsDialog, setShowResultsDialog] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+  const [resumeID, setResumeID] = useState<string | null>(null);
+  const [reviewType, setReviewType] = useState<string | null>(null);
+  const [resumeName, setResumeName] = useState("");
+  const [openResumeName, setOpenResumeName] = useState(false);
+  const [saveAll, setSaveAll] = useState<boolean>(false);
+  const usedresumes = useAppSelector((state) => state.assets.usedresumes);
+  const totalslot = useAppSelector((state) => state.assets.resumeslot);
+
+  console.log(usedresumes, "Used rewume", totalslot, "total");
 
   const sentences = [
     "Analyzing your resume",
@@ -202,11 +225,15 @@ export default function AIReview({
   useEffect(() => {
     if (isLoading) {
       const interval = setInterval(() => {
-        setCurrentSentenceIndex((prevIndex) => (prevIndex + 1) % sentences.length);
+        setCurrentSentenceIndex(
+          (prevIndex) => (prevIndex + 1) % sentences.length
+        );
       }, 3000);
       return () => clearInterval(interval);
     }
   }, [isLoading]);
+
+  console.log(reviewType, "ReviewType");
 
   const handleFormSubmit = async (formData: {
     resumeOption: "select" | "upload";
@@ -215,6 +242,10 @@ export default function AIReview({
     jd: string;
     reviewType: string;
   }) => {
+    console.log(formData.reviewType);
+    setResumeID(formData.selectedResume);
+
+    setReviewType(formData.reviewType);
     if (credits < (creditList.get(formData.reviewType) ?? 0)) {
       setOpen(true);
       return;
@@ -251,7 +282,8 @@ export default function AIReview({
       if (response?.data?.statusCode === 402) {
         return toast({
           variant: "destructive",
-          description: response?.data.message || "Insufficient credits to proceed.",
+          description:
+            response?.data.message || "Insufficient credits to proceed.",
           title: "Insufficient credits",
         });
       }
@@ -265,12 +297,13 @@ export default function AIReview({
       }
 
       setAiSuggestions(response.data.output.finalStageResults);
+
       dispatch(
         updateCredits(
           credits -
-          ((formData.reviewType === "tailored"
-            ? creditList.get("tailored")
-            : creditList.get("generic")) ?? 0)
+            ((formData.reviewType === "tailored"
+              ? creditList.get("tailored")
+              : creditList.get("generic")) ?? 0)
         )
       );
     } catch (error) {
@@ -292,7 +325,7 @@ export default function AIReview({
         selector,
         final_output,
       }));
-      
+
       const updatedData = await processAcceptAllChanges(resumeData, data);
       setResumeData(updatedData);
       await handleSave({ value: updatedData });
@@ -312,10 +345,80 @@ export default function AIReview({
     }
   };
 
-  const handleSave = async ({ value }: { value?: any } = { value: undefined }) => {
+  const handleSaveAS = async () => {
     try {
+      if (usedresumes >= totalslot) {
+        toast({
+          title: "Failed",
+          description: "No slots avialable",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!resumeName) {
+        toast({
+          title: "Insufficient Data",
+          description: "Resume name is empty",
+          variant: "destructive",
+        });
+      }
+
+      const res = await createResumeWithData({
+        resumeData: resumeData,
+        resumeStyles: resumeStyles,
+        resumeName: resumeName,
+      });
+
+      setResumeID(res.resumeId);
+
+      if (res.success) {
+        dispatch(updateUsedResumeSlots(usedresumes + 1))
+        toast({
+          title: "Success",
+          description: "Resume created successfully.",
+        });
+      } else {
+        toast({
+          title: "Failed",
+          description: "Failed to create resume",
+          variant: "destructive",
+        });
+      }
+      setOpenResumeName(false);
+
+      if (saveAll) {
+        await handleAcceptAllAndSave();
+        setSaveAll(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Failed",
+        description: "Failed to create resume",
+        variant: "destructive",
+      });
+    } finally {
+      setOpenResumeName(false);
+    }
+  };
+
+  const handleSave = async (
+    { value }: { value?: any } = {
+      value: undefined,
+    }
+  ) => {
+    try {
+      console.log("The resume id is", resumeID);
+
       const data = value || resumeData;
-      const res = await saveResumeData(data, undefined, data.id, "reviewupdate");
+      const res = await saveResumeData(
+        data,
+        undefined,
+        resumeID,
+        "reviewupdate"
+      );
+
+      console.log("Resume ID", data.id);
 
       if (res.status === 429) {
         toast({
@@ -326,10 +429,20 @@ export default function AIReview({
         return;
       }
 
-      toast({
-        title: "Success",
-        description: "Resume updated successfully.",
-      });
+      console.log(res);
+
+      if (res.success) {
+        toast({
+          title: "Success",
+          description: "Resume updated successfully.",
+        });
+      } else {
+        toast({
+          title: "Failed",
+          description: "Resume update failed.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -341,20 +454,24 @@ export default function AIReview({
 
   const handleDeleteIssue = (selector: string) => {
     if (!aiSuggestions) return;
-    setAiSuggestions(aiSuggestions.filter(
-      (suggestion) => suggestion.selector !== selector
-    ));
+    setAiSuggestions(
+      aiSuggestions.filter((suggestion) => suggestion.selector !== selector)
+    );
   };
 
   const handleAcceptIssue = async (selector: string, finalOutput: string) => {
     if (!aiSuggestions || !resumeData) return;
 
     try {
-      const updatedData = await updateResumeDataServer(resumeData, selector, finalOutput);
+      const updatedData = await updateResumeDataServer(
+        resumeData,
+        selector,
+        finalOutput
+      );
       setResumeData(updatedData);
-      setAiSuggestions(aiSuggestions.filter(
-        (suggestion) => suggestion.selector !== selector
-      ));
+      setAiSuggestions(
+        aiSuggestions.filter((suggestion) => suggestion.selector !== selector)
+      );
 
       toast({
         title: "Success",
@@ -373,7 +490,7 @@ export default function AIReview({
     const pagesHTML = Array.from(document.querySelectorAll("[data-page]"))
       .map((el) => el.outerHTML)
       .join("");
-  
+
     const styles = Array.from(document.styleSheets)
       .map((sheet) => {
         try {
@@ -386,7 +503,7 @@ export default function AIReview({
         }
       })
       .join("\n");
-  
+
     const printStyles = `
       @page {
         size: ${resumeStyles.paperFormat};
@@ -412,11 +529,11 @@ export default function AIReview({
         }
       }
     `;
-  
+
     const printFrame = document.createElement("iframe");
     printFrame.style.display = "none";
     document.body.appendChild(printFrame);
-  
+
     const printDoc = printFrame.contentDocument;
     printDoc?.open();
     printDoc?.write(`
@@ -435,7 +552,7 @@ export default function AIReview({
       </html>
     `);
     printDoc?.close();
-  
+
     setTimeout(() => {
       printFrame.contentWindow?.print();
       document.body.removeChild(printFrame);
@@ -443,7 +560,9 @@ export default function AIReview({
   };
 
   const metrics = aiSuggestions ? processMetrics(aiSuggestions) : null;
-  const groupedIssues = aiSuggestions ? groupIssuesBySection(aiSuggestions) : {};
+  const groupedIssues = aiSuggestions
+    ? groupIssuesBySection(aiSuggestions)
+    : {};
 
   return (
     <div className="flex flex-col h-full bg-background text-foreground">
@@ -528,16 +647,31 @@ export default function AIReview({
                 </Button>
                 <h2 className="text-xl font-bold">Resume Analysis Results</h2>
                 <div className="flex items-center gap-x-2">
-                  <Button
-                    onClick={handlePrint}
-                    variant="outline"
-                    size="sm"
-                  >
+                  <Button onClick={handlePrint} variant="outline" size="sm">
                     <Printer className="mr-2 h-4 w-4" />
                     Print Resume
                   </Button>
                   <Button
-                    onClick={handleAcceptAllAndSave}
+                    onClick={() => setOpenResumeName(true)}
+                    variant="default"
+                    size="sm"
+                    disabled={usedresumes === totalslot}
+                    className={`${
+                      usedresumes === totalslot ? "cursor-not-allowed" : ""
+                    }`}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save As
+                  </Button>
+                  <Button
+                    onClick={
+                      resumeID
+                        ? handleAcceptAllAndSave
+                        : () => {
+                            setSaveAll(true);
+                            setOpenResumeName(true);
+                          }
+                    }
                     variant="default"
                     size="sm"
                   >
@@ -545,7 +679,11 @@ export default function AIReview({
                     Accept All & Save
                   </Button>
                   <Button
-                    onClick={() => handleSave()}
+                    onClick={
+                      resumeID
+                        ? () => handleSave()
+                        : () => setOpenResumeName(true)
+                    }
                     variant="default"
                     size="sm"
                   >
@@ -559,7 +697,9 @@ export default function AIReview({
               {metrics && (
                 <div className="border-b bg-muted/30 p-4">
                   <div className="mx-auto max-w-7xl">
-                    <h3 className="mb-4 text-lg font-semibold">Resume Metrics</h3>
+                    <h3 className="mb-4 text-lg font-semibold">
+                      Resume Metrics
+                    </h3>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                       <Card>
                         <CardHeader className="pb-2">
@@ -567,7 +707,7 @@ export default function AIReview({
                             Total Issues
                           </CardTitle>
                         </CardHeader>
-                
+
                         <CardContent>
                           <div className="text-2xl font-bold">
                             {metrics.totalIssues}
@@ -685,64 +825,100 @@ export default function AIReview({
                                       <AccordionContent className="bg-muted/10 p-4">
                                         <div className="space-y-4">
                                           {/* Metrics Section */}
-                                          {issue.metrics.map((metric, metricIndex) => (
-                                            <div key={metricIndex} className="space-y-2">
-                                              <div className="flex items-center justify-between">
-                                                <h4 className="font-medium">{metric.type}</h4>
-                                                <div className="flex items-center gap-2">
-                                                  <Progress value={metric.score * 20} className="w-24" />
-                                                  <span className="text-sm">{metric.score}/5</span>
+                                          {issue.metrics.map(
+                                            (metric, metricIndex) => (
+                                              <div
+                                                key={metricIndex}
+                                                className="space-y-2"
+                                              >
+                                                <div className="flex items-center justify-between">
+                                                  <h4 className="font-medium">
+                                                    {metric.type}
+                                                  </h4>
+                                                  <div className="flex items-center gap-2">
+                                                    <Progress
+                                                      value={metric.score * 20}
+                                                      className="w-24"
+                                                    />
+                                                    <span className="text-sm">
+                                                      {metric.score}/5
+                                                    </span>
+                                                  </div>
                                                 </div>
-                                              </div>
 
-                                              {metric.issues.length > 0 && (
-                                                <div className="space-y-2">
-                                                  {metric.issues.map((issueItem, issueIndex) => (
-                                                    <div key={issueIndex} className="rounded-md bg-muted/30 p-2">
-                                                      <div className="flex items-start justify-between">
-                                                        <div className="flex flex-wrap items-center gap-2 justify-between">
-                                                          <p className="text-sm">{issueItem.name}</p>
-                                                          <Badge
-                                                            variant={
-                                                              issueItem.severity === "major"
-                                                                ? "destructive"
-                                                                : issueItem.severity === "moderate"
-                                                                  ? "default"
-                                                                  : "secondary"
-                                                            }
-                                                            className="mt-1"
-                                                          >
-                                                            {issueItem.severity}
-                                                          </Badge>
+                                                {metric.issues.length > 0 && (
+                                                  <div className="space-y-2">
+                                                    {metric.issues.map(
+                                                      (
+                                                        issueItem,
+                                                        issueIndex
+                                                      ) => (
+                                                        <div
+                                                          key={issueIndex}
+                                                          className="rounded-md bg-muted/30 p-2"
+                                                        >
+                                                          <div className="flex items-start justify-between">
+                                                            <div className="flex flex-wrap items-center gap-2 justify-between">
+                                                              <p className="text-sm">
+                                                                {issueItem.name}
+                                                              </p>
+                                                              <Badge
+                                                                variant={
+                                                                  issueItem.severity ===
+                                                                  "major"
+                                                                    ? "destructive"
+                                                                    : issueItem.severity ===
+                                                                      "moderate"
+                                                                    ? "default"
+                                                                    : "secondary"
+                                                                }
+                                                                className="mt-1"
+                                                              >
+                                                                {
+                                                                  issueItem.severity
+                                                                }
+                                                              </Badge>
+                                                            </div>
+                                                          </div>
                                                         </div>
-                                                      </div>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              )}
-                                            </div>
-                                          ))}
+                                                      )
+                                                    )}
+                                                  </div>
+                                                )}
+                                              </div>
+                                            )
+                                          )}
 
                                           {/* Original and Suggested Section */}
                                           <div className="border-t pt-4 mt-4">
                                             <div className="space-y-4">
                                               <div>
-                                                <h5 className="text-sm font-medium">Original:</h5>
+                                                <h5 className="text-sm font-medium">
+                                                  Original:
+                                                </h5>
                                                 <div className="mt-1 rounded-md bg-muted/20 p-2">
                                                   <AsyncContentRenderer
                                                     resumeData={resumeData}
                                                     selector={issue.selector}
-                                                    dateFormat={resumeStyles?.datetype || "MMM yyyy"}
+                                                    dateFormat={
+                                                      resumeStyles?.datetype ||
+                                                      "MMM yyyy"
+                                                    }
                                                   />
                                                 </div>
                                               </div>
 
                                               <div>
-                                                <h5 className="text-sm font-medium">Suggested:</h5>
+                                                <h5 className="text-sm font-medium">
+                                                  Suggested:
+                                                </h5>
                                                 <div className="mt-1 rounded-md bg-muted/20 p-2">
                                                   <ContentRenderer
                                                     content={issue.final_output}
-                                                    dateFormat={resumeStyles?.datetype || "MMM yyyy"}
+                                                    dateFormat={
+                                                      resumeStyles?.datetype ||
+                                                      "MMM yyyy"
+                                                    }
                                                   />
                                                 </div>
                                               </div>
@@ -751,7 +927,11 @@ export default function AIReview({
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                  onClick={() => handleDeleteIssue(issue.selector)}
+                                                  onClick={() =>
+                                                    handleDeleteIssue(
+                                                      issue.selector
+                                                    )
+                                                  }
                                                 >
                                                   <X className="mr-1 h-3 w-3" />
                                                   Delete
@@ -759,7 +939,12 @@ export default function AIReview({
                                                 <Button
                                                   variant="default"
                                                   size="sm"
-                                                  onClick={() => handleAcceptIssue(issue.selector, issue.final_output)}
+                                                  onClick={() =>
+                                                    handleAcceptIssue(
+                                                      issue.selector,
+                                                      issue.final_output
+                                                    )
+                                                  }
                                                 >
                                                   <CheckCircle className="mr-1 h-3 w-3" />
                                                   Accept
@@ -811,9 +996,46 @@ export default function AIReview({
         )}
       </AnimatePresence>
 
+      <Dialog open={openResumeName} onOpenChange={setOpenResumeName}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Create Resume</DialogTitle>
+            <DialogDescription>
+              Enter a name for your new resume. Click create when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="resume-name" className="text-right">
+                Resume Name
+              </Label>
+              <Input
+                id="resume-name"
+                value={resumeName}
+                onChange={(e) => setResumeName(e.target.value)}
+                className="col-span-3"
+                placeholder="My Professional Resume"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveAS} disabled={!resumeName.trim()}>
+              Create
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <PremiumModal
-        credits={creditList.get("generic") ?? 0}
-        name="Generic Review"
+        credits={
+          reviewType === "generic"
+            ? creditList.get("generic") ?? 0
+            : creditList.get("tailored") ?? 0
+        }
+        name={reviewType === "generic" ? "Generic Review" : "Tailored Review"}
         onClose={() => setOpen(false)}
         open={open}
       />
