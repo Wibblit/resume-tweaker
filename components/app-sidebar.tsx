@@ -37,7 +37,7 @@ import {
   updateCoverSlot,
   updateResumeSlot,
 } from "@/slices/userAssets";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SignOutButton } from "./SignOutButton";
 import {
   DropdownMenu,
@@ -57,6 +57,7 @@ import Link from "next/link";
 import { SettingsDialog } from "./Sidebar/settings/settings-dialog";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
+import { FeedbackForm } from "./feedbackModal";
 
 // Menu items.
 const items = [
@@ -71,6 +72,7 @@ export function AppSidebar({ session }: { session: Session }) {
   const { setTheme, theme } = useTheme();
   const credit = useAppSelector((state) => state?.assets?.credits);
   const loading = useAppSelector((state) => state?.assets?.loading);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { toast } = useToast();
   const credits = {
     used: credit,
@@ -143,10 +145,26 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-          className={`p-3 bg-background/80 rounded-md ${
-            isCollapsed && "flex items-center justify-center"
-          }`}
-        >
+          className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"
+            }`}
+        ><Tooltip>
+            <TooltipTrigger asChild>
+              <div className={"flex items-center justify-center w-full"}>
+                <Button
+                  variant="ghost"
+                  className={`w-full ${isCollapsed && "py-1 px-2"} ${!isCollapsed && "justify-start"
+                    }`}
+                  onClick={() => setIsFeedbackOpen(true)}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  {!isCollapsed && <span className="ml-2">Feedback</span>}
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">Send Feedback</TooltipContent>
+            )}
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -244,6 +262,10 @@ export function AppSidebar({ session }: { session: Session }) {
           </Tooltip>
         </SidebarFooter>
       </Sidebar>
+      <FeedbackForm 
+      open={isFeedbackOpen} 
+      onOpenChange={setIsFeedbackOpen} 
+    />
     </TooltipProvider>
   );
 }
