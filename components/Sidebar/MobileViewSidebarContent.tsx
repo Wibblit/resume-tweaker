@@ -34,6 +34,7 @@ import {
   updateLoadingTrue,
   updateCoverSlot,
   updateResumeSlot,
+  updateUsedResumeSlots,
 } from "@/slices/userAssets";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
@@ -74,10 +75,14 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         const response = await axios.get("/api/get-credits", {
           withCredentials: true,
         });
+        const responseslots = await axios.get("/api/verify-resume-slots", {
+          withCredentials: true,
+        });
         //console.log(response?.data?.Credits?.credits);
         dispatch(updateCredits(response?.data?.Credits?.credits));
         dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
         dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
+        dispatch(updateUsedResumeSlots(responseslots.data?.usedresume));
       } catch (error) {
         //console.log(error);
         toast({

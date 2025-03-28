@@ -167,6 +167,7 @@ export default function AIReviewSetup({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    console.log("Hehe")
     onSubmit({
       resumeOption,
       selectedResume,
