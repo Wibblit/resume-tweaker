@@ -185,7 +185,7 @@ export default function AIReviewSetup({
           id="resume-option"
           value={resumeOption}
           onValueChange={(value: "select" | "upload") => setResumeOption(value)}
-          className="mt-2"
+          className="mt-2 flex gap-4"
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="select" id="select-resume" />
@@ -225,37 +225,28 @@ export default function AIReviewSetup({
       ) : (
         <div>
           <Label htmlFor="resume-upload">Upload Your Resume</Label>
-          <div className="mt-2 flex items-center gap-4">
+          <div className="mt-2 flex items-center gap-2">
             <Input
               id="resume-upload"
               type="file"
               accept=".pdf"
               onChange={handleFileUpload}
-              className="flex-1"
+              className="w-[70%]"
               disabled={resumeOption !== "upload" || isOcrInProgress}
             />
-            <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  disabled={resumeOption !== "upload" || isOcrInProgress}
-                >
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <h2 className="text-lg font-semibold mb-4">Upload Resume</h2>
-                <Input
-                  type="file"
-                  accept=".pdf"
-                  onChange={handleFileUpload}
-                  className="w-full"
-                  disabled={isOcrInProgress}
-                />
-              </DialogContent>
-            </Dialog>
+
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              disabled={resumeOption !== "upload" || isOcrInProgress}
+              className="flex-1"
+              onClick={() => document.getElementById("resume-upload")?.click()}
+
+            >
+              <Upload className="h-4 w-4" /> Browse
+            </Button>
+
           </div>
           {file && (
             <p className="mt-2 text-sm text-muted-foreground">
@@ -280,7 +271,7 @@ export default function AIReviewSetup({
           id="review-type"
           value={reviewType}
           onValueChange={setReviewType}
-          className="mt-2"
+          className="mt-2 flex gap-4"
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="generic" id="generic" />

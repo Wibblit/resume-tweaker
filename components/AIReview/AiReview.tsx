@@ -10,7 +10,7 @@ import {
   ResumeStyles,
   RecentResume as UserResume,
 } from "@/types/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   Accordion,
@@ -28,7 +28,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { saveResumeData } from "@/actions/saveResumeData";
 import ResumeDisplay from "../resumeViewer";
 import { initialState } from "@/slices/rightsidebarSlice";
-import { DEFAULT_RESUME_STYLES, testresume } from "@/data/reviewData";
+import { DEFAULT_RESUME_STYLES, testresume, testsuggestions } from "@/data/reviewData";
 import {
   Dialog,
   DialogContent,
@@ -49,7 +49,7 @@ import AIReviewSetup from "./AIReviewSetup";
 import { ContentRenderer, AsyncContentRenderer } from "./ContentRenderer";
 import { createResumeWithData } from "@/actions/createResume";
 import { updateUsedResumeSlots } from "@/slices/userAssets";
-
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 type Issue = {
   name: string;
   severity: string;
@@ -188,8 +188,9 @@ export default function AIReview({
 }: {
   recentResumes: UserResume[];
 }) {
+
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
-    null
+    null //non debug: null debug: JSON.parse(testsuggestions)
   );
   const testparseresume = JSON.parse(testresume);
   const [resumeData, setResumeData] = useState(testparseresume);
@@ -199,7 +200,7 @@ export default function AIReview({
   const [cancelTokenSource, setCancelTokenSource] =
     useState<CancelTokenSource | null>(null);
   const [resumeStyles, setResumeStyles] = useState<ResumeStyles>(initialState);
-  const [showResultsDialog, setShowResultsDialog] = useState(false);
+  const [showResultsDialog, setShowResultsDialog] = useState(false); //non debug: false debug: true
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
@@ -211,7 +212,7 @@ export default function AIReview({
   const usedresumes = useAppSelector((state) => state.assets.usedresumes);
   const totalslot = useAppSelector((state) => state.assets.resumeslot);
 
-  console.log(usedresumes, "Used rewume", totalslot, "total");
+  console.log(usedresumes, "Used resume", totalslot, "total");
 
   const sentences = [
     "Analyzing your resume",
@@ -301,9 +302,9 @@ export default function AIReview({
       dispatch(
         updateCredits(
           credits -
-            ((formData.reviewType === "tailored"
-              ? creditList.get("tailored")
-              : creditList.get("generic")) ?? 0)
+          ((formData.reviewType === "tailored"
+            ? creditList.get("tailored")
+            : creditList.get("generic")) ?? 0)
         )
       );
     } catch (error) {
@@ -558,6 +559,8 @@ export default function AIReview({
       document.body.removeChild(printFrame);
     }, 500);
   };
+  const [activeMetricCard, setActiveMetricCard] = useState(0);
+  // const metrics = testsuggestions as unknown as AIReviewResult[];
 
   const metrics = aiSuggestions ? processMetrics(aiSuggestions) : null;
   const groupedIssues = aiSuggestions
@@ -565,27 +568,36 @@ export default function AIReview({
     : {};
 
   return (
-    <div className="flex flex-col h-full bg-background text-foreground">
-      <div className="flex h-[calc(100vh-60px)] md:h-[calc(100vh-20px)] w-full items-center justify-center p-4">
-        <motion.main
-          className="flex-1 max-w-4xl p-4 md:py-12 rounded-xl border"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-6 flex items-center justify-between">
-              <h1 className="text-3xl font-bold">AI Resume Review</h1>
-            </div>
-            <AIReviewSetup
-              recentResumes={recentResumes}
-              onSubmit={handleFormSubmit}
-              isLoading={isLoading}
-              setResumeData={setResumeData}
-              setResumeStyles={setResumeStyles}
-            />
-          </div>
-        </motion.main>
+    <div className="flex flex-col md:h-full bg-background text-foreground">
+      <div className="flex mt-2 md:h-[calc(100vh-20px)] w-full items-center justify-center">
+        <Card className="md:flex-1 max-w-2xl md:max-w-4xl mx-2 md:mx-0 ">
+          <motion.main
+            className=""
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <CardHeader className="mb-6 flex items-center justify-between">
+              <CardTitle>
+                <h1 className="text-3xl font-bold">AI Resume Review</h1>
+              </CardTitle>
+              <CardDescription>
+                <p className=" text-muted-foreground">
+                  Get insights and suggestions to improve your resume.
+                </p>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <AIReviewSetup
+                recentResumes={recentResumes}
+                onSubmit={handleFormSubmit}
+                isLoading={isLoading}
+                setResumeData={setResumeData}
+                setResumeStyles={setResumeStyles}
+              />
+            </CardContent>
+          </motion.main>
+        </Card>
       </div>
 
       <AnimatePresence>
@@ -636,7 +648,7 @@ export default function AIReview({
           >
             <div className="flex h-full flex-col">
               {/* Header */}
-              <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-background p-4">
+              <div className="hidden md:flex sticky top-0 z-10 items-center justify-between border-b bg-background p-4">
                 <Button
                   variant="outline"
                   size="sm"
@@ -656,9 +668,8 @@ export default function AIReview({
                     variant="default"
                     size="sm"
                     disabled={usedresumes === totalslot}
-                    className={`${
-                      usedresumes === totalslot ? "cursor-not-allowed" : ""
-                    }`}
+                    className={`${usedresumes === totalslot ? "cursor-not-allowed" : ""
+                      }`}
                   >
                     <Save className="mr-2 h-4 w-4" />
                     Save As
@@ -668,9 +679,9 @@ export default function AIReview({
                       resumeID
                         ? handleAcceptAllAndSave
                         : () => {
-                            setSaveAll(true);
-                            setOpenResumeName(true);
-                          }
+                          setSaveAll(true);
+                          setOpenResumeName(true);
+                        }
                     }
                     variant="default"
                     size="sm"
@@ -692,16 +703,72 @@ export default function AIReview({
                   </Button>
                 </div>
               </div>
-
+              {/* Header Mobile Version */}
+              <div className=" md:hidden sticky top-0 z-10 items-center justify-between border-b bg-background p-4">
+                <div className="flex justify-between mb-4">
+                  <h2 className="text-xl font-bold">Resume Analysis Results</h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowResultsDialog(false)}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    Exit
+                  </Button>
+                </div>
+                <div className="flex justify-between items-center gap-x-2">
+                  <Button onClick={handlePrint} variant="outline" size="sm">
+                    <Printer className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={() => setOpenResumeName(true)}
+                    variant="default"
+                    size="sm"
+                    disabled={usedresumes === totalslot}
+                    className={`${usedresumes === totalslot ? "cursor-not-allowed" : ""
+                      }`}
+                  >
+                    <Save className="h-4 w-4" />
+                    Save As
+                  </Button>
+                  <Button
+                    onClick={
+                      resumeID
+                        ? handleAcceptAllAndSave
+                        : () => {
+                          setSaveAll(true);
+                          setOpenResumeName(true);
+                        }
+                    }
+                    variant="default"
+                    size="sm"
+                  >
+                    <Save className=" h-4 w-4" />
+                    Accept & Save
+                  </Button>
+                  <Button
+                    onClick={
+                      resumeID
+                        ? () => handleSave()
+                        : () => setOpenResumeName(true)
+                    }
+                    variant="default"
+                    size="sm"
+                  >
+                    <Save className="h-4 w-4" />
+                    Save
+                  </Button>
+                </div>
+              </div>
               {/* Metrics */}
               {metrics && (
-                <div className="border-b bg-muted/30 p-4">
+                <div className="hidden md:block border-b bg-muted/30 p-4">
                   <div className="mx-auto max-w-7xl">
                     <h3 className="mb-4 text-lg font-semibold">
                       Resume Metrics
                     </h3>
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                      <Card>
+                    <div className="flex md:grid gap-4 md:grid-cols-4 overflow-x-scroll">
+                      <Card className="min-w-[200px]">
                         <CardHeader className="pb-2">
                           <CardTitle className="text-sm font-medium">
                             Total Issues
@@ -774,220 +841,550 @@ export default function AIReview({
                   </div>
                 </div>
               )}
+              {/* Metrics Mobile Version */}
+              {metrics && (
+                <div className="md:hidden border-b bg-muted/30 p-4">
+                  <div className="mx-auto">
+                    <h3 className="mb-4 text-lg font-semibold">
+                      Resume Metrics
+                    </h3>
+                    <div className="flex gap-4 pb-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                      onScroll={(e) => {
+                        const scrollLeft = e.currentTarget.scrollLeft;
+                        const cardWidth = 276; // 260px card + 16px gap
+                        setActiveMetricCard(Math.round(scrollLeft / cardWidth));
+                      }}
+                      style={{
+                        msOverflowStyle: 'none',  /* IE and Edge */
+                        scrollbarWidth: 'none',   /* Firefox */
+                        WebkitOverflowScrolling: 'touch'
+                      }}>
 
+                      <div className="snap-center shrink-0">
+                        <Card className="w-[260px] h-[140px]">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-center">
+                              Total Issues Found
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex items-center justify-center mt-2">
+                            <div className="text-3xl font-bold text-primary">
+                              {metrics.totalIssues}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <div className="snap-center shrink-0">
+                        <Card className="w-[260px] h-[140px]">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-center">
+                              Resume Score
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-col items-center justify-center gap-2">
+                            <div className="text-3xl font-bold text-primary">
+                              {metrics.averageScore}
+                              <span className="text-xl text-muted-foreground">/5</span>
+                            </div>
+                            <Progress
+                              value={Number(metrics.averageScore) * 20}
+                              className="w-32 h-2"
+                            />
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <div className="snap-center shrink-0">
+                        <Card className="w-[260px] h-[140px]">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-center">
+                              Most Common Issue
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-col justify-center text-center mt-2">
+                            <div className="text-lg font-semibold line-clamp-1">
+                              {metrics.mostCommonIssueType}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              Found {metrics.mostCommonIssueCount} times
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <div className="snap-center shrink-0">
+                        <Card className="w-[260px] h-[140px]">
+                          <CardHeader className="pb-2">
+                            <CardTitle className="text-sm font-medium text-center">
+                              Issues by Severity
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex flex-col items-center justify-center gap-2">
+                            <div className="flex flex-wrap gap-2 justify-center">
+                              {metrics.issuesBySeverity.major > 0 && (
+                                <Badge variant="destructive" className="px-3 py-1">
+                                  {metrics.issuesBySeverity.major} Major
+                                </Badge>
+                              )}
+                              {metrics.issuesBySeverity.moderate > 0 && (
+                                <Badge variant="default" className="px-3 py-1">
+                                  {metrics.issuesBySeverity.moderate} Moderate
+                                </Badge>
+                              )}
+                              {metrics.issuesBySeverity.minor > 0 && (
+                                <Badge variant="secondary" className="px-3 py-1">
+                                  {metrics.issuesBySeverity.minor} Minor
+                                </Badge>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                      <style jsx>{`
+                            div::-webkit-scrollbar {
+                                display: none;
+                              }
+                            `}</style>
+                    </div>
+                    {/* Optional: Add scroll indicators */}
+                    <div className="flex justify-center gap-1 mt-4">
+                      {[0, 1, 2, 3].map((index) => (
+                        <div
+                          key={index}
+                          className={`h-1 rounded-full transition-all duration-300 ${index === activeMetricCard
+                            ? "w-8 bg-primary"
+                            : "w-1 bg-muted-foreground"
+                            }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               {/* Two-column layout */}
               <div className="flex flex-1 overflow-hidden">
-                {/* Left column - Issues */}
-                <div className="w-full md:w-1/2 overflow-auto border-r">
-                  <ScrollArea className="h-full">
-                    <div className="p-4">
-                      <h3 className="mb-4 text-lg font-semibold">Issues</h3>
 
-                      {Object.entries(groupedIssues).map(
-                        ([section, issues]) => (
-                          <Accordion
-                            type="single"
-                            collapsible
-                            key={section}
-                            className="mb-4"
-                          >
-                            <AccordionItem value={section}>
-                              <AccordionTrigger className="px-4 py-2 bg-muted/50 rounded-md">
-                                <div className="flex items-center justify-between w-full">
-                                  <span className="font-medium capitalize">
-                                    {section}
-                                  </span>
-                                  <Badge variant="outline" className="mx-2">
-                                    {issues.length}{" "}
-                                    {issues.length === 1 ? "issue" : "issues"}
-                                  </Badge>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="pt-2">
-                                {issues.map((issue, index) => (
-                                  <Accordion
-                                    type="single"
-                                    collapsible
-                                    key={index}
-                                    className="mb-2"
-                                  >
-                                    <AccordionItem
-                                      value={`${section}-${index}`}
-                                      className="border rounded-md overflow-hidden"
-                                    >
-                                      <AccordionTrigger className="px-4 py-2 hover:bg-muted/30">
-                                        <div className="flex items-center justify-between text-left w-full">
-                                          <span className="font-medium text-sm">
-                                            {issue.correction_logic}
-                                          </span>
-                                        </div>
-                                      </AccordionTrigger>
-                                      <AccordionContent className="bg-muted/10 p-4">
-                                        <div className="space-y-4">
-                                          {/* Metrics Section */}
-                                          {issue.metrics.map(
-                                            (metric, metricIndex) => (
-                                              <div
-                                                key={metricIndex}
-                                                className="space-y-2"
-                                              >
-                                                <div className="flex items-center justify-between">
-                                                  <h4 className="font-medium">
-                                                    {metric.type}
-                                                  </h4>
-                                                  <div className="flex items-center gap-2">
-                                                    <Progress
-                                                      value={metric.score * 20}
-                                                      className="w-24"
-                                                    />
-                                                    <span className="text-sm">
-                                                      {metric.score}/5
-                                                    </span>
-                                                  </div>
-                                                </div>
+                <div className="md:hidden w-full flex flex-col">
+                  <Tabs defaultValue="issues" className="w-full">
+                    <TabsList className="w-full rounded-none border-b">
+                      <TabsTrigger value="issues" className="flex-1">Issues</TabsTrigger>
+                      <TabsTrigger value="preview" className="flex-1">Preview</TabsTrigger>
+                    </TabsList>
 
-                                                {metric.issues.length > 0 && (
-                                                  <div className="space-y-2">
-                                                    {metric.issues.map(
-                                                      (
-                                                        issueItem,
-                                                        issueIndex
-                                                      ) => (
-                                                        <div
-                                                          key={issueIndex}
-                                                          className="rounded-md bg-muted/30 p-2"
-                                                        >
-                                                          <div className="flex items-start justify-between">
-                                                            <div className="flex flex-wrap items-center gap-2 justify-between">
-                                                              <p className="text-sm">
-                                                                {issueItem.name}
-                                                              </p>
-                                                              <Badge
-                                                                variant={
-                                                                  issueItem.severity ===
-                                                                  "major"
-                                                                    ? "destructive"
-                                                                    : issueItem.severity ===
-                                                                      "moderate"
-                                                                    ? "default"
-                                                                    : "secondary"
-                                                                }
-                                                                className="mt-1"
-                                                              >
-                                                                {
-                                                                  issueItem.severity
-                                                                }
-                                                              </Badge>
+                    <TabsContent value="issues" className="flex-1 h-[calc(100vh-220px)]">
+                      <ScrollArea className="h-full">
+                        <div className="p-4">
+                          <h3 className="mb-4 text-lg font-semibold">Issues</h3>
+                          {Object.entries(groupedIssues).map(
+                            ([section, issues]) => (
+                              <Accordion
+                                type="single"
+                                collapsible
+                                key={section}
+                                className="mb-4"
+                              >
+                                <AccordionItem value={section}>
+                                  <AccordionTrigger className="px-4 py-2 bg-muted/50 rounded-md">
+                                    <div className="flex items-center justify-between w-full">
+                                      <span className="font-medium capitalize">
+                                        {section}
+                                      </span>
+                                      <Badge variant="outline" className="mx-2">
+                                        {issues.length}{" "}
+                                        {issues.length === 1 ? "issue" : "issues"}
+                                      </Badge>
+                                    </div>
+                                  </AccordionTrigger>
+                                  <AccordionContent className="pt-2">
+                                    {issues.map((issue, index) => (
+                                      <Accordion
+                                        type="single"
+                                        collapsible
+                                        key={index}
+                                        className="mb-2"
+                                      >
+                                        <AccordionItem
+                                          value={`${section}-${index}`}
+                                          className="border rounded-md overflow-hidden"
+                                        >
+                                          <AccordionTrigger className="px-4 py-2 hover:bg-muted/30">
+                                            <div className="flex items-center justify-between text-left w-full">
+                                              <span className="font-medium text-sm">
+                                                {issue.correction_logic}
+                                              </span>
+                                            </div>
+                                          </AccordionTrigger>
+                                          <AccordionContent className="bg-muted/10 p-4">
+                                            <div className="space-y-4">
+                                              {/* Metrics Section */}
+                                              {issue.metrics.map(
+                                                (metric, metricIndex) => (
+                                                  <div
+                                                    key={metricIndex}
+                                                    className="space-y-2"
+                                                  >
+                                                    <div className="flex items-center justify-between">
+                                                      <h4 className="font-medium">
+                                                        {metric.type}
+                                                      </h4>
+                                                      <div className="flex items-center gap-2">
+                                                        <Progress
+                                                          value={metric.score * 20}
+                                                          className="w-24"
+                                                        />
+                                                        <span className="text-sm">
+                                                          {metric.score}/5
+                                                        </span>
+                                                      </div>
+                                                    </div>
+                                                    {metric.issues.length > 0 && (
+                                                      <div className="space-y-2">
+                                                        {metric.issues.map(
+                                                          (
+                                                            issueItem,
+                                                            issueIndex
+                                                          ) => (
+                                                            <div
+                                                              key={issueIndex}
+                                                              className="rounded-md bg-muted/30 p-2"
+                                                            >
+                                                              <div className="flex items-start justify-between">
+                                                                <div className="flex flex-wrap items-center gap-2 justify-between">
+                                                                  <p className="text-sm">
+                                                                    {issueItem.name}
+                                                                  </p>
+                                                                  <Badge
+                                                                    variant={
+                                                                      issueItem.severity ===
+                                                                        "major"
+                                                                        ? "destructive"
+                                                                        : issueItem.severity ===
+                                                                          "moderate"
+                                                                          ? "default"
+                                                                          : "secondary"
+                                                                    }
+                                                                    className="mt-1"
+                                                                  >
+                                                                    {
+                                                                      issueItem.severity
+                                                                    }
+                                                                  </Badge>
+                                                                </div>
+                                                              </div>
                                                             </div>
-                                                          </div>
-                                                        </div>
-                                                      )
+                                                          )
+                                                        )}
+                                                      </div>
                                                     )}
                                                   </div>
-                                                )}
-                                              </div>
-                                            )
-                                          )}
-
-                                          {/* Original and Suggested Section */}
-                                          <div className="border-t pt-4 mt-4">
-                                            <div className="space-y-4">
-                                              <div>
-                                                <h5 className="text-sm font-medium">
-                                                  Original:
-                                                </h5>
-                                                <div className="mt-1 rounded-md bg-muted/20 p-2">
-                                                  <AsyncContentRenderer
-                                                    resumeData={resumeData}
-                                                    selector={issue.selector}
-                                                    dateFormat={
-                                                      resumeStyles?.datetype ||
-                                                      "MMM yyyy"
-                                                    }
-                                                  />
+                                                )
+                                              )}
+                                              {/* Original and Suggested Section */}
+                                              <div className="border-t pt-4 mt-4">
+                                                <div className="space-y-4">
+                                                  <div>
+                                                    <h5 className="text-sm font-medium">
+                                                      Original:
+                                                    </h5>
+                                                    <div className="mt-1 rounded-md bg-muted/20 p-2">
+                                                      <AsyncContentRenderer
+                                                        resumeData={resumeData}
+                                                        selector={issue.selector}
+                                                        dateFormat={
+                                                          resumeStyles?.datetype ||
+                                                          "MMM yyyy"
+                                                        }
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                  <div>
+                                                    <h5 className="text-sm font-medium">
+                                                      Suggested:
+                                                    </h5>
+                                                    <div className="mt-1 rounded-md bg-muted/20 p-2">
+                                                      <ContentRenderer
+                                                        content={issue.final_output}
+                                                        dateFormat={
+                                                          resumeStyles?.datetype ||
+                                                          "MMM yyyy"
+                                                        }
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex justify-end gap-2">
+                                                    <Button
+                                                      variant="outline"
+                                                      size="sm"
+                                                      onClick={() =>
+                                                        handleDeleteIssue(
+                                                          issue.selector
+                                                        )
+                                                      }
+                                                    >
+                                                      <X className="mr-1 h-3 w-3" />
+                                                      Delete
+                                                    </Button>
+                                                    <Button
+                                                      variant="default"
+                                                      size="sm"
+                                                      onClick={() =>
+                                                        handleAcceptIssue(
+                                                          issue.selector,
+                                                          issue.final_output
+                                                        )
+                                                      }
+                                                    >
+                                                      <CheckCircle className="mr-1 h-3 w-3" />
+                                                      Accept
+                                                    </Button>
+                                                  </div>
                                                 </div>
                                               </div>
+                                            </div>
+                                          </AccordionContent>
+                                        </AccordionItem>
+                                      </Accordion>
+                                    ))}
+                                  </AccordionContent>
+                                </AccordionItem>
+                              </Accordion>
+                            )
+                          )}
+                          {Object.keys(groupedIssues).length === 0 && (
+                            <div className="flex flex-col items-center justify-center p-8 text-center">
+                              <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                              <h4 className="text-lg font-medium">
+                                No issues found
+                              </h4>
+                              <p className="text-muted-foreground">
+                                Your resume looks great!
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </ScrollArea>
+                    </TabsContent>
 
-                                              <div>
-                                                <h5 className="text-sm font-medium">
-                                                  Suggested:
-                                                </h5>
-                                                <div className="mt-1 rounded-md bg-muted/20 p-2">
-                                                  <ContentRenderer
-                                                    content={issue.final_output}
-                                                    dateFormat={
-                                                      resumeStyles?.datetype ||
-                                                      "MMM yyyy"
-                                                    }
-                                                  />
+                    <TabsContent value="preview" className="flex-1 h-[calc(100vh-220px)]">
+                      <div className="flex h-full items-center justify-center p-4">
+                        <ResumeDisplay
+                          resumeData={resumeData}
+                          resumeStyle={resumeStyles}
+                          templateNumber={resumeStyles.id}
+                          key={resumeStyles.id}
+                          className="resume-display-container"
+                        />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+                <div className="hidden md:flex w-full">
+                  {/* Left column - Issues */}
+                  <div className="md:w-1/2 overflow-auto border-r">
+                    <ScrollArea className="h-full">
+                      <div className="p-4">
+                        <h3 className="mb-4 text-lg font-semibold">Issues</h3>
+                        {Object.entries(groupedIssues).map(
+                          ([section, issues]) => (
+                            <Accordion
+                              type="single"
+                              collapsible
+                              key={section}
+                              className="mb-4"
+                            >
+                              <AccordionItem value={section}>
+                                <AccordionTrigger className="px-4 py-2 bg-muted/50 rounded-md">
+                                  <div className="flex items-center justify-between w-full">
+                                    <span className="font-medium capitalize">
+                                      {section}
+                                    </span>
+                                    <Badge variant="outline" className="mx-2">
+                                      {issues.length}{" "}
+                                      {issues.length === 1 ? "issue" : "issues"}
+                                    </Badge>
+                                  </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="pt-2">
+                                  {issues.map((issue, index) => (
+                                    <Accordion
+                                      type="single"
+                                      collapsible
+                                      key={index}
+                                      className="mb-2"
+                                    >
+                                      <AccordionItem
+                                        value={`${section}-${index}`}
+                                        className="border rounded-md overflow-hidden"
+                                      >
+                                        <AccordionTrigger className="px-4 py-2 hover:bg-muted/30">
+                                          <div className="flex items-center justify-between text-left w-full">
+                                            <span className="font-medium text-sm">
+                                              {issue.correction_logic}
+                                            </span>
+                                          </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="bg-muted/10 p-4">
+                                          <div className="space-y-4">
+                                            {/* Metrics Section */}
+                                            {issue.metrics.map(
+                                              (metric, metricIndex) => (
+                                                <div
+                                                  key={metricIndex}
+                                                  className="space-y-2"
+                                                >
+                                                  <div className="flex items-center justify-between">
+                                                    <h4 className="font-medium">
+                                                      {metric.type}
+                                                    </h4>
+                                                    <div className="flex items-center gap-2">
+                                                      <Progress
+                                                        value={metric.score * 20}
+                                                        className="w-24"
+                                                      />
+                                                      <span className="text-sm">
+                                                        {metric.score}/5
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  {metric.issues.length > 0 && (
+                                                    <div className="space-y-2">
+                                                      {metric.issues.map(
+                                                        (
+                                                          issueItem,
+                                                          issueIndex
+                                                        ) => (
+                                                          <div
+                                                            key={issueIndex}
+                                                            className="rounded-md bg-muted/30 p-2"
+                                                          >
+                                                            <div className="flex items-start justify-between">
+                                                              <div className="flex flex-wrap items-center gap-2 justify-between">
+                                                                <p className="text-sm">
+                                                                  {issueItem.name}
+                                                                </p>
+                                                                <Badge
+                                                                  variant={
+                                                                    issueItem.severity ===
+                                                                      "major"
+                                                                      ? "destructive"
+                                                                      : issueItem.severity ===
+                                                                        "moderate"
+                                                                        ? "default"
+                                                                        : "secondary"
+                                                                  }
+                                                                  className="mt-1"
+                                                                >
+                                                                  {
+                                                                    issueItem.severity
+                                                                  }
+                                                                </Badge>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        )
+                                                      )}
+                                                    </div>
+                                                  )}
                                                 </div>
-                                              </div>
-
-                                              <div className="flex justify-end gap-2">
-                                                <Button
-                                                  variant="outline"
-                                                  size="sm"
-                                                  onClick={() =>
-                                                    handleDeleteIssue(
-                                                      issue.selector
-                                                    )
-                                                  }
-                                                >
-                                                  <X className="mr-1 h-3 w-3" />
-                                                  Delete
-                                                </Button>
-                                                <Button
-                                                  variant="default"
-                                                  size="sm"
-                                                  onClick={() =>
-                                                    handleAcceptIssue(
-                                                      issue.selector,
-                                                      issue.final_output
-                                                    )
-                                                  }
-                                                >
-                                                  <CheckCircle className="mr-1 h-3 w-3" />
-                                                  Accept
-                                                </Button>
+                                              )
+                                            )}
+                                            {/* Original and Suggested Section */}
+                                            <div className="border-t pt-4 mt-4">
+                                              <div className="space-y-4">
+                                                <div>
+                                                  <h5 className="text-sm font-medium">
+                                                    Original:
+                                                  </h5>
+                                                  <div className="mt-1 rounded-md bg-muted/20 p-2">
+                                                    <AsyncContentRenderer
+                                                      resumeData={resumeData}
+                                                      selector={issue.selector}
+                                                      dateFormat={
+                                                        resumeStyles?.datetype ||
+                                                        "MMM yyyy"
+                                                      }
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <div>
+                                                  <h5 className="text-sm font-medium">
+                                                    Suggested:
+                                                  </h5>
+                                                  <div className="mt-1 rounded-md bg-muted/20 p-2">
+                                                    <ContentRenderer
+                                                      content={issue.final_output}
+                                                      dateFormat={
+                                                        resumeStyles?.datetype ||
+                                                        "MMM yyyy"
+                                                      }
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <div className="flex justify-end gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      handleDeleteIssue(
+                                                        issue.selector
+                                                      )
+                                                    }
+                                                  >
+                                                    <X className="mr-1 h-3 w-3" />
+                                                    Delete
+                                                  </Button>
+                                                  <Button
+                                                    variant="default"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      handleAcceptIssue(
+                                                        issue.selector,
+                                                        issue.final_output
+                                                      )
+                                                    }
+                                                  >
+                                                    <CheckCircle className="mr-1 h-3 w-3" />
+                                                    Accept
+                                                  </Button>
+                                                </div>
                                               </div>
                                             </div>
                                           </div>
-                                        </div>
-                                      </AccordionContent>
-                                    </AccordionItem>
-                                  </Accordion>
-                                ))}
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                        )
-                      )}
-
-                      {Object.keys(groupedIssues).length === 0 && (
-                        <div className="flex flex-col items-center justify-center p-8 text-center">
-                          <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-                          <h4 className="text-lg font-medium">
-                            No issues found
-                          </h4>
-                          <p className="text-muted-foreground">
-                            Your resume looks great!
-                          </p>
-                        </div>
-                      )}
+                                        </AccordionContent>
+                                      </AccordionItem>
+                                    </Accordion>
+                                  ))}
+                                </AccordionContent>
+                              </AccordionItem>
+                            </Accordion>
+                          )
+                        )}
+                        {Object.keys(groupedIssues).length === 0 && (
+                          <div className="flex flex-col items-center justify-center p-8 text-center">
+                            <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                            <h4 className="text-lg font-medium">
+                              No issues found
+                            </h4>
+                            <p className="text-muted-foreground">
+                              Your resume looks great!
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                  {/* Right column - Resume preview */}
+                  <div className="hidden md:block md:w-1/2 overflow-auto bg-muted/10">
+                    <div className="flex h-full items-center justify-center p-4">
+                      <ResumeDisplay
+                        resumeData={resumeData}
+                        resumeStyle={resumeStyles}
+                        templateNumber={resumeStyles.id}
+                        key={resumeStyles.id}
+                        className="resume-display-container"
+                      />
                     </div>
-                  </ScrollArea>
-                </div>
-
-                {/* Right column - Resume preview */}
-                <div className="hidden md:block md:w-1/2 overflow-auto bg-muted/10">
-                  <div className="flex h-full items-center justify-center p-4">
-                    <ResumeDisplay
-                      resumeData={resumeData}
-                      resumeStyle={resumeStyles}
-                      templateNumber={resumeStyles.id}
-                      key={resumeStyles.id}
-                      className="resume-display-container"
-                    />
                   </div>
                 </div>
               </div>
@@ -1019,10 +1416,10 @@ export default function AIReview({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button className="w-full" variant="outline" onClick={() => setOpenResumeName(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveAS} disabled={!resumeName.trim()}>
+            <Button className="w-full" onClick={handleSaveAS} disabled={!resumeName.trim()}>
               Create
             </Button>
           </DialogFooter>

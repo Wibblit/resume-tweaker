@@ -5,7 +5,6 @@ import { Button } from "../ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import { Session } from "next-auth";
-
 interface MobileSideBarProps {
   session: Session | null;
 }

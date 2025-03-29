@@ -52,33 +52,28 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
   };
 
   const renderObject = (obj: any, depth = 0): JSX.Element => {
-    const entries = Object.entries(obj).filter(([key]) => key !== 'id');
+    const entries = Object.entries(obj).filter(([key]) => key !== "id");
 
     return (
-      <div className={`space-y-2 ${depth > 0 ? 'ml-4' : ''}`}>
+      <div className={`space-y-3 ${depth > 0 ? "pl-4 border-l-2 border-muted" : ""}`}>
         {entries.map(([key, value], index) => {
           if (value == null) return null;
 
-          const formattedKey = key.replace(/([A-Z])/g, ' $1')
-            .replace(/^./, str => str.toUpperCase());
+          const formattedKey = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
           return (
-            <div key={index} className="flex flex-col">
-              <div className="flex items-baseline">
-                <span className="text-sm font-medium text-muted-foreground min-w-[120px]">
-                  {formattedKey}:
-                </span>
-                <span className="text-sm ml-2 flex-1">
-                  {typeof value === 'object' ? (
-                    renderObject(value, depth + 1)
+            <div key={index} className="flex flex-col space-y-1">
+              <div className="text-sm text-foreground pl-3">
+                <div className="text-sm font-medium text-muted-foreground"><span className="mr-2">{formattedKey}:</span>
+
+                  {typeof value === "object" ? (
+                    <div className="p-2 bg-muted/30 rounded-lg">{renderObject(value, depth + 1)}</div>
                   ) : (
-                    <span className="text-foreground">
-                      {shouldFormatDate(key, value)
-                        ? (typeof value === 'object' ? String(value) : formatDateValue(value, dateFormat))
-                        : String(value)}
-                    </span>
+                    shouldFormatDate(key, value)
+                      ? (typeof value === "object" ? String(value) : formatDateValue(value, dateFormat))
+                      : String(value)
                   )}
-                </span>
+                </div>
               </div>
             </div>
           );
@@ -91,17 +86,17 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
     return (
       <div className="space-y-4">
         {arr.map((item, index) => (
-          <div
-            key={index}
-            className="relative pl-4 border-l-2 border-primary/50 dark:border-primary/30"
-          >
+          <div key={index} className="relative pl-5 border-l-2 border-primary/40">
             <div className="absolute -left-1 top-0 h-2 w-2 rounded-full bg-primary"></div>
-            {typeof item === 'object' ? renderObject(item) : String(item)}
+            <div className="p-3 bg-muted/30 rounded-lg">
+              {typeof item === "object" ? renderObject(item) : <span className="text-foreground">{String(item)}</span>}
+            </div>
           </div>
         ))}
       </div>
     );
   };
+
 
   const renderContent = () => {
     if (content == null) {

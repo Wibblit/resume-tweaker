@@ -41,7 +41,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAppDispatch } from "@/hooks/hooks";
 import { Separator } from "../ui/separator";
 import { SettingsDialog } from "./settings/settings-dialog";
-
+import { FeedbackForm } from "../feedbackModal";
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
   { name: "AI Review", icon: Star, href: "/home/ai-review" },
@@ -57,7 +57,7 @@ interface SideBarProps {
 export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
-
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const credit = useAppSelector((state) => state?.assets?.credits);
   const loading = useAppSelector((state) => state?.assets?.loading);
   const { toast } = useToast();
@@ -132,6 +132,16 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
+      <div>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={() => setIsFeedbackOpen(true)}
+        >
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Send Feedback
+        </Button>
+      </div>
         <div>
           <div className={"flex items-center justify-center w-full"}>
             <SettingsDialog isCollapsed={false} />
@@ -187,6 +197,10 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
           )}
         </div>
       </div>
+      <FeedbackForm 
+      open={isFeedbackOpen} 
+      onOpenChange={setIsFeedbackOpen} 
+    />
     </div>
   );
 }
