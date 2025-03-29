@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  MessageSquareReply,
 } from "lucide-react";
 import {
   Sidebar,
@@ -152,7 +153,8 @@ export function AppSidebar({ session }: { session: Session }) {
         <SidebarFooter
           className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"
             }`}
-        ><Tooltip>
+        >
+          <Tooltip>
             <TooltipTrigger asChild>
               <div className={"flex items-center justify-center w-full"}>
                 <Button
@@ -161,7 +163,7 @@ export function AppSidebar({ session }: { session: Session }) {
                     }`}
                   onClick={() => setIsFeedbackOpen(true)}
                 >
-                  <MessageSquare className="h-4 w-4" />
+                  <MessageSquareReply className="h-4 w-4" />
                   {!isCollapsed && <span className="ml-2">Feedback</span>}
                 </Button>
               </div>
@@ -172,35 +174,10 @@ export function AppSidebar({ session }: { session: Session }) {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div>
-                <div className={"flex items-center justify-center w-full"}>
-                  <SettingsDialog isCollapsed={isCollapsed} />
-                </div>
-              </div>
-            </TooltipTrigger>
-            {isCollapsed && (
-              <TooltipContent side="right">Settings</TooltipContent>
-            )}
-          </Tooltip>
-          <Separator />
-          {session?.user && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <SignOutButton isCollapsed={isCollapsed} />
-                </div>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">Logout</TooltipContent>
-              )}
-            </Tooltip>
-          )}
-          <Tooltip>
-            <TooltipTrigger asChild>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     className={`w-full ${!isCollapsed && "justify-start"}`}
                   >
                     {theme === "light" && <Sun className="h-4 w-4" />}
@@ -231,6 +208,32 @@ export function AppSidebar({ session }: { session: Session }) {
               <TooltipContent side="right">Change Theme</TooltipContent>
             )}
           </Tooltip>
+          <Separator />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <div className={"flex items-center justify-center w-full"}>
+                  <SettingsDialog isCollapsed={isCollapsed} />
+                </div>
+              </div>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">Settings</TooltipContent>
+            )}
+          </Tooltip>
+          {session?.user && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <SignOutButton isCollapsed={isCollapsed} />
+                </div>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">Logout</TooltipContent>
+              )}
+            </Tooltip>
+          )}
+          
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -240,12 +243,12 @@ export function AppSidebar({ session }: { session: Session }) {
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center justify-between py-2 px-4">
                       <div className="flex items-center space-x-2">
-                        <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                        <Coins className="h-4 w-4 mr-2 text-zinc-500 dark:text-zinc-400" />
                         {!isCollapsed && (
                           <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                            Credits Available
+                            Credits
                           </span>
                         )}
                       </div>
