@@ -190,7 +190,7 @@ export default function AIReview({
 }) {
 
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
-    null //non debug: null debug: JSON.parse(testsuggestions)
+    JSON.parse(testsuggestions) //non debug: null debug: JSON.parse(testsuggestions)
   );
   const testparseresume = JSON.parse(testresume);
   const [resumeData, setResumeData] = useState(testparseresume);
@@ -200,7 +200,7 @@ export default function AIReview({
   const [cancelTokenSource, setCancelTokenSource] =
     useState<CancelTokenSource | null>(null);
   const [resumeStyles, setResumeStyles] = useState<ResumeStyles>(initialState);
-  const [showResultsDialog, setShowResultsDialog] = useState(false); //non debug: false debug: true
+  const [showResultsDialog, setShowResultsDialog] = useState(true); //non debug: false debug: true
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);

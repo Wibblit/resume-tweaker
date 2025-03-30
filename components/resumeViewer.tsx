@@ -22,6 +22,9 @@ import Template6 from "@/templates/Template6";
 import Template7 from "@/templates/Template7";
 import Template8 from "@/templates/Template8";
 import Template9 from "@/templates/Template9";
+import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { Button } from "./ui/button";
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 
 interface ResumeData {
   [key: string]: any; // This allows string indexing
@@ -101,41 +104,78 @@ export default function ResumeDisplay({
       content: resumeData,
     });
   }
+  const Controls = () => {
+    const { zoomIn, zoomOut, resetTransform } = useControls();
+    return (
+      <div className="flex gap-2 z-50">
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={() => zoomIn()}
+          className="bg-background/95 shadow-md"
+          aria-label="Zoom In"
+        >
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={() => zoomOut()}
+          className="bg-background/95 shadow-md"
+        >
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          onClick={() => resetTransform()}
+          className="bg-background/95 shadow-md"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+      </div>
+    )
+  }
+
+  // ...existing dispatch and pages code...
 
   return (
-    <div
-      className={[
-        'flex flex-col h-full w-full bg-sidebar/30',
-        className || ''
-      ].filter(Boolean).join(' ')}
-    >      <ScrollArea className="flex-grow">
-        <div className="flex flex-col items-center justify-start p-4 pb-20">
-          {pages.map((page, index) => (
-            <motion.div
-              key={page.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className="mb-8"
-            >
-              <div
-                id={`page-${page.id}`}
-                data-page={page.id}
-                className="relative bg-white text-foreground shadow-2xl overflow-hidden mx-auto"
-                style={{
-                  fontFamily: resumeStyle.font,
-                  width: `${PAGE_FORMATS[resumeStyle.paperFormat]?.width * MM_TO_PX
-                    }px`,
-                  height: `${PAGE_FORMATS[resumeStyle.paperFormat]?.height * MM_TO_PX
-                    }px`,
-                }}
-              >
-                {renderTemplate(page, index, resumeStyle)}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </ScrollArea>
+    <div className=" w-full h-full">
+      <TransformWrapper
+        initialScale={0.8}
+        minScale={0.5}
+        maxScale={3}
+        centerOnInit={true}
+        limitToBounds={false}
+        smooth={true}
+      >
+        <>
+          <Controls />
+          <TransformComponent
+            wrapperClass="!w-full !h-full"
+            contentClass="!w-full !h-full flex flex-col items-center justify-start py-8"
+          >
+            <div className="p-8">
+              {pages.map((page, index) => (
+                <div
+                  key={page.id}
+                  id={`page-${page.id}`}
+                  data-page={page.id}
+                  className="relative bg-white text-foreground shadow-2xl overflow-hidden mx-auto mb-8"
+                  style={{
+                    fontFamily: resumeStyle.font,
+                    width: `${PAGE_FORMATS[resumeStyle.paperFormat]?.width * MM_TO_PX}px`,
+                    height: `${PAGE_FORMATS[resumeStyle.paperFormat]?.height * MM_TO_PX}px`,
+                  }}
+                >
+                  {renderTemplate(page, index, resumeStyle)}
+                </div>
+              ))}
+            </div>
+          </TransformComponent>
+        </>
+
+      </TransformWrapper>
     </div>
   );
 }
