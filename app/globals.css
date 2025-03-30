@@ -146,6 +146,19 @@
   }
 }
 
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.animate-progress-infinite {
+  animation: indeterminate 1s ease-in-out infinite;
+}
+
 .animate-gradient-x {
   animation: gradient-x 15s ease infinite;
   background-size: 200% 200%;

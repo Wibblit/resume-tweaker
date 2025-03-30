@@ -59,6 +59,7 @@ export default function AIReviewSetup({
   const [funcdisabler, setFuncDisabler] = useState<boolean>(false);
   const [ocrProgress, setOcrProgress] = useState(0);
   const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
   const workerRef = useRef<Tesseract.Worker | null>(null);
   const { toast } = useToast();
 
@@ -115,6 +116,9 @@ export default function AIReviewSetup({
           const response = await worker.recognize(imageUrls[i]);
           ocrText += " " + response?.data.text;
         }
+        setIsOcrInProgress(false);
+        setOcrProgress(1);
+        setIsParsing(true);
 
         try {
           const parseResponse = await fetch('/api/parse-resume', {
@@ -152,8 +156,7 @@ export default function AIReviewSetup({
         variant: "destructive",
       });
     } finally {
-      setIsOcrInProgress(false);
-      setOcrProgress(1);
+      setIsParsing(false);
     }
   };
 
@@ -231,7 +234,7 @@ export default function AIReviewSetup({
               type="file"
               accept=".pdf"
               onChange={handleFileUpload}
-              className="w-[70%]"
+              className="flex-1"
               disabled={resumeOption !== "upload" || isOcrInProgress}
             />
 
@@ -240,7 +243,7 @@ export default function AIReviewSetup({
               size="icon"
               variant="outline"
               disabled={resumeOption !== "upload" || isOcrInProgress}
-              className="flex-1"
+              className="flex-1 max-w-[140px]"
               onClick={() => document.getElementById("resume-upload")?.click()}
 
             >
@@ -253,15 +256,28 @@ export default function AIReviewSetup({
               File uploaded: {file.name}
             </p>
           )}
-          {isOcrInProgress && (
-            <div className="mt-4">
-              <Label>Extracting data from PDF...</Label>
+          {(isOcrInProgress || isParsing) && (
+        <div className="mt-4">
+          <Label>
+            {isOcrInProgress ? "Extracting data from PDF..." : "Parsing resume data..."}
+          </Label>
+          {isOcrInProgress ? (
+            <>
               <Progress value={ocrProgress * 100} className="mt-2" />
               <p className="text-sm text-muted-foreground mt-1">
                 {(ocrProgress * 100).toFixed(0)}% complete
               </p>
-            </div>
+            </>
+          ) : (
+            <>
+            <Progress
+              value={100}
+              className="mt-2 animate-pulse"
+              />
+            </>
           )}
+        </div>
+      )}
         </div>
       )}
 
@@ -301,7 +317,7 @@ export default function AIReviewSetup({
       <Button
         type="submit"
         className="w-full"
-        disabled={isLoading || isOcrInProgress}
+        disabled={isLoading || isOcrInProgress ||isParsing}
       >
         {isLoading ? (
           <div className="flex">

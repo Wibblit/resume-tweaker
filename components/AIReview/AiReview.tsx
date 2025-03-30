@@ -190,7 +190,7 @@ export default function AIReview({
 }) {
 
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
-    JSON.parse(testsuggestions) //non debug: null debug: JSON.parse(testsuggestions)
+    null //non debug: null debug: JSON.parse(testsuggestions)
   );
   const testparseresume = JSON.parse(testresume);
   const [resumeData, setResumeData] = useState(testparseresume);
@@ -200,7 +200,7 @@ export default function AIReview({
   const [cancelTokenSource, setCancelTokenSource] =
     useState<CancelTokenSource | null>(null);
   const [resumeStyles, setResumeStyles] = useState<ResumeStyles>(initialState);
-  const [showResultsDialog, setShowResultsDialog] = useState(true); //non debug: false debug: true
+  const [showResultsDialog, setShowResultsDialog] = useState(false); //non debug: false debug: true
   const [open, setOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
@@ -211,6 +211,8 @@ export default function AIReview({
   const [saveAll, setSaveAll] = useState<boolean>(false);
   const usedresumes = useAppSelector((state) => state.assets.usedresumes);
   const totalslot = useAppSelector((state) => state.assets.resumeslot);
+  
+
 
   console.log(usedresumes, "Used resume", totalslot, "total");
 
@@ -569,7 +571,7 @@ export default function AIReview({
 
   return (
     <div className="flex flex-col md:h-full bg-background text-foreground">
-      <div className="flex mt-2 md:h-[calc(100vh-20px)] w-full items-center justify-center">
+      <div className="flex mt-2 h-[calc(100vh-20px)] md:h-[calc(100vh-20px)] w-full items-center justify-center">
         <Card className="md:flex-1 max-w-2xl md:max-w-4xl mx-2 md:mx-0 ">
           <motion.main
             className=""
@@ -577,7 +579,7 @@ export default function AIReview({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <CardHeader className="mb-6 flex items-center justify-between">
+            <CardHeader className="mb-6 flex items-center text-center justify-between">
               <CardTitle>
                 <h1 className="text-3xl font-bold">AI Resume Review</h1>
               </CardTitle>
@@ -631,7 +633,7 @@ export default function AIReview({
                 }}
               >
                 <X className="mr-2 h-4 w-4" />
-                Exit
+                Cancel Review
               </Button>
             </div>
           </motion.div>
@@ -1416,12 +1418,14 @@ export default function AIReview({
             </div>
           </div>
           <DialogFooter>
-            <Button className="w-full" variant="outline" onClick={() => setOpenResumeName(false)}>
-              Cancel
-            </Button>
-            <Button className="w-full" onClick={handleSaveAS} disabled={!resumeName.trim()}>
-              Create
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button className="w-full" variant="outline" onClick={() => setOpenResumeName(false)}>
+                Cancel
+              </Button>
+              <Button className="w-full" onClick={handleSaveAS} disabled={!resumeName.trim()}>
+                Create
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
