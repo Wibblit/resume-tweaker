@@ -192,7 +192,7 @@ export default function AIReviewSetup({
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="select" id="select-resume" />
-            <Label htmlFor="select-resume">Select Existing Resume</Label>
+            <Label htmlFor="select-resume">Select Existing Resume (Works best)</Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem value="upload" id="upload-resume" />
