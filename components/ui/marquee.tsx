@@ -1,3 +1,4 @@
+"use client"
 
 import React, { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
@@ -6,59 +7,59 @@ import { GradientText } from "../gradient-text";
 const images = [
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp",
-    name: "Template 1",
+    name: "Wibblit Resume Editor Template 1",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp",
-    name: "Template 2",
+    name: "Wibblit Resume Editor Template 2",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp",
-    name: "Template 3",
+    name: "Wibblit Resume Editor Template 3",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp",
-    name: "Template 4",
+    name: "Wibblit Resume Editor Template 4",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp",
-    name: "Template 5",
+    name: "Wibblit Resume Editor Template 5",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp",
-    name: "Template 6",
+    name: "Wibblit Resume Editor Template 6",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp",
-    name: "Template 7",
+    name: "Wibblit Resume Editor Template 7",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp",
-    name: "Template 8",
+    name: "Wibblit Resume Editor Template 8",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp",
-    name: "Template 9",
+    name: "Wibblit Resume Editor Template 9",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp",
-    name: "Creative Template 1",
+    name: "Creative Wibblit Cover Letter Editor Template 1",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp",
-    name: "Creative Template 2",
+    name: "Creative Wibblit Cover Letter Editor Template 2",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp",
-    name: "Creative Template 3",
+    name: "Creative Wibblit Cover Letter Editor Template 3",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp",
-    name: "Creative Template 4",
+    name: "Creative Wibblit Cover Letter Editor Template 4",
   },
   {
     image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp",
-    name: "Creative Template 5",
+    name: "Creative Wibblit Cover Letter Editor Template 5",
   },
 ];
 
@@ -75,6 +76,14 @@ const ImageCard = ({ image, name }: { image: string; name: string }) => (
       alt={name}
       className="w-full h-full object-cover rounded-lg"
     />
+    <noscript>
+      <img
+        src={image || "/placeholder.svg"}
+        alt={name}
+        
+        className="w-full h-full object-cover rounded-lg"
+      />
+    </noscript>
   </figure>
 )
 
