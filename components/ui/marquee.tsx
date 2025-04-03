@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
 import { GradientText } from "../gradient-text";
+import ImageCardServer from "../ImageCardServer";
 
 const images = [
   {
@@ -69,23 +70,7 @@ const shuffledimages3 = [...images].sort(() => Math.random() - 0.1);
 const shuffledimages4 = [...images].sort(() => Math.random() - 0.4);
 
 
-const ImageCard = ({ image, name }: { image: string; name: string }) => (
-  <figure className="relative h-72 lg:h-full flex-shrink-0 cursor-pointer overflow-hidden rounded-xl border p-1 border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05] dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]">
-    <img
-      src={image || "/placeholder.svg"}
-      alt={name}
-      className="w-full h-full object-cover rounded-lg"
-    />
-    <noscript>
-      <img
-        src={image || "/placeholder.svg"}
-        alt={name}
-        
-        className="w-full h-full object-cover rounded-lg"
-      />
-    </noscript>
-  </figure>
-)
+
 
 const Marquee = ({
   className,
@@ -179,24 +164,24 @@ export function ImageMarquee() {
             <div className="lg:hidden flex flex-col space-y-4">
               <Marquee className="h-1/2 [--duration:30s]">
                 {shuffledimages1.map((image) => (
-                  <ImageCard key={image.name} {...image} />
+                  <ImageCardServer key={image.name} {...image} />
                 ))}
               </Marquee>
               <Marquee reverse className="h-1/2 [--duration:35s]">
                 {[...shuffledimages2].reverse().map((image) => (
-                  <ImageCard key={image.name} {...image} />
+                  <ImageCardServer key={image.name} {...image} />
                 ))}
               </Marquee>
             </div>
             {/* Large screens: 3 vertical columns */}
             <Marquee vertical className="hidden lg:block [--duration:40s] h-full w-1/3">
               {shuffledimages3.map((image) => (
-                <ImageCard key={image.name} {...image} />
+                <ImageCardServer key={image.name} {...image} />
               ))}
             </Marquee>
             <Marquee vertical reverse className="hidden lg:block [--duration:45s] h-full w-1/3">
               {[...shuffledimages4].reverse().map((image) => (
-                <ImageCard key={image.name} {...image} />
+                <ImageCardServer key={image.name} {...image} />
               ))}
             </Marquee>
             <Marquee vertical className="hidden lg:block [--duration:50s] h-full w-1/3">
@@ -204,7 +189,7 @@ export function ImageMarquee() {
                 .slice(2)
                 .concat(images.slice(0, 2))
                 .map((image) => (
-                  <ImageCard key={image.name} {...image} />
+                  <ImageCardServer key={image.name} {...image} />
                 ))}
             </Marquee>
           </div>
