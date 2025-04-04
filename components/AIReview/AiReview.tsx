@@ -3,13 +3,27 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { FileText, X, Save, CheckCircle, Printer } from "lucide-react";
+import {
+  FileText,
+  Loader2,
+  X,
+  Save,
+  CheckCircle,
+  Printer,
+  Loader,
+} from "lucide-react";
 import axios, { CancelTokenSource } from "axios";
 import {
   ResumeStyles,
   RecentResume as UserResume,
 } from "@/types/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   Accordion,
@@ -27,7 +41,11 @@ import { ScrollArea } from "../ui/scroll-area";
 import { saveResumeData } from "@/actions/saveResumeData";
 import ResumeDisplay from "../resumeViewer";
 import { initialState } from "@/slices/rightsidebarSlice";
-import { DEFAULT_RESUME_STYLES, testresume, testsuggestions } from "@/data/reviewData";
+import {
+  DEFAULT_RESUME_STYLES,
+  testresume,
+  testsuggestions,
+} from "@/data/reviewData";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +67,8 @@ import { ContentRenderer, AsyncContentRenderer } from "./ContentRenderer";
 import { createResumeWithData } from "@/actions/createResume";
 import { updateUsedResumeSlots } from "@/slices/userAssets";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
+
 type Issue = {
   name: string;
   severity: string;
@@ -187,7 +207,6 @@ export default function AIReview({
 }: {
   recentResumes: UserResume[];
 }) {
-
   const [aiSuggestions, setAiSuggestions] = useState<AIReviewResult[] | null>(
     null //non debug: null debug: JSON.parse(testsuggestions)
   );
@@ -207,11 +226,21 @@ export default function AIReview({
   const [reviewType, setReviewType] = useState<string | null>(null);
   const [resumeName, setResumeName] = useState("");
   const [openResumeName, setOpenResumeName] = useState(false);
+  const [openResumeName2, setOpenResumeName2] = useState(false);
   const [saveAll, setSaveAll] = useState<boolean>(false);
   const usedresumes = useAppSelector((state) => state.assets.usedresumes);
   const totalslot = useAppSelector((state) => state.assets.resumeslot);
-  
+  const [isOpenNoSlot, setIsOpenNoSlot] = useState<boolean>(false);
+  const [isOpenCustomize, setIsOpenCustomize] = useState<boolean>(false);
+  const [isloadingCustomize, setIsLoadingCustomize] = useState({
+    withData: false,
+    withoutData: false,
+  });
+  const [customizeTemp, setCustomizeTemp] = useState<
+    "withdata" | "withoutdata" | null
+  >(null);
 
+  const router = useRouter();
 
   console.log(usedresumes, "Used resume", totalslot, "total");
 
@@ -302,9 +331,9 @@ export default function AIReview({
       dispatch(
         updateCredits(
           credits -
-          ((formData.reviewType === "tailored"
-            ? creditList.get("tailored")
-            : creditList.get("generic")) ?? 0)
+            ((formData.reviewType === "tailored"
+              ? creditList.get("tailored")
+              : creditList.get("generic")) ?? 0)
         )
       );
     } catch (error) {
@@ -346,7 +375,9 @@ export default function AIReview({
     }
   };
 
-  const handleSaveAS = async () => {
+  const handleSaveAS = async ({
+    isSaveAll,
+  }: { isSaveAll?: boolean | null | undefined } = {}) => {
     try {
       if (usedresumes >= totalslot) {
         toast({
@@ -363,10 +394,24 @@ export default function AIReview({
           description: "Resume name is empty",
           variant: "destructive",
         });
+        return;
+      }
+
+      let updatedData = resumeData;
+      if (saveAll || isSaveAll) {
+        const data = aiSuggestions?.map(({ selector, final_output }) => ({
+          selector,
+          final_output,
+        }));
+
+        updatedData = await processAcceptAllChanges(resumeData, data!);
+        setResumeData(updatedData);
+        setSaveAll(false);
+        setAiSuggestions([]);
       }
 
       const res = await createResumeWithData({
-        resumeData: resumeData,
+        resumeData: updatedData,
         resumeStyles: resumeStyles,
         resumeName: resumeName,
       });
@@ -374,7 +419,7 @@ export default function AIReview({
       setResumeID(res.resumeId);
 
       if (res.success) {
-        dispatch(updateUsedResumeSlots(usedresumes + 1))
+        dispatch(updateUsedResumeSlots(usedresumes + 1));
         toast({
           title: "Success",
           description: "Resume created successfully.",
@@ -388,10 +433,7 @@ export default function AIReview({
       }
       setOpenResumeName(false);
 
-      if (saveAll) {
-        await handleAcceptAllAndSave();
-        setSaveAll(false);
-      }
+      return res.resumeId;
     } catch (error) {
       toast({
         title: "Failed",
@@ -450,6 +492,88 @@ export default function AIReview({
         description: "Failed to save the resume.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleSavePreprocessor = async () => {
+    if (resumeID) {
+      handleSave();
+    } else {
+      if (usedresumes >= totalslot) {
+        setIsOpenNoSlot(true);
+        return;
+      }
+      setOpenResumeName(true);
+    }
+  };
+
+  const handleAcceptAllAndPreprocessor = () => {
+    console.log("Mastersum moned");
+    if (resumeID) {
+      console.log(resumeID, "I got youbro ");
+      handleAcceptAllAndSave();
+    } else {
+      if (usedresumes >= totalslot) {
+        console.log(" I called you");
+        setIsOpenNoSlot(true);
+        return;
+      }
+      setSaveAll(true);
+      setOpenResumeName(true);
+    }
+  };
+
+  const handleCustomizeInEditorPreprocessor = () => {
+    if (!resumeID) {
+      if (usedresumes >= totalslot) {
+        setIsOpenNoSlot(true);
+        return;
+      }
+    }
+    if (!resumeID) {
+      setOpenResumeName2(true);
+    } else {
+      setIsOpenCustomize(true);
+    }
+  };
+
+  const handleCustomizeDispatcher = ({ value }: { value: string }) => {
+    if (value === "withdata") {
+      setIsLoadingCustomize((prev) => ({ ...prev, withData: true }));
+      handleCustomizeInEditorWithData();
+    } else {
+      setIsLoadingCustomize((prev) => ({ ...prev, withoutData: true }));
+      handleCustomizeInEditorWithoutData();
+    }
+  };
+
+  const handleCustomizeInEditorWithoutData = async () => {
+    const type = "review";
+    if (resumeID) {
+      router.push(`/home/editor?type=${type}&resID=${resumeID}`);
+    } else {
+      setIsLoadingCustomize((prev) => ({
+        ...prev,
+        withoutData: true,
+      }));
+      const id = await handleSaveAS();
+      router.push(`/home/editor?type=${type}&resID=${id}`);
+    }
+  };
+
+  const handleCustomizeInEditorWithData = async () => {
+    const type = "review";
+    if (resumeID) {
+      await handleAcceptAllAndSave();
+      router.push(`/home/editor?type=${type}&resID=${resumeID}`);
+    } else {
+      setIsLoadingCustomize((prev) => ({
+        ...prev,
+        withData: true,
+      }));
+      const id = await handleSaveAS({ isSaveAll: true });
+      setSaveAll(false);
+      router.push(`/home/editor?type=${type}&resID=${id}`);
     }
   };
 
@@ -668,21 +792,15 @@ export default function AIReview({
                     variant="default"
                     size="sm"
                     disabled={usedresumes === totalslot}
-                    className={`${usedresumes === totalslot ? "cursor-not-allowed" : ""
-                      }`}
+                    className={`${
+                      usedresumes === totalslot ? "cursor-not-allowed" : ""
+                    }`}
                   >
                     <Save className="mr-2 h-4 w-4" />
                     Save As
                   </Button>
                   <Button
-                    onClick={
-                      resumeID
-                        ? handleAcceptAllAndSave
-                        : () => {
-                          setSaveAll(true);
-                          setOpenResumeName(true);
-                        }
-                    }
+                    onClick={handleAcceptAllAndPreprocessor}
                     variant="default"
                     size="sm"
                   >
@@ -690,11 +808,7 @@ export default function AIReview({
                     Accept All & Save
                   </Button>
                   <Button
-                    onClick={
-                      resumeID
-                        ? () => handleSave()
-                        : () => setOpenResumeName(true)
-                    }
+                    onClick={handleSavePreprocessor}
                     variant="default"
                     size="sm"
                   >
@@ -721,25 +835,26 @@ export default function AIReview({
                     <Printer className="h-4 w-4" />
                   </Button>
                   <Button
-                    onClick={() => setOpenResumeName(true)}
+                    onClick={() => {
+                      if (usedresumes >= totalslot) {
+                        setOpen(true);
+                        return;
+                      } else {
+                        setOpenResumeName(true);
+                      }
+                    }}
                     variant="default"
                     size="sm"
                     disabled={usedresumes === totalslot}
-                    className={`${usedresumes === totalslot ? "cursor-not-allowed" : ""
-                      }`}
+                    className={`${
+                      usedresumes === totalslot ? "cursor-not-allowed" : ""
+                    }`}
                   >
                     <Save className="h-4 w-4" />
                     Save As
                   </Button>
                   <Button
-                    onClick={
-                      resumeID
-                        ? handleAcceptAllAndSave
-                        : () => {
-                          setSaveAll(true);
-                          setOpenResumeName(true);
-                        }
-                    }
+                    onClick={handleAcceptAllAndPreprocessor}
                     variant="default"
                     size="sm"
                   >
@@ -747,11 +862,7 @@ export default function AIReview({
                     Accept & Save
                   </Button>
                   <Button
-                    onClick={
-                      resumeID
-                        ? () => handleSave()
-                        : () => setOpenResumeName(true)
-                    }
+                    onClick={handleSavePreprocessor}
                     variant="default"
                     size="sm"
                   >
@@ -848,18 +959,19 @@ export default function AIReview({
                     <h3 className="mb-4 text-lg font-semibold">
                       Resume Metrics
                     </h3>
-                    <div className="flex gap-4 pb-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+                    <div
+                      className="flex gap-4 pb-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
                       onScroll={(e) => {
                         const scrollLeft = e.currentTarget.scrollLeft;
                         const cardWidth = 276; // 260px card + 16px gap
                         setActiveMetricCard(Math.round(scrollLeft / cardWidth));
                       }}
                       style={{
-                        msOverflowStyle: 'none',  /* IE and Edge */
-                        scrollbarWidth: 'none',   /* Firefox */
-                        WebkitOverflowScrolling: 'touch'
-                      }}>
-
+                        msOverflowStyle: "none" /* IE and Edge */,
+                        scrollbarWidth: "none" /* Firefox */,
+                        WebkitOverflowScrolling: "touch",
+                      }}
+                    >
                       <div className="snap-center shrink-0">
                         <Card className="w-[260px] h-[140px]">
                           <CardHeader className="pb-2">
@@ -885,7 +997,9 @@ export default function AIReview({
                           <CardContent className="flex flex-col items-center justify-center gap-2">
                             <div className="text-3xl font-bold text-primary">
                               {metrics.averageScore}
-                              <span className="text-xl text-muted-foreground">/5</span>
+                              <span className="text-xl text-muted-foreground">
+                                /5
+                              </span>
                             </div>
                             <Progress
                               value={Number(metrics.averageScore) * 20}
@@ -923,7 +1037,10 @@ export default function AIReview({
                           <CardContent className="flex flex-col items-center justify-center gap-2">
                             <div className="flex flex-wrap gap-2 justify-center">
                               {metrics.issuesBySeverity.major > 0 && (
-                                <Badge variant="destructive" className="px-3 py-1">
+                                <Badge
+                                  variant="destructive"
+                                  className="px-3 py-1"
+                                >
                                   {metrics.issuesBySeverity.major} Major
                                 </Badge>
                               )}
@@ -933,7 +1050,10 @@ export default function AIReview({
                                 </Badge>
                               )}
                               {metrics.issuesBySeverity.minor > 0 && (
-                                <Badge variant="secondary" className="px-3 py-1">
+                                <Badge
+                                  variant="secondary"
+                                  className="px-3 py-1"
+                                >
                                   {metrics.issuesBySeverity.minor} Minor
                                 </Badge>
                               )}
@@ -942,20 +1062,21 @@ export default function AIReview({
                         </Card>
                       </div>
                       <style jsx>{`
-                            div::-webkit-scrollbar {
-                                display: none;
-                              }
-                            `}</style>
+                        div::-webkit-scrollbar {
+                          display: none;
+                        }
+                      `}</style>
                     </div>
                     {/* Optional: Add scroll indicators */}
                     <div className="flex justify-center gap-1 mt-4">
                       {[0, 1, 2, 3].map((index) => (
                         <div
                           key={index}
-                          className={`h-1 rounded-full transition-all duration-300 ${index === activeMetricCard
-                            ? "w-8 bg-primary"
-                            : "w-1 bg-muted-foreground"
-                            }`}
+                          className={`h-1 rounded-full transition-all duration-300 ${
+                            index === activeMetricCard
+                              ? "w-8 bg-primary"
+                              : "w-1 bg-muted-foreground"
+                          }`}
                         />
                       ))}
                     </div>
@@ -964,15 +1085,21 @@ export default function AIReview({
               )}
               {/* Two-column layout */}
               <div className="flex flex-1 overflow-hidden">
-
                 <div className="md:hidden w-full flex flex-col">
                   <Tabs defaultValue="issues" className="w-full">
                     <TabsList className="w-full rounded-none border-b">
-                      <TabsTrigger value="issues" className="flex-1">Issues</TabsTrigger>
-                      <TabsTrigger value="preview" className="flex-1">Preview</TabsTrigger>
+                      <TabsTrigger value="issues" className="flex-1">
+                        Issues
+                      </TabsTrigger>
+                      <TabsTrigger value="preview" className="flex-1">
+                        Preview
+                      </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="issues" className="flex-1 h-[calc(100vh-220px)]">
+                    <TabsContent
+                      value="issues"
+                      className="flex-1 h-[calc(100vh-220px)]"
+                    >
                       <ScrollArea className="h-full">
                         <div className="p-4">
                           <h3 className="mb-4 text-lg font-semibold">Issues</h3>
@@ -992,7 +1119,9 @@ export default function AIReview({
                                       </span>
                                       <Badge variant="outline" className="mx-2">
                                         {issues.length}{" "}
-                                        {issues.length === 1 ? "issue" : "issues"}
+                                        {issues.length === 1
+                                          ? "issue"
+                                          : "issues"}
                                       </Badge>
                                     </div>
                                   </AccordionTrigger>
@@ -1030,7 +1159,9 @@ export default function AIReview({
                                                       </h4>
                                                       <div className="flex items-center gap-2">
                                                         <Progress
-                                                          value={metric.score * 20}
+                                                          value={
+                                                            metric.score * 20
+                                                          }
                                                           className="w-24"
                                                         />
                                                         <span className="text-sm">
@@ -1038,7 +1169,8 @@ export default function AIReview({
                                                         </span>
                                                       </div>
                                                     </div>
-                                                    {metric.issues.length > 0 && (
+                                                    {metric.issues.length >
+                                                      0 && (
                                                       <div className="space-y-2">
                                                         {metric.issues.map(
                                                           (
@@ -1052,17 +1184,19 @@ export default function AIReview({
                                                               <div className="flex items-start justify-between">
                                                                 <div className="flex flex-wrap items-center gap-2 justify-between">
                                                                   <p className="text-sm">
-                                                                    {issueItem.name}
+                                                                    {
+                                                                      issueItem.name
+                                                                    }
                                                                   </p>
                                                                   <Badge
                                                                     variant={
                                                                       issueItem.severity ===
-                                                                        "major"
+                                                                      "major"
                                                                         ? "destructive"
                                                                         : issueItem.severity ===
                                                                           "moderate"
-                                                                          ? "default"
-                                                                          : "secondary"
+                                                                        ? "default"
+                                                                        : "secondary"
                                                                     }
                                                                     className="mt-1"
                                                                   >
@@ -1090,7 +1224,9 @@ export default function AIReview({
                                                     <div className="mt-1 rounded-md bg-muted/20 p-2">
                                                       <AsyncContentRenderer
                                                         resumeData={resumeData}
-                                                        selector={issue.selector}
+                                                        selector={
+                                                          issue.selector
+                                                        }
                                                         dateFormat={
                                                           resumeStyles?.datetype ||
                                                           "MMM yyyy"
@@ -1104,7 +1240,9 @@ export default function AIReview({
                                                     </h5>
                                                     <div className="mt-1 rounded-md bg-muted/20 p-2">
                                                       <ContentRenderer
-                                                        content={issue.final_output}
+                                                        content={
+                                                          issue.final_output
+                                                        }
                                                         dateFormat={
                                                           resumeStyles?.datetype ||
                                                           "MMM yyyy"
@@ -1166,7 +1304,10 @@ export default function AIReview({
                       </ScrollArea>
                     </TabsContent>
 
-                    <TabsContent value="preview" className="flex-1 h-[calc(100vh-220px)]">
+                    <TabsContent
+                      value="preview"
+                      className="flex-1 h-[calc(100vh-220px)]"
+                    >
                       <div className="flex h-full items-center justify-center p-4">
                         <ResumeDisplay
                           resumeData={resumeData}
@@ -1174,6 +1315,9 @@ export default function AIReview({
                           templateNumber={resumeStyles.id}
                           key={resumeStyles.id}
                           className="resume-display-container"
+                          handleCustomizeInEditorPreprocessor={
+                            handleCustomizeInEditorPreprocessor
+                          }
                         />
                       </div>
                     </TabsContent>
@@ -1239,7 +1383,9 @@ export default function AIReview({
                                                     </h4>
                                                     <div className="flex items-center gap-2">
                                                       <Progress
-                                                        value={metric.score * 20}
+                                                        value={
+                                                          metric.score * 20
+                                                        }
                                                         className="w-24"
                                                       />
                                                       <span className="text-sm">
@@ -1261,17 +1407,19 @@ export default function AIReview({
                                                             <div className="flex items-start justify-between">
                                                               <div className="flex flex-wrap items-center gap-2 justify-between">
                                                                 <p className="text-sm">
-                                                                  {issueItem.name}
+                                                                  {
+                                                                    issueItem.name
+                                                                  }
                                                                 </p>
                                                                 <Badge
                                                                   variant={
                                                                     issueItem.severity ===
-                                                                      "major"
+                                                                    "major"
                                                                       ? "destructive"
                                                                       : issueItem.severity ===
                                                                         "moderate"
-                                                                        ? "default"
-                                                                        : "secondary"
+                                                                      ? "default"
+                                                                      : "secondary"
                                                                   }
                                                                   className="mt-1"
                                                                 >
@@ -1313,7 +1461,9 @@ export default function AIReview({
                                                   </h5>
                                                   <div className="mt-1 rounded-md bg-muted/20 p-2">
                                                     <ContentRenderer
-                                                      content={issue.final_output}
+                                                      content={
+                                                        issue.final_output
+                                                      }
                                                       dateFormat={
                                                         resumeStyles?.datetype ||
                                                         "MMM yyyy"
@@ -1383,6 +1533,9 @@ export default function AIReview({
                         templateNumber={resumeStyles.id}
                         key={resumeStyles.id}
                         className="resume-display-container"
+                        handleCustomizeInEditorPreprocessor={
+                          handleCustomizeInEditorPreprocessor
+                        }
                       />
                     </div>
                   </div>
@@ -1417,11 +1570,110 @@ export default function AIReview({
           </div>
           <DialogFooter>
             <div className="flex flex-col gap-2">
-              <Button className="w-full" variant="outline" onClick={() => setOpenResumeName(false)}>
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => setOpenResumeName(false)}
+              >
                 Cancel
               </Button>
-              <Button className="w-full" onClick={handleSaveAS} disabled={!resumeName.trim()}>
+              <Button
+                className="w-full"
+                onClick={() => handleSaveAS()}
+                disabled={!resumeName.trim()}
+              >
                 Create
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isOpenNoSlot} onOpenChange={() => setIsOpenNoSlot(false)}>
+        <DialogContent className="sm:max-w-md">
+          <div className="flex flex-col items-center space-y-4 py-6">
+            <p className="text-sm text-center text-muted-foreground px-2">
+              For now, you can review the changes you've made. To apply them,
+              please free up a slot or purchase additional slot.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isOpenCustomize}
+        onOpenChange={() => setIsOpenCustomize(false)}
+      >
+        <DialogContent className="sm:max-w-md text-center space-y-4 py-6">
+          <p className="text-base font-medium">
+            Do you want to apply the suggested changes?
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() =>
+                handleCustomizeDispatcher({ value: "withoutdata" })
+              }
+            >
+              Keep Original{" "}
+              {isloadingCustomize.withoutData && (
+                <Loader2 className="animate-spin ml-2" />
+              )}
+            </Button>
+            <Button
+              className="w-full"
+              onClick={() => handleCustomizeDispatcher({ value: "withdata" })}
+            >
+              Apply Changes{" "}
+              {isloadingCustomize.withData && (
+                <Loader2 className="animate-spin ml-2" />
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openResumeName2} onOpenChange={setOpenResumeName2}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Create Resume</DialogTitle>
+            <DialogDescription>
+              Enter a name for your new resume. Click create when you're done.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="resume-name" className="text-right">
+                Resume Name
+              </Label>
+              <Input
+                id="resume-name"
+                value={resumeName}
+                onChange={(e) => setResumeName(e.target.value)}
+                className="col-span-3"
+                placeholder="My Professional Resume"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <div className="flex flex-col gap-2">
+              <Button
+                className="w-full"
+                variant="outline"
+                onClick={() => setOpenResumeName2(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setOpenResumeName2(false);
+                  setIsOpenCustomize(true);
+                }}
+                disabled={!resumeName.trim()}
+              >
+                Done
               </Button>
             </div>
           </DialogFooter>
