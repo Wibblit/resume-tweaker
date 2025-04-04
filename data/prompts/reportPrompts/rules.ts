@@ -20,11 +20,11 @@ export const reportRules = () => {
 - The correction must be in line with the comment and the correction_logic
 
 #### Special case for correction
-- note that the main resume summary is an array of objects, even though it only has one single object, the selector for summary content is summary[0].content, not summary.content
+- note that the main resume summary is an array of objects, even though it only has one single object, the selector for summary content is summary[0].content (if its non empty, i.e []), not summary.content
 
 #### Special rules for selectors
-- Use index-based selectors only for the summary field, and specifically only summary[0].content, literally no other field is allowed to use index based selectors.
-- For every selector other than the summary[0].content, index-based selectors are not allowed, so if you need something like awards[0].summary, then you need to use filter bsed selectors, like awards[?(@.id=='90876543-2109-8765-4321-0fedcba98765')].summary and nothing else.
+- Use index-based selectors only for the summary field, and specifically only summary[0].content(if its non empty, i.e []), literally no other field is allowed to use index based selectors.
+- For every selector other than the summary[0].content(if its non empty, i.e []), index-based selectors are not allowed, so if you need something like awards[0].summary, then you need to use filter bsed selectors, like awards[?(@.id=='90876543-2109-8765-4321-0fedcba98765')].summary and nothing else.
 - you can only use filter based selectors and regular key based selectors (if you want select whole object like 'awards') for all other fields, so no index based selectors for any other field, only summary[0].content is allowed to use index based selectors.
 
 #### Conflict Resolution:

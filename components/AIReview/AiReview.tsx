@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { FileText, Loader2, X, Save, CheckCircle, Printer } from "lucide-react";
+import { FileText, X, Save, CheckCircle, Printer } from "lucide-react";
 import axios, { CancelTokenSource } from "axios";
 import {
-  ResumeData,
   ResumeStyles,
   RecentResume as UserResume,
 } from "@/types/types";
@@ -275,12 +274,11 @@ export default function AIReview({
         }
       );
 
-      if (formData.resumeOption === "upload") {
-        setResumeStyles(DEFAULT_RESUME_STYLES);
-      } else {
+      if (formData.resumeOption === "select") {
         setResumeData(response?.data?.resume);
         setResumeStyles(response?.data?.styles);
       }
+      // For uploaded resumes, the data and styles are already set in AIReviewSetup
 
       if (response?.data?.statusCode === 402) {
         return toast({

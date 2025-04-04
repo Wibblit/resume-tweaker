@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,14 +14,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createResume } from "@/actions/createResume";
+import { createResume, createResumeWithData } from "@/actions/createResume";
 import { setCurrentCover } from "@/slices/currentCoverSlice";
 import { setCurrentResume } from "@/slices/currentResumeSlices";
 import { useAppDispatch } from "@/hooks/hooks";
 import { useToast } from "@/hooks/use-toast";
 import { UpdateId } from "@/slices/rightsidebarSlice";
 import { createCover } from "@/actions/createCover";
-import { Coins, Loader, Sparkles } from "lucide-react";
+import { Coins, Loader, Sparkles, Upload } from "lucide-react";
 import axios from "axios";
 import { useAppSelector } from "@/hooks/hooks";
 import { PremiumModal } from "../premium-modal";
@@ -33,9 +33,16 @@ import {
   updateCoverSlot,
   updateResumeSlot,
 } from "@/slices/userAssets";
+import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Tesseract, { createWorker } from "tesseract.js";
+import pdfToImages from "@/lib/pdfToImages";
+import { DEFAULT_RESUME_STYLES } from "@/data/reviewData";
+import { ResumeStyles } from "@/types/types";
 
 const RESUME = "Resume";
 const COVER = "Cover Letter";
+type ResumeOption = "manual" | "upload";
 
 export function CreateNewDialog({
   children,
@@ -54,6 +61,31 @@ export function CreateNewDialog({
   const { toast } = useToast();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [resumeOption, setResumeOption] = useState<ResumeOption>("manual");
+  const [file, setFile] = useState<File | null>(null);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [isOcrInProgress, setIsOcrInProgress] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [resumeData, setResumeData] = useState<any>(null);
+  const [resumeStyles, setResumeStyles] = useState<ResumeStyles>(DEFAULT_RESUME_STYLES);
+  const workerRef = useRef<Tesseract.Worker | null>(null);
+
+  useEffect(() => {
+    async function worker() {
+      workerRef.current = await createWorker({
+        logger: (message) => {
+          if ("progress" in message) {
+            setOcrProgress(message.progress);
+          }
+        },
+      });
+    }
+    worker();
+    return () => {
+      workerRef.current?.terminate();
+      workerRef.current = null;
+    };
+  }, []);
 
   const onClose = () => {
     setOpen(false);
@@ -95,6 +127,93 @@ export function CreateNewDialog({
     setBuyLoading(false);
   };
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const uploadedFile = event.target.files?.[0];
+      if (!uploadedFile) return;
+
+      setIsOcrInProgress(true);
+      setOcrProgress(0);
+
+      const worker = workerRef.current;
+      if (!worker) {
+        throw new Error("OCR worker not initialized");
+      }
+
+      await worker.load();
+      await worker.loadLanguage("eng");
+      await worker.initialize("eng");
+      await worker.setParameters({
+        tessjs_create_hocr: "1",
+        tessedit_pageseg_mode: Tesseract.PSM.AUTO_OSD,
+      });
+
+      let ocrText = "";
+
+      if (uploadedFile.type === "application/pdf") {
+        setFile(uploadedFile);
+        const pdfUrl = URL.createObjectURL(uploadedFile);
+        const imageUrls = await pdfToImages(pdfUrl);
+
+        for (let i = 0; i < imageUrls.length; i++) {
+          const response = await worker.recognize(imageUrls[i]);
+          ocrText += " " + response?.data.text;
+        }
+        setIsOcrInProgress(false);
+        setOcrProgress(1);
+        setIsParsing(true);
+
+        try {
+          const parseResponse = await fetch('/api/parse-resume', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: ocrText }),
+          });
+
+          if (!parseResponse.ok) {
+            throw new Error('Failed to parse resume');
+          }
+
+          const parsedData = await parseResponse.json();
+          setResumeData(parsedData.resume);
+          setResumeStyles(parsedData.styles);
+          setIsParsing(false);
+          toast({
+            title: "Resume Parsed Successfully",
+            description: "Your resume has been successfully parsed. Click Create to continue.",
+          });
+        } catch (error) {
+          console.error('Error parsing resume:', error);
+          toast({
+            title: "Error",
+            description: "Failed to parse the resume. Please try again.",
+            variant: "destructive",
+          });
+          setIsParsing(false);
+        }
+      } else {
+        setIsOcrInProgress(false);
+        setIsParsing(false);
+        toast({
+          title: "Invalid File Format",
+          description: "Please upload a PDF file.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error processing file:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process the file. Please try again.",
+        variant: "destructive",
+      });
+      setIsOcrInProgress(false);
+      setIsParsing(false);
+    }
+  };
+
   const handleCreate = async () => {
     if (template) {
       dispatch(UpdateId(templateId));
@@ -115,24 +234,54 @@ export function CreateNewDialog({
             variant: "destructive",
           });
         }
-        const response = await createResume(name);
-        if (response && response.success) {
-          localStorage.setItem("currResumeId", response?.resume?.id as string);
-          dispatch(
-            setCurrentResume({
-              currResumeId: response?.resume?.id as string,
-              currResumeName: response?.resume?.resumeName as string,
-            })
-          );
-
-          router.push("/home/editor");
-        } else {
-          toast({
-            title: `Error ${response.status}`,
-            description: response.message || "Failed to create resume",
-            variant: "destructive",
+        
+        if (resumeOption === "upload" && resumeData) {
+          // Create resume with parsed data
+          const response = await createResumeWithData({
+            resumeData: resumeData,
+            resumeStyles: resumeStyles,
+            resumeName: name
           });
-          setLoading(false);
+          
+          if (response && response.success) {
+            localStorage.setItem("currResumeId", response?.resumeId as string);
+            dispatch(
+              setCurrentResume({
+                currResumeId: response?.resumeId as string,
+                currResumeName: name,
+              })
+            );
+
+            router.push("/home/editor");
+          } else {
+            toast({
+              title: `Error ${response.status}`,
+              description: response.message || "Failed to create resume",
+              variant: "destructive",
+            });
+            setLoading(false);
+          }
+        } else {
+          // Create empty resume
+          const response = await createResume(name);
+          if (response && response.success) {
+            localStorage.setItem("currResumeId", response?.resume?.id as string);
+            dispatch(
+              setCurrentResume({
+                currResumeId: response?.resume?.id as string,
+                currResumeName: response?.resume?.resumeName as string,
+              })
+            );
+
+            router.push("/home/editor");
+          } else {
+            toast({
+              title: `Error ${response.status}`,
+              description: response.message || "Failed to create resume",
+              variant: "destructive",
+            });
+            setLoading(false);
+          }
         }
       } else {
         const verifier = await axios.get("/api/verify-cover-slots");
@@ -208,6 +357,80 @@ export function CreateNewDialog({
             
             <Separator className="my-2" />
             
+            {type === RESUME && (
+              <div>
+                <Label htmlFor="resume-option">Resume Option</Label>
+                <RadioGroup
+                  id="resume-option"
+                  value={resumeOption}
+                  onValueChange={(value: ResumeOption) => setResumeOption(value)}
+                  className="mt-2 flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="manual" id="manual-resume" />
+                    <Label htmlFor="manual-resume">Create Empty Resume</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="upload" id="upload-resume" />
+                    <Label htmlFor="upload-resume">Upload & Parse Resume</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+            
+            {type === RESUME && resumeOption === "upload" && (
+              <div>
+                <Label htmlFor="resume-upload">Upload Your Resume</Label>
+                <div className="mt-2 flex items-center gap-2">
+                  <Input
+                    id="resume-upload"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleFileUpload}
+                    className="flex-1"
+                    disabled={isOcrInProgress || isParsing}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="outline"
+                    disabled={isOcrInProgress || isParsing}
+                    className="flex-1 max-w-[140px]"
+                    onClick={() => document.getElementById("resume-upload")?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-2" /> Browse
+                  </Button>
+                </div>
+                {file && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    File uploaded: {file.name}
+                  </p>
+                )}
+                {(isOcrInProgress || isParsing) && (
+                  <div className="mt-4">
+                    <Label>
+                      {isOcrInProgress ? "Extracting data from PDF..." : "Parsing resume data..."}
+                    </Label>
+                    {isOcrInProgress ? (
+                      <>
+                        <Progress value={ocrProgress * 100} className="mt-2" />
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {(ocrProgress * 100).toFixed(0)}% complete
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Progress
+                          value={100}
+                          className="mt-2 animate-pulse"
+                        />
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">
                 Name
@@ -225,7 +448,7 @@ export function CreateNewDialog({
           <DialogFooter className="sm:justify-center">
             <Button
               onClick={handleCreate}
-              disabled={!name.trim() || loading}
+              disabled={!name.trim() || loading || isOcrInProgress || isParsing || (resumeOption === "upload" && !resumeData && type === RESUME)}
               className="w-full sm:w-auto"
             >
               {loading ? (

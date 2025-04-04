@@ -135,7 +135,7 @@ export default function AIReviewSetup({
 
           const parsedData = await parseResponse.json();
           setResumeData(parsedData.resume);
-          setResumeStyles(DEFAULT_RESUME_STYLES);
+          setResumeStyles(parsedData.styles);
           setResumeText(JSON.stringify(parsedData.resume));
           setIsUploadDialogOpen(false);
           setResumeOption("upload");
