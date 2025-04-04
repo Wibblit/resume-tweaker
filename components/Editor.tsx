@@ -33,7 +33,12 @@ import { useToast } from "@/hooks/use-toast";
 import { initialState } from "@/slices/leftsidebarSlice";
 import { updateResumeIsSave } from "@/slices/currentResumeSlices";
 
-export default function Editor() {
+interface Editor {
+  type?: "review" | null | undefined;
+  resID?: string | null | undefined;
+}
+
+export default function Editor({ type, resID }: Editor) {
   const [activeSection, setActiveSection] = useState<keyof ResumeData | "">(
     "basics"
   );
@@ -58,9 +63,16 @@ export default function Editor() {
     async function getResumeData() {
       try {
         setIsLoading(true);
-        const resumeId = currResumeId
-          ? currResumeId
-          : localStorage.getItem("currResumeId");
+
+        let resumeId;
+        if (type === "review") {
+          resumeId = resID;
+        } else {
+          resumeId = currResumeId
+            ? currResumeId
+            : localStorage.getItem("currResumeId");
+        }
+
         const response = await axios.get<{
           resumeData: PageData;
           message: string;
