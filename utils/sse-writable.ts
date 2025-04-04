@@ -1,7 +1,10 @@
 import { WritableStreamDefaultWriter } from "stream/web";
 
-type Writable = WritableStreamDefaultWriter<any>;
-
+type Writable = {
+  write: (chunk: string) => Promise<void>;
+  close: () => Promise<void>;
+  closed: Promise<void>; // Ensure this matches WritableStreamDefaultWriter<any>
+};
 const clients: Record<string, Writable[]> = {};
 
 export const broadcastToUser = async (userId: string, data: object) => {
