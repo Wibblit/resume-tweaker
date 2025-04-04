@@ -331,9 +331,9 @@ export default function AIReview({
       dispatch(
         updateCredits(
           credits -
-            ((formData.reviewType === "tailored"
-              ? creditList.get("tailored")
-              : creditList.get("generic")) ?? 0)
+          ((formData.reviewType === "tailored"
+            ? creditList.get("tailored")
+            : creditList.get("generic")) ?? 0)
         )
       );
     } catch (error) {
@@ -792,9 +792,8 @@ export default function AIReview({
                     variant="default"
                     size="sm"
                     disabled={usedresumes === totalslot}
-                    className={`${
-                      usedresumes === totalslot ? "cursor-not-allowed" : ""
-                    }`}
+                    className={`${usedresumes === totalslot ? "cursor-not-allowed" : ""
+                      }`}
                   >
                     <Save className="mr-2 h-4 w-4" />
                     Save As
@@ -846,9 +845,8 @@ export default function AIReview({
                     variant="default"
                     size="sm"
                     disabled={usedresumes === totalslot}
-                    className={`${
-                      usedresumes === totalslot ? "cursor-not-allowed" : ""
-                    }`}
+                    className={`${usedresumes === totalslot ? "cursor-not-allowed" : ""
+                      }`}
                   >
                     <Save className="h-4 w-4" />
                     Save As
@@ -1072,11 +1070,10 @@ export default function AIReview({
                       {[0, 1, 2, 3].map((index) => (
                         <div
                           key={index}
-                          className={`h-1 rounded-full transition-all duration-300 ${
-                            index === activeMetricCard
+                          className={`h-1 rounded-full transition-all duration-300 ${index === activeMetricCard
                               ? "w-8 bg-primary"
                               : "w-1 bg-muted-foreground"
-                          }`}
+                            }`}
                         />
                       ))}
                     </div>
@@ -1171,46 +1168,46 @@ export default function AIReview({
                                                     </div>
                                                     {metric.issues.length >
                                                       0 && (
-                                                      <div className="space-y-2">
-                                                        {metric.issues.map(
-                                                          (
-                                                            issueItem,
-                                                            issueIndex
-                                                          ) => (
-                                                            <div
-                                                              key={issueIndex}
-                                                              className="rounded-md bg-muted/30 p-2"
-                                                            >
-                                                              <div className="flex items-start justify-between">
-                                                                <div className="flex flex-wrap items-center gap-2 justify-between">
-                                                                  <p className="text-sm">
-                                                                    {
-                                                                      issueItem.name
-                                                                    }
-                                                                  </p>
-                                                                  <Badge
-                                                                    variant={
-                                                                      issueItem.severity ===
-                                                                      "major"
-                                                                        ? "destructive"
-                                                                        : issueItem.severity ===
-                                                                          "moderate"
-                                                                        ? "default"
-                                                                        : "secondary"
-                                                                    }
-                                                                    className="mt-1"
-                                                                  >
-                                                                    {
-                                                                      issueItem.severity
-                                                                    }
-                                                                  </Badge>
+                                                        <div className="space-y-2">
+                                                          {metric.issues.map(
+                                                            (
+                                                              issueItem,
+                                                              issueIndex
+                                                            ) => (
+                                                              <div
+                                                                key={issueIndex}
+                                                                className="rounded-md bg-muted/30 p-2"
+                                                              >
+                                                                <div className="flex items-start justify-between">
+                                                                  <div className="flex flex-wrap items-center gap-2 justify-between">
+                                                                    <p className="text-sm">
+                                                                      {
+                                                                        issueItem.name
+                                                                      }
+                                                                    </p>
+                                                                    <Badge
+                                                                      variant={
+                                                                        issueItem.severity ===
+                                                                          "major"
+                                                                          ? "destructive"
+                                                                          : issueItem.severity ===
+                                                                            "moderate"
+                                                                            ? "default"
+                                                                            : "secondary"
+                                                                      }
+                                                                      className="mt-1"
+                                                                    >
+                                                                      {
+                                                                        issueItem.severity
+                                                                      }
+                                                                    </Badge>
+                                                                  </div>
                                                                 </div>
                                                               </div>
-                                                            </div>
-                                                          )
-                                                        )}
-                                                      </div>
-                                                    )}
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      )}
                                                   </div>
                                                 )
                                               )}
@@ -1414,12 +1411,12 @@ export default function AIReview({
                                                                 <Badge
                                                                   variant={
                                                                     issueItem.severity ===
-                                                                    "major"
+                                                                      "major"
                                                                       ? "destructive"
                                                                       : issueItem.severity ===
                                                                         "moderate"
-                                                                      ? "default"
-                                                                      : "secondary"
+                                                                        ? "default"
+                                                                        : "secondary"
                                                                   }
                                                                   className="mt-1"
                                                                 >
@@ -1569,7 +1566,7 @@ export default function AIReview({
             </div>
           </div>
           <DialogFooter>
-            <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
               <Button
                 className="w-full"
                 variant="outline"
@@ -1604,33 +1601,39 @@ export default function AIReview({
         open={isOpenCustomize}
         onOpenChange={() => setIsOpenCustomize(false)}
       >
-        <DialogContent className="sm:max-w-md text-center space-y-4 py-6">
-          <p className="text-base font-medium">
-            Do you want to apply the suggested changes?
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() =>
-                handleCustomizeDispatcher({ value: "withoutdata" })
-              }
-            >
-              Keep Original{" "}
-              {isloadingCustomize.withoutData && (
-                <Loader2 className="animate-spin ml-2" />
-              )}
-            </Button>
-            <Button
-              className="w-full"
-              onClick={() => handleCustomizeDispatcher({ value: "withdata" })}
-            >
-              Apply Changes{" "}
-              {isloadingCustomize.withData && (
-                <Loader2 className="animate-spin ml-2" />
-              )}
-            </Button>
-          </div>
+        <DialogContent className="sm:max-w-[425px]">
+
+          <DialogHeader>
+            <DialogTitle>Apply Changes</DialogTitle>
+            <DialogDescription>
+              Apply the suggested changes to your resume?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() =>
+                  handleCustomizeDispatcher({ value: "withoutdata" })
+                }
+              >
+                Keep Original{" "}
+                {isloadingCustomize.withoutData && (
+                  <Loader2 className="animate-spin ml-2" />
+                )}
+              </Button>
+              <Button
+                className="w-full"
+                onClick={() => handleCustomizeDispatcher({ value: "withdata" })}
+              >
+                Apply Changes{" "}
+                {isloadingCustomize.withData && (
+                  <Loader2 className="animate-spin ml-2" />
+                )}
+              </Button>
+            </div>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -1657,7 +1660,7 @@ export default function AIReview({
             </div>
           </div>
           <DialogFooter>
-            <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
               <Button
                 className="w-full"
                 variant="outline"
