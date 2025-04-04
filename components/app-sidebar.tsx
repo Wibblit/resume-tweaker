@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  MessageSquareReply,
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,8 +37,9 @@ import {
   updateLoadingTrue,
   updateCoverSlot,
   updateResumeSlot,
+  updateUsedResumeSlots,
 } from "@/slices/userAssets";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SignOutButton } from "./SignOutButton";
 import {
   DropdownMenu,
@@ -57,6 +59,7 @@ import Link from "next/link";
 import { SettingsDialog } from "./Sidebar/settings/settings-dialog";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
+import { FeedbackForm } from "./feedbackModal";
 
 // Menu items.
 const items = [
@@ -71,6 +74,7 @@ export function AppSidebar({ session }: { session: Session }) {
   const { setTheme, theme } = useTheme();
   const credit = useAppSelector((state) => state?.assets?.credits);
   const loading = useAppSelector((state) => state?.assets?.loading);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { toast } = useToast();
   const credits = {
     used: credit,
@@ -89,10 +93,14 @@ export function AppSidebar({ session }: { session: Session }) {
         const response = await axios.get("/api/get-credits", {
           withCredentials: true,
         });
+        const responseslots = await axios.get("/api/verify-resume-slots", {
+          withCredentials: true,
+        });
         //console.log(response?.data?.Credits?.credits);
         dispatch(updateCredits(response?.data?.Credits?.credits));
         dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
         dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
+        dispatch(updateUsedResumeSlots(responseslots.data?.usedresume));
       } catch (error) {
         //console.log(error);
         toast({
@@ -143,41 +151,33 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-          className={`p-3 bg-background/80 rounded-md ${
-            isCollapsed && "flex items-center justify-center"
-          }`}
+          className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"
+            }`}
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <div>
-                <div className={"flex items-center justify-center w-full"}>
-                  <SettingsDialog isCollapsed={isCollapsed} />
-                </div>
+              <div className={"flex items-center justify-center w-full"}>
+                <Button
+                  variant="ghost"
+                  className={`w-full ${isCollapsed && "py-1 px-2"} ${!isCollapsed && "justify-start"
+                    }`}
+                  onClick={() => setIsFeedbackOpen(true)}
+                >
+                  <MessageSquareReply className="h-4 w-4" />
+                  {!isCollapsed && <span className="ml-2">Feedback</span>}
+                </Button>
               </div>
             </TooltipTrigger>
             {isCollapsed && (
-              <TooltipContent side="right">Settings</TooltipContent>
+              <TooltipContent side="right">Send Feedback</TooltipContent>
             )}
           </Tooltip>
-          <Separator />
-          {session?.user && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <SignOutButton isCollapsed={isCollapsed} />
-                </div>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">Logout</TooltipContent>
-              )}
-            </Tooltip>
-          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     className={`w-full ${!isCollapsed && "justify-start"}`}
                   >
                     {theme === "light" && <Sun className="h-4 w-4" />}
@@ -208,6 +208,32 @@ export function AppSidebar({ session }: { session: Session }) {
               <TooltipContent side="right">Change Theme</TooltipContent>
             )}
           </Tooltip>
+          <Separator />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <div className={"flex items-center justify-center w-full"}>
+                  <SettingsDialog isCollapsed={isCollapsed} />
+                </div>
+              </div>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">Settings</TooltipContent>
+            )}
+          </Tooltip>
+          {session?.user && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <SignOutButton isCollapsed={isCollapsed} />
+                </div>
+              </TooltipTrigger>
+              {isCollapsed && (
+                <TooltipContent side="right">Logout</TooltipContent>
+              )}
+            </Tooltip>
+          )}
+          
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -217,12 +243,12 @@ export function AppSidebar({ session }: { session: Session }) {
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center justify-between py-2 px-4">
                       <div className="flex items-center space-x-2">
-                        <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                        <Coins className="h-4 w-4 mr-2 text-zinc-500 dark:text-zinc-400" />
                         {!isCollapsed && (
                           <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                            Credits Available
+                            Credits
                           </span>
                         )}
                       </div>
@@ -244,6 +270,10 @@ export function AppSidebar({ session }: { session: Session }) {
           </Tooltip>
         </SidebarFooter>
       </Sidebar>
+      <FeedbackForm 
+      open={isFeedbackOpen} 
+      onOpenChange={setIsFeedbackOpen} 
+    />
     </TooltipProvider>
   );
 }

@@ -203,7 +203,7 @@ function AIPopover({
     if (response.data.content.trim() === "Invalid Input.") {
       toast({
         title: "Invalid Input",
-        description: "Please enter meaningful text.",
+        description: "Please enter a meaningful and appropriate prompt.\n Ex. 'Write a summary in points, I worked at google for 2 years as a software engineer, took part in the development of the google search engine.'",
         variant: "destructive",
       });
     } else {

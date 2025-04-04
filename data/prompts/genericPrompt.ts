@@ -14,7 +14,7 @@ export const genericPrompt = `Evaluate the provided resume based on the followin
           Relevance (10 points)
           Assess if the information provided is relevant to general job applications, avoiding unnecessary or unrelated content.
 
-          Grammar and Language (10 points)
+          Grammer and Language (10 points)
           Evaluate the overall grammar, spelling, and professional tone of the resume.
 
           NOTE: 

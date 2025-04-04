@@ -9,6 +9,7 @@ import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 import { creditList } from "@/utils/credits";
 import { prisma } from "@/prisma";
+import { resumeReview } from "./review-utilities";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -20,11 +21,8 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   }
   const data = await request.json();
   const { resumeId, jd, resumeOption, resumeText, reviewType } = data;
-  //console.log(data);
-  const prompt = jd ? jdTailoredPrompt : genericPrompt;
   let ip = request.ip || request.headers.get("x-forwarded-for") || "127.0.0.1";
   ip = ip === "::1" ? "127.0.0.1" : ip;
-
   const results = await prisma.userAssets.findUnique({
     where: {
       userId: session?.user?.id,
@@ -48,61 +46,89 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   if (rateLimiter(session.user.id, ip)) {
     throw ApiError.rateLimitExceeded; // Rate-limiting error
   }
+  let resume;
+  let resumejson = null;
+  let resumestyles = null;
 
-  let result =
-    resumeOption === "upload"
-      ? resumeText
-      : await prisma.resume.findUnique({
-          where: {
-            id: resumeId,
-            userId: session.user.id,
-          },
-        });
+  if (resumeOption === "upload") {
+    // For uploaded resumes, use the provided text and default styles
+    resume = resumeText;
+    resumejson = JSON.parse(resumeText);
+    resumestyles = {
+      id: 1,
+      font: {
+        family: 'Helvetica',
+        size: '11pt',
+        color: '#000000'
+      },
+      spacing: {
+        margin: 6,
+        lineHeight: 1.2
+      },
+      datetype: "MMM 'YY",
+      sections: [
+        'basics', 'profiles', 'summary', 'experience',
+        'education', 'projects', 'skills', 'certifications',
+        'languages', 'awards', 'publications', 'references',
+        'volunteer'
+      ],
+      sectionOrder: {
+        sections: [
+          { name: 'left', width: 'full' },
+          { name: 'right', width: 'full' }
+        ],
+        column3: []
+      }
+    };
+  } else {
+    // For selected resumes, fetch from database
+    const dbResume = await prisma.resume.findUnique({
+      where: {
+        id: resumeId,
+        userId: session.user.id,
+      },
+    });
 
-  if (!result) {
-    throw ApiError.resourceNotFound; // If resume is not found
-  }
+    if (!dbResume) {
+      throw ApiError.resourceNotFound;
+    }
 
-  if (resumeOption !== "upload") {
-    const { id, userId, resumeName, ...resumeDetails } = result;
-    result = resumeDetails;
-    result = {
-      ...result,
-      basics: result.basics.map((basic: any, index: number) =>
+    const { id, userId, resumeName, styles, ...resumeDetails } = dbResume;
+    
+    // Process resume data
+    const processedResume = {
+      ...resumeDetails,
+      basics: Array.isArray(resumeDetails.basics) ? resumeDetails.basics.map((basic: any, index: number) =>
         index === 0 ? { ...basic, picture: null } : basic
-      ),
-      styles: null,
+      ) : [],
       createdOn: null,
       updatedOn: null,
     };
-    result = JSON.stringify(result) + JSON.stringify(result);
+
+    resumejson = processedResume;
+    resume = JSON.stringify(processedResume, null, 2);
+    resumestyles = styles;
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const detailedPrompt = `${result} ${jd} ${prompt}`;
-  const generatedContent = await model.generateContent(detailedPrompt);
-  const response = generatedContent.response;
-  const text = response.text();
-  const cleanedText = text.replace(/```json\s*|\s*```/g, "").trim();
+  // Generate review
+  const generatedContent = await resumeReview(resume, jd, reviewType);
 
-  const resumeReview = JSON.parse(cleanedText);
-
+  // Update credits
   await prisma.userAssets.update({
     where: {
       userId: session?.user?.id,
     },
     data: {
       credits: {
-        decrement:
-          reviewType === "tailored"
-            ? creditList.get("tailored")
-            : creditList.get("generic"),
+        decrement: requiredCredits,
       },
     },
   });
 
   return NextResponse.json({
-    resumeReview,
+    output: generatedContent,
+    resume: resumejson,
+    styles: resumestyles,
     message: "Review generated successfully.",
   });
 });

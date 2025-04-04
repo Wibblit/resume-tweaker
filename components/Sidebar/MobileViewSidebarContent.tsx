@@ -23,6 +23,7 @@ import {
   X,
   Chrome,
   Loader,
+  MessageSquareReply,
 } from "lucide-react";
 import { Session } from "next-auth";
 import { SignOutButton } from "../SignOutButton";
@@ -34,13 +35,14 @@ import {
   updateLoadingTrue,
   updateCoverSlot,
   updateResumeSlot,
+  updateUsedResumeSlots,
 } from "@/slices/userAssets";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { useAppDispatch } from "@/hooks/hooks";
 import { Separator } from "../ui/separator";
 import { SettingsDialog } from "./settings/settings-dialog";
-
+import { FeedbackForm } from "../feedbackModal";
 const sidebarItems = [
   { name: "Resumes", icon: FileText, href: "/home" },
   { name: "AI Review", icon: Star, href: "/home/ai-review" },
@@ -56,7 +58,7 @@ interface SideBarProps {
 export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
-
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const credit = useAppSelector((state) => state?.assets?.credits);
   const loading = useAppSelector((state) => state?.assets?.loading);
   const { toast } = useToast();
@@ -74,10 +76,14 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         const response = await axios.get("/api/get-credits", {
           withCredentials: true,
         });
+        const responseslots = await axios.get("/api/verify-resume-slots", {
+          withCredentials: true,
+        });
         //console.log(response?.data?.Credits?.credits);
         dispatch(updateCredits(response?.data?.Credits?.credits));
         dispatch(updateResumeSlot(response?.data?.Credits?.resumeslot));
         dispatch(updateCoverSlot(response?.data?.Credits?.coverslot));
+        dispatch(updateUsedResumeSlots(responseslots.data?.usedresume));
       } catch (error) {
         //console.log(error);
         toast({
@@ -127,20 +133,9 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
         </div>
       </ScrollArea>
       <div className="border-t border-border p-4 space-y-4">
-        <div>
-          <div className={"flex items-center justify-center w-full"}>
-            <SettingsDialog isCollapsed={false} />
-          </div>
-        </div>
-        <Separator />
-        {session?.user && (
-          <div>
-            <SignOutButton />
-          </div>
-        )}
-        <DropdownMenu>
+      <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start">
               {theme === "light" && <Sun className="h-4 w-4" />}
               {theme === "dark" && <Moon className="h-4 w-4" />}
               {theme === "system" && <Laptop className="h-4 w-4" />}
@@ -162,17 +157,38 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      <div>
+        <Button
+          variant="ghost"
+          className="w-full justify-start"
+          onClick={() => setIsFeedbackOpen(true)}
+        >
+          <MessageSquareReply className="mr-2 h-4 w-4" />
+          Send Feedback
+        </Button>
+      </div>
+        <div>
+          <div className={"flex items-center justify-center w-full"}>
+            <SettingsDialog isCollapsed={false} />
+          </div>
+        </div>
+        {session?.user && (
+          <div>
+            <SignOutButton />
+          </div>
+        )}
+
         <div>
           {loading ? (
             <div className="flex items-center justify-center">
               <Loader className="animate-spin h-4 w-4" />
             </div>
           ) : (
-            <div className="flex items-center justify-between py-2">
+            <div className="flex items-center justify-between px-4 py-2">
               <div className="flex items-center space-x-2">
-                <Coins className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                <Coins className="h-4 w-4 mr-2 text-zinc-500 dark:text-zinc-400" />
                 <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Credits Available
+                  Credits
                 </span>
               </div>
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -182,6 +198,10 @@ export default function Component({ session, setIsSidebarOpen }: SideBarProps) {
           )}
         </div>
       </div>
+      <FeedbackForm 
+      open={isFeedbackOpen} 
+      onOpenChange={setIsFeedbackOpen} 
+    />
     </div>
   );
 }
