@@ -95,6 +95,9 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
           await prisma.userAssets.create({
             data: {
               userId: existingUser?.id,
+              resumeslot: 4,
+              coverslot: 4,
+              credits: 400,
             },
           });
         }
