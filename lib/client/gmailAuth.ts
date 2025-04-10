@@ -3,7 +3,8 @@ export const getGoogleAuthURL = () => {
 
   const options = {
     redirect_uri: "http://localhost:3000/api/email-auth/gmail/callback",
-    client_id: "493445936272-cd0u6a6940g3d5i3on95tr8g46c7l9jj.apps.googleusercontent.com",
+    client_id:
+      "493445936272-cd0u6a6940g3d5i3on95tr8g46c7l9jj.apps.googleusercontent.com",
     access_type: "offline",
     response_type: "code",
     prompt: "consent",

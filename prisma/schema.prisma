@@ -172,31 +172,36 @@ model Profile {
 }
 
 model Payment {
-  id          String   @id @default(cuid()) // Payment record ID
-  paymentId   String   @unique // Unique transaction identifier
-  userId      String // Foreign key to User
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  productId   String // Identifier for purchased item
-  productName String // Name of the purchased item
-  quantity    Int // Quantity of the purchased item
-  total       Decimal  @db.Decimal(10, 2) // Total payment amount
-  tax         Decimal  @db.Decimal(10, 2) // Tax amount
-  currency    String // Currency code (e.g., "INR")
-  status      String // Enum for payment status
-  credits     Int
-  createdAt   DateTime @default(now()) // Payment initiation timestamp
-  updatedAt   DateTime @updatedAt // Last updated timestamp
+  id            String        @id @default(cuid()) // Payment record ID
+  transactionId String        @unique // Unique transaction identifier
+  userId        String // Foreign key to User
+  user          User          @relation(fields: [userId], references: [id])
+  priceId       String // Identifier for purchased item
+  priceName     String // Name of the purchased item
+  quantity      Int // Quantity of the purchased item
+  total         Decimal       @db.Decimal(10, 2) // Total payment amount
+  tax           Decimal       @db.Decimal(10, 2) // Tax amount
+  currency      String // Currency code (e.g., "INR")
+  status        PaymentStatus // Enum for payment status
+  credits       Int
+  createdAt     DateTime      @default(now()) // Payment initiation timestamp
+  updatedAt     DateTime      @updatedAt // Last updated timestamp
 
   @@map("payment")
 }
 
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
 model UserAssets {
-  id         String   @id @default(cuid()) // Payment record ID
-  userId     String   @unique
-  credits    Int      @default(0) // Credits left for the user
-  resumeslot Int      @default(1) // Number of slots for storing resumes
-  coverslot  Int      @default(1)
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid()) // Payment record ID
+  userId    String   @unique
+  credits   Int      @default(0) // Credits left for the user
+  slots     Int      @default(1) // Number of slots for storing resumes
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -216,7 +221,7 @@ model Tokens {
 model JobEmails {
   id          String   @id @default(cuid())
   jobId       String
-  jobState    String   
+  jobState    String
   jobRole     String
   companyName String
   location    String
@@ -224,20 +229,20 @@ model JobEmails {
   description String
   meetingUrl  String
   userId      String
-  isDeleted   Boolean @default(false)
+  isDeleted   Boolean  @default(false)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, name: "UserJobs")
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   @@unique([jobId, userId])
 }
 
 model JD {
-  id             String @id @default(cuid())
-  userId         String 
+  id             String   @id @default(cuid())
+  userId         String
   companyName    String
   employmentType String
-  r2FileName     String @unique()
+  r2FileName     String   @unique()
   jobTitle       String
   location       String
   logoSrc        String
@@ -248,7 +253,7 @@ model JD {
   workType       String
   addedOn        String
   createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
   isDeleted      Boolean  @default(false)
-  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
