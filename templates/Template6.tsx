@@ -365,6 +365,8 @@ export default function Component({
                   {isIcons && profile.url.href !== "" && (
                     <SocialIcon
                       style={{ width: "24px", height: "24px" }}
+                      fgColor={"white"}
+                      bgColor={"black"}
                       url={profile.url.href}
                     />
                   )}

@@ -155,10 +155,12 @@ const Profiles: React.FC<{
     >
       {Array.isArray(profiles) &&
         profiles.map((profile, index) => (
-          <div className="flex gap-2 items-center" key={index}>
+          <div className="flex gap-1 items-center" key={index}>
             {isIcons && profile.url.href !== "" && (
               <SocialIcon
                 style={{ width: "16px", height: "16px" }}
+                fgColor={"white"}
+                bgColor={"black"}
                 url={profile.url.href}
               />
             )}
@@ -205,7 +207,7 @@ const Header: React.FC<{
       lineHeight: 1.2,
     },
     headline: {
-      fontSize: `1.6em`,
+      fontSize: `1.4em`,
       marginBottom: "0.4em",
       color: "white",
       lineHeight: 1.4,

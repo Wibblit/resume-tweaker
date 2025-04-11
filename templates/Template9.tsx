@@ -67,8 +67,7 @@ export default function Component({
       color: "#000",
     } as React.CSSProperties,
     header: {
-      marginBottom: "1rem",
-      paddingBottom: "0.5rem",
+      marginBottom: "1em",
     } as React.CSSProperties,
     sectionTitle: {
       fontSize: "1.1em",
@@ -88,7 +87,22 @@ export default function Component({
     },
     text: {
       fontSize : `${fontSize}px`
-    }
+    },
+    name: {
+      fontSize: `3em`,
+      fontWeight: "bold",
+      marginBottom: "0.3em",
+      lineHeight: 1.2,
+    },
+    headline: {
+      fontSize: `1.4em`,
+      marginBottom: "0.2em",
+      lineHeight: 1.4,
+    },
+    details: {
+      fontSize: `1.4em`,
+      lineHeight: 1.6,
+    },
   };
 
   const renderSection = (sectionName: SectionName) => {
@@ -98,8 +112,8 @@ export default function Component({
         if (!basics) return null;
         return (
           <div style={styles.header}>
-            <h1 className="text-2xl font-bold uppercase mb-1">{basics.name}</h1>
-            <div className="text-sm space-x-1">
+            <h1 className="font-bold uppercase mb-1" style={styles.name}>{basics.name}</h1>
+            <div className=" space-x-1" style={styles.details}>
               {basics.location && <span>{basics.location}</span>}
               {basics.phone && (
                 <>
@@ -125,6 +139,7 @@ export default function Component({
                 </>
               )}
             </div>
+            {basics.headLine && <p style={styles.headline}>{basics.headLine}</p>}
           </div>
         );
 
@@ -350,6 +365,8 @@ export default function Component({
                   {isIcons && profile.url.href !== "" && (
                     <SocialIcon
                       style={{ width: "16px", height: "16px" }}
+                      fgColor={"white"}
+                      bgColor={"black"}
                       url={profile.url.href}
                     />
                   )}
@@ -472,7 +489,7 @@ export default function Component({
 
                 {/* Flexible content container */}
                 <div className="flex-grow">
-                  <div className="font-bold">
+                  <div className="font-bold" style={styles.text}>
                     {award.title}{" "}
                     {award.title && award.awarder && (
                       <span className="font-normal">|</span>

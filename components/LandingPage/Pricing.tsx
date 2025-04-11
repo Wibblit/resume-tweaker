@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { QuantityDialog } from "@/app/(staticPages)/pricing/QuantityDialog";
 import { useSession } from "next-auth/react";
 import { GradientText } from "../gradient-text";
+import Breadcrumb from "../Breadcrumb";
 
 const features = [
   "Everything in the free plan",
@@ -95,8 +96,14 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
+       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Pricing', href: '/pricing', active: true }
+        ]} />
+      </div>
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
             <GradientText>Simple, Transparent Pricing, No Subscriptions</GradientText>

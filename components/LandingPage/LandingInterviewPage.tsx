@@ -15,6 +15,7 @@ import InterviewResults from "@/components/Interview/interviewResults";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import FAQAccordion from "../faq-accordian";
+import Breadcrumb from "../Breadcrumb";
 const faqData = [
   {
     question: "Can AI be used for interview practice?",
@@ -149,11 +150,16 @@ function InterviewPage() {
         bg-[size:6rem_4rem]
         [mask-image:linear-gradient(to_bottom,black_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,black_95%,transparent)]">
-
         {/* Hero Section */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_300px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_300px,#000,transparent)] -z-10" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8"></div>
-        <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
+        <section className="container max-w-7xl mx-auto px-4 pt-10 pb-32 mt-16 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+          <Breadcrumb items={[
+            { label: 'Home', href: '/' },
+            { label: 'Interview', href: '/interview', active: true }
+          ]} />
+        </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Ace Your Next Interview with our
             <br />
@@ -162,7 +168,7 @@ function InterviewPage() {
             </GradientText>
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-          Practice with a free AI interview bot that provides realistic voice-based mock interviews. Get AI-generated interview answers, personalized feedback, and refine your responses in real time.
+            Practice with a free AI interview bot that provides realistic voice-based mock interviews. Get AI-generated interview answers, personalized feedback, and refine your responses in real time.
           </p>
           <div className="flex gap-4 flex-wrap justify-center">
             <Button

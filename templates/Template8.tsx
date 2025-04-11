@@ -139,19 +139,19 @@ const Header: React.FC<{
       width: contentWidth,
     },
     name: {
-      fontSize: `${Math.max(2, imageSize / 38) * scaleFactor}em`,
+      fontSize: "3em",
       fontWeight: "bold",
       marginBottom: "",
       lineHeight: 1,
     },
     headline: {
-      fontSize: `${Math.max(1.2, imageSize / 64) * scaleFactor}rem`,
+      fontSize: "1.8em",
       marginBottom: "",
       lineHeight: 1.4,
       color: "inherit",
     },
     details: {
-      fontSize: `${Math.max(1, imageSize / 128) * scaleFactor}rem`,
+      fontSize: "1.1em",
       lineHeight: 1.6,
     },
   };
@@ -543,6 +543,8 @@ const Template8: React.FC<TemplateProps> = ({
                     {isIcons && profile.url.href !== "" && (
                       <SocialIcon
                         style={{ width: "16px", height: "16px" }}
+                        fgColor={"white"}
+                        bgColor={"black"}
                         url={profile.url.href}
                       />
                     )}

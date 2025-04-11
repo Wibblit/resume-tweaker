@@ -68,7 +68,7 @@ export default async function Home() {
     },
     {
       question: "Can AI help me write a strong resume?",
-      answer: "Definitely! ResumeTweaker’s AI crafts resumes tailored to your skills and job goals, optimizes for ATS scans, and suggests improvements to maximize impact."
+      answer: "Definitely! ResumeTweaker's AI crafts resumes tailored to your skills and job goals, optimizes for ATS scans, and suggests improvements to maximize impact."
     },
     {
       question: "How do I write a cover letter that stands out?",

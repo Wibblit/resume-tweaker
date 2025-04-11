@@ -4,6 +4,7 @@ import { prisma } from "@/prisma";
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { load } from "cheerio"; // Update import
+import Breadcrumb from "@/components/Breadcrumb";
 
 export async function generateStaticParams() {
   const posts = await prisma.blog.findMany();
@@ -37,11 +38,15 @@ export async function generateMetadata({
   const thumbnailUrl = data.thumbnail || "No blog image";
   const publishedDate = data.createdAt?.toISOString();
   const updatedDate = data.updatedAt?.toISOString();
-  const postUrl = `${baseUrl}/blog/${params.slug}`;
+  const postUrl = `${baseUrl}/blogs/${params.slug}`;
+  
+  // Extract clean tags for better SEO
+  const cleanTags = data.tags?.map(tag => tag.trim()) || [];
+  
   return {
-    title: data.title,
-    description: data.excerpt,
-    keywords: data.tags,
+    title: `${data.title} | ResumeTweaker Blog`,
+    description: data.excerpt || `Read ${data.title} - Learn about resume building, job interviews, and career advice on ResumeTweaker.`,
+    keywords: [...cleanTags, 'resume tips', 'career advice', 'job search', 'interview preparation'],
     openGraph: {
       type: "article",
       url: postUrl,
@@ -55,9 +60,11 @@ export async function generateMetadata({
           alt: data.title,
         },
       ],
-      siteName: "resumetweaker.wibblit.com",
+      siteName: "ResumeTweaker",
       publishedTime: publishedDate,
       modifiedTime: updatedDate,
+      authors: [data.author || 'ResumeTweaker Team'],
+      tags: cleanTags,
     },
 
     twitter: {
@@ -65,16 +72,18 @@ export async function generateMetadata({
       title: data.title,
       images: [thumbnailUrl],
       description: data.excerpt ?? undefined,
-      site: "resumetweaker.wibblit.com"
+      site: "@wibblitofficial"
     },
 
     other: {
-      "article:author": data.author || "Unknown Author",
-      "article:section": data.category || "Blog",
-      "article:tag": data.tags?.join(", "),
+      "article:author": data.author || "ResumeTweaker Team",
+      "article:section": data.category || "Career Advice",
+      "article:tag": cleanTags.join(", "),
+      "article:published_time": publishedDate,
+      "article:modified_time": updatedDate,
     },
     alternates: {
-      canonical: `${baseUrl}/blog/${params.slug}`,
+      canonical: `${baseUrl}/blogs/${params.slug}`,
     },
     
   };
@@ -93,8 +102,53 @@ export default async function BlogPostPage({
   data.content = await HTMLcontent.text();
   const tableOfContents = extractH2Content(data.content);
   const newData = { ...data, tableOfContents };
+  
+  // Create Article schema
+  const baseUrl = "https://resumetweaker.wibblit.com";
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    'headline': data.title,
+    'description': data.excerpt || '',
+    'image': data.thumbnail || '',
+    'author': {
+      '@type': 'Person',
+      'name': data.author || 'ResumeTweaker Team'
+    },
+    'publisher': {
+      '@type': 'Organization',
+      '@id': 'https://resumetweaker.wibblit.com/#organization',
+      'name': 'ResumeTweaker',
+      'logo': {
+        '@type': 'ImageObject',
+        'url': 'https://resumetweaker.wibblit.com/favicons/apple-touch-icon.png'
+      }
+    },
+    'datePublished': data.createdAt?.toISOString() || new Date().toISOString(),
+    'dateModified': data.updatedAt?.toISOString() || new Date().toISOString(),
+    'mainEntityOfPage': {
+      '@type': 'WebPage',
+      '@id': `${baseUrl}/blogs/${params.slug}`
+    }
+  };
+  
   //console.log(tableOfContents);
-  return <BlogPost data={newData!} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-6 mb-2">
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Blogs', href: '/blogs' },
+          { label: data.title, href: `/blogs/${params.slug}`, active: true }
+        ]} />
+      </div>
+      <BlogPost data={newData!} />
+    </>
+  );
 }
 
 function extractH2Content(htmlStr: string) {

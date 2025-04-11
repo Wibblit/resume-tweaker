@@ -619,10 +619,12 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             <Section title="Profiles" baseColor={baseColor}>
               <div className="flex flex-wrap items-center gap-2">
                 {content.profiles.map((profile, index) => (
-                  <div className="flex gap-2 items-center" key={index}>
+                  <div className="flex gap-1 items-center" key={index}>
                     {isIcons && profile.url.href !== "" && (
                       <SocialIcon
                         style={{ width: "16px", height: "16px" }}
+                        fgColor={"white"}
+                        bgColor={"black"}
                         url={profile.url.href}
                       />
                     )}

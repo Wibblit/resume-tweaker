@@ -109,10 +109,46 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Define structured data for Organization and WebSite
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://resumetweaker.wibblit.com/#organization",
+        "name": "ResumeTweaker",
+        "url": "https://resumetweaker.wibblit.com/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://resumetweaker.wibblit.com/favicons/apple-touch-icon.png",
+          "width": 180,
+          "height": 180
+        },
+        "sameAs": [
+          "https://twitter.com/wibblitofficial"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://resumetweaker.wibblit.com/#website",
+        "url": "https://resumetweaker.wibblit.com/",
+        "name": "ResumeTweaker",
+        "description": "AI Resume, Cover Letter, Review & Interview Prep",
+        "publisher": {
+          "@id": "https://resumetweaker.wibblit.com/#organization"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en">
       <head>
         <GoogleAnalytics gaId="G-2SNY7ETV6E" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body className={cn(` antialiased font-custom`, fontSans.className)}>
         <ThemeProvider

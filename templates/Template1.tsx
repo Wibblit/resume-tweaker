@@ -64,7 +64,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
     },
     sectionTitle: {
       color: baseColor,
-      fontSize: "1.4em",
+      fontSize: "1.1em",
       fontWeight: "bold",
       marginBottom: isSeparator ? "0.5em" : "none",
       textTransform: "uppercase",
@@ -73,23 +73,24 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
     },
     sectionTitleWithOutBorder: {
       color: baseColor,
-      fontSize: "1.4em",
+      fontSize: "1.1em",
       fontWeight: "bold",
       marginBottom: "0.5em",
       textTransform: "uppercase",
       paddingBottom: "0.25em",
     },
     subtitle: {
-      fontSize: "1.2em",
+      fontSize: "1.05em",
       fontWeight: "bold",
       color: "#000",
     },
     normal: {
-      fontSize: "1.2em",
+      fontSize: "1em",
       color: "#000",
     },
     link: {
       color: baseColor,
+      fontSize: "1em",
     },
   };
 
@@ -103,17 +104,17 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             <h1 className="text-3xl font-bold uppercase mb-1 text-center">
               {basics.name}
             </h1>
-            <p className="text-lg text-center mb-2">{basics.headLine}</p>
-            <div className="flex justify-around items-center space-x-2">
-              <p>{basics.email}</p>
+            <p className="text-center mb-2" style={styles.normal}>{basics.headLine}</p>
+            <div className="flex justify-around items-center space-x-2" >
+              <p style={styles.normal}>{basics.email}</p>
               {basics.phone && (
-                <p>
+                <p style={styles.normal}>
                   <span className="mx-1">|</span>
                   {basics.phone}
                 </p>
               )}
               {basics.location && (
-                <p>
+                <p style={styles.normal}>
                   {" "}
                   <span className="mx-1">|</span>
                   {basics.location}
@@ -126,7 +127,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   rel="noopener noreferrer"
                   style={styles.link}
                 >
-                  <p>
+                  <p style={styles.normal}>
                     {basics.url.label && <span className="mx-1">|</span>}
                     {basics.url.label}
                   </p>
@@ -437,10 +438,12 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     {isIcons && profile.url.href !== "" && (
                     <SocialIcon
                       style={{ width: "20px", height: "20px" }}
+                      fgColor={"white"}
+                      bgColor={"black"}
                       url={profile.url.href}
                     />
                   )}
-                    <span className="no-underline text-base">{profile.url.label}</span>
+                    <span className="no-underline">{profile.url.label}</span>
                   </a>
                 </div>
               ))}
@@ -549,8 +552,8 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                       <h3 style={styles.subtitle}>{award.title}</h3>
 
                       {award.awarder && (
-                        <p>
-                          <span className="mx-1">|</span>
+                        <p style={styles.normal}>
+                          <span className="mx-1" >|</span>
                           {award.awarder}
                         </p>
                       )}

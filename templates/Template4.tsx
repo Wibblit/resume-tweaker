@@ -631,7 +631,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
       {/* Header Section */}
       {content.basics && (
         <div>
-          <div className="mb-6 flex-row flex items-start justify-between">
+          <div className=" flex-row flex items-start justify-between">
             {/* Left: Name & Headline */}
             <div className="w-full md:w-3/4">
               <h1
@@ -645,12 +645,14 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
               </p>
 
               {/* Social Profiles */}
-              <div className="flex flex-wrap gap-1 mt-1">
+              <div className="flex flex-wrap gap-2 mt-1">
                 {content?.profiles?.map((profile, index) => (
                   <div className="flex items-center gap-1" key={index}>
                     {isIcons && profile.url.href !== "" && (
                       <SocialIcon
                         style={{ width: "16px", height: "16px" }}
+                        fgColor={"white"}
+                        bgColor={"black"}
                         url={profile.url.href}
                       />
                     )}
@@ -700,7 +702,7 @@ const ResumeTemplate: React.FC<TemplateProps> = ({
             </div>
           </div>
 
-          <div className="my-4">
+          <div className="my-1" >
             {content.summary && content.summary[0].content && (
               <HTMLViewer
                 lineHeight={lineHeight}

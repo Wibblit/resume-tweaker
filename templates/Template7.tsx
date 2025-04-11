@@ -177,7 +177,9 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                       className="no-underline flex items-center gap-1"
                     >
                       {isIcons && profile.url.href !== "" && (
-                        <SocialIcon style={{ width: "24px", height: "24px" }} url={profile.url.href} />
+                        <SocialIcon style={{ width: "24px", height: "24px" }} url={profile.url.href} 
+                          fgColor={"white"}
+                          bgColor={"black"} />
                       )}
                       <span className="text-sm font-medium">{profile.url.label}</span>
                     </a>
@@ -630,9 +632,9 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
                         {sec.startDate && (
                           <h3 style={styles.subtitle}>
                             <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                                                      {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
-                                                      {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-" : ""}</div> {formatDate(sec.endDate, datetype)}</div>}
-                                                    </div>
+                              {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
+                              {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-" : ""}</div> {formatDate(sec.endDate, datetype)}</div>}
+                            </div>
                           </h3>
                         )}
                       </div>

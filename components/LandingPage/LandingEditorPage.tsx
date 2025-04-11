@@ -22,6 +22,7 @@ import { TypeCard } from "@/components/ReviewPage/TypeCard"
 import type { RefObject } from "react"
 import React from "react"
 import FAQAccordion from "../faq-accordian"
+import Breadcrumb from "../Breadcrumb";
 
 const features = [
   {
@@ -137,7 +138,13 @@ function EditorPage() {
 
         {/* Hero Section */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-20"></div>
-        <section className="container relative max-w-7xl mx-auto px-4 pt-20 pb-12 mt-16 text-center overflow-hidden ">
+        <section className="container relative max-w-7xl mx-auto px-4 pt-10 pb-12 mt-16 text-center overflow-hidden ">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+            <Breadcrumb items={[
+              { label: 'Home', href: '/' },
+              { label: 'Editor', href: '/editor', active: true }
+            ]} />
+          </div>
           <div className="relative z-10">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 [text-shadow:0_2px_4px_rgba(0,0,0,0.1)]">
               Say hello to the best 

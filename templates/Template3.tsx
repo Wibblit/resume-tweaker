@@ -152,12 +152,12 @@ const Header: React.FC<{
       lineHeight: 1.2,
     },
     headline: {
-      fontSize: `1.4em`,
+      fontSize: `1.1em`,
       color: baseColor,
       lineHeight: 1.4,
     },
     details: {
-      fontSize: `1.2em`,
+      fontSize: `1.1em`,
       lineHeight: 1.6,
     },
   };
@@ -233,7 +233,7 @@ const Header: React.FC<{
           )}
           {isUrl(basics?.url?.href) && <Link url={basics.url!} />}
         </div>
-        <div className="flex flex-wrap items-center justify-start mt-1 gap-1">
+        <div className="flex flex-wrap items-center justify-start mt-1 gap-2">
           {
             //@ts-ignore
             content.profiles.map((profile, index) => (
@@ -242,15 +242,17 @@ const Header: React.FC<{
                 href={profile.url.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2"
+                className="flex items-center gap-1"
               >
                 {isIcons && profile.url.href !== "" && (
                   <SocialIcon
                     style={{ width: "16px", height: "16px" }}
+                    fgColor={"white"}
+                    bgColor={"black"}
                     url={profile.url.href}
                   />
                 )}
-                <span className="no-underline text-base">
+                <span className="no-underline ">
                   {profile.url.label}
                 </span>
               </a>

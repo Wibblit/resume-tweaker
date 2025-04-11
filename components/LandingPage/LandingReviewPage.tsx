@@ -16,6 +16,7 @@ import Link from "next/link";
 import { TypeCard } from "@/components/ReviewPage/TypeCard";
 import { useRouter } from "next/navigation";
 import FAQAccordion from "../faq-accordian";
+import Breadcrumb from "../Breadcrumb";
 
 const dummyData = {
   evaluation: [
@@ -139,7 +140,13 @@ export default function ReviewPage() {
         [mask-image:linear-gradient(to_bottom,white_95%,transparent)]
         [-webkit-mask-image:linear-gradient(to_bottom,white_95%,transparent)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_500px_at_50%_200px,#fff,transparent)] dark:bg-[radial-gradient(circle_500px_at_50%_200px,#000,transparent)] -z-10" />
-        <section className="container max-w-7xl mx-auto px-4 pt-20 pb-32 mt-16 text-center">
+        <section className="container max-w-7xl mx-auto px-4 pt-10 pb-32 mt-16 text-center">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+            <Breadcrumb items={[
+              { label: 'Home', href: '/' },
+              { label: 'Review', href: '/review', active: true }
+            ]} />
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Optimize Your Resume with the Best
             <br />
