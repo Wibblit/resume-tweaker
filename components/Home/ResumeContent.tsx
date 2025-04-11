@@ -90,7 +90,7 @@ export default function ResumeContent({
               </div>
             ) : (
               <div className="flex flex-wrap sm:flex-nowrap items-center justify-start sm:justify-start gap-2">
-                <div className="flex items-center gap-1 bg-secondary/50 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm w-full md:min-w-[160px] justify-center">
+                <div className="flex items-center gap-1 bg-secondary/50 px-4 py-2 rounded-md shadow-sm text-sm w-full md:min-w-[160px] justify-center">
                   <FileText className="w-4 h-4 text-primary" />
                   <span className="font-medium text-secondary-foreground">
                     {usedresumeslot} / {resumeslot} used
@@ -106,7 +106,7 @@ export default function ResumeContent({
                   <Plus className="w-4 h-4" />
                 </Button>
 
-                <div className="flex items-center gap-1 bg-amber-900/20 px-4 py-2 rounded-md backdrop-blur-sm shadow-sm text-sm w-full md:min-w-[160px] justify-center md:mt-0">
+                <div className="flex items-center gap-1 bg-amber-900/20 px-4 py-2 rounded-md shadow-sm text-sm w-full md:min-w-[160px] justify-center md:mt-0">
                   <Sparkles className="w-4 h-4 text-amber-600" />
                   <span className="font-medium text-amber-700">
                     {avaiLableCredits} Credits

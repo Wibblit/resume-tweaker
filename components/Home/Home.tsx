@@ -62,7 +62,7 @@ export default function Home({ resumes, letters }: Homeprops) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <ScrollArea className="h-full">
+        <ScrollArea className="h-full md:mt-0 mt-12">
           <div className="max-w-7xl mx-auto w-full">
             <Tabs
               defaultValue="resumes"

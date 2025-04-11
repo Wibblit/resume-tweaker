@@ -240,15 +240,15 @@ export default function Component({
       });
     }
   };
-  
+
   const handleSaveAndExit = async () => {
     dispatch(updateCoverLetterIsSave(false));
     await handleSave()
     router.push('/home')
   }
-  
+
   const handleExit = async () => {
-     dispatch(updateCoverLetterIsSave(false));
+    dispatch(updateCoverLetterIsSave(false));
     await new Promise((resolve) => setTimeout(resolve, 1000));
     router.push("/home")
   }
@@ -355,15 +355,15 @@ export default function Component({
                         unsaved changes will be lost.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    <AlertDialogFooter className="sm:flex sm:flex-col sm:gap-2">
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction onClick={handleExit}>
-                                                  Don't save
-                                            </AlertDialogAction>
+                        Don't save
+                      </AlertDialogAction>
                       <AlertDialogAction onClick={handleSaveAndExit}>
                         Save and Exit
                       </AlertDialogAction>
-                      
+
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -425,7 +425,6 @@ export default function Component({
             initialScale={isPhoneView ? 0.6 : 0.8}
             limitToBounds={false}
             wheel={{ step: 0.2 }}
-            panning={{ disabled: !isHovering }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>

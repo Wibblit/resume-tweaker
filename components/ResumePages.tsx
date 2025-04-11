@@ -126,62 +126,62 @@ const ResumePage: React.FC<{
   lineHeight,
   margin,
 }) => {
-  const renderTemplate = (page: Page, pageIndex: number) => {
-    const props = {
-      content: page.content,
-      baseColor,
-      fontSize,
-      fontFamily,
-      lineHeight,
-      margin,
-      pageIndex,
+    const renderTemplate = (page: Page, pageIndex: number) => {
+      const props = {
+        content: page.content,
+        baseColor,
+        fontSize,
+        fontFamily,
+        lineHeight,
+        margin,
+        pageIndex,
+      };
+
+      switch (page.template) {
+        case 1:
+          return <Template1 {...props} />;
+        case 2:
+          return <Template2 {...props} />;
+        case 3:
+          return <Template3 {...props} />;
+        case 4:
+          return <Template4 {...props} />;
+        case 5:
+          return <Template5 {...props} />;
+        case 6:
+          return <Template6 {...props} />;
+        case 7:
+          return <Template7 {...props} />;
+        case 8:
+          return <Template8 {...props} />;
+        case 9:
+          return <Template9 {...props} />;
+        default:
+          return <Template1 {...props} />;
+      }
     };
 
-    switch (page.template) {
-      case 1:
-        return <Template1 {...props} />;
-      case 2:
-        return <Template2 {...props} />;
-      case 3:
-        return <Template3 {...props} />;
-      case 4:
-        return <Template4 {...props} />;
-      case 5:
-        return <Template5 {...props} />;
-      case 6:
-        return <Template6 {...props} />;
-      case 7:
-        return <Template7 {...props} />;
-      case 8:
-        return <Template8 {...props} />;
-      case 9:
-        return <Template9 {...props} />;
-      default:
-        return <Template1 {...props} />;
-    }
-  };
-
-  return (
-    <div
-      id={`page-${page.id}`}
-      data-page={pageNumber}
-      className="relative bg-white text-foreground shadow-2xl overflow-hidden"
-      style={{
-        fontFamily,
-        width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
-        height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
-      }}
-    >
-      {renderTemplate(page, pageIndex)}
+    return (
       <div
-        className="absolute inset-x-0 border-b border-dashed"
+        id={`page-${page.id}`}
+        data-page={pageNumber}
+        className="relative bg-white text-foreground shadow-2xl overflow-hidden"
         style={{
-          top: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
+          fontFamily,
+          width: `${PAGE_FORMATS[pageFormat]?.width * MM_TO_PX}px`,
+          height: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
         }}
-      />
-    </div>
-  );
-};
+      >
+        {renderTemplate(page, pageIndex)}
+        <div
+          className="absolute inset-x-0 border-b border-dashed"
+          style={{
+            top: `${PAGE_FORMATS[pageFormat]?.height * MM_TO_PX}px`,
+          }}
+        />
+      </div>
+    );
+  };
 
 export default function ResumePages({
   pageFormat,
@@ -443,10 +443,14 @@ export default function ResumePages({
                             Any unsaved changes will be lost.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter>
+                        <AlertDialogFooter className="flex flex-col gap-2">
+                          <AlertDialogAction onClick={handleExit}>
+                            Don't save
+                          </AlertDialogAction>
                           <AlertDialogAction onClick={handleSaveAndExit}>
                             Save and Exit
                           </AlertDialogAction>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
@@ -669,7 +673,6 @@ export default function ResumePages({
             initialScale={isPhoneView ? 0.6 : 0.8}
             limitToBounds={false}
             wheel={{ step: 0.2 }}
-            panning={{ disabled: !isHovering }}
           >
             {({ zoomIn, zoomOut, resetTransform }) => (
               <>
