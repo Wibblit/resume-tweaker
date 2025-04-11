@@ -19,6 +19,8 @@ import {
   updateUsedResumeSlots,
 } from "@/slices/userAssets";
 import { useAppDispatch } from "@/hooks/hooks";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 const RESUME = "resume";
 const COVER = "cover";
@@ -31,6 +33,19 @@ interface Homeprops {
 export default function Home({ resumes, letters }: Homeprops) {
   const [searchQuery, setSearchQuery] = useState("");
   const [tab, setTab] = useState(RESUME);
+  const { data: session } = useSession();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (session?.isNewUser) {
+      toast({
+        title: "🎉 Welcome aboard! You've got 400 free credits!",
+        description:
+          "Kickstart your job hunt with free access to resume building, tailored cover letters, AI mock interviews, and more. We're excited to help you land your dream job!",
+        duration: Infinity,
+      });
+    }
+  }, []);
 
   const dispatch = useAppDispatch();
 
