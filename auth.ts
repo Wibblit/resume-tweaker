@@ -109,18 +109,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               userId: existingUser?.id,
             },
           });
-          gmailConnectEmail = await prisma.tokens.findUnique({
-            where: { userId: existingUser.id },
-            select: { email: true },
-          });
         }
       }
+
+      gmailConnectEmail = await prisma.tokens.findUnique({
+        where: { userId: existingUser?.id },
+        select: { email: true },
+      });
+
       callbackUrl = "";
       user.id = existingUser?.id;
       user.provider = account?.provider as string;
       user.createdAt = existingUser?.createdAt.toISOString();
       user.connectedEmail = gmailConnectEmail?.email || null;
-
+      console.log("gmail connect email", gmailConnectEmail);
       return true;
     },
     async authorized({ auth, request: { nextUrl } }) {

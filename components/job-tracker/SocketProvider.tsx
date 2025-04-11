@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import React, { createContext, useContext, useEffect, useRef } from "react";
 import { SocketManger } from "@/lib/sockets/socketManager";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
@@ -85,7 +80,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
 
                 if (playPromise !== undefined) {
                   playPromise.catch((error) => {
-                    console.error("Error playing notification sound:", error);  
+                    console.error("Error playing notification sound:", error);
                   });
                 }
               } catch (error) {
@@ -128,6 +123,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         return () => {
           window.removeEventListener("beforeunload", handleBeforeUnload);
         };
+      }
+      if (status === "unauthenticated") {
+        socketManagerRef.current?.disconnect();
       }
     }
 
