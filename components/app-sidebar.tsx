@@ -10,6 +10,7 @@ import {
   Sun,
   Moon,
   Laptop,
+  LayoutDashboard,  
   MessageSquareReply,
 } from "lucide-react";
 import {
@@ -66,6 +67,12 @@ const items = [
   { title: "Resumes & Cover letters", icon: FileText, url: "/home" },
   { title: "AI Review", icon: Star, url: "/home/ai-review" },
   { title: "AI Interview", icon: MessageSquare, url: "/home/ai-interview" },
+  {
+    title: "Job tracker",
+    icon: LayoutDashboard,
+    url: "/home/job-tracker",
+    isNew: true,
+  },
   { title: "Profile", icon: User, url: "/profile" },
 ];
 
@@ -142,6 +149,11 @@ export function AppSidebar({ session }: { session: Session }) {
                       <a href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
+                        {item.isNew && !isCollapsed && (
+                          <span className="ml-2 absolute right-2 inline-flex px-1.5 py-0.5 text-[10px] font-medium bg-primary text-primary-foreground rounded-full">
+                            NEW
+                          </span>
+                        )}
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -151,16 +163,18 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter
-          className={`p-3 bg-background/80 rounded-md ${isCollapsed && "flex items-center justify-center"
-            }`}
+          className={`p-3 bg-background/80 rounded-md ${
+            isCollapsed && "flex items-center justify-center"
+          }`}
         >
           <Tooltip>
             <TooltipTrigger asChild>
               <div className={"flex items-center justify-center w-full"}>
                 <Button
                   variant="ghost"
-                  className={`w-full ${isCollapsed && "py-1 px-2"} ${!isCollapsed && "justify-start"
-                    }`}
+                  className={`w-full ${isCollapsed && "py-1 px-2"} ${
+                    !isCollapsed && "justify-start"
+                  }`}
                   onClick={() => setIsFeedbackOpen(true)}
                 >
                   <MessageSquareReply className="h-4 w-4" />
@@ -233,7 +247,7 @@ export function AppSidebar({ session }: { session: Session }) {
               )}
             </Tooltip>
           )}
-          
+
           <Tooltip>
             <TooltipTrigger asChild>
               <div>
@@ -270,10 +284,7 @@ export function AppSidebar({ session }: { session: Session }) {
           </Tooltip>
         </SidebarFooter>
       </Sidebar>
-      <FeedbackForm 
-      open={isFeedbackOpen} 
-      onOpenChange={setIsFeedbackOpen} 
-    />
+      <FeedbackForm open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen} />
     </TooltipProvider>
   );
 }
