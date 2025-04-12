@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import InterviewResults from "./interviewResults";
 import AudioVisualization from "./audioVisualization";
+import * as tts from "@diffusionstudio/vits-web";
 import { NoAudioAlert } from "./NoAudioAlert";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -29,8 +30,6 @@ import fetchRetry from "fetch-retry";
 import { updateCredits } from "@/slices/userAssets";
 import { useAppSelector } from "@/hooks/hooks";
 import { creditList } from "@/utils/credits";
-import TTSService from "@/services/tts.service";
-import { checkBrowserTTS } from "@/utils/browser.utils";
 
 interface AdaptiveInterviewProps {
   interviewData: {
@@ -74,7 +73,7 @@ export default function AdaptiveInterview({
   const [report, setReport] = useState(null);
   const [isInterviewComplete, setIsInterviewComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [audio, setAudio] = useState<string | null>(null);
+  const [audioQueue, setAudioQueue] = useState<string[]>([]);
   const [showNoAudioAlert, setShowNoAudioAlert] = useState(false);
   const [isTimerPaused, setIsTimerPaused] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -86,24 +85,9 @@ export default function AdaptiveInterview({
   const [currRetryNumber, setCurrRetryNumber] = useState(0);
   const [isdetected, setIsDetected] = useState<boolean>(false);
   const [stopper, setStopper] = useState<boolean>(false);
-  const [isUsingModelTTS, setIsUsingModelTTS] = useState(false);
+
   const [isoLoader, setIsoLoader] = useState<boolean>(false);
-  const [isSpeaking, setIsSpeaking] = useState(false); // New state
-  const [isTypingComplete, setIsTypingComplete] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [isNextLoading, setIsNextLoading] = useState<boolean>(false);
 
-  const ttsservice = new TTSService(
-    setIsTimerPaused,
-    setAudio,
-    setIsSpeaking,
-    setIsTypingComplete,
-    isUsingModelTTS,
-    audio,
-    setIsoLoader
-  );
-
-  console.log("isTypingComplete", isTypingComplete);
   const router = useRouter();
   const dispatch = useDispatch();
   const credits = useAppSelector((state) => state?.assets?.credits);
@@ -139,10 +123,6 @@ export default function AdaptiveInterview({
 
   useEffect(() => {
     fetchFirstQuestion();
-
-    checkBrowserTTS().then((isAvailable) => {
-      setIsUsingModelTTS(!isAvailable); // Use model-based TTS if not available or on Firefox
-    });
   }, []);
 
   const handleQuitInterview = () => {
@@ -153,21 +133,11 @@ export default function AdaptiveInterview({
     if (isRecording) {
       mediaRecorderRef.current?.stop();
     }
+    if (isPlayingAudio) {
+      stopAudio();
+    }
     router.replace("/home/ai-interview");
   };
-
-  console.log("IsSpeaking", isSpeaking);
-
-  console.log(
-    "isSpecking",
-    isSpeaking,
-    "SkipQuestionLoading",
-    skipQuestionLoading,
-    "isNextLoading",
-    isNextLoading,
-    "Iso Loader",
-    isoLoader
-  );
 
   const fetchFirstQuestion = async () => {
     setIsTimerPaused(true);
@@ -231,7 +201,19 @@ export default function AdaptiveInterview({
   };
 
   const generateAudio = async (question: string) => {
-    ttsservice.generateAudio(question);
+    setIsTimerPaused(true);
+    try {
+      const wav = await tts.predict({
+        text: question,
+        voiceId: "en_US-hfc_male-medium",
+      });
+      const audioUrl = URL.createObjectURL(wav);
+      setAudioQueue((prevQueue) => [...prevQueue, audioUrl]);
+    } catch (error) {
+      console.error(`Error generating audio for question:`, error);
+    } finally {
+      setIsTimerPaused(false);
+    }
   };
 
   const handleNextQuestion = async () => {
@@ -242,11 +224,9 @@ export default function AdaptiveInterview({
         description:
           "Please record your audio response or skip this question to proceed to the next one.",
       });
-      setIsNextLoading(false);
-      setIsoLoader(false);
       return;
     }
-    setIsTypingComplete(true);
+
     setIsTimerPaused(true);
     try {
       if (currentQuestionIndex < numberOfQuestions - 1) {
@@ -350,7 +330,6 @@ export default function AdaptiveInterview({
   };
 
   const handleSkipQuestion = async () => {
-    setIsTypingComplete(true);
     setSkipQuestionLoding(true);
     setIsTimerPaused(true);
     dispatch({
@@ -502,14 +481,60 @@ export default function AdaptiveInterview({
     }
   };
 
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isNextLoading, setIsNextLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setIsTypingComplete(false);
+    if (audioQueue[currentQuestionIndex]) {
+      audioRef.current = new Audio(audioQueue[currentQuestionIndex]);
+      playAudio();
+      audioRef.current.onended = () => {
+        setIsPlayingAudio(false);
+      };
+    }
+    // Clean up the audio when the component unmounts or question changes
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlayingAudio(false);
+      }
+    };
+  }, [
+    questions[currentQuestionIndex],
+    audioQueue[currentQuestionIndex],
+    setIsPlayingAudio,
+  ]);
+
+  const playAudio = () => {
+    if (audioRef.current && !isPlayingAudio) {
+      audioRef.current
+        .play()
+        .then(() => setIsPlayingAudio(true))
+        .catch((err) => {
+          console.error("Audio playback failed:", err);
+          setIsPlayingAudio(false);
+        });
+    }
+  };
+
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlayingAudio(false);
+    }
+  };
   const handleNextQuestions = async () => {
     setIsNextLoading(true);
     setIsoLoader(true);
+    stopAudio();
     await handleNextQuestion();
+    setIsoLoader(false);
     setIsNextLoading(false);
   };
-
-  console.log(isoLoader, skipQuestionLoading, isSpeaking, "Confirmation");
 
   return (
     <Card className="max-w-4xl mx-auto bg-background shadow-lg">
@@ -563,7 +588,7 @@ export default function AdaptiveInterview({
         {!isInterviewComplete && (
           <>
             <div className="mb-4 space-y-4">
-              {isTypingComplete ? (
+              {!audioQueue[currentQuestionIndex] ? (
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-4 w-full" />
@@ -572,12 +597,10 @@ export default function AdaptiveInterview({
               ) : (
                 <p className="text-lg mb-2 min-h-[3rem]">
                   <TypeAnimation
-                    key={`${questions[currentQuestionIndex]}-${
-                      audio || "speechSynthesis"
-                    }`}
+                    key={`${questions[currentQuestionIndex]}-${audioQueue[currentQuestionIndex]}`}
                     sequence={[
                       questions[currentQuestionIndex],
-                      () => setIsTypingComplete(false),
+                      () => setIsTypingComplete(true),
                     ]}
                     wrapper="p"
                     cursor={true}
@@ -587,40 +610,38 @@ export default function AdaptiveInterview({
               )}
 
               <div className="flex items-center space-x-4">
-                {!isTypingComplete && (
+                {audioQueue[currentQuestionIndex] && (
                   <Button
-                    onClick={() =>
-                      ttsservice.playAudio({
-                        question: questions[currentQuestionIndex],
-                      })
-                    }
+                    onClick={playAudio}
                     variant="outline"
                     size="sm"
-                    disabled={isSpeaking}
+                    disabled={isPlayingAudio}
                   >
-                    {isSpeaking ? (
+                    {isPlayingAudio ? (
                       <AudioLines className="w-4 h-4" />
                     ) : (
                       <Volume2 className="h-4 w-4" />
                     )}
                     <span className="ml-2">
-                      {isSpeaking ? "Playing..." : "Play Audio"}
+                      {isPlayingAudio ? "Playing..." : "Play Audio"}
                     </span>
                   </Button>
                 )}
-
-                {!isTypingComplete && !isSpeaking && (
+                {isTypingComplete && (
                   <Button
                     onClick={handleSkipQuestion}
                     disabled={
                       skipQuestionLoading ||
+                      !audioQueue[currentQuestionIndex] ||
                       isoLoader ||
                       currentQuestionIndex === numberOfQuestions - 1
                     }
                     variant={"link"}
                     size={"sm"}
                     className={`text-blue-500 hover:underline flex items-center justify-center ${
-                      skipQuestionLoading || isoLoader
+                      skipQuestionLoading ||
+                      !audioQueue[currentQuestionIndex] ||
+                      isoLoader
                         ? "cursor-not-allowed opacity-50"
                         : ""
                     }`}
@@ -674,46 +695,51 @@ export default function AdaptiveInterview({
               audioBlob={audioBlob}
             />
             <AudioVisualization isRecording={isRecording} />
-            <div
-              className={`flex mt-4 w-full ${
-                currentQuestionIndex === numberOfQuestions - 1
-                  ? "justify-center"
-                  : "justify-between"
-              }`}
-            >
-              {currentQuestionIndex !== numberOfQuestions - 1 && (
-                <Button
-                  onClick={() => setIsRecording(!isRecording)}
-                  variant={isRecording ? "destructive" : "default"}
-                  disabled={isSpeaking || skipQuestionLoading || isoLoader}
-                >
-                  {isRecording ? (
-                    <>
-                      <Pause className="mr-2 h-4 w-4" />
-                      Stop Recording
-                    </>
-                  ) : (
-                    <>
-                      <Play className="mr-2 h-4 w-4" />
-                      {currentQuestionIndex === 0 ? (
-                        <span>Start Recording</span>
-                      ) : (
-                        <span>Start Recording</span>
-                      )}
-                    </>
-                  )}
-                </Button>
-              )}
-
+            <div className="flex justify-between mt-4">
+              <Button
+                onClick={() => setIsRecording(!isRecording)}
+                variant={isRecording ? "destructive" : "default"}
+                disabled={
+                  skipQuestionLoading ||
+                  !audioQueue[currentQuestionIndex] ||
+                  isoLoader ||
+                  currentQuestionIndex === numberOfQuestions - 1
+                }
+                className="flex items-center"
+              >
+                {isRecording ? (
+                  <>
+                    <Pause className="mr-2 h-4 w-4" />
+                    Pause Recording
+                  </>
+                ) : (
+                  <>
+                    <Play className="mr-2 h-4 w-4" />
+                    {currentQuestionIndex === 0 ? (
+                      <span>Start Recording</span>
+                    ) : (
+                      <span>Resume Recording</span>
+                    )}
+                  </>
+                )}
+              </Button>
               <Button
                 onClick={handleNextQuestions}
                 disabled={
-                  isSpeaking ||
                   skipQuestionLoading ||
                   isNextLoading ||
-                  isoLoader
+                  isoLoader ||
+                  !audioQueue[currentQuestionIndex]
                 }
                 variant="default"
+                className={`flex items-center justify-center ${
+                  skipQuestionLoading ||
+                  isNextLoading ||
+                  isoLoader ||
+                  !audioQueue[currentQuestionIndex]
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
               >
                 {isNextLoading && <Loader2 className="animate-spin mr-1" />}
                 {currentQuestionIndex === numberOfQuestions - 1 ||

@@ -5,7 +5,6 @@ declare module "next-auth" {
     createdAt?: string; // Add the createdAt field
     isNewUser?: boolean;
     provider: string;
-    connectedEmail?: string | null;
   }
 
   interface Session {
@@ -18,7 +17,6 @@ declare module "next-auth" {
       provider: string;
       name: string;
       createdAt: string;
-      connectedEmail?: string | null;
-    };
+    }
   }
 }

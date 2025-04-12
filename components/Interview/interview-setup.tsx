@@ -65,12 +65,6 @@ interface FormData {
   interviewType: "comprehensive" | "adaptive";
 }
 
-const getTextFromHtml = (html: string) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  return doc.body.textContent || "";
-};
-
 export default function InterviewSetup({
   recentResumes,
 }: {
@@ -79,34 +73,18 @@ export default function InterviewSetup({
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  const fromKanban = searchParams.get("fromKanban");
-  console.log("from kanban", fromKanban, searchParams.get("jobTitle"))
-  const [formData, setLocalFormData] = useState<FormData>(
-    fromKanban === "true"
-      ? {
-          job: searchParams.get("jobTitle") || "",
-          position: "",
-          companyName: searchParams.get("companyName") || "",
-          duration: 10,
-          resume: null,
-          jd: getTextFromHtml(searchParams.get("jobDescription") as string) || "",
-          interviewerPosition: "",
-          interviewType: "comprehensive",
-        }
-      : {
-          job: "",
-          position: "",
-          companyName: "",
-          resume: null,
-          jd: "",
-          duration: 10,
-          interviewerPosition: "",
-          interviewType:
-            (searchParams.get("interviewStyle") as
-              | "comprehensive"
-              | "adaptive") ?? "comprehensive",
-        }
-  );
+  const [formData, setLocalFormData] = useState<FormData>({
+    job: "",
+    position: "",
+    companyName: "",
+    resume: null,
+    jd: "",
+    duration: 10,
+    interviewerPosition: "",
+    interviewType:
+      (searchParams.get("interviewStyle") as "comprehensive" | "adaptive") ??
+      "comprehensive",
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const [resumeText, setResumeText] = useState("");
   const workerRef = useRef<Tesseract.Worker | null>(null);
@@ -311,7 +289,6 @@ export default function InterviewSetup({
                   name="job"
                   placeholder="e.g. Software Engineer"
                   onChange={handleInputChange}
-                  value={formData.job}
                   required
                   className="bg-background text-foreground"
                 />
@@ -329,7 +306,6 @@ export default function InterviewSetup({
                   name="position"
                   placeholder="e.g. Senior"
                   onChange={handleInputChange}
-                  value={formData.position}
                   required
                   className="bg-background text-foreground"
                 />
@@ -347,7 +323,6 @@ export default function InterviewSetup({
                   name="companyName"
                   placeholder="e.g. Tech Corp"
                   onChange={handleInputChange}
-                  value={formData.companyName}
                   required
                   className="bg-background text-foreground"
                 />
@@ -365,7 +340,6 @@ export default function InterviewSetup({
                   name="interviewerPosition"
                   placeholder="e.g. HR, Senior Developer"
                   onChange={handleInputChange}
-                  value={formData.interviewerPosition}
                   required
                   className="bg-background text-foreground"
                 />
@@ -471,7 +445,6 @@ export default function InterviewSetup({
                 name="jd"
                 placeholder="Paste job description here..."
                 onChange={handleInputChange}
-                value={formData.jd}
                 className="bg-background text-foreground"
               />
             </div>

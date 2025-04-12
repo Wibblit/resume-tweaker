@@ -21,7 +21,7 @@ export function SignIn() {
   const [isLoading, setIsLoading] = useState("");
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [url, seturl] = useState("/onboarding");
+  const [url,seturl] = useState("/onboarding");
   const params = useSearchParams();
   const redirect = params.get("callbackUrl");
   const isDarkTheme = resolvedTheme === "dark";
@@ -54,7 +54,7 @@ export function SignIn() {
     // }
     try {
       await signIn(provider, {
-        redirectTo: redirect ? redirect : "/home",
+        redirectTo: "/home",
       });
     } catch (error) {
       throw error;

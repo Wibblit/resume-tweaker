@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/prisma";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import r2Storage from "@/utils/upload";
+import { uploadFileToR2, uploadHtmlToR2 } from "@/utils/upload";
 
 export async function createBlogPost(formData: FormData) {
   try {
@@ -30,9 +30,9 @@ export async function createBlogPost(formData: FormData) {
 
     const image = formData.get("image") as File;
 
-    const contentUrl = await r2Storage.uploadHtml(slug, content);
+    const contentUrl = await uploadHtmlToR2(slug, content);
 
-    const thumbnailURL = await r2Storage.uploadFile({
+    const thumbnailURL = await uploadFileToR2({
       file: image,
       bucketName: process.env.R2_BUCKET_BLOGS as string,
     });
