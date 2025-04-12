@@ -44,6 +44,7 @@ import {
   setJobs,
   resetUnsavedChanges,
 } from "@/slices/job-tracker/job-slice";
+import { CategorySelect } from "./categorySelect";
 
 const Tracker = () => {
   const dispatch = useAppDispatch();
@@ -59,45 +60,44 @@ const Tracker = () => {
   const { toast } = useToast();
   const { state: sidebarState } = useSidebar();
 
-async function syncData(extensionData: Job[]) {
-  const lastSync = await JobStorage.getLastSync();
-  const since = lastSync?.toISOString() ?? "1970-01-01T00:00:00.000Z";
-  const updatedJobs = await updatedAfter(since);
-  const { jobs, emails } = updatedJobs.data;
-  console.log("jobs from syncData: ", jobs);
+  async function syncData(extensionData: Job[]) {
+    const lastSync = await JobStorage.getLastSync();
+    const since = lastSync?.toISOString() ?? "1970-01-01T00:00:00.000Z";
+    const updatedJobs = await updatedAfter(since);
+    const { jobs, emails } = updatedJobs.data;
+    console.log("jobs from syncData: ", jobs);
 
-  // Convert extensionData to a Map for fast lookups
-  const extensionDataMap = new Map(extensionData.map((job) => [job.id, job]));
+    // Convert extensionData to a Map for fast lookups
+    const extensionDataMap = new Map(extensionData.map((job) => [job.id, job]));
 
-  const deletePromises = [];
-  const updatePromises = [];
+    const deletePromises = [];
+    const updatePromises = [];
 
-  // Process both jobs and emails
-  for (const job of [...jobs, ...emails]) {
-    if (job.isDeleted) {
-      console.log("lastsync delete horaha h", job.id);
-      // Mark the job for deletion
-      deletePromises.push(JobStorage.deleteJob(job.id));
-      dispatch(removeJob(job.id));
-      extensionDataMap.delete(job.id); // Remove job from map
-    } else {
-      const { isDeleted, ...rest } = job;
-      // Mark the job for update
-      updatePromises.push(JobStorage.updateJob(rest));
-      dispatch(addJob(job));
-      extensionDataMap.set(job.id, job); // Update job in map
+    // Process both jobs and emails
+    for (const job of [...jobs, ...emails]) {
+      if (job.isDeleted) {
+        console.log("lastsync delete horaha h", job.id);
+        // Mark the job for deletion
+        deletePromises.push(JobStorage.deleteJob(job.id));
+        dispatch(removeJob(job.id));
+        extensionDataMap.delete(job.id); // Remove job from map
+      } else {
+        const { isDeleted, ...rest } = job;
+        // Mark the job for update
+        updatePromises.push(JobStorage.updateJob(rest));
+        dispatch(addJob(job));
+        extensionDataMap.set(job.id, job); // Update job in map
+      }
     }
+
+    // Wait for all delete and update operations to complete
+    await Promise.all([...deletePromises, ...updatePromises]);
+
+    // Set the last sync time after updates and deletions are complete
+    await JobStorage.setLastSync(new Date());
+
+    return Array.from(extensionDataMap.values());
   }
-
-  // Wait for all delete and update operations to complete
-  await Promise.all([...deletePromises, ...updatePromises]);
-
-  // Set the last sync time after updates and deletions are complete
-  await JobStorage.setLastSync(new Date());
-
-  return Array.from(extensionDataMap.values());
-}
-
 
   const throttleSyncData = throttle(syncData, 30 * 1000);
 
@@ -355,11 +355,12 @@ async function syncData(extensionData: Job[]) {
                 onClick={() => setShowSearchDialog(true)}
               >
                 <Search className="mr-2 h-4 w-4" />
-                <span className="truncate">Search jobs...</span>
+                <span className="truncate">Search jobs and emails</span>
                 <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                   <span className="text-xs">⌘</span>K
                 </kbd>
               </Button>
+              <CategorySelect />
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
               <NotificationBell />
