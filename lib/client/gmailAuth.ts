@@ -2,9 +2,12 @@ export const getGoogleAuthURL = () => {
   const rootUrl = "https://accounts.google.com/o/oauth2/auth";
 
   const options = {
-    redirect_uri: "http://localhost:3000/api/email-auth/gmail/callback",
-    client_id:
-      "493445936272-cd0u6a6940g3d5i3on95tr8g46c7l9jj.apps.googleusercontent.com",
+    redirect_uri: (
+      process.env.NEXT_PUBLIC_GOOGLE_NOTIFICATION_SERVICE_REDIRECT_URL || ""
+    ).toString(),
+    client_id: (
+      process.env.NEXT_PUBLIC_GOOGLE_NOTIFICATION_SERVICE_AUTH_ID || ""
+    ).toString(),
     access_type: "offline",
     response_type: "code",
     prompt: "consent",
@@ -13,4 +16,4 @@ export const getGoogleAuthURL = () => {
 
   const qs = new URLSearchParams(options).toString();
   return `${rootUrl}?${qs}`;
-};  
+};

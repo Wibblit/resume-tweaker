@@ -15,11 +15,14 @@ export type JobEmail = {
 export class SocketManger {
   private static instance: SocketManger;
   private socket: Socket;
+  private notificationServiceBaseUrl = (
+    process.env.NEXT_PUBLIC_NOTIFICATION_SERVICE_BASE_URL || ""
+  ).toString();
 
   private constructor(token: string) {
-    this.socket = io("http://localhost:3001", {
+    this.socket = io(this.notificationServiceBaseUrl, {
       auth: {
-        token: token || ""
+        token: token || "",
       },
       autoConnect: true,
       transports: ["websocket"],

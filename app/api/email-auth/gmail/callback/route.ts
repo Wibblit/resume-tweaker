@@ -16,18 +16,22 @@ export const GET = asyncHandler(async (req: NextRequest) => {
   }
 
   const cookieHeader = req.headers.get("cookie");
+  const notificationServiceBaseUrl = (
+    process.env.NOTIFICATION_SERVICE_BASE_URL || ""
+  ).toString();
 
   console.log("Authorization code: ", code);
   const response = await axios.post(
-    "http://localhost:3001/api/auth/gmail/token",
-    { code, session }, {
+    notificationServiceBaseUrl + "/api/auth/gmail/token",
+    { code, session },
+    {
       withCredentials: true,
       headers: {
-        Cookie: cookieHeader || ''
-      }
+        Cookie: cookieHeader || "",
+      },
     }
   );
-console.log("Response Data", response.data)
+  console.log("Response Data", response.data);
 
   if (response.status !== 200) {
     throw ApiError.custom("Failed to authenticate with Gmail", 500);

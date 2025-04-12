@@ -30,8 +30,7 @@ const useSessionMessaging = () => {
         };
 
         chrome.runtime.sendMessage(
-          process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID ||
-            "pkghmhfhkloagakddedgpccekgapifje",
+          (process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "").toString() ,
           message,
           { includeTlsChannelId: true },
           (response) => {

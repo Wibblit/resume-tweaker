@@ -28,8 +28,7 @@ export default function VerificationPage() {
     if (session.user) {
       try {
         chrome.runtime.sendMessage(
-          process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID ||
-            "pkghmhfhkloagakddedgpccekgapifje",
+          (process.env.NEXT_PUBLIC_CHROME_EXTENSION_ID || "").toString(),
           {
             type: "LOGIN_SUCCESS",
             user: session.user,

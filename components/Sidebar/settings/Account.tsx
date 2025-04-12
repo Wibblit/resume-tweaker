@@ -28,6 +28,9 @@ import axios from "axios";
 function Account({ session }: { session: Session }) {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const notificationServiceBaseUrl = (
+    process.env.NEXT_PUBLIC_NOTIFICATION_SERVICE_BASE_URL || ""
+  ).toString();
 
   const { toast } = useToast();
 
@@ -39,7 +42,7 @@ function Account({ session }: { session: Session }) {
     await ExtensionCommunicator.clearExtensionStorage();
     if (session.user.connectedEmail) {
       const response = await axios.post(
-        "http://localhost:3001/api/auth/gmail/halt-email-watch",
+        notificationServiceBaseUrl + "/api/auth/gmail/halt-email-watch",
         {
           userId: session?.user.id,
         },
