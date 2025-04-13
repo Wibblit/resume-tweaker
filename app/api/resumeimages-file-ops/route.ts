@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { uploadFileToR2 } from "@/utils/upload";
+import r2Storage from "@/utils/upload";
 import { deleteFileFromR2 } from "@/utils/delete";
 
 export async function POST(request: NextRequest) {
@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
 
     const file = formData.get("file") as File;
 
-    const url = await uploadFileToR2({
+    const url = await r2Storage.uploadFile({
       file: file,
       //@ts-ignore
       bucketName: process.env.R2_BUCKET_RESUME,
