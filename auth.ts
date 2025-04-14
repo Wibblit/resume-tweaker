@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import LinkedIn from "next-auth/providers/linkedin";
 import { prisma } from "./prisma";
 import type { Provider } from "next-auth/providers";
+import { revalidatePath } from "next/cache";
 
 const providers: Provider[] = [
   Google({
@@ -61,6 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (trigger === "update") {
         if (session?.connectedEmail) {
           token.connectedEmail = session.connectedEmail;
+          revalidatePath("/home/job-tracker", "page");
         } else if (session.connectedEmail === null) {
           token.connectedEmail = null;
         }

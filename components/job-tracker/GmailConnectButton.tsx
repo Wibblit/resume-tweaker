@@ -25,9 +25,6 @@ const ConnectGmailButton = () => {
   const [showInitialTooltip, setShowInitialTooltip] = useState(true);
   const { data: session, status, update } = useSession();
   const { toast } = useToast();
-  const notificationServiceBaseUrl = (
-    process.env.NEXT_PUBLIC_NOTIFICATION_SERVICE_BASE_URL || ""
-  ).toString();
 
   useEffect(() => {
     // Hide the initial tooltip after 5 seconds
