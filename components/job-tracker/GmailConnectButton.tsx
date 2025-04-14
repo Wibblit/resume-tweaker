@@ -99,7 +99,7 @@ const ConnectGmailButton = () => {
           <Button
             variant="ghost"
             className="flex items-center gap-2 text-destructive hover:text-destructive w-full"
-            onClick={handleDisconnect}
+            onClick={() => handleDisconnect()}
           >
             <LogOut className="w-4 h-4" />
             Disconnect Gmail
