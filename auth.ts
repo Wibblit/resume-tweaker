@@ -58,7 +58,7 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
         token.connectedEmail = user.connectedEmail;
       }
 
-      if (trigger === "update" && session?.connectedEmail) {
+      if (trigger === "update") {
         token.connectedEmail = session.connectedEmail;
       }
 
