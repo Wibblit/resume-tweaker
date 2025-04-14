@@ -4,7 +4,6 @@ import Google from "next-auth/providers/google";
 import LinkedIn from "next-auth/providers/linkedin";
 import { prisma } from "./prisma";
 import type { Provider } from "next-auth/providers";
-import { revalidatePath } from "next/cache";
 
 const providers: Provider[] = [
   Google({
@@ -41,7 +40,7 @@ export const providerMap = providers.map((provider) => {
 });
 let callbackUrl = "";
 //main
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   theme: {
     logo: "/rt-light-bg.svg",
   },
@@ -59,13 +58,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.connectedEmail = user.connectedEmail;
       }
 
-      if (trigger === "update") {
-        if (session?.connectedEmail) {
-          token.connectedEmail = session.connectedEmail;
-          revalidatePath("/home/job-tracker", "page");
-        } else if (session.connectedEmail === null) {
-          token.connectedEmail = null;
-        }
+      if (trigger === "update" && session?.connectedEmail) {
+        token.connectedEmail = session.connectedEmail;
       }
 
       return token;
@@ -76,7 +70,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.isNewUser = token.isNewUser;
       session.user.provider = token.provider;
       session.user.createdAt = token.createdAt;
-      session.user.connectedEmail = token.connectedEmail;
+      if (token.connectedEmail) {
+        session.user.connectedEmail = token.connectedEmail;
+      }
 
       return session;
     },

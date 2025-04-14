@@ -52,7 +52,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 const JobTracker = () => {
   const socketManager = useSocket();
   const searchParams = useSearchParams();
-  const { data: session, update } = useSession();
+  const { data: session, update, } = useSession();
   const router = useRouter();
   const hasUpdatedRef = useRef(false);
 
@@ -80,10 +80,6 @@ const JobTracker = () => {
             connectedEmail: email,
           });
 
-          console.log("Session update called with email:", email);
-
-          // Clear URL parameters
-          router.replace("/home/job-tracker", undefined);
         } catch (error) {
           console.error("Failed to update session:", error);
         }

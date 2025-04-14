@@ -3,6 +3,7 @@ import axios from "axios";
 import { ApiError } from "@/lib/apiRouteHelpers/errorHandler";
 import { asyncHandler } from "@/lib/apiRouteHelpers/asyncHandler";
 import { auth } from "@/auth";
+import { unstable_update } from "@/auth";
 
 export const GET = asyncHandler(async (req: NextRequest) => {
   const session = await auth();
@@ -32,6 +33,11 @@ export const GET = asyncHandler(async (req: NextRequest) => {
     }
   );
   console.log("Response Data", response.data);
+  await unstable_update({
+    user: {
+      connectedEmail: response.data.data.email,
+    },
+  });
 
   if (response.status !== 200) {
     throw ApiError.custom("Failed to authenticate with Gmail", 500);
