@@ -36,11 +36,13 @@ export const GET = asyncHandler(async (req: NextRequest) => {
   if (response.status !== 200) {
     throw ApiError.custom("Failed to authenticate with Gmail", 500);
   }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin;
   // Redirect to the profile page after successful authentication
   return NextResponse.redirect(
     new URL(
       `/home/job-tracker?gmailConnected=true&email=${response.data.data.email}`,
-      req.nextUrl.origin
+      baseUrl
     )
   );
 });
