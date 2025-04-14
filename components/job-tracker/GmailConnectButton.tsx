@@ -42,27 +42,31 @@ const ConnectGmailButton = () => {
   };
 
   const handleDisconnect = async () => {
-    const response = await axios.post(
-      notificationServiceBaseUrl + "/api/auth/gmail/halt-email-watch",
-      {
-        userId: session?.user.id,
-      },
-      { withCredentials: true }
-    );
+    try {
+      // Call your own API endpoint instead of the notification service directly
+      const response = await axios.post("/api/disconnectGmail");
 
-    if (response.status === 200) {
-      const previousEmail = session?.user.connectedEmail;
-      await update({
-        connectedEmail: null,
-      });
+      if (response.status === 200) {
+        const previousEmail = session?.user.connectedEmail;
+        await update({
+          connectedEmail: null,
+        });
+        toast({
+          title: "🔕 Gmail Disconnected!",
+          description: (
+            <>
+              No longer job emails are tracked from{" "}
+              <span className="font-bold underline">{previousEmail}</span>.
+            </>
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Failed to disconnect Gmail:", error);
       toast({
-        title: "🔕 Gmail Disconnected!",
-        description: (
-          <>
-            No longer job emails are tracked from{" "}
-            <span className="font-bold underline">{previousEmail}</span>.
-          </>
-        ),
+        variant: "destructive",
+        title: "Error disconnecting Gmail",
+        description: "Please try again later.",
       });
     }
   };
