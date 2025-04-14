@@ -44,7 +44,7 @@ const ConnectGmailButton = () => {
   const handleDisconnect = async () => {
     try {
       // Call your own API endpoint instead of the notification service directly
-      const response = await axios.post("/api/disconnectGmail");
+      const response = await axios.post("/api/disconnect-gmail");
 
       if (response.status === 200) {
         const previousEmail = session?.user.connectedEmail;
