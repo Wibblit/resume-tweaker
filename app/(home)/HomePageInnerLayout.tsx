@@ -55,49 +55,49 @@ export default function InnerLayout({
 
   const initialized = useRef(false);
 
-  useEffect(() => {
-    // Only update Redux if we haven't initialized yet or if the data has changed
-    if (!initialized.current && creditsData) {
-      dispatch(updateLoadingTrue());
+  // useEffect(() => {
+  //   // Only update Redux if we haven't initialized yet or if the data has changed
+  //   if (!initialized.current && creditsData) {
+  //     dispatch(updateLoadingTrue());
 
-      dispatch(updateCredits(creditsData.credits));
-      dispatch(updateResumeSlot(creditsData.resumeslot));
-      dispatch(updateCoverSlot(creditsData.coverslot));
+  //     dispatch(updateCredits(creditsData.credits));
+  //     dispatch(updateResumeSlot(creditsData.resumeslot));
+  //     dispatch(updateCoverSlot(creditsData.coverslot));
 
-      dispatch(updateLoadingFalse());
+  //     dispatch(updateLoadingFalse());
 
-      initialized.current = true;
-    } else if (
+  //     initialized.current = true;
+  //   } else if (
      
-      creditsData &&
-      (currentCredits !== creditsData.credits ||
-        currentResumeSlot !== creditsData.resumeslot ||
-        currentCoverSlot !== creditsData.coverslot)
-    ) {
-       console.log("redux cleared");
-      // Only update if the data has actually changed
-      dispatch(updateLoadingTrue());
+  //     creditsData &&
+  //     (currentCredits !== creditsData.credits ||
+  //       currentResumeSlot !== creditsData.resumeslot ||
+  //       currentCoverSlot !== creditsData.coverslot)
+  //   ) {
+  //      console.log("redux cleared");
+  //     // Only update if the data has actually changed
+  //     dispatch(updateLoadingTrue());
 
-      dispatch(updateCredits(creditsData.credits));
-      dispatch(updateResumeSlot(creditsData.resumeslot));
-      dispatch(updateCoverSlot(creditsData.coverslot));
+  //     dispatch(updateCredits(creditsData.credits));
+  //     dispatch(updateResumeSlot(creditsData.resumeslot));
+  //     dispatch(updateCoverSlot(creditsData.coverslot));
 
-      dispatch(updateLoadingFalse());
-    } else if (!creditsData && !initialized.current) {
-      toast({
-        title: "Failed to Load Credits",
-        description: "Unable to fetch your credits. Please try again.",
-        variant: "destructive",
-      });
-    }
-  }, [
-    creditsData,
-    dispatch,
-    toast,
-    currentCredits,
-    currentResumeSlot,
-    currentCoverSlot,
-  ]);
+  //     dispatch(updateLoadingFalse());
+  //   } else if (!creditsData && !initialized.current) {
+  //     toast({
+  //       title: "Failed to Load Credits",
+  //       description: "Unable to fetch your credits. Please try again.",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // }, [
+  //   creditsData,
+  //   dispatch,
+  //   toast,
+  //   currentCredits,
+  //   currentResumeSlot,
+  //   currentCoverSlot,
+  // ]);
 
   return hideSidebar ? (
     <main>{children}</main>

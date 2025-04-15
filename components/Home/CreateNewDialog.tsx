@@ -372,7 +372,7 @@ export function CreateNewDialog({
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="upload" id="upload-resume" />
-                    <Label htmlFor="upload-resume">Upload & Parse Resume</Label>
+                    <Label htmlFor="upload-resume">Upload (Default Template)</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -422,7 +422,7 @@ export function CreateNewDialog({
                       <>
                         <Progress
                           value={100}
-                          className="mt-2 animate-pulse"
+                          className="mt-2 animate-strong-pulse"
                         />
                       </>
                     )}
