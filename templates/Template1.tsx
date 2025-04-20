@@ -92,6 +92,9 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       color: baseColor,
       fontSize: "1em",
     },
+    linklabel: {
+      color : baseColor
+    },
   };
 
   const renderSection = (sectionName: SectionName) => {
@@ -421,10 +424,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         if (!content.profiles?.length) return null;
         return (
           <section className="mb-2">
-            <div className="flex flex-wrap justify-center space-x-4">
+            <div className="flex flex-wrap space-x-4">
               {content.profiles.map((profile, index) => (
                 <div
-                  className="flex flex-wrap justify-center"
+                  className="flex gap-2 items-center"
                   key={index}
                 >
                   <a
@@ -433,17 +436,17 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     target="_blank"
                     rel="noopener noreferrer"
                     style={styles.link}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2" // Added gap-2 for consistent spacing
                   >
                     {isIcons && profile.url.href !== "" && (
-                    <SocialIcon
-                      style={{ width: "20px", height: "20px" }}
-                      fgColor={"white"}
-                      bgColor={"black"}
-                      url={profile.url.href}
-                    />
-                  )}
-                    <span className="no-underline">{profile.url.label}</span>
+                      <SocialIcon
+                        style={{ width: "18px", height: "18px"}} // Added marginRight for spacing
+                        fgColor={"white"}
+                        bgColor={"black"}
+                        url={profile.url.href}
+                      />
+                    )}
+                    <span className="no-underline" style={styles.linklabel}>{profile.url.label}</span>
                   </a>
                 </div>
               ))}
@@ -657,25 +660,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
   };
 
   return (
-    <div className="no-ltwave p-8" style={styles.container}>
-      <style>
-        {`
-      /* Override any global font styles inside this container */
-      .no-ltwave * {
-        font-family: inherit; /* Ensures all elements inside no-ltwave inherit the default font */
-      }
-
-      .no-ltwave p {
-        color: black;
-        font-size: ${1.3 * fontSize}px;
-        line-height: ${1.6 * fontSize}px;
-        white-space: pre-wrap; 
-        word-wrap: break-word; 
-        overflow-wrap: break-word;
-        text-align: justify;
-      }
-    `}
-      </style>
+    <div style={styles.container}>
       {sectionOrder?.sections[pageIndex]?.column1.map((sectionName) =>
         renderSection(sectionName as SectionName)
       )}

@@ -169,22 +169,24 @@ const Template7: React.FC<ModernResumeTemplateProps> = ({
             <div className="mb-4">
               <div className="flex flex-wrap space-x-4">
                 {content.profiles?.map((profile, index) => (
-                  <div className="flex items-center" key={index}>
+                  <div className="flex items-center gap-2" key={index}>
                     <a
                       href={profile.url.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="no-underline flex items-center gap-1"
+                      className="no-underline flex items-center gap-2"
                     >
                       {isIcons && profile.url.href !== "" && (
-                        <SocialIcon style={{ width: "24px", height: "24px" }} url={profile.url.href} 
+                        <SocialIcon
+                          style={{ width: "24px", height: "24px" }}
                           fgColor={"white"}
-                          bgColor={"black"} />
+                          bgColor={"black"}
+                          url={profile.url.href}
+                        />
                       )}
                       <span className="text-sm font-medium">{profile.url.label}</span>
                     </a>
                   </div>
-
                 ))}
               </div>
             </div>
