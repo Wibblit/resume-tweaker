@@ -40,7 +40,7 @@ export const providerMap = providers.map((provider) => {
 });
 let callbackUrl = "";
 //main
-export const { handlers, signIn, signOut, auth, } = NextAuth({
+export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   theme: {
     logo: "/rt-light-bg.svg",
   },
@@ -49,13 +49,19 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
     signIn: `/login?callbackUrl=${callbackUrl}`,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.isNewUser = user.isNewUser;
         token.provider = user.provider;
         token.createdAt = user.createdAt;
+        token.connectedEmail = user.connectedEmail;
       }
+
+      if (trigger === "update") {
+        token.connectedEmail = session.connectedEmail;
+      }
+
       return token;
     },
     async session({ session, token }: any) {
@@ -64,6 +70,10 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
       session.isNewUser = token.isNewUser;
       session.user.provider = token.provider;
       session.user.createdAt = token.createdAt;
+      if (token.connectedEmail) {
+        session.user.connectedEmail = token.connectedEmail;
+      }
+
       return session;
     },
     async signIn({ user, account, profile }) {
@@ -80,8 +90,9 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
           data: { provider: account.provider },
         });
       }
+      let gmailConnectEmail = null;
       if (!existingUser) {
-        callbackUrl = "/home"
+        callbackUrl = "/home";
         if (user && user.email && profile && account && account.provider) {
           existingUser = await prisma.user.create({
             data: {
@@ -90,8 +101,7 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
               image: user.image || profile?.picture || null,
               provider: account.provider,
             },
-          }
-          );
+          });
           await prisma.userAssets.create({
             data: {
               userId: existingUser?.id,
@@ -102,10 +112,18 @@ export const { handlers, signIn, signOut, auth, } = NextAuth({
           });
         }
       }
-      callbackUrl = ""
+
+      gmailConnectEmail = await prisma.tokens.findUnique({
+        where: { userId: existingUser?.id },
+        select: { email: true },
+      });
+
+      callbackUrl = "";
       user.id = existingUser?.id;
       user.provider = account?.provider as string;
       user.createdAt = existingUser?.createdAt.toISOString();
+      user.connectedEmail = gmailConnectEmail?.email || null;
+      console.log("gmail connect email", gmailConnectEmail);
       return true;
     },
     async authorized({ auth, request: { nextUrl } }) {

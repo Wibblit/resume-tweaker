@@ -30,7 +30,7 @@ interface Homeprops {
   letters: LetterProps | [];
 }
 
-export default function Home({ resumes, letters }: Homeprops) {
+export default function   Home({ resumes, letters }: Homeprops) {
   const [searchQuery, setSearchQuery] = useState("");
   const [tab, setTab] = useState(RESUME);
   const { data: session } = useSession();

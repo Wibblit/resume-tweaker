@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --grad-foreground:#000000;
+    --grad-foreground: #000000;
     --grad-background: #ffffff;
     --background: 0 0% 98%;
     --foreground: 240 10% 3.9%;
@@ -153,6 +153,20 @@
   100% {
     transform: translateX(400%);
   }
+}
+
+@keyframes strong-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-strong-pulse {
+  animation: strong-pulse 0.8s ease-in-out infinite;
 }
 
 .animate-progress-infinite {
