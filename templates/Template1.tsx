@@ -424,7 +424,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         if (!content.profiles?.length) return null;
         return (
           <section className="mb-2">
-            <div className="flex flex-wrap space-x-4">
+            <div className="flex flex-wrap space-x-4 justify-center w-full">
               {content.profiles.map((profile, index) => (
                 <div
                   className="flex gap-2 items-center"
