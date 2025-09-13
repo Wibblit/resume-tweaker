@@ -3,11 +3,12 @@ import ReviewPage from "@/components/LandingPage/LandingReviewPage";
 
 export const metadata: Metadata = {
   title: {
-    absolute:"ResumeTweaker | AI Powered Resume Review"},
+    absolute: "ResumeTweaker | AI Powered Resume Review",
+  },
   description:
     "Boost your job prospects with ResumeTweaker’s AI-powered resume review. Get detailed feedback, ATS optimization tips, and a resume score to help you stand out.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/review",
+    canonical: "https://resumetweaker.vercel.app/review",
   },
   keywords: [
     "resume review services",
@@ -28,7 +29,6 @@ export const metadata: Metadata = {
   ],
 };
 
-
-export default function Page(){
-  return <ReviewPage/>
+export default function Page() {
+  return <ReviewPage />;
 }

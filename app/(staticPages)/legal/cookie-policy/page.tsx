@@ -1,14 +1,13 @@
-import React from 'react';
-import { Metadata } from "next"
+import React from "react";
+import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Cookie Policy",
   description:
     "This is the Cookie policy of Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/legal/cookie-policy",
-  }
+    canonical: "https://resumetweaker.vercel.app/legal/cookie-policy",
+  },
 };
-
 
 export default function CookiePolicy() {
   const rawhtml = ` <div>
@@ -205,7 +204,7 @@ export default function CookiePolicy() {
        <td>
         <span>
          Authentication
-         <a data-custom-class="link" href="https://resumetweaker.wibblit.com/legal/privacy-policy" target="_blank">
+         <a data-custom-class="link" href="https://resumetweaker.vercel.app/legal/privacy-policy" target="_blank">
           <span>
            View Service Privacy Policy
           </span>
@@ -278,7 +277,7 @@ export default function CookiePolicy() {
        <td>
         <span>
          Authenticaiton
-         <a data-custom-class="link" href="https://resumetweaker.wibblit.com/legal/privacy-policy" target="_blank">
+         <a data-custom-class="link" href="https://resumetweaker.vercel.app/legal/privacy-policy" target="_blank">
           <span>
            View Service Privacy Policy
           </span>
@@ -1396,38 +1395,53 @@ export default function CookiePolicy() {
         <div className="p-8">
           {/* Header Section */}
           <div className="text-start mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">COOKIE POLICY</h1>
-            <p className="text-lg text-muted-foreground">Last updated January 17, 2025</p>
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              COOKIE POLICY
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Last updated January 17, 2025
+            </p>
           </div>
 
           {/* Introduction Section */}
           <div className="mb-8 text-muted-foreground">
             <p className="mb-4">
-              This Cookie Policy explains how <span className="font-semibold">Wibblit</span> ("<strong>Company</strong>," "<strong>we</strong>," "<strong>us</strong>," and "<strong>our</strong>") uses cookies and similar technologies to recognize you when you visit our website at{' '}
-              <a href="https://resumetweaker.wibblit.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
-                https://resumetweaker.wibblit.com
-              </a>{' '}
-              ("<strong>Website</strong>"). It explains what these technologies are and why we use them, as well as your rights to control our use of them.
+              This Cookie Policy explains how{" "}
+              <span className="font-semibold">Wibblit</span> ("
+              <strong>Company</strong>," "<strong>we</strong>," "
+              <strong>us</strong>," and "<strong>our</strong>") uses cookies and
+              similar technologies to recognize you when you visit our website
+              at{" "}
+              <a
+                href="https://resumetweaker.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80"
+              >
+                https://resumetweaker.vercel.app
+              </a>{" "}
+              ("<strong>Website</strong>"). It explains what these technologies
+              are and why we use them, as well as your rights to control our use
+              of them.
             </p>
           </div>
 
           {/* Main Content */}
-          <div 
+          <div
             className="prose prose-lg max-w-none text-muted-foreground prose-headings:text-foreground prose-a:text-primary hover:prose-a:text-primary/80"
-            dangerouslySetInnerHTML={{ 
-              __html: rawhtml.replace(
-                /<h2>/g, 
-                '<h2 class="text-2xl font-bold text-foreground mt-12 mb-6">'
-              ).replace(
-                /<p>/g,
-                '<p class="text-muted-foreground mb-4">'
-              ).replace(
-                /<u>/g,
-                '<u class="text-foreground mb-4">'
-              ).replace(
-                /<strong>/g,
-                '<strong class="font-semibold text-foreground">')
-            }} 
+            dangerouslySetInnerHTML={{
+              __html: rawhtml
+                .replace(
+                  /<h2>/g,
+                  '<h2 class="text-2xl font-bold text-foreground mt-12 mb-6">'
+                )
+                .replace(/<p>/g, '<p class="text-muted-foreground mb-4">')
+                .replace(/<u>/g, '<u class="text-foreground mb-4">')
+                .replace(
+                  /<strong>/g,
+                  '<strong class="font-semibold text-foreground">'
+                ),
+            }}
           />
         </div>
       </div>

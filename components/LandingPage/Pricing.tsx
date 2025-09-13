@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Check, Sparkles, Star , Sparkle} from "lucide-react";
+import { Check, Sparkles, Star, Sparkle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { QuantityDialog } from "@/app/(staticPages)/pricing/QuantityDialog";
 import { useSession } from "next-auth/react";
@@ -20,7 +20,7 @@ const features = [
   "Everything in the free plan",
   "AI to generate & Tweak content",
   "Resume Review",
-  "AI Interview"
+  "AI Interview",
 ];
 const freePlanFeatures = [
   "Resume editor",
@@ -29,8 +29,8 @@ const freePlanFeatures = [
   "1 Free cover letter slot",
   "All Resume templates free",
   "All Cover Letter templates free",
-  "Unlimited downloads"
-]
+  "Unlimited downloads",
+];
 interface Plan {
   name: string;
   baseCredits: number;
@@ -86,7 +86,7 @@ export default function Pricing() {
     setQuantity(newQuantity);
     if (selectedPlan) {
       router.push(
-        `https://checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=https://resumetweaker.wibblit.com/profile&email=${session?.user.email}&metadata_user_id=${session?.user.id}&metadata_packname=${selectedPlan.name}&metadata_credits=${selectedPlan.baseCredits}&disableEmail=true`
+        `https://checkout.dodopayments.com/buy/${selectedPlan.productId}?quantity=${newQuantity}&redirect_url=https://resumetweaker.vercel.app/profile&email=${session?.user.email}&metadata_user_id=${session?.user.id}&metadata_packname=${selectedPlan.name}&metadata_credits=${selectedPlan.baseCredits}&disableEmail=true`
       );
     }
   };
@@ -98,18 +98,31 @@ export default function Pricing() {
   return (
     <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-       <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-        <Breadcrumb items={[
-          { label: 'Home', href: '/' },
-          { label: 'Pricing', href: '/pricing', active: true }
-        ]} />
-      </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Pricing", href: "/pricing", active: true },
+            ]}
+          />
+        </div>
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            <GradientText>Simple, Transparent Pricing, No Subscriptions</GradientText>
+            <GradientText>
+              Simple, Transparent Pricing, No Subscriptions
+            </GradientText>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            There are <span className="text-primary font-semibold"> no recurring payments</span>. Pay once, use forever <span className="text-primary font-semibold">(credits never expire)</span>. All plans include{" "}
+            There are{" "}
+            <span className="text-primary font-semibold">
+              {" "}
+              no recurring payments
+            </span>
+            . Pay once, use forever{" "}
+            <span className="text-primary font-semibold">
+              (credits never expire)
+            </span>
+            . All plans include{" "}
             <span className="text-primary font-semibold">full access</span> to
             our AI-powered tools. We accept{" "}
             <span className="text-primary font-semibold">100+</span> countries.
@@ -176,12 +189,17 @@ export default function Pricing() {
                 <div className="h-full w-1 bg-border"></div>
                 <div className="flex flex-col justify-between items-center">
                   <span className="text-9xl font-bold">$0</span>
-                  <Button variant="silver" className=" md:px-16 py-2" 
-                  onClick={() => {
-                  if (!session) {
-                    return router.push("/login");
-                  }
-                }}>Get Started</Button>
+                  <Button
+                    variant="silver"
+                    className=" md:px-16 py-2"
+                    onClick={() => {
+                      if (!session) {
+                        return router.push("/login");
+                      }
+                    }}
+                  >
+                    Get Started
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -189,8 +207,9 @@ export default function Pricing() {
           {plans.map((plan) => (
             <Card
               key={plan.name}
-              className={`relative flex flex-col pb-4 ${plan.popular ? "border-primary shadow-lg scale-105" : ""
-                }`}
+              className={`relative flex flex-col pb-4 ${
+                plan.popular ? "border-primary shadow-lg scale-105" : ""
+              }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -224,9 +243,11 @@ export default function Pricing() {
                     </div>
                   ))}
                   <div className="flex items-center gap-2">
-                      <Sparkle className="w-4 h-4 text-primary fill-primary" />
-                      <span className="text-sm">{plan.baseCredits} Credits that never expire</span>
-                    </div>
+                    <Sparkle className="w-4 h-4 text-primary fill-primary" />
+                    <span className="text-sm">
+                      {plan.baseCredits} Credits that never expire
+                    </span>
+                  </div>
                 </div>
               </CardContent>
 
@@ -254,8 +275,9 @@ export default function Pricing() {
             onClose={() => setIsDialogOpen(false)}
             onConfirm={handleConfirmQuantity}
             title={`Purchase ${selectedPlan.name} Credits`}
-            description={`Each ${selectedPlan.name
-              } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
+            description={`Each ${
+              selectedPlan.name
+            } pack contains ${selectedPlan.baseCredits.toLocaleString()} credits.`}
             initialQuantity={1}
             maxQuantity={10}
             baseCredits={selectedPlan.baseCredits}

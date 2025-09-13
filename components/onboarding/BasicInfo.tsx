@@ -94,7 +94,7 @@ export default function BasicInfo({
           <Input
             id="url.href"
             name="url.href"
-            placeholder="https://resumetweaker.wibblit.com"
+            placeholder="https://resumetweaker.vercel.app"
             value={basics.url.href}
             onChange={handleChange}
           />

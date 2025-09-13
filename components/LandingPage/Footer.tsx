@@ -19,7 +19,7 @@ export default function Footer() {
               <a href="https://wibblit.com/" className="shrink-0">
                 <ThemeAwareWibblitLogo />
               </a>
-              <a href="https://resumetweaker.wibblit.com/" className="shrink-0">
+              <a href="https://resumetweaker.vercel.app/" className="shrink-0">
                 <ThemeAwareLogo />
               </a>
             </div>
@@ -96,10 +96,8 @@ export default function Footer() {
           {/* Legal */}
           <div className="space-y-4">
             <h3 className="text-base font-semibold">
-              <Link href={"/legal"}>
-              Legal
-              </Link>
-              </h3>
+              <Link href={"/legal"}>Legal</Link>
+            </h3>
             <ul className="space-y-3">
               {[
                 { href: "/legal/privacy-policy", label: "Privacy Policy" },
@@ -127,11 +125,26 @@ export default function Footer() {
           <div className="flex gap-4">
             {[
               { url: "https://x.com/wibblitofficial", network: "x" },
-              { url: "https://bsky.app/profile/wibblit.bsky.social", network: "bsky.app" },
-              { url: "https://www.linkedin.com/company/wibblit",network: "linkedin"},
-              { url: "https://www.facebook.com/profile.php?id=61567985016999", network: "facebook" },
-              { url: "https://www.instagram.com/wibblitofficial/", network: "instagram" },
-              { url: "https://www.youtube.com/@wibblitofficial", network: "youtube" },
+              {
+                url: "https://bsky.app/profile/wibblit.bsky.social",
+                network: "bsky.app",
+              },
+              {
+                url: "https://www.linkedin.com/company/wibblit",
+                network: "linkedin",
+              },
+              {
+                url: "https://www.facebook.com/profile.php?id=61567985016999",
+                network: "facebook",
+              },
+              {
+                url: "https://www.instagram.com/wibblitofficial/",
+                network: "instagram",
+              },
+              {
+                url: "https://www.youtube.com/@wibblitofficial",
+                network: "youtube",
+              },
               { url: "https://www.reddit.com/r/wibblit/", network: "reddit" },
               { url: "https://www.tiktok.com/@wibblit", network: "tiktok" },
             ].map((social) => (

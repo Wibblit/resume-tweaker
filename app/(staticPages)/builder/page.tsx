@@ -1,13 +1,14 @@
-import { Metadata } from "next"
-import EditorPage from "@/components/LandingPage/LandingEditorPage"
+import { Metadata } from "next";
+import EditorPage from "@/components/LandingPage/LandingEditorPage";
 
 export const metadata: Metadata = {
   title: {
-    absolute:"ResumeTweaker | AI Resume and Cover Letter Builder"},
+    absolute: "ResumeTweaker | AI Resume and Cover Letter Builder",
+  },
   description:
     "Create a standout resume and cover letter with ResumeTweaker's AI tools. Build, optimize, and download ATS-friendly CVs as PDFs — free and mobile-friendly.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/builder",
+    canonical: "https://resumetweaker.vercel.app/builder",
   },
   keywords: [
     "AI resume builder",
@@ -27,6 +28,6 @@ export const metadata: Metadata = {
     "resume builder for job seekers",
   ],
 };
-export default function Page(){
-  return <EditorPage/>
+export default function Page() {
+  return <EditorPage />;
 }

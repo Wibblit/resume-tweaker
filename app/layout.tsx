@@ -2,7 +2,7 @@ import "./globals.css";
 import { Metadata } from "next";
 import { Montserrat as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { GoogleAnalytics } from "@next/third-parties/google"
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,14 +14,14 @@ export const metadata: Metadata = {
     default: "ResumeTweaker | AI Resume, Cover Letter, Review & Interview Prep",
     template: "%s | ResumeTweaker",
   },
-  metadataBase: new URL("https://resumetweaker.wibblit.com/"),
+  metadataBase: new URL("https://resumetweaker.vercel.app/"),
   description:
     "Optimize your job search with AI-powered resume building and reviews, cover letter building, and interview prep. Get professional tools for every step of your application process with ResumeTweaker",
   openGraph: {
     title: "ResumeTweaker | AI Resume Review, Cover Letter & Interview Prep",
     description:
       "Create, tweak, and perfect your resume with resumetweaker’s AI-powered resume builder. Stand out in your job search with optimized and tailored resumes.",
-    url: "https://resumetweaker.wibblit.com",
+    url: "https://resumetweaker.vercel.app",
     siteName: "resumetweaker",
     images: [
       {
@@ -115,30 +115,28 @@ export default function RootLayout({
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://resumetweaker.wibblit.com/#organization",
-        "name": "ResumeTweaker",
-        "url": "https://resumetweaker.wibblit.com/",
-        "logo": {
+        "@id": "https://resumetweaker.vercel.app/#organization",
+        name: "ResumeTweaker",
+        url: "https://resumetweaker.vercel.app/",
+        logo: {
           "@type": "ImageObject",
-          "url": "https://resumetweaker.wibblit.com/favicons/apple-touch-icon.png",
-          "width": 180,
-          "height": 180
+          url: "https://resumetweaker.vercel.app/favicons/apple-touch-icon.png",
+          width: 180,
+          height: 180,
         },
-        "sameAs": [
-          "https://twitter.com/wibblitofficial"
-        ]
+        sameAs: ["https://twitter.com/wibblitofficial"],
       },
       {
         "@type": "WebSite",
-        "@id": "https://resumetweaker.wibblit.com/#website",
-        "url": "https://resumetweaker.wibblit.com/",
-        "name": "ResumeTweaker",
-        "description": "AI Resume, Cover Letter, Review & Interview Prep",
-        "publisher": {
-          "@id": "https://resumetweaker.wibblit.com/#organization"
-        }
-      }
-    ]
+        "@id": "https://resumetweaker.vercel.app/#website",
+        url: "https://resumetweaker.vercel.app/",
+        name: "ResumeTweaker",
+        description: "AI Resume, Cover Letter, Review & Interview Prep",
+        publisher: {
+          "@id": "https://resumetweaker.vercel.app/#organization",
+        },
+      },
+    ],
   };
 
   return (

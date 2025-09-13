@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "Login to Resumetweaker, Supercharge your job search with AI resume builder, review, and personalised interviews.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/login",
+    canonical: "https://resumetweaker.vercel.app/login",
   },
   keywords: [
     "AI resume builder",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     "AI career assistant",
     "interview techniques and strategies",
     "job application enhancement",
-    "AI-powered job search tools"
+    "AI-powered job search tools",
   ],
 };
 

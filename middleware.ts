@@ -6,7 +6,7 @@ import { creditList } from "./utils/credits";
 
 const allowedOrigins = [
   "http://localhost:3000", // Add your allowed domains here
-  "https://resumetweaker.wibblit.com",
+  "https://resumetweaker.vercel.app",
 ];
 
 export default auth(async function middleware(req: NextRequest) {

@@ -1,12 +1,12 @@
-import React from 'react';
-import { Metadata } from "next"
+import React from "react";
+import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
     "This is the Terms of Service of Resumetweaker. Create professional resumes and cover letters with ResumeTweaker's AI-powered tools. Build and customize your job application documents effortlessly.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/legal/terms-of-service",
-  }
+    canonical: "https://resumetweaker.vercel.app/legal/terms-of-service",
+  },
 };
 export default function TermsOfService() {
   const rawhtml = `
@@ -1953,60 +1953,82 @@ export default function TermsOfService() {
         <div className="p-8">
           {/* Header Section */}
           <div className="text-start mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-4">TERMS OF SERVICE</h1>
-            <p className="text-lg text-muted-foreground">Last updated January 16, 2025</p>
+            <h1 className="text-4xl font-bold text-foreground mb-4">
+              TERMS OF SERVICE
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Last updated January 16, 2025
+            </p>
           </div>
 
           {/* Agreement Section */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">AGREEMENT TO OUR LEGAL TERMS</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              AGREEMENT TO OUR LEGAL TERMS
+            </h2>
             <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-400">
               <p className="mb-4">
-                We are Wibblit ('Company', 'we', 'us', or 'our'), a company registered in India at 
-                No 245, 1st Cross, MG Nagar, Shankar Matt, Near Olety Landmark, Bengaluru, Karnataka 560086.
+                We are Wibblit ('Company', 'we', 'us', or 'our'), a company
+                registered in India at No 245, 1st Cross, MG Nagar, Shankar
+                Matt, Near Olety Landmark, Bengaluru, Karnataka 560086.
               </p>
               <p className="mb-4">
-                We operate the website resumetweaker.wibblit.com (the 'Site'), as well as any other related 
-                products and services that refer or link to these legal terms (the 'Legal Terms') 
-                (collectively, the 'Services').
+                We operate the website resumetweaker.wibblit.com (the 'Site'),
+                as well as any other related products and services that refer or
+                link to these legal terms (the 'Legal Terms') (collectively, the
+                'Services').
               </p>
               <p className="mb-4">
-                You can contact us by phone at +91 7483705831, email at contact@wibblit.com, or by mail to 
-                No 245, 1st Cross, MG Nagar, Shankar Matt, Near Olety Landmark, Bengaluru, Karnataka 560086, India.
+                You can contact us by phone at +91 7483705831, email at
+                contact@wibblit.com, or by mail to No 245, 1st Cross, MG Nagar,
+                Shankar Matt, Near Olety Landmark, Bengaluru, Karnataka 560086,
+                India.
               </p>
             </div>
           </div>
 
           {/* Table of Contents */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-foreground mb-6">TABLE OF CONTENTS</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              TABLE OF CONTENTS
+            </h2>
             <nav className="space-y-2">
               {[
-                { id: 'services', title: '1. OUR SERVICES' },
-                { id: 'ip', title: '2. INTELLECTUAL PROPERTY RIGHTS' },
-                { id: 'userreps', title: '3. USER REPRESENTATIONS' },
-                { id: 'userreg', title: '4. USER REGISTRATION' },
-                { id: 'purchases', title: '5. PURCHASES AND PAYMENT' },
-                { id: 'prohibited', title: '6. PROHIBITED ACTIVITIES' },
-                { id: 'ugc', title: '7. USER GENERATED CONTRIBUTIONS' },
-                { id: 'license', title: '8. CONTRIBUTION LICENSE' },
-                { id: 'sitemanage', title: '9. SERVICES MANAGEMENT' },
-                { id: 'ppno', title: '10. PRIVACY POLICY' },
-                { id: 'terms', title: '11. TERM AND TERMINATION' },
-                { id: 'modifications', title: '12. MODIFICATIONS AND INTERRUPTIONS' },
-                { id: 'law', title: '13. GOVERNING LAW' },
-                { id: 'disputes', title: '14. DISPUTE RESOLUTION' },
-                { id: 'corrections', title: '15. CORRECTIONS' },
-                { id: 'disclaimer', title: '16. DISCLAIMER' },
-                { id: 'liability', title: '17. LIMITATIONS OF LIABILITY' },
-                { id: 'indemnification', title: '18. INDEMNIFICATION' },
-                { id: 'userdata', title: '19. USER DATA' },
-                { id: 'electronic', title: '20. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES' },
-                { id: 'california', title: '21. CALIFORNIA USERS AND RESIDENTS' },
-                { id: 'misc', title: '22. MISCELLANEOUS' },
-                { id: 'contact', title: '23. CONTACT US' },
-              ].map(section => (
-                <a 
+                { id: "services", title: "1. OUR SERVICES" },
+                { id: "ip", title: "2. INTELLECTUAL PROPERTY RIGHTS" },
+                { id: "userreps", title: "3. USER REPRESENTATIONS" },
+                { id: "userreg", title: "4. USER REGISTRATION" },
+                { id: "purchases", title: "5. PURCHASES AND PAYMENT" },
+                { id: "prohibited", title: "6. PROHIBITED ACTIVITIES" },
+                { id: "ugc", title: "7. USER GENERATED CONTRIBUTIONS" },
+                { id: "license", title: "8. CONTRIBUTION LICENSE" },
+                { id: "sitemanage", title: "9. SERVICES MANAGEMENT" },
+                { id: "ppno", title: "10. PRIVACY POLICY" },
+                { id: "terms", title: "11. TERM AND TERMINATION" },
+                {
+                  id: "modifications",
+                  title: "12. MODIFICATIONS AND INTERRUPTIONS",
+                },
+                { id: "law", title: "13. GOVERNING LAW" },
+                { id: "disputes", title: "14. DISPUTE RESOLUTION" },
+                { id: "corrections", title: "15. CORRECTIONS" },
+                { id: "disclaimer", title: "16. DISCLAIMER" },
+                { id: "liability", title: "17. LIMITATIONS OF LIABILITY" },
+                { id: "indemnification", title: "18. INDEMNIFICATION" },
+                { id: "userdata", title: "19. USER DATA" },
+                {
+                  id: "electronic",
+                  title:
+                    "20. ELECTRONIC COMMUNICATIONS, TRANSACTIONS, AND SIGNATURES",
+                },
+                {
+                  id: "california",
+                  title: "21. CALIFORNIA USERS AND RESIDENTS",
+                },
+                { id: "misc", title: "22. MISCELLANEOUS" },
+                { id: "contact", title: "23. CONTACT US" },
+              ].map((section) => (
+                <a
                   key={section.id}
                   href={`#${section.id}`}
                   className="block text-gray-700 dark:text-gray-300 dark:hover:text-foreground hover:text-foreground transition-colors"
@@ -2018,46 +2040,54 @@ export default function TermsOfService() {
           </div>
 
           {/* Main Content */}
-          <div 
+          <div
             className="prose prose-lg max-w-none text-muted-foreground prose-headings:text-foreground prose-a:text-gray-700 dark:prose-a:text-gray-300 hover:prose-a:text-foreground"
-            dangerouslySetInnerHTML={{ 
-              __html: rawhtml.replace(
-                /<h2>/g, 
-                '<h2 class="text-2xl font-bold text-foreground mt-12 mb-6">'
-              ).replace(
-                /<h3>/g,
-                '<h3 class="text-xl font-bold text-foreground mt-8 mb-4">'
-              ).replace(
-                /<ul>/g,
-                '<ul class="list-disc pl-6 space-y-2 mb-6">'
-              ).replace(
-                /<li>/g,
-                '<li class="text-foreground">'
-              ).replace(
-                /<strong>/g,
-                '<strong class="font-semibold text-foreground">'
-              ).replace(
-                /<a /g,
-                '<a class="text-muted-foreground hover:text-foreground" '
-              )
-            }} 
+            dangerouslySetInnerHTML={{
+              __html: rawhtml
+                .replace(
+                  /<h2>/g,
+                  '<h2 class="text-2xl font-bold text-foreground mt-12 mb-6">'
+                )
+                .replace(
+                  /<h3>/g,
+                  '<h3 class="text-xl font-bold text-foreground mt-8 mb-4">'
+                )
+                .replace(/<ul>/g, '<ul class="list-disc pl-6 space-y-2 mb-6">')
+                .replace(/<li>/g, '<li class="text-foreground">')
+                .replace(
+                  /<strong>/g,
+                  '<strong class="font-semibold text-foreground">'
+                )
+                .replace(
+                  /<a /g,
+                  '<a class="text-muted-foreground hover:text-foreground" '
+                ),
+            }}
           />
 
           {/* Contact Section */}
           <div className="mt-12 p-6 bg-background rounded-lg">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Contact Information</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              Contact Information
+            </h2>
             <div className="space-y-2 text-gray-600 dark:text-gray-400">
-              <p><strong className="text-muted-foreground">Wibblit</strong></p>
+              <p>
+                <strong className="text-muted-foreground">Wibblit</strong>
+              </p>
               <p>No 245, 1st Cross</p>
               <p>MG Nagar, Shankar Matt, Near Olety Landmark</p>
               <p>Bengaluru, Karnataka 560086</p>
               <p>India</p>
               <p className="mt-4">
-                <strong className="text-foreground">Phone:</strong> +91 7483705831
+                <strong className="text-foreground">Phone:</strong> +91
+                7483705831
               </p>
               <p>
-                <strong className="text-foreground">Email:</strong>{' '}
-                <a href="mailto:contact@wibblit.com" className="text-muted-foreground hover:text-foreground">
+                <strong className="text-foreground">Email:</strong>{" "}
+                <a
+                  href="mailto:contact@wibblit.com"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   contact@wibblit.com
                 </a>
               </p>
