@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   ],
 };
 
-//skeleton
+
 export default async function Blogs() {
   const session = await auth();
   return (
