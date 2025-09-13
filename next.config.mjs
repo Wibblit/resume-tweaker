@@ -10,7 +10,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cdnresumetweaker.wibblit.com",
+        hostname: "cdnresumetweaker.contact-wibblit.workers.dev",
         pathname: "/**", // Allow all paths under this hostname
       },
     ],
@@ -30,8 +30,9 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "frame-src 'self' https://cdnresumetweaker.wibblit.com https://www.youtube.com/ https://youtube.com/;",
-          }
+            value:
+              "frame-src 'self' https://cdnresumetweaker.wibblit.com https://www.youtube.com/ https://youtube.com/;",
+          },
         ],
       },
     ];

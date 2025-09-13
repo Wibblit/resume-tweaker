@@ -192,7 +192,7 @@ interface SkeletonBlogCardProps {
 function SkeletonBlogCard({ isLarge = false, isWide = false }: SkeletonBlogCardProps) {
   return (
     <div
-      className={`relative overflow-hidden rounded-xl ${
+      className={`relative overflow-hidden rounded-xl shrink-0 ${
         isLarge ? "h-full" : isWide ? "h-64" : "h-64"
       }`}
     >

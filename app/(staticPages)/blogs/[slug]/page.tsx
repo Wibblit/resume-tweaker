@@ -34,7 +34,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const data = await fetchBlog(params.slug);
   if (!data) return { title: "Blog Post Not Found" };
-  const baseUrl = "https://resumetweaker.wibblit.com";
+  const baseUrl = "https://resumetweaker.vercel.app";
   const thumbnailUrl = data.thumbnail || "No blog image";
   const publishedDate = data.createdAt?.toISOString();
   const updatedDate = data.updatedAt?.toISOString();
@@ -104,7 +104,7 @@ export default async function BlogPostPage({
   const newData = { ...data, tableOfContents };
   
   // Create Article schema
-  const baseUrl = "https://resumetweaker.wibblit.com";
+  const baseUrl = "https://resumetweaker.vercel.app";
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -117,11 +117,11 @@ export default async function BlogPostPage({
     },
     'publisher': {
       '@type': 'Organization',
-      '@id': 'https://resumetweaker.wibblit.com/#organization',
+      '@id': 'https://resumetweaker.vercel.app/#organization',
       'name': 'ResumeTweaker',
       'logo': {
         '@type': 'ImageObject',
-        'url': 'https://resumetweaker.wibblit.com/favicons/apple-touch-icon.png'
+        'url': 'https://resumetweaker.vercel.app/favicons/apple-touch-icon.png'
       }
     },
     'datePublished': data.createdAt?.toISOString() || new Date().toISOString(),

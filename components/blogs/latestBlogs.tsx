@@ -227,7 +227,7 @@ export default function LatestBlogs() {
 
   return (
     <section className="py-12 md:py-24">
-      <div className="container px-4 md:px-6">
+      <div className="container px-4 md:px-6 min-w-full">
         <h1 className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl mb-8">
           Latest Blogs
         </h1>
@@ -290,7 +290,7 @@ export default function LatestBlogs() {
 
 function SkeletonBlogCard() {
   return (
-    <Card className="cursor-pointer h-full overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col">
+    <Card className="cursor-pointer h-full overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col shrink-0">
       <CardHeader className="p-0">
         <Skeleton className="w-full h-48 rounded-t-lg" />
       </CardHeader>

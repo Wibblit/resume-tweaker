@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Explore ResumeTweaker's blog for expert career advice, resume tips, and job search strategies to advance your professional journey.",
   alternates: {
-    canonical: "https://resumetweaker.wibblit.com/blogs",
+    canonical: "https://resumetweaker.vercel.app/blogs",
   },
   keywords: [
     "career advice blog",
