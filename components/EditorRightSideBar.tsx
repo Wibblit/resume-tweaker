@@ -127,55 +127,55 @@ const templates = [
     id: 1,
     name: "Classic Charm",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample1-resume.webp",
   },
   {
     id: 2,
     name: "Artistic Flair",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample2-resume.webp",
   },
   {
     id: 3,
     name: "Executive Edge",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample3-resume.webp",
   },
   {
     id: 4,
     name: "Fresh Start",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample4-resume.webp",
   },
   {
     id: 5,
     name: "Eco Essence",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample5-resume.webp",
   },
   {
     id: 6,
     name: "Naval Professional",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample6-resume.webp",
   },
   {
     id: 7,
     name: "Classic Centered",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample7-resume.webp",
   },
   {
     id: 8,
     name: "Split Modern",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample8-resume.webp",
   },
   {
     id: 9,
     name: "Stanford Minimalist",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample9-resume.webp",
   },
 ];
 
@@ -184,31 +184,31 @@ const covertemplate = [
     id: 1,
     name: "Classic Professional",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample1-coverletter.webp",
   },
   {
     id: 2,
     name: "Modern Header",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample2-coverletter.webp",
   },
   {
     id: 3,
     name: "Classic Framed",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample3-coverletter.webp",
   },
   {
     id: 4,
     name: "Bold Sidebar",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample4-coverletter.webp",
   },
   {
     id: 5,
     name: "Minimalist Centered",
     image:
-      "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp",
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample5-coverletter.webp",
   },
 ];
 
@@ -487,51 +487,51 @@ export default function EditorRightSideBar({
                 <div className="grid grid-cols-2 gap-4 pr-4">
                   {!show
                     ? covertemplate.map((template) => (
-                      <SheetClose asChild key={template.id}>
-                        <Button
-                          variant="outline"
-                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                          onClick={() => {
-                            setSelectedTemplate(template.name);
-                            dispatch(UpdateId(template.id));
-                          }}
-                        >
-                          <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
-                            <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
-                            <img
-                              src={template.image}
-                              alt={`${template.name} template`}
-                              className="absolute inset-0 w-full object-cover"
-                            />
-                          </div>
-                          <div className="p-2 text-center font-medium">
-                            {template.name}
-                          </div>
-                        </Button>
-                      </SheetClose>
-                    ))
+                        <SheetClose asChild key={template.id}>
+                          <Button
+                            variant="outline"
+                            className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            onClick={() => {
+                              setSelectedTemplate(template.name);
+                              dispatch(UpdateId(template.id));
+                            }}
+                          >
+                            <div className="relative w-full pt-[133%] overflow-hidden rounded-t-md">
+                              <div className="absolute inset-0 bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-700 dark:to-zinc-800" />
+                              <img
+                                src={template.image}
+                                alt={`${template.name} template`}
+                                className="absolute inset-0 w-full object-cover"
+                              />
+                            </div>
+                            <div className="p-2 text-center font-medium">
+                              {template.name}
+                            </div>
+                          </Button>
+                        </SheetClose>
+                      ))
                     : templates.map((template) => (
-                      <SheetClose asChild key={template.id}>
-                        <Button
-                          variant="outline"
-                          className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                          onClick={() => {
-                            setSelectedTemplate(template.name);
-                            dispatch(UpdateId(template.id));
-                          }}
-                        >
-                          <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
-                            <img
-                              src={template.image}
-                              alt={template.name}
-                              className="object-cover transition-transform group-hover:scale-105"
-                            />
-                            <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
-                          </div>
-                          <span className="font-medium">{template.name}</span>
-                        </Button>
-                      </SheetClose>
-                    ))}
+                        <SheetClose asChild key={template.id}>
+                          <Button
+                            variant="outline"
+                            className="h-auto p-0 flex flex-col items-stretch hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                            onClick={() => {
+                              setSelectedTemplate(template.name);
+                              dispatch(UpdateId(template.id));
+                            }}
+                          >
+                            <div className="relative aspect-[3/4] w-full mb-2 overflow-hidden rounded-md">
+                              <img
+                                src={template.image}
+                                alt={template.name}
+                                className="object-cover transition-transform group-hover:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-background/10 group-hover:bg-background/20 transition-colors" />
+                            </div>
+                            <span className="font-medium">{template.name}</span>
+                          </Button>
+                        </SheetClose>
+                      ))}
                 </div>
               </div>
             </SheetContent>
@@ -635,7 +635,9 @@ export default function EditorRightSideBar({
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" className="w-full justify-between mt-2">
-                <span style={{ fontFamily: selectedFont }}>{selectedFont ?? "Helvetica"}</span>
+                <span style={{ fontFamily: selectedFont }}>
+                  {selectedFont ?? "Helvetica"}
+                </span>
                 <ChevronRight className="h-4 w-4 opacity-50" />
               </Button>
             </SheetTrigger>
@@ -934,8 +936,9 @@ export default function EditorRightSideBar({
               const url = URL.createObjectURL(blob); // Generate a download URL
               const link = document.createElement("a"); // Create a hidden <a> element
               link.href = url;
-              link.download = `${segment === "editor" ? "resume.json" : "coverletter.json"
-                }`; // Set the filename
+              link.download = `${
+                segment === "editor" ? "resume.json" : "coverletter.json"
+              }`; // Set the filename
               link.click(); // Trigger download
               URL.revokeObjectURL(url); // Clean up the URL after download
             }}

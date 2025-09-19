@@ -47,15 +47,51 @@ export default function ResumeContent({
   };
 
   const resumeTemplates = [
-    { id: 1, name: "Classic Charm", img: "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp" },
-    { id: 2, name: "Artistic Flair", img: "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp" },
-    { id: 3, name: "Executive Edge", img: "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp" },
-    { id: 4, name: "Fresh Start", img: "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp" },
-    { id: 5, name: "Eco Essence", img: "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp" },
-    { id: 6, name: "Naval Professional", img: "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp" },
-    { id: 7, name: "Classic Centered", img: "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp" },
-    { id: 8, name: "Split Modern", img: "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp" },
-    { id: 9, name: "Stanford Minimalist", img: "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp" },
+    {
+      id: 1,
+      name: "Classic Charm",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample1-resume.webp",
+    },
+    {
+      id: 2,
+      name: "Artistic Flair",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample2-resume.webp",
+    },
+    {
+      id: 3,
+      name: "Executive Edge",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample3-resume.webp",
+    },
+    {
+      id: 4,
+      name: "Fresh Start",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample4-resume.webp",
+    },
+    {
+      id: 5,
+      name: "Eco Essence",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample5-resume.webp",
+    },
+    {
+      id: 6,
+      name: "Naval Professional",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample6-resume.webp",
+    },
+    {
+      id: 7,
+      name: "Classic Centered",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample7-resume.webp",
+    },
+    {
+      id: 8,
+      name: "Split Modern",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample8-resume.webp",
+    },
+    {
+      id: 9,
+      name: "Stanford Minimalist",
+      img: "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample9-resume.webp",
+    },
   ];
 
   const filteredTemplates = resumeTemplates.filter((template) =>

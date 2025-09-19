@@ -28,7 +28,7 @@
 
 //   await r2Client.send(command);
 
-//   return `https://cdnresumetweaker.wibblit.com/${bucketName}/${uniqueFileName}`;
+//   return `https://cdnresumetweaker.contact-wibblit.workers.dev/${bucketName}/${uniqueFileName}`;
 // }
 
 // export async function uploadHtmlToR2(slug: string, htmlContent: string) {
@@ -40,7 +40,7 @@
 //   });
 
 //   await r2Client.send(command);
-//   return `https://cdnresumetweaker.wibblit.com/${process.env.R2_BUCKET_BLOGS}/${slug}.html`;
+//   return `https://cdnresumetweaker.contact-wibblit.workers.dev/${process.env.R2_BUCKET_BLOGS}/${slug}.html`;
 // }
 
 // export async function uploadTextToR2(htmlContent: string) {
@@ -56,7 +56,7 @@
 //   });
 
 //   await r2Client.send(command);
-//   return `https://cdnresumetweaker.wibblit.com/${process.env.R2_BUCKET_JDS}/${uniqueFileName}`;
+//   return `https://cdnresumetweaker.contact-wibblit.workers.dev/${process.env.R2_BUCKET_JDS}/${uniqueFileName}`;
 // }
 
 import { PutObjectCommand } from "@aws-sdk/client-s3";
@@ -92,7 +92,7 @@ class R2Storage {
 
     await r2Client.send(command);
 
-    return `https://cdnresumetweaker.wibblit.com/${bucketName}/${uniqueFileName}`;
+    return `https://cdnresumetweaker.contact-wibblit.workers.dev/${bucketName}/${uniqueFileName}`;
   }
 
   public async uploadHtml(slug: string, htmlContent: string): Promise<string> {
@@ -104,7 +104,7 @@ class R2Storage {
     });
 
     await r2Client.send(command);
-    return `https://cdnresumetweaker.wibblit.com/${process.env.R2_BUCKET_BLOGS}/${slug}.html`;
+    return `https://cdnresumetweaker.contact-wibblit.workers.dev/${process.env.R2_BUCKET_BLOGS}/${slug}.html`;
   }
 
   public async uploadText(htmlContent: string): Promise<string> {
@@ -118,7 +118,7 @@ class R2Storage {
     });
 
     await r2Client.send(command);
-    return `https://cdnresumetweaker.wibblit.com/${process.env.R2_BUCKET_JDS}/${uniqueFileName}`;
+    return `https://cdnresumetweaker.contact-wibblit.workers.dev/${process.env.R2_BUCKET_JDS}/${uniqueFileName}`;
   }
 }
 

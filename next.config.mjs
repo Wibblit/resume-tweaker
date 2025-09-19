@@ -31,14 +31,12 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "frame-src 'self' https://cdnresumetweaker.wibblit.com https://www.youtube.com/ https://youtube.com/;",
+              "frame-src 'self' https://cdnresumetweaker.contact-wibblit.workers.dev https://www.youtube.com/ https://youtube.com/;",
           },
         ],
       },
     ];
   },
 };
-
-
 
 export default nextConfig;

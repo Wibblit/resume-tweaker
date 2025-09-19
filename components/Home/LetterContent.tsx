@@ -54,12 +54,33 @@ export default function LetterContent({
     {
       id: 1,
       name: "Classic Professional",
-      image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp",
+      image:
+        "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample1-coverletter.webp",
     },
-    { id: 2, name: "Modern Header", image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp" },
-    { id: 3, name: "Classic Framed", image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp" },
-    { id: 4, name: "Bold Sidebar", image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp" },
-    { id: 5, name: "Minimalist Centered", image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp" },
+    {
+      id: 2,
+      name: "Modern Header",
+      image:
+        "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample2-coverletter.webp",
+    },
+    {
+      id: 3,
+      name: "Classic Framed",
+      image:
+        "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample3-coverletter.webp",
+    },
+    {
+      id: 4,
+      name: "Bold Sidebar",
+      image:
+        "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample4-coverletter.webp",
+    },
+    {
+      id: 5,
+      name: "Minimalist Centered",
+      image:
+        "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample5-coverletter.webp",
+    },
   ];
 
   const filteredTemplates = letterTemplates.filter((template) =>

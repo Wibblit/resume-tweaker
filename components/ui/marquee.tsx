@@ -1,65 +1,79 @@
-"use client"
+"use client";
 
-import React, { useEffect, useRef, useState } from "react"
-import { cn } from "@/lib/utils"
+import React, { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { GradientText } from "../gradient-text";
 import ImageCardServer from "../ImageCardServer";
 
 const images = [
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample1-resume.webp",
     name: "Wibblit Resume Editor Template 1",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample2-resume.webp",
     name: "Wibblit Resume Editor Template 2",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample3-resume.webp",
     name: "Wibblit Resume Editor Template 3",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample4-resume.webp",
     name: "Wibblit Resume Editor Template 4",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample5-resume.webp",
     name: "Wibblit Resume Editor Template 5",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample6-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample6-resume.webp",
     name: "Wibblit Resume Editor Template 6",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample7-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample7-resume.webp",
     name: "Wibblit Resume Editor Template 7",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample8-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample8-resume.webp",
     name: "Wibblit Resume Editor Template 8",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample9-resume.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample9-resume.webp",
     name: "Wibblit Resume Editor Template 9",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample1-coverletter.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample1-coverletter.webp",
     name: "Creative Wibblit Cover Letter Editor Template 1",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample2-coverletter.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample2-coverletter.webp",
     name: "Creative Wibblit Cover Letter Editor Template 2",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample3-coverletter.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample3-coverletter.webp",
     name: "Creative Wibblit Cover Letter Editor Template 3",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample4-coverletter.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample4-coverletter.webp",
     name: "Creative Wibblit Cover Letter Editor Template 4",
   },
   {
-    image: "https://cdnresumetweaker.wibblit.com/static-images/sample5-coverletter.webp",
+    image:
+      "https://cdnresumetweaker.contact-wibblit.workers.dev/static-images/sample5-coverletter.webp",
     name: "Creative Wibblit Cover Letter Editor Template 5",
   },
 ];
@@ -69,16 +83,24 @@ const shuffledimages2 = [...images].sort(() => Math.random() - 0.2);
 const shuffledimages3 = [...images].sort(() => Math.random() - 0.1);
 const shuffledimages4 = [...images].sort(() => Math.random() - 0.4);
 
-
-
-
 const Marquee = ({
   className,
   reverse = false,
   vertical = false,
   children,
-}: { className?: string; reverse?: boolean; vertical?: boolean; children: React.ReactNode }) => (
-  <div className={cn("flex overflow-hidden [--gap:1rem]", vertical ? "flex-col -my-2" : "flex-row -mx-2", className)}>
+}: {
+  className?: string;
+  reverse?: boolean;
+  vertical?: boolean;
+  children: React.ReactNode;
+}) => (
+  <div
+    className={cn(
+      "flex overflow-hidden [--gap:1rem]",
+      vertical ? "flex-col -my-2" : "flex-row -mx-2",
+      className
+    )}
+  >
     {[...Array(2)].map((_, i) => (
       <div
         key={i}
@@ -90,8 +112,8 @@ const Marquee = ({
               ? "animate-marquee-vertical-reverse"
               : "animate-marquee-vertical"
             : reverse
-              ? "animate-marquee-reverse"
-              : "animate-marquee",
+            ? "animate-marquee-reverse"
+            : "animate-marquee"
         )}
         style={{
           animationDuration: "var(--duration)",
@@ -100,53 +122,53 @@ const Marquee = ({
         {React.Children.map(children, (child) =>
           React.isValidElement(child)
             ? React.cloneElement(child as React.ReactElement<any>, {
-              style: {
-                ...((child as React.ReactElement<any>).props.style || {}),
-                minWidth: vertical ? undefined : "max-content",
-                minHeight: vertical ? "max-content" : undefined,
-              },
-            })
-            : child,
+                style: {
+                  ...((child as React.ReactElement<any>).props.style || {}),
+                  minWidth: vertical ? undefined : "max-content",
+                  minHeight: vertical ? "max-content" : undefined,
+                },
+              })
+            : child
         )}
       </div>
     ))}
   </div>
-)
+);
 
 export function ImageMarquee() {
-  const [isVisible, setIsVisible] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
-          observer.unobserve(entry.target)
+          setIsVisible(true);
+          observer.unobserve(entry.target);
         }
       },
       {
         threshold: 0.1,
-      },
-    )
+      }
+    );
 
     if (ref.current) {
-      observer.observe(ref.current)
+      observer.observe(ref.current);
     }
 
     return () => {
       if (ref.current) {
-        observer.unobserve(ref.current)
+        observer.unobserve(ref.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <div
       ref={ref}
       className={cn(
         "w-full min-h-screen text-foreground transition-opacity duration-1000 ease-in-out",
-        isVisible ? "opacity-100" : "opacity-0",
+        isVisible ? "opacity-100" : "opacity-0"
       )}
     >
       <div className="container mx-auto p-4 flex flex-col lg:flex-row items-start justify-between">
@@ -155,7 +177,8 @@ export function ImageMarquee() {
             <GradientText className="">ATS friendly templates</GradientText>
           </h2>
           <p className="text-base mb-4 text-muted-foreground">
-            You don't have to stick to one boring template, even the fun ones can be ats friendly!
+            You don't have to stick to one boring template, even the fun ones
+            can be ats friendly!
           </p>
         </div>
         <div className="w-full lg:w-3/4 h-[calc(100vh-2rem)] overflow-hidden">
@@ -174,17 +197,27 @@ export function ImageMarquee() {
               </Marquee>
             </div>
             {/* Large screens: 3 vertical columns */}
-            <Marquee vertical className="hidden lg:block [--duration:40s] h-full w-1/3">
+            <Marquee
+              vertical
+              className="hidden lg:block [--duration:40s] h-full w-1/3"
+            >
               {shuffledimages3.map((image) => (
                 <ImageCardServer key={image.name} {...image} />
               ))}
             </Marquee>
-            <Marquee vertical reverse className="hidden lg:block [--duration:45s] h-full w-1/3">
+            <Marquee
+              vertical
+              reverse
+              className="hidden lg:block [--duration:45s] h-full w-1/3"
+            >
               {[...shuffledimages4].reverse().map((image) => (
                 <ImageCardServer key={image.name} {...image} />
               ))}
             </Marquee>
-            <Marquee vertical className="hidden lg:block [--duration:50s] h-full w-1/3">
+            <Marquee
+              vertical
+              className="hidden lg:block [--duration:50s] h-full w-1/3"
+            >
               {images
                 .slice(2)
                 .concat(images.slice(0, 2))
@@ -196,6 +229,5 @@ export function ImageMarquee() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

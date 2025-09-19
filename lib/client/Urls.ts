@@ -3,6 +3,4 @@ export const gmailLogo =
 export const linkedinLogo =
   "https://tpc.googlesyndication.com/simgad/14778439095016119154";
 
-export const r2Url = `https://cdnresumetweaker.wibblit.com/${process.env.R2_BUCKET_JDS}/`;
-
-  
+export const r2Url = `https://cdnresumetweaker.contact-wibblit.workers.dev/${process.env.R2_BUCKET_JDS}/`;
