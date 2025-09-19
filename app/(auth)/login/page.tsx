@@ -2,7 +2,6 @@ import { SignIn } from "@/components/auth/SignIn";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import { prisma } from "@/prisma";
 
 export const metadata: Metadata = {
   title: "Login",

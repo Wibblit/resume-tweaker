@@ -103,10 +103,10 @@ export default async function BlogPostPage({
   const tableOfContents = extractH2Content(data.content);
   const newData = { ...data, tableOfContents };
   
-  // Create Article schema
+  // Create Article schema                                                                                                                                                                                                                                                
   const baseUrl = "https://resumetweaker.vercel.app";
   const articleSchema = {
-    '@context': 'https://schema.org',
+    '@context': 'https://schema.org',                                                                                                                                                                                                                                             
     '@type': 'Article',
     'headline': data.title,
     'description': data.excerpt || '',
