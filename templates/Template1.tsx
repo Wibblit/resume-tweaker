@@ -93,7 +93,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
       fontSize: "1em",
     },
     linklabel: {
-      color : baseColor
+      color: baseColor,
     },
   };
 
@@ -107,8 +107,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             <h1 className="text-3xl font-bold uppercase mb-1 text-center">
               {basics.name}
             </h1>
-            <p className="text-center mb-2" style={styles.normal}>{basics.headLine}</p>
-            <div className="flex justify-around items-center space-x-2" >
+            <p className="text-center mb-2" style={styles.normal}>
+              {basics.headLine}
+            </p>
+            <div className="flex justify-around items-center space-x-2">
               <p style={styles.normal}>{basics.email}</p>
               {basics.phone && (
                 <p style={styles.normal}>
@@ -171,12 +173,21 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     </div>
                     <div className="flex flex-wrap items-start justify-start gap-1">
                       {category.skills.map((skill, skillIndex) => (
-                        <p key={skillIndex} style={styles.normal} className="flex items-center">
+                        <p
+                          key={skillIndex}
+                          style={styles.normal}
+                          className="flex items-center"
+                        >
                           {skill.level && skill.level.trim() !== ""
                             ? `${skill.name} (${skill.level})`
                             : skill.name}
                           {skillIndex !== category.skills.length - 1 && (
-                            <div style={styles.divider} className="inline-block ml-1">|</div>
+                            <div
+                              style={styles.divider}
+                              className="inline-block ml-1"
+                            >
+                              |
+                            </div>
                           )}
                         </p>
                       ))}
@@ -200,9 +211,20 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                     <h3 style={styles.subtitle}>{edu.institution}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                          {edu.startDate && <div>{formatDate(edu.startDate, datetype)}</div>}
-                          {edu.endDate && <div className="flex items-center"><div className="mx-1">{(edu.startDate && edu.endDate) ? "-" : ""}</div> {formatDate(edu.endDate, datetype)}</div>}
+                        <div
+                          className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {edu.startDate && (
+                            <div>{formatDate(edu.startDate, datetype)}</div>
+                          )}
+                          {edu.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {edu.startDate && edu.endDate ? "-" : ""}
+                              </div>{" "}
+                              {formatDate(edu.endDate, datetype)}
+                            </div>
+                          )}
                         </div>
                       </h3>
                     </div>
@@ -236,30 +258,48 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
             {content.experience.map((exp, index) => (
               <div key={index} className="mb-4">
                 <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between" style={styles.subtitle}>
+                  <div
+                    className="w-full flex items-center justify-between"
+                    style={styles.subtitle}
+                  >
                     <h3 style={styles.subtitle}>{exp.organization}</h3>
                     <div>
                       <h3 style={styles.subtitle}>
-                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                          {exp.startDate && <div>{formatDate(exp.startDate, datetype)}</div>}
-                          {exp.endDate && <div className="flex items-center"><div className="mx-1">{(exp.startDate && exp.endDate) ? "-" : ""}</div> {formatDate(exp.endDate, datetype)}</div>}
+                        <div
+                          className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {exp.startDate && (
+                            <div>{formatDate(exp.startDate, datetype)}</div>
+                          )}
+                          {exp.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {exp.startDate && exp.endDate ? "-" : ""}
+                              </div>{" "}
+                              {formatDate(exp.endDate, datetype)}
+                            </div>
+                          )}
                         </div>
                       </h3>
                     </div>
                   </div>
-                  <div className="w-full flex items-start justify-between mb-1" style={styles.normal}>
+                  <div
+                    className="w-full flex items-start justify-between mb-1"
+                    style={styles.normal}
+                  >
                     <p
                       className="italic"
                       style={{
                         fontSize:
                           typeof styles.subtitle?.fontSize === "string"
-                            ? `${parseFloat(
-                              styles.subtitle.fontSize.replace("em", "")
-                            ) * 0.85
-                            }em`
+                            ? `${
+                                parseFloat(
+                                  styles.subtitle.fontSize.replace("em", "")
+                                ) * 0.85
+                              }em`
                             : typeof styles.subtitle?.fontSize === "number"
-                              ? styles.subtitle.fontSize * 0.8
-                              : undefined,
+                            ? styles.subtitle.fontSize * 0.8
+                            : undefined,
                       }}
                     >
                       {exp.role}
@@ -268,13 +308,14 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                       style={{
                         fontSize:
                           typeof styles.subtitle?.fontSize === "string"
-                            ? `${parseFloat(
-                              styles.subtitle.fontSize.replace("em", "")
-                            ) * 0.85
-                            }em`
+                            ? `${
+                                parseFloat(
+                                  styles.subtitle.fontSize.replace("em", "")
+                                ) * 0.85
+                              }em`
                             : typeof styles.subtitle?.fontSize === "number"
-                              ? styles.subtitle.fontSize * 0.8
-                              : undefined,
+                            ? styles.subtitle.fontSize * 0.8
+                            : undefined,
                       }}
                     >
                       {exp.location}
@@ -326,9 +367,22 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                     <div>
                       <h3 style={styles.subtitle}>
-                        <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                          {project.startDate && <div>{formatDate(project.startDate, datetype)}</div>}
-                          {project.endDate && <div className="flex items-center"><div className="mx-1">{(project.startDate && project.endDate) ? "-" : ""}</div> {formatDate(project.endDate, datetype)}</div>}
+                        <div
+                          className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                        >
+                          {project.startDate && (
+                            <div>{formatDate(project.startDate, datetype)}</div>
+                          )}
+                          {project.endDate && (
+                            <div className="flex items-center">
+                              <div className="mx-1">
+                                {project.startDate && project.endDate
+                                  ? "-"
+                                  : ""}
+                              </div>{" "}
+                              {formatDate(project.endDate, datetype)}
+                            </div>
+                          )}
                         </div>
                       </h3>
                     </div>
@@ -353,7 +407,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                         ))}
                       </div>
                     )}
-                  <div className="w-full items-start mt-1" style={styles.normal}>
+                  <div
+                    className="w-full items-start mt-1"
+                    style={styles.normal}
+                  >
                     <HTMLViewer
                       lineHeight={lineHeight}
                       content={project.summary}
@@ -370,35 +427,40 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
         return (
           <section className="mb-2">
             <h2 style={styles.sectionTitle}>Certifications and Courses</h2>
-            {content.certifications.map((cert, index) => (
-              <div key={index} className="mb-4">
-                <div className="flex flex-col justify-between items-center">
-                  <div className="w-full flex items-center justify-between">
-                    <h3 style={styles.subtitle}>{cert.name}</h3>
-                    <div>
-                      <h3 style={styles.normal}>
-                        {cert.date && formatDate(cert.date, datetype)}
-                      </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {content.certifications.map((cert, index) => (
+                <div key={index} className="mb-2 mr-4">
+                  <div className="flex flex-col gap-1 justify-between items-center">
+                    <div className="w-full flex items-center justify-between">
+                      <div className="flex gap-2">
+                        <h3 style={styles.subtitle}>{cert.name}</h3>
+                        {cert.url && (
+                          <a
+                            href={cert.url.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={styles.link}
+                          >
+                            <p style={{ ...styles.normal, ...styles.link }}>
+                              {cert.url.label && " | "}
+                              {cert.url.label}
+                            </p>
+                          </a>
+                        )}
+                      </div>
+                      <div>
+                        <h3 style={styles.subtitle}>
+                          {cert.date && formatDate(cert.date, datetype)}
+                        </h3>
+                      </div>
+                    </div>
+                    <div className="w-full flex items-start justify-between">
+                      <p>{cert.issuer}</p>
                     </div>
                   </div>
-                  <div className="w-full flex items-start justify-between">
-                    <p>{cert.issuer}</p>
-                    {cert.url && (
-                      <a
-                        href={cert.url.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={styles.link}
-                      >
-                        <p style={{ ...styles.normal, ...styles.link }}>
-                          {cert.url.label}
-                        </p>
-                      </a>
-                    )}
-                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         );
 
@@ -426,10 +488,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
           <section className="mb-2">
             <div className="flex flex-wrap space-x-4 justify-center w-full">
               {content.profiles.map((profile, index) => (
-                <div
-                  className="flex gap-2 items-center"
-                  key={index}
-                >
+                <div className="flex gap-2 items-center" key={index}>
                   <a
                     key={index}
                     href={profile.url.href}
@@ -440,13 +499,15 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   >
                     {isIcons && profile.url.href !== "" && (
                       <SocialIcon
-                        style={{ width: "18px", height: "18px"}} // Added marginRight for spacing
+                        style={{ width: "18px", height: "18px" }} // Added marginRight for spacing
                         fgColor={"white"}
                         bgColor={"black"}
                         url={profile.url.href}
                       />
                     )}
-                    <span className="no-underline" style={styles.linklabel}>{profile.url.label}</span>
+                    <span className="no-underline" style={styles.linklabel}>
+                      {profile.url.label}
+                    </span>
                   </a>
                 </div>
               ))}
@@ -484,9 +545,20 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                   <div className="flex justify-between">
                     <h3 style={styles.subtitle}>{vol.organization}</h3>
                     <p style={styles.subtitle}>
-                      <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                        {vol.startDate && <div>{formatDate(vol.startDate, datetype)}</div>}
-                        {vol.endDate && <div className="flex items-center"><div className="mx-1">{(vol.startDate && vol.endDate) ? "-" : ""}</div> {formatDate(vol.endDate, datetype)}</div>}
+                      <div
+                        className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                      >
+                        {vol.startDate && (
+                          <div>{formatDate(vol.startDate, datetype)}</div>
+                        )}
+                        {vol.endDate && (
+                          <div className="flex items-center">
+                            <div className="mx-1">
+                              {vol.startDate && vol.endDate ? "-" : ""}
+                            </div>{" "}
+                            {formatDate(vol.endDate, datetype)}
+                          </div>
+                        )}
                       </div>
                     </p>
                   </div>
@@ -556,7 +628,7 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
 
                       {award.awarder && (
                         <p style={styles.normal}>
-                          <span className="mx-1" >|</span>
+                          <span className="mx-1">|</span>
                           {award.awarder}
                         </p>
                       )}
@@ -568,7 +640,10 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                       </h3>
                     </div>
                   </div>
-                  <div className="w-full items-center justify-start" style={styles.normal}>
+                  <div
+                    className="w-full items-center justify-start"
+                    style={styles.normal}
+                  >
                     {award.summary && (
                       // <p className="w-full text-left mt-1">{award.summary}</p>
                       <HTMLViewer
@@ -627,9 +702,20 @@ const ModernResumeTemplate: React.FC<ModernResumeTemplateProps> = ({
                       {/* Right Section: Dates */}
                       {sec.startDate && (
                         <div style={styles.subtitle}>
-                          <div className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}>
-                            {sec.startDate && <div>{formatDate(sec.startDate, datetype)}</div>}
-                            {sec.endDate && <div className="flex items-center"><div className="mx-1">{(sec.startDate && sec.endDate) ? "-" : ""}</div> {formatDate(sec.endDate, datetype)}</div>}
+                          <div
+                            className={`flex font-semibold flex-wrap  justify-end gap-0 items-center whitespace-nowrap`}
+                          >
+                            {sec.startDate && (
+                              <div>{formatDate(sec.startDate, datetype)}</div>
+                            )}
+                            {sec.endDate && (
+                              <div className="flex items-center">
+                                <div className="mx-1">
+                                  {sec.startDate && sec.endDate ? "-" : ""}
+                                </div>{" "}
+                                {formatDate(sec.endDate, datetype)}
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
