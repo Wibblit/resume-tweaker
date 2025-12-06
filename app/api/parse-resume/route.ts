@@ -12,19 +12,19 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // Define the standard section order
 const STANDARD_SECTION_ORDER = [
-  'basics',
-  'profiles',
-  'summary',
-  'experience',
-  'education',
-  'projects',
-  'skills',
-  'certifications',
-  'languages',
-  'awards',
-  'publications',
-  'references',
-  'volunteer'
+  "basics",
+  "profiles",
+  "summary",
+  "experience",
+  "education",
+  "projects",
+  "skills",
+  "certifications",
+  "languages",
+  "awards",
+  "publications",
+  "references",
+  "volunteer",
 ];
 
 // Helper function to get non-empty sections
@@ -43,7 +43,7 @@ function getNonEmptySections(resumeData: any): {
     if (sectionData && Array.isArray(sectionData) && sectionData.length > 0) {
       // Special handling for different sections
       switch (section) {
-        case 'basics':
+        case "basics":
           // Basics should have at least name or email
           const basics = sectionData[0];
           if (basics.name || basics.email) {
@@ -53,7 +53,7 @@ function getNonEmptySections(resumeData: any): {
           }
           break;
 
-        case 'summary':
+        case "summary":
           // Summary should have content
           const summary = sectionData[0];
           if (summary.content && summary.content.trim()) {
@@ -63,9 +63,10 @@ function getNonEmptySections(resumeData: any): {
           }
           break;
 
-        case 'skills':
+        case "skills":
           // Skills should have at least one category with skills
-          const hasSkills = Array.isArray(sectionData) && sectionData.length > 0;
+          const hasSkills =
+            Array.isArray(sectionData) && sectionData.length > 0;
           if (hasSkills) {
             presentSections.push(section);
           } else {
@@ -73,25 +74,33 @@ function getNonEmptySections(resumeData: any): {
           }
           break;
 
-        case 'experience':
-        case 'education':
-        case 'projects':
-        case 'certifications':
-        case 'awards':
-        case 'publications':
-        case 'references':
-        case 'volunteer':
+        case "experience":
+        case "education":
+        case "projects":
+        case "certifications":
+        case "awards":
+        case "publications":
+        case "references":
+        case "volunteer":
           // For these sections, check if any item has meaningful data
-          const hasData = sectionData.some(item => {
+          const hasData = sectionData.some((item) => {
             // Check common fields that should have data
             const hasRole = item.role && item.role.trim();
-            const hasOrganization = item.organization && item.organization.trim();
+            const hasOrganization =
+              item.organization && item.organization.trim();
             const hasName = item.name && item.name.trim();
             const hasTitle = item.title && item.title.trim();
             const hasInstitution = item.institution && item.institution.trim();
             const hasSummary = item.summary && item.summary.trim();
             // At least one of these fields should have data
-            return hasRole || hasOrganization || hasName || hasTitle || hasInstitution || hasSummary;
+            return (
+              hasRole ||
+              hasOrganization ||
+              hasName ||
+              hasTitle ||
+              hasInstitution ||
+              hasSummary
+            );
           });
 
           if (hasData) {
@@ -101,10 +110,11 @@ function getNonEmptySections(resumeData: any): {
           }
           break;
 
-        case 'profiles':
+        case "profiles":
           // Profiles should have at least one with a valid URL
-          const hasProfile = sectionData.some(profile =>
-            profile.url && profile.url.href && profile.url.href.trim()
+          const hasProfile = sectionData.some(
+            (profile) =>
+              profile.url && profile.url.href && profile.url.href.trim()
           );
           if (hasProfile) {
             presentSections.push(section);
@@ -113,10 +123,11 @@ function getNonEmptySections(resumeData: any): {
           }
           break;
 
-        case 'languages':
+        case "languages":
           // Languages should have at least one with name and level
-          const hasLanguage = sectionData.some(lang =>
-            lang.name && lang.name.trim() && lang.level && lang.level.trim()
+          const hasLanguage = sectionData.some(
+            (lang) =>
+              lang.name && lang.name.trim() && lang.level && lang.level.trim()
           );
           if (hasLanguage) {
             presentSections.push(section);
@@ -132,12 +143,15 @@ function getNonEmptySections(resumeData: any): {
 
   return {
     presentSections,
-    missingSections
+    missingSections,
   };
 }
 
 // Helper function to update resume styles
-function updateResumeStyles(presentSections: string[], missingSections: string[]): ResumeStyles {
+function updateResumeStyles(
+  presentSections: string[],
+  missingSections: string[]
+): ResumeStyles {
   const styles = DEFAULT_RESUME_STYLES;
 
   // Update section order in column1
@@ -157,7 +171,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     throw ApiError.userNotAuthenticated;
   if (!text) throw ApiError.invalidRequest;
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const prompt = `
   This is a user-uploaded resume from my onboarding page. Extract all profile data available in the resume and format it strictly according to the structure below. If a field does not have data, include it with default values (empty strings, empty arrays, or undefined as applicable). Ensure that the output is a valid JSON string that can be directly parsed using JSON.parse (Will direct updated in redux state after parsing).
   
@@ -346,11 +360,11 @@ export const POST = asyncHandler(async (req: NextRequest) => {
 
   // Update resume styles based on parsed data
   const updatedStyles = updateResumeStyles(presentSections, missingSections);
-  console.log('resume', JSON.stringify(resume, null, 2));
-  console.log('styles', JSON.stringify(updatedStyles, null, 2));
+  console.log("resume", JSON.stringify(resume, null, 2));
+  console.log("styles", JSON.stringify(updatedStyles, null, 2));
 
   return NextResponse.json({
     resume,
-    styles: updatedStyles
+    styles: updatedStyles,
   });
 });

@@ -46,7 +46,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
       throw ApiError.invalidRequest; // Throw an error if any necessary data is missing
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // Generate content using the audio and the prompt
     const result = await model.generateContent([
@@ -91,7 +91,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
       },
     });
 
-    return NextResponse.json({ success: true,report: cleanedText });
+    return NextResponse.json({ success: true, report: cleanedText });
   } catch (error) {
     console.error(
       "Error processing Gemini API response for report generation:",

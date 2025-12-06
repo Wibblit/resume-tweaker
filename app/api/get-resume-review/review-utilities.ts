@@ -47,10 +47,9 @@ type MergedResult = {
   }[];
 };
 
-
 function mergeSelectors(input: StageResult[]): {
-  mergedSelectorGroups: MergedSelectorGroup[],
-  subsetsToRemove: string[]
+  mergedSelectorGroups: MergedSelectorGroup[];
+  subsetsToRemove: string[];
 } {
   const outputMap = new Map<string, any[]>();
   const subsetsToRemove: string[] = [];
@@ -60,9 +59,9 @@ function mergeSelectors(input: StageResult[]): {
     const selector = entry.selector;
     const change = {
       selector,
-      type: entry.metrics[0]?.type || '',
-      correction_logic: entry.correction_logic || '',
-      final_output: entry.final_output || '',
+      type: entry.metrics[0]?.type || "",
+      correction_logic: entry.correction_logic || "",
+      final_output: entry.final_output || "",
     };
 
     if (!outputMap.has(selector)) {
@@ -114,32 +113,50 @@ function mergeSelectors(input: StageResult[]): {
 
   return {
     mergedSelectorGroups,
-    subsetsToRemove
+    subsetsToRemove,
   };
 }
 
-
-function mergeMetrics(stageResults: StageResult[], mergedSelectorGroups: MergedSelectorGroup[], mergedJson: MergedResult): MergedResult {
+function mergeMetrics(
+  stageResults: StageResult[],
+  mergedSelectorGroups: MergedSelectorGroup[],
+  mergedJson: MergedResult
+): MergedResult {
   try {
     if (!stageResults || !mergedSelectorGroups || !mergedJson) {
-      console.error('Missing required parameters in mergeMetrics:', { stageResults, mergedSelectorGroups, mergedJson });
+      console.error("Missing required parameters in mergeMetrics:", {
+        stageResults,
+        mergedSelectorGroups,
+        mergedJson,
+      });
       return { result: [] };
     }
 
     // Ensure mergedJson has a result property
     if (!mergedJson.result) {
-      console.error('mergedJson is missing result property:', mergedJson);
+      console.error("mergedJson is missing result property:", mergedJson);
       return { result: [] };
     }
-    const metricsMap = new Map<string, { type: string; score: number; issues: { name: string; severity: string }[] }[]>();
+    const metricsMap = new Map<
+      string,
+      {
+        type: string;
+        score: number;
+        issues: { name: string; severity: string }[];
+      }[]
+    >();
 
     // Collect and merge metrics for each selector
     mergedSelectorGroups.forEach(({ selector }) => {
       if (!selector) return;
-      const matchingResults = stageResults.filter((result) => result.selector === selector);
+      const matchingResults = stageResults.filter(
+        (result) => result.selector === selector
+      );
 
       if (matchingResults.length > 0) {
-        const mergedMetrics = matchingResults.flatMap((result) => result.metrics);
+        const mergedMetrics = matchingResults.flatMap(
+          (result) => result.metrics
+        );
         metricsMap.set(selector, mergedMetrics);
       }
     });
@@ -160,40 +177,59 @@ function mergeMetrics(stageResults: StageResult[], mergedSelectorGroups: MergedS
     });
     return { result: updatedResult };
   } catch (error) {
-    console.error('Error in mergeMetrics:', error);
+    console.error("Error in mergeMetrics:", error);
     return { result: [] };
   }
 }
 
-function syncStageResultsWithMerged(stageResults: StageResult[], mergedResult: MergedResult, subsetsToRemove: string[]): StageResult[] {
-  const mergedSelectors = new Set(mergedResult.result.map(item => item.selector));
+function syncStageResultsWithMerged(
+  stageResults: StageResult[],
+  mergedResult: MergedResult,
+  subsetsToRemove: string[]
+): StageResult[] {
+  const mergedSelectors = new Set(
+    mergedResult.result.map((item) => item.selector)
+  );
   // Remove all entries from stageResults that exist in mergedResult
-  const filteredStageResults = stageResults.filter(result =>
-    !mergedSelectors.has(result.selector) && !subsetsToRemove.includes(result.selector)
+  const filteredStageResults = stageResults.filter(
+    (result) =>
+      !mergedSelectors.has(result.selector) &&
+      !subsetsToRemove.includes(result.selector)
   );
   // Add the merged result entries
   const updatedStageResults = [
     ...filteredStageResults,
-    ...mergedResult.result.map(item => ({
+    ...mergedResult.result.map((item) => ({
       selector: item.selector,
       metrics: item.metrics || [],
-      correction_logic: item.correction_logic || '',
-      final_output: item.final_output
-    }))
+      correction_logic: item.correction_logic || "",
+      final_output: item.final_output,
+    })),
   ];
 
   return updatedStageResults;
 }
 
-export const executeStagesConcurrently = async (stagePrompts: string[], stageNames: string[]) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+export const executeStagesConcurrently = async (
+  stagePrompts: string[],
+  stageNames: string[]
+) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const stageResults: StageResult[] = [];
-  let tokensused: { stagename: string, promptTokensUsed: number, candidateTokensUsed: number, totalTokensUsed: number }[] = [];
+  let tokensused: {
+    stagename: string;
+    promptTokensUsed: number;
+    candidateTokensUsed: number;
+    totalTokensUsed: number;
+  }[] = [];
 
   const stagePromises = stagePrompts.map((prompt, index) => {
     const name = stageNames[index];
-    return model.generateContent(prompt).then(response => {
-      const text = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
+    return model.generateContent(prompt).then((response) => {
+      const text = response.response
+        .text()
+        .replace(/```json\s*|\s*```/g, "")
+        .trim();
       const tokendata = response.response.usageMetadata;
       tokensused.push({
         candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
@@ -208,53 +244,85 @@ export const executeStagesConcurrently = async (stagePrompts: string[], stageNam
   });
 
   const results = await Promise.all(stagePromises);
-  results.forEach(result => stageResults.push(...result));
+  results.forEach((result) => stageResults.push(...result));
   const cleaned = mergeSelectors(stageResults);
   return {
     stageres: stageResults,
     tomerge: cleaned.mergedSelectorGroups,
     subsetsToRemove: cleaned.subsetsToRemove,
-    tokeninfo: tokensused
+    tokeninfo: tokensused,
   };
 };
 
-
-export const resumeReview = async (resume: string, jd: string, reviewType: string) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  let stagespromptlist = []
-  console.log('-------------------------------------------')
-  console.log('resume review started------------------------')
-  console.log('resume:', resume)
-  if (reviewType == 'generic') {
-    stagespromptlist = [grammerPrompt(resume), readabilityClarityPrompt(resume), impactPrompt(resume)]
+export const resumeReview = async (
+  resume: string,
+  jd: string,
+  reviewType: string
+) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  let stagespromptlist = [];
+  console.log("-------------------------------------------");
+  console.log("resume review started------------------------");
+  console.log("resume:", resume);
+  if (reviewType == "generic") {
+    stagespromptlist = [
+      grammerPrompt(resume),
+      readabilityClarityPrompt(resume),
+      impactPrompt(resume),
+    ];
+  } else {
+    stagespromptlist = [
+      grammerPrompt(resume),
+      readabilityClarityPrompt(resume),
+      impactPrompt(resume),
+      relevancePrompt(resume, jd),
+    ];
   }
-  else {
-    stagespromptlist = [grammerPrompt(resume), readabilityClarityPrompt(resume), impactPrompt(resume), relevancePrompt(resume, jd)]
-  }
-  const stageNames = ["grammer", "readabilityClarity", "impact", "relevance"]
-  const stageresults = await executeStagesConcurrently(stagespromptlist, stageNames)
-  console.log('stages completed----------------------------\n', stageresults)
-  let tokensinfo = stageresults.tokeninfo
-  var finalText = ''
+  const stageNames = ["grammer", "readabilityClarity", "impact", "relevance"];
+  const stageresults = await executeStagesConcurrently(
+    stagespromptlist,
+    stageNames
+  );
+  console.log("stages completed----------------------------\n", stageresults);
+  let tokensinfo = stageresults.tokeninfo;
+  var finalText = "";
   if (stageresults.tomerge.length >= 1) {
-
-    console.log("Merging conflicts\n")
-    const conflictMergePrompt = mergePrompt(JSON.stringify({ results: stageresults.tomerge }))
+    console.log("Merging conflicts\n");
+    const conflictMergePrompt = mergePrompt(
+      JSON.stringify({ results: stageresults.tomerge })
+    );
     const response = await model.generateContent(conflictMergePrompt);
-    finalText = response.response.text().replace(/```json\s*|\s*```/g, "").trim();
-    const mergejson = JSON.parse(finalText)
-    console.log('parsed merge')
-    const mergedmetricsjson = mergeMetrics(stageresults.stageres, stageresults.tomerge, mergejson)
-    console.log('merged metrics---------------------------------\n', JSON.stringify(mergedmetricsjson,null,2))
-    const finalStageResults = syncStageResultsWithMerged(stageresults.stageres, mergedmetricsjson, stageresults.subsetsToRemove)
-    console.log('final result ready-----------------------------\n', JSON.stringify(finalStageResults,null,2))
-    var tokendata = response.response.usageMetadata
+    finalText = response.response
+      .text()
+      .replace(/```json\s*|\s*```/g, "")
+      .trim();
+    const mergejson = JSON.parse(finalText);
+    console.log("parsed merge");
+    const mergedmetricsjson = mergeMetrics(
+      stageresults.stageres,
+      stageresults.tomerge,
+      mergejson
+    );
+    console.log(
+      "merged metrics---------------------------------\n",
+      JSON.stringify(mergedmetricsjson, null, 2)
+    );
+    const finalStageResults = syncStageResultsWithMerged(
+      stageresults.stageres,
+      mergedmetricsjson,
+      stageresults.subsetsToRemove
+    );
+    console.log(
+      "final result ready-----------------------------\n",
+      JSON.stringify(finalStageResults, null, 2)
+    );
+    var tokendata = response.response.usageMetadata;
     tokensinfo.push({
       candidateTokensUsed: tokendata?.candidatesTokenCount ?? 0,
       promptTokensUsed: tokendata?.promptTokenCount ?? 0,
       totalTokensUsed: tokendata?.totalTokenCount ?? 0,
       stagename: "merge",
-    })
+    });
     const totaltokens = tokensinfo.reduce(
       (acc, curr) => {
         acc.candidateTokensUsed += curr.candidateTokensUsed;
@@ -272,8 +340,8 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
     return { finalStageResults, tokensinfo };
   }
   if (stageresults.tomerge.length === 0) {
-    console.log('No conflicts found')
-    const finalStageResults = stageresults.stageres
+    console.log("No conflicts found");
+    const finalStageResults = stageresults.stageres;
     const totaltokens = tokensinfo.reduce(
       (acc, curr) => {
         acc.candidateTokensUsed += curr.candidateTokensUsed;
@@ -287,7 +355,6 @@ export const resumeReview = async (resume: string, jd: string, reviewType: strin
       ...totaltokens,
       stagename: "total",
     });
-    return { finalStageResults, tokensinfo }
+    return { finalStageResults, tokensinfo };
   }
 };
-

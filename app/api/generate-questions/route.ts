@@ -36,7 +36,7 @@ export const POST = asyncHandler(async (req: NextRequest) => {
     throw ApiError.rateLimitExceeded;
   }
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `You are an AI interviewer conducting a structured interview for a ${position} ${job} position at ${companyName}. You are acting in the capacity of a ${interviewerPosition} and are tasked with evaluating the candidate’s qualifications, skills, and suitability for the role.
     Generate ${numberOfQuestions} interview questions for this position. 

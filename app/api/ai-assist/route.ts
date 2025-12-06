@@ -29,7 +29,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     action === "enhance"
       ? getAIEnhancementPrompt(content, section)
       : getAISuggestionPrompt(prompt, section);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const result = await model.generateContent(detailedPrompt);
   //console.log("result: ", result);
   const response = result.response;

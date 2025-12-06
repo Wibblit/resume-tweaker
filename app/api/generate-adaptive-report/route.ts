@@ -25,7 +25,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
   }
 
   //console.log("Chat History ", JSON.stringify(chatHistory, null, 2));
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const result = await model.generateContent(
     `Context\nchathistory:${JSON.stringify(
